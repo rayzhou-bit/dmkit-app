@@ -13,6 +13,7 @@
   width: 100%;
   margin: 0;
   padding: 0;
+
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -23,12 +24,13 @@
     height: 100%;
     width: 100%;
     padding: 3px 5px;
-    box-sizing: border-box;
-    display: block;
-    text-align: left;
 
     border: 1px solid #999;
     border-radius: 3px;
+
+    box-sizing: border-box;
+    display: block;
+    text-align: left;
     
     cursor: move;
 
@@ -42,6 +44,7 @@
   .DelButton {
     height: 100%;
     padding: 3px 5px;
+    
     box-sizing: border-box;
     display: block;
     text-align: center;

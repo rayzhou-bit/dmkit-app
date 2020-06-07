@@ -8,29 +8,25 @@ import { updateObject } from '../../shared/utility';
 //     views: viewsTestId
 
 const initialState = {
-  user: "usersTestId",
-  campaign: "campaignTestId",
   cards: null,
-  // {
-  //   key1: {x: x-position, y: y-position},
-  //   key2: {x: x-position, y: y-potition},
-  //   etc...
+  // structure for cards
+  // autoId: {
+  //   x: x-position,
+  //   y: y-position,
+  //   views: [view1, view2, etc...],
   // }
 };
 
-const updCardPos = (state, action) => {
-  const updatedCards = updateObject(state.cards, {[action.key]: action.data});
-  const updatedState = {
-    cards: updatedCards,
-  }
+const updCard = (state, action) => {
+  const updatedCards = updateObject(state.cards, {[action.id]: action.data});
+  const updatedState = {cards: updatedCards};
   return updateObject(state, updatedState);
-}
+};
 
 const reducer = (state = initialState, action) => {
   switch(action.type) {
-    case actionTypes.UPD_CARD_POS: return updCardPos(state, action);
-    default:
-      return state;
+    case actionTypes.UPD_CARD: return updCard(state, action);
+    default: return state;
   }
 };
 

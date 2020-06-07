@@ -1,0 +1,66 @@
+.ViewSelect {
+  position: absolute;
+  bottom: 0;
+
+  width: 100%;
+  padding: 0;  margin: 0;
+
+  background-color: lightgray;
+  border-top: 1px solid black;
+
+  box-sizing: border-box;
+  z-index: 90;
+
+  .Tab {
+    height: 100%;
+    padding: 0;  margin: 0;
+
+    border: 1px solid black;
+
+    display: inline-block;
+  }
+}
+
+button {
+  padding: 5px;
+  margin: 0;
+
+  color: black;
+  background-color: lightgray;
+
+  font-size: 24px;
+  font-weight: bold;
+  text-align: center;
+  
+  display: inline-block;
+  text-decoration: none;
+  border: 0;
+
+  &:hover {
+    background-color: lightskyblue;
+  }
+}
+
+input {
+  padding: 5px;
+  margin: 0;
+
+  color: black;
+  background-color: lightskyblue;
+
+  font-size: 24px;
+  font-weight: bold;
+  text-align: center;
+  
+  display: inline-block;
+  text-decoration: none;
+  border: 0;
+
+  &:hover {
+    background-color: lightskyblue;
+  }
+  &:read-only {
+    background-color: lightgray;
+    cursor: default;
+  }
+}

@@ -2,15 +2,15 @@ import React, { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Draggable from 'react-draggable';
 
-import * as actions from '../../store/action/index';
+import * as actions from '../../store/actionIndex';
 import './Card.scss';
 import logo from '../../logo.svg';
 
 const Card = React.memo(props => {
   const dispatch = useDispatch();
 
-  const user = useSelector(state => state.viewScreen.user);
-  const campaign = useSelector(state => state.viewScreen.campaign);
+  const user = useSelector(state => state.campaign.user);
+  const campaign = useSelector(state => state.campaign.campaign);
 
   const removeCard = useCallback(() => dispatch(actions.removeCard(user, campaign, props.id)), []);
 

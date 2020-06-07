@@ -1,20 +1,19 @@
-import React, { useEffect, useCallback, useReducer } from 'react';
+import React, { useEffect, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import './ViewScreen.scss';
-import * as actions from '../../store/action/index';
+import './View.scss';
+import * as actions from '../../store/actionIndex';
 import Card from '../Card/Card';
-import ToolMenu from '../../components/ToolMenu/ToolMenu';
 
 const ViewScreen = (props) => {
   const dispatch = useDispatch();
 
-  const user = useSelector(state => state.viewScreen.user);
-  const campaign = useSelector(state => state.viewScreen.campaign);
-  const cards = useSelector(state => state.viewScreen.cards);
+  const user = useSelector(state => state.campaign.user);
+  const campaign = useSelector(state => state.campaign.campaign);
+  const cards = useSelector(state => state.cards.cards);
+  const activeView = useSelector(state => state.views.activeView);
 
   const fetchCards = useCallback(() => dispatch(actions.fetchCards(user, campaign)), []);
-  const addCard = useCallback(() => dispatch(actions.addCard(user, campaign)), []);
 
   useEffect(() => {
     console.log('ViewScreen: useEffect');
@@ -35,10 +34,7 @@ const ViewScreen = (props) => {
 
   return (
     <div className="ViewScreen">
-      <ToolMenu 
-        addCard={addCard}
-      />
-      {cardObjs}
+        {cardObjs}
     </div>
   );
 };

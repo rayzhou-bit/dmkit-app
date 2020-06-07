@@ -1,14 +1,4 @@
-export const UPD_CARD_POS = 'UPD_CARD_POS';
-export const SAVE_CARD_POS = 'SAVE_CARD_POS';
-
-// SERVER CALLS
-export const FETCH_CARDS = 'FETCH_CARDS';
-
-
-
-
-
-
-export const ADD_CARD = 'ADD_CARD';
-
-export const SAVE_POS = 'SAVE_POS';
+export const UPD_CARD = 'UPD_CARD';
+export const UPD_VIEW = 'UPD_VIEW';
+export const UPD_VIEW_ORDER = 'UPD_VIEW_ORDER';
+export const UPD_ACTIVE_VIEW = 'UPD_ACTIVE_VIEW';

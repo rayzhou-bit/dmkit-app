@@ -5,13 +5,17 @@ import { createStore, applyMiddleware, compose, combineReducers } from 'redux';
 import thunk from 'redux-thunk';
 
 import App from './App';
-import viewScreenReducer from './store/reducer/viewScreen';
+import campaignReducer from './store/reducer/campaign';
+import cardReducer from './store/reducer/card';
+import viewReducer from './store/reducer/view';
 import * as serviceWorker from './serviceWorker';
 
 const composeEnhancers = process.env.NODE_ENV === 'development' ? window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ : null || compose;
 
 const rootReducer = combineReducers({
-  viewScreen: viewScreenReducer,
+  campaign: campaignReducer,
+  cards: cardReducer,
+  views: viewReducer,
 });
 
 const store = createStore(rootReducer, composeEnhancers(
