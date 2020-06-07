@@ -23,7 +23,9 @@ const ViewScreen = (props) => {
   let cardObjs = [];
   if (cards) {
     for (let id in cards) {
-      if (cards[id]) {
+      // let showCard = false;
+      // if (cards[id] && ) {showCard = cards[id].views.includes(activeView)}
+      if (cards[id] && cards[id].views && cards[id].views.includes(activeView)) {
         cardObjs = [
           ...cardObjs,
           <Card key={id} id={id} x={cards[id].x} y={cards[id].y} />
