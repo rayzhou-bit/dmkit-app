@@ -1,13 +1,17 @@
 export {
   fetchCards,
-  saveCardPos,
-  addCard,
+  saveEditedCardData,
+  createCard,
   removeCard,
+  saveCardData,
+  saveCardPos,
+  onClickCard,
 } from './action/card';
 export {
   fetchViews,
-  addView,
+  saveEditedViewData,
+  createView,
   removeView,
+  saveViewTitle,
   onClickView,
-  updViewTitle,
 } from './action/view'

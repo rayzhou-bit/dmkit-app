@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import {useEffect} from 'react';
 
 export const updateObject = (oldObject, updatedProperties) => {
   return {
@@ -21,4 +21,4 @@ export const useOutsideClick = (ref, func, args) => {
       document.removeEventListener("mouseup", handleClickOutside);
     };
   }, [ref, func, args]);
-}
+};
