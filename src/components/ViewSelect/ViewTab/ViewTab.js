@@ -4,12 +4,12 @@ import { useDispatch, useSelector } from "react-redux";
 import "./ViewTab.scss";
 import * as actions from "../../../store/actionIndex";
 
-const useOutsideClickSave = (ref, user, campaign, viewId, editing, setEditting) => {
+const useOutsideClickSave = (ref, view, editing, setEditting) => {
   const dispatch = useDispatch();
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (ref.current && !ref.current.contains(event.target) && editing) {
-        dispatch(actions.saveViewTitle(user, campaign, viewId, ref.current.value));
+        dispatch(actions.updViewTitle(view, ref.current.value));
         setEditting(false);
       }
     };
@@ -25,47 +25,42 @@ const ViewTab = React.memo((props) => {
 
   const [editing, setEditting] = useState(false);
 
-  const user = useSelector((state) => state.campaign.user);
-  const campaign = useSelector((state) => state.campaign.campaign);
-  const views = useSelector((state) => state.views.views);
-  const viewOrder = useSelector((state) => state.views.viewOrder);
-  const activeView = useSelector((state) => state.views.activeView);
+  const viewColl = useSelector(state => state.view);
+  const activeView = useSelector(state => state.viewManage.activeView);
 
-  const removeView = (viewId) => dispatch(actions.removeView(user, campaign, viewOrder, viewId));
-  const onClickView = (viewId) => dispatch(actions.onClickView(user, campaign, activeView, viewId));
+  const viewId = props.id;
+  const viewData = viewColl[viewId];
+  const viewTitle = viewData.title ? viewData.title : "untitled";
+  const viewTitleRef = useRef(viewId);
 
-  const enterHandler = (event, viewId, newTitle) => {
+  const setViewDelete = (view) => dispatch(actions.setViewDelete(view));
+  const onClickView = (view) => dispatch(actions.onClickView(view));
+
+  const enterHandler = (event, view, newTitle) => {
     if (event.which === 13 && editing) {
-      dispatch(actions.saveViewTitle(user, campaign, viewId, newTitle));
+      dispatch(actions.updViewTitle(view, newTitle));
       setEditting(false);
     }
   };
 
-  const view = views[props.id];
-  const tabInputRef = useRef(props.id);
-  useOutsideClickSave(tabInputRef, user, campaign, props.id, editing, setEditting);
-
-  let viewTitle = "untitled";
-  if (view.title) {
-    viewTitle = view.title
-  }
+  useOutsideClickSave(viewTitleRef, viewId, editing, setEditting);
 
   return (
-    <div className="viewTab" onClick={props.id === activeView ? null : () => onClickView(props.id)}>
+    <div className="viewTab" onClick={viewId === activeView ? null : () => onClickView(viewId)}>
       <input
-        ref={tabInputRef}
+        ref={viewTitleRef}
         onChange={editing ? null : () => setEditting(true)}
         onKeyUp={
-          props.id === activeView
-            ? (event) => enterHandler(event, props.id, tabInputRef.current.value)
+          viewId === activeView
+            ? (event) => enterHandler(event, viewId, viewTitleRef.current.value)
             : null
         }
         defaultValue={viewTitle}
-        readOnly={props.id !== activeView}
+        readOnly={viewId !== activeView}
         type="text"
         required
       />
-      <button onClick={() => removeView(props.id)}>X</button>
+      <button onClick={() => setViewDelete(viewId)}>X</button>
     </div>
   );
 });

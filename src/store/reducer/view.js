@@ -9,46 +9,50 @@ import { updateObject } from '../../shared/utility';
 //     viewOrder: []
 
 const initialState = {
-  views: {},
   // view1: {
   //   title: "view title",
   //   edited: boolean,
   // }
+};
 
-  viewOrder: [],
-  // array that keeps track of the position of the views
+const saveEditedView = (state, action) => {
+  const updatedView = updateObject(state[action.view], {edited: false});
+  return updateObject(state, {[action.view]: updatedView});
+};
 
-  viewDelete: [],
-  // array that keeps track of views to delete from firebase
+const addView = (state, action) => {
+  const view = {
+    [action.view]: {
+      title: "untitled",
+      edited: true
+    }
+  };
+  return updateObject(state, view);
+};
 
-  activeView: null,
+const deleteView = (state, action) => {
+  let updatedViews = {...state};
+  delete updatedViews[action.view];
+  return updatedViews;
 };
 
 const updViewTitle = (state, action) => {
-  const updatedView = updateObject(state.views[action.view], {title: action.title});
-  const updatedViews = updateObject(state.views, {[action.view]: updatedView});
-  return updateObject(state, {views: updatedViews});
-};
-
-const updViewEdited = (state, action) => {
-  const updatedView = updateObject(state.views[action.view], {edited: action.edited});
-  const updatedViews = updateObject(state.views, {[action.view]: updatedView});
-  return updateObject(state, {views: updatedViews});
-};
-
-const queueViewDelete = (state, action) => {
-  const updatedViewDelete = [...state.viewDelete].push(action.view);
-  return updateObject(state, {viewDelete: updatedViewDelete})
+  let updatedView = {...state[action.view]};
+  updatedView.title = action.title;
+  updatedView.edited = true;
+  return updateObject(state, {[action.view]: updatedView});
 };
 
 const reducer = (state = initialState, action) => {
   switch(action.type) {
+    case actionTypes.LOAD_VIEW_COLL: return updateObject(state, action.viewColl);
+    case actionTypes.SAVE_EDITED_VIEW: return saveEditedView(state, action);
+
+    case actionTypes.ADD_VIEW: return addView(state, action);
+    case actionTypes.DELETE_VIEW: return deleteView(state, action);
+
     case actionTypes.UPD_VIEW_TITLE: return updViewTitle(state, action);
-    case actionTypes.UPD_VIEW_ORDER: return updateObject(state, {viewOrder: action.data});
-    case actionTypes.UPD_VIEW_EDITED: return updViewEdited(state, action);
-    case actionTypes.QUEUE_VIEW_DELETE: return queueViewDelete(state, action);
-    case actionTypes.CLEAR_VIEW_DELETE: return updateObject(state, {viewDelete: []});
-    case actionTypes.UPD_ACTIVE_VIEW: return updateObject(state, {activeView: action.data});
+
     default: return state;
   }
 };

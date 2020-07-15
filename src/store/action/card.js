@@ -1,100 +1,101 @@
 import * as actionTypes from '../actionTypes';
 import fire from '../../shared/fire';
+import { updateObject } from '../../shared/utility';
 const db = fire.firestore();
 
-// <-----REDUCER CALLS----->
-const updCardPos = (card, view, pos) => { return { type: actionTypes.UPD_CARD_POS, card: card, view: view, pos: pos } };
-const updCardData = (card, data) => { return { type: actionTypes.UPD_CARD_DATA, card: card, data: data } };
-const updCardEdited = (card, edited) => { return { type: actionTypes.UPD_CARD_EDITED, card: card, edited: edited } };
-const updActiveCard = (card) => { return { type: actionTypes.UPD_ACTIVE_CARD, card: card } };
-// <-----REDUCER CALLS----->
+// <-----SIMPLE CARD REDUCER CALLS----->
+const loadCardColl = (cardColl) => { return { type: actionTypes.LOAD_CARD_COLL, cardColl: cardColl }; };
+const saveEditedCard = (card) => { return { type: actionTypes.SAVE_EDITED_CARD, card: card }; };
+const addCard = (card, view, pos) => { return { type: actionTypes.ADD_CARD, card: card, view: view, pos: pos }; };
+const deleteCard = (card) => { return { type: actionTypes.DELETE_CARD, card: card }; };
+export const removeCardFromView = (card, view) => { return { type: actionTypes.REMOVE_CARD_FROM_VIEW, card: card, view: view }; };
+export const updCardPos = (card, view, pos) => { return { type: actionTypes.UPD_CARD_POS, card: card, view: view, pos: pos }; };
+export const updCardText = (card, text) => { return { type: actionTypes.UPD_CARD_TEXT, card: card, text: text }; };
 
-export const fetchCards = (userId, campaignId) => {
-  const cardsRef = db.collection("users").doc(userId).collection("campaigns").doc(campaignId).collection("cards");
+// <-----SIMPLE CARDMANAGE REDUCER CALLS----->
+const queueCardDelete = (card) => { return { type: actionTypes.QUEUE_CARD_DELETE, card: card }; };
+const clearCardDelete = () => { return { type: actionTypes.CLEAR_CARD_DELETE }; };
+const updActiveCard = (card) => { return { type: actionTypes.UPD_ACTIVE_CARD, card: card }; };
+
+// <-----COMPLEX CALLS----->
+export const fetchCardColl = (user, campaign) => {
+  const cardCollRef = db.collection("users").doc(user).collection("campaigns").doc(campaign).collection("cards");
   return dispatch => {
-    cardsRef.get()
+    cardCollRef.get()
       .then(snapshot => {
+        let cardColl = {};
         snapshot.forEach(card => {
-          let views = card.data().views ? card.data().views : null;
-          let data = card.data().data ? card.data().data : null;
-          for (let view in views) {
-            dispatch(updCardPos(card.id, view, views[view]));
-          }
-          dispatch(updCardData(card.id, data));
-          console.log("[fetchCards] firebase fetched card:", card.id, card.data());
+          cardColl = updateObject(cardColl, {
+            [card.id]: card.data()
+          });
         });
+        dispatch(loadCardColl(cardColl));
+        // snapshot.forEach(card => {
+        //   let views = card.data().views ? card.data().views : null;
+        //   let data = card.data().data ? card.data().data : null;
+        //   for (let view in views) {
+        //     dispatch(updCardPos(card.id, view, views[view]));
+        //   }
+        //   dispatch(updCardData(card.id, data));
+        //   console.log("[fetchCardColl] firebase fetched card:", card.id, card.data());
+        // });
       })
-      .catch(error => console.log("[fetchCards] firebase error:", error));
+      .catch(error => console.log("[fetchCardColl] firebase error:", error));
   };
 };
 
-export const saveEditedCardData = (userId, campaignId, cards) => {
-  const cardsRef = db.collection("users").doc(userId).collection("campaigns").doc(campaignId).collection("cards");
+export const saveCards = (user, campaign, cardColl, cardDelete) => {
+  const cardCollRef = db.collection("users").doc(user).collection("campaigns").doc(campaign).collection("cards");
   return dispatch => {
     let batch = db.batch();
-    for (let card in cards) {
-      if (cards[card].edited) {
-        let cardRef = cardsRef.doc(card);
-        let dataPackage = { views: cards[card].views, data: cards[card].data };
+    for (let card in cardColl) {
+      if (cardColl[card].edited) {
+        let cardRef = cardCollRef.doc(card);
+        let dataPackage = cardColl[card];
+        delete dataPackage.edited;
         batch.set(cardRef, dataPackage);
-        dispatch(updCardEdited(card, false));
-        console.log("[saveEditedCardData] batched:", card);
+        console.log("[saveCards] batch set:", card);
       }
     }
+    for (let card in cardDelete) {
+      let cardRef = cardCollRef.doc(card);
+      batch.delete(cardRef);
+      console.log("[saveCards] batch delete:", card)
+    }
     batch.commit()
-      .then(response => console.log("[saveEditedCardData] firebase response:", response))
-      .catch(error => console.log("[saveEditedCardData] firebase error:", error));
-  };
-};
-
-export const createCard = (userId, campaignId, activeView) => {
-  const cardsRef = db.collection("users").doc(userId).collection("campaigns").doc(campaignId).collection("cards");
-  let dataPackage = { views: { [activeView]: {x: 100, y: 100} }, data: null };
-  return dispatch => {
-    cardsRef.add(dataPackage)
       .then(response => {
-        console.log("[createCard] firebase added card:", response.id);
-        dispatch(updCardPos(response.id, activeView, {x: 100, y: 100}));
-        dispatch(updCardData(response.id, null));
-        dispatch(updCardEdited(response.id, true));
-        console.log("[createCard] added card:", response.id);
+        console.log("[saveCards] firebase batch success:", response);
+        for (let card in cardColl) {
+          if (cardColl[card].edited) {
+            dispatch(saveEditedCard(card));
+          }
+        }
+        dispatch(clearCardDelete);
       })
-      .catch(error => console.log("[createCard] firebase error:", error));
+      .catch(error => console.log("[saveCards] firebase batch error:", error));
   };
 };
 
-export const removeCard = (activeView, cardId) => {
+export const setCardCreate = (user, campaign, view) => {
+  const cardCollRef = db.collection("users").doc(user).collection("campaigns").doc(campaign).collection("cards");
+  let dataPackage = { views: { [view]: {x: 100, y: 100} } };
   return dispatch => {
-    dispatch(updCardPos(cardId, activeView, null));
-    dispatch(updCardEdited(cardId, true));
-    console.log("[removeCard] removed card:", cardId);
+    cardCollRef.add(dataPackage)
+      .then(response => {
+        console.log("[setCardCreate] firebase add card success:", response.id);
+        dispatch(addCard(response.id, view));
+      })
+      .catch(error => console.log("[setCardCreate] firebase add card error:", error));
   };
 };
 
-export const deleteCard = () => {};
-
-export const saveCardPos = (activeView, cardId, e, pos) => {
+export const setCardDelete = (card) => {
   return dispatch => {
-    dispatch(updCardPos(cardId, activeView, {x: pos.x, y: pos.y}));
-    dispatch(updCardEdited(cardId, true));
-    console.log("[saveCardPos] updated card:", cardId, pos);
+    dispatch(deleteCard(card));
+    dispatch(queueCardDelete(card));
   };
 };
 
-export const saveCardData = (cardId, data) => {
-  return dispatch => {
-    dispatch(updCardData(cardId, {
-      title: data.title,
-      text: data.text,
-    }));
-    dispatch(updCardEdited(cardId, true));
-    console.log("[saveCardData] updated card:", cardId);
-  };
-};
-
-export const onClickCard = (activeCard, cardId) => {
-  return dispatch => {
-    dispatch(updActiveCard(cardId));
-    console.log("[onClickCard] updated activeCard:", cardId)
-  };
+export const onClickCard = (card) => {
+  return dispatch => dispatch(updActiveCard(card));
 };

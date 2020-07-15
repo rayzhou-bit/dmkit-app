@@ -1,116 +1,126 @@
 import * as actionTypes from '../actionTypes';
 import fire from '../../shared/fire';
+import { updateObject } from '../../shared/utility';
 const db = fire.firestore();
 
-// <-----REDUCER CALLS----->
-const updViewTitle = (view, title) => { return { type: actionTypes.UPD_VIEW_TITLE, view: view, title: title }; };
-const updViewOrder = (data) => { return { type: actionTypes.UPD_VIEW_ORDER, data: data }; };
-const updViewEdited = (view, edited) => { return { type: actionTypes.UPD_VIEW_EDITED, view: view, edited: edited }; };
-const queueViewDelete = (view) => { return { type: actionTypes.QUEUE_VIEW_DELETE, view: view }; };
-const clearViewDelete = () => {return { type: actionTypes.CLEAR_VIEW_DELETE }; };
-const updActiveView = (data) => { return { type: actionTypes.UPD_ACTIVE_VIEW, data: data }; };
-// <-----REDUCER CALLS----->
+// <-----SIMPLE VIEW REDUCER CALLS----->
+const loadViewColl = (viewColl) => { return { type: actionTypes.LOAD_VIEW_COLL, viewColl: viewColl }; };
+const addView = (view) => { return { type: actionTypes.ADD_VIEW, view: view }; };
+const deleteView = (view) => { return { type: actionTypes.DELETE_VIEW, view: view }; };
+export const updViewTitle = (view, title) => { return { type: actionTypes.UPD_VIEW_TITLE, view: view, title: title }; };
 
-export const fetchViews = (userId, campaignId, activeView) => {
-  const viewsRef = db.collection("users").doc(userId).collection("campaigns").doc(campaignId).collection("views");
-  const campaignRef = db.collection("users").doc(userId).collection("campaigns").doc(campaignId);
+// <-----SIMPLE VIEWMANAGE REDUCER CALLS----->
+const loadViewOrder = (viewOrder) => { return { type: actionTypes.LOAD_VIEW_ORDER, viewOrder: viewOrder }; };
+const saveEditedView = (view) => { return { type: actionTypes.SAVE_EDITED_VIEW, view: view }; };
+const addToViewOrder = (view) => { return { type: actionTypes.ADD_TO_VIEW_ORDER, view: view }; };
+const deleteFromViewOrder = (view) => { return { type: actionTypes.DELETE_FROM_VIEW_ORDER, view: view }; };
+const queueViewDelete = (view) => { return { type: actionTypes.QUEUE_VIEW_DELETE, view: view }; };
+const dequeueViewDelete = (view) => { return { type: actionTypes.DEQUEUE_VIEW_DELETE, view: view }; };
+const clearViewDelete = () => {return { type: actionTypes.CLEAR_VIEW_DELETE }; };
+const updActiveView = (view) => { return { type: actionTypes.UPD_ACTIVE_VIEW, view: view }; };
+
+// <-----COMPLEX CALLS----->
+export const fetchViewColl = (user, campaign, activeView) => {
+  const viewCollRef = db.collection("users").doc(user).collection("campaigns").doc(campaign).collection("views");
+  const campaignRef = db.collection("users").doc(user).collection("campaigns").doc(campaign);
   return dispatch => {
-    viewsRef.get()
+    viewCollRef.get()
       .then(snapshot => {
+        let viewColl = {};
         snapshot.forEach(view => {
-          let title = view.data().title ? view.data().title : "untitled";
-          dispatch(updViewTitle(view.id, title));
-          console.log("[fetchViews] firebase fetched view:", view.id);
+          viewColl = updateObject(viewColl, {
+            [view.id]: view.data()
+          });
         });
+        dispatch(loadViewColl(viewColl));
+        // snapshot.forEach(view => {
+        //   let title = view.data().title ? view.data().title : "untitled";
+        //   dispatch(updViewTitle(view.id, title));
+        //   console.log("[fetchViewColl] firebase fetched view:", view.id);
+        // });
       })
-      .catch(error => console.log("[fetchViews] firebase error:", error));
+      .catch(error => console.log("[fetchViewColl] firebase error:", error));
     campaignRef.get()
       .then(doc => {
         if (doc.exists && doc.data().viewOrder) {
-          dispatch(updViewOrder(doc.data().viewOrder));
-          console.log("[fetchViews] firebase updated viewOrder:", doc.data().viewOrder);
+          dispatch(loadViewOrder(doc.data().viewOrder));
+          console.log("[fetchViewColl] firebase updated viewOrder success:", doc.data().viewOrder);
           if (!activeView) {
             dispatch(updActiveView(doc.data().viewOrder[0]));
-            console.log("[fetchViews] updated activeView:", doc.data().viewOrder[0]);
+            console.log("[fetchViewColl] updated activeView:", doc.data().viewOrder[0]);
           }
         }
       })
-      .catch(error => console.log("[fetchViews] firebase error:", error));
+      .catch(error => console.log("[fetchViewColl] firebase error:", error));
   };
 };
 
-export const saveEditedViewData = (userId, campaignId, views, viewOrder, viewDelete) => {
-  const viewsRef = db.collection("users").doc(userId).collection("campaigns").doc(campaignId).collection("views");
-  const campaignRef = db.collection("users").doc(userId).collection("campaigns").doc(campaignId);
+export const saveViews = (user, campaign, viewColl, viewDelete, viewOrder) => {
+  const viewCollRef = db.collection("users").doc(user).collection("campaigns").doc(campaign).collection("views");
+  const campaignRef = db.collection("users").doc(user).collection("campaigns").doc(campaign);
   return dispatch => {
     let batch = db.batch();
-    for (let view in views) {
-      if (views[view].edited) {
-        let viewRef = viewsRef.doc(view);
-        let dataPackage = views[view];
+    for (let view in viewColl) {
+      if (viewColl[view].edited) {
+        let viewRef = viewCollRef.doc(view);
+        let dataPackage = viewColl[view];
         delete dataPackage.edited;
         batch.set(viewRef, dataPackage);
-        console.log("[saveEditedViewData] batched edit:", view);
+        console.log("[saveViews] batch set:", view);
       }
     }
     for (let view in viewDelete) {
-      let viewRef = viewsRef.doc(view);
+      let viewRef = viewCollRef.doc(view);
       batch.delete(viewRef);
-      console.log("[saveEditedViewData] batched delete:", view);
+      console.log("[saveViews] batch delete:", view);
     }
     batch.set(campaignRef, {viewOrder: viewOrder}, {merge: true});
-    console.log("[saveEditedViewData] batched viewOrder:", viewOrder);
+    console.log("[saveViews] batch viewOrder:", viewOrder);
     batch.commit()
       .then(response => {
-        console.log("[saveEditedViewData] firebase response:", response);
-        for (let view in views) {
-          if (views[view].edited) {
-            dispatch(updViewEdited(view, false));
+        console.log("[saveViews] firebase response:", response);
+        for (let view in viewColl) {
+          if (viewColl[view].edited) {
+            dispatch(saveEditedView(view));
           }
         }
         dispatch(clearViewDelete());
       })
-      .catch(error => console.log("[saveEditedViewData] firebase error:", error));
+      .catch(error => console.log("[saveViews] firebase error:", error));
   };
 };
 
-export const createView = (userId, campaignId, viewOrder) => {
-  const viewsRef = db.collection("users").doc(userId).collection("campaigns").doc(campaignId).collection("views");
-  let dataPackage = { title: "untitled" + viewOrder.length };
+export const setViewCreate = (user, campaign, viewOrder) => {
+  const viewCollRef = db.collection("users").doc(user).collection("campaigns").doc(campaign).collection("views");
+  const campaignRef = db.collection("users").doc(user).collection("campaigns").doc(campaign);
+  let dataPackage = { title: "untitled" };
 
   return dispatch => {
-    viewsRef.add(dataPackage)
+    viewCollRef.add(dataPackage)
       .then(response => {
-        console.log("[createView] firebase added view:", response.id);
-        dispatch(updViewTitle(response.id, "untitled" + viewOrder.length));
-        dispatch(updViewEdited(response.id, true));
-        console.log("[createView] added view:", response.id);
-        let newViewOrder = viewOrder;
-        newViewOrder.push(response.id);
-        dispatch(updViewOrder(newViewOrder));
+        console.log("[setViewCreate] firebase add view success:", response.id);
+        dispatch(addView(response.id));
+        // Update viewOrder
+        let newViewOrder = [...viewOrder].push(response.id);
+        campaignRef.set({viewOrder: newViewOrder})
+          .then(response => {
+            console.log("[setViewCreate] firebase update viewOrder success:", response);
+            dispatch(addToViewOrder(response.id));
+          })
+          .catch(error => console.log("[setViewCreate] firebase update viewOrder error:", error));
       })
-      .catch(error => console.log("[createView] firebase error:", error));
+      .catch(error => console.log("[setViewCreate] firebase add view error:", error));
   };
 };
 
-export const removeView = (userId, campaignId, viewOrder, viewId) => {
+export const setViewDelete = (view) => {
   return dispatch => {
-    let newViewOrder = [...viewOrder].filter(x => {return x !== viewId});
-    dispatch(updViewTitle(viewId, null));
-    dispatch(updViewOrder(newViewOrder));
-    dispatch(queueViewDelete(viewId));
-    console.log("[removeView] removed view:", viewId);
+    dispatch(deleteView(view));
+    dispatch(queueViewDelete(view));
+    dispatch(deleteFromViewOrder(view));
   };
 };
 
-export const saveViewTitle = (userId, campaignId, viewId, newTitle) => {
-  return dispatch => {
-    dispatch(updViewTitle(viewId, newTitle));
-    dispatch(updViewEdited(viewId, true));
-    console.log("[saveViewData] updated view:", viewId);
-  };
-};
-
-export const onClickView = (userId, campaignId, activeView, viewId) => {
-  return dispatch => dispatch(updActiveView(viewId));
+export const onClickView = (view) => {
+  return dispatch => dispatch(updActiveView(view));
 };

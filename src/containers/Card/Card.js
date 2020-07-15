@@ -5,12 +5,12 @@ import Draggable from "react-draggable";
 import * as actions from "../../store/actionIndex";
 import "./Card.scss";
 
-const useOutsideClickSave = (ref, user, campaign, cardId, editing, setEditting) => {
+const useOutsideClickSave = (ref, card, editing, setEditting) => {
   const dispatch = useDispatch();
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (ref.current && !ref.current.contains(event.target) && editing) {
-        dispatch(actions.saveCardData(user, campaign, cardId, ref.current.value));
+        dispatch(actions.updCardText(card, ref.current.value));
         setEditting(false);
       }
     };
@@ -22,33 +22,34 @@ const useOutsideClickSave = (ref, user, campaign, cardId, editing, setEditting) 
 };
 
 const Card = (props) => {
+
   const dispatch = useDispatch();
   
   const [editing, setEditting] = useState(false);
 
-  const user = useSelector((state) => state.campaign.user);
-  const campaign = useSelector((state) => state.campaign.campaign);
-  const cards = useSelector((state) => state.cards.cards);
-  const activeCard = useSelector((state) => state.cards.activeCard);
-  const activeView = useSelector((state) => state.views.activeView);
+  const cardColl = useSelector(state => state.card);
+  const activeCard = useSelector(state => state.cardManage.activeCard);
+  const activeView = useSelector(state => state.viewManage.activeView);
 
-  const onDragStop = (e, data) => dispatch(actions.saveCardPos(activeView, props.id, e, data));
-  const removeCard = () => dispatch(actions.removeCard(activeView, props.id));
-  const onClickCard = (cardId) => dispatch(actions.onClickCard(activeCard, cardId));
+  const cardId = props.id;
+  const cardData = cardColl[cardId];
+  const cardPos = cardData.views[activeView];
+  const cardTitle = (cardData.data && cardData.data.title) ? cardData.data.title : (cardId + " | " + cardPos.x + " | " + cardPos.y)
+  const cardText = (cardData.data && cardData.data.text) ? cardData.data.text : "";
+  const cardTextRef = useRef(cardId);
 
-  const enterDataHandler = (event, cardId, newData) => {
+  const onDragStop = (e, pos) => dispatch(actions.updCardPos(cardId, activeView, {x: pos.x, y: pos.y}));
+  const removeCardFromView = () => dispatch(actions.removeCardFromView(cardId, activeView));
+  const onClickCard = (clickedCard) => dispatch(actions.onClickCard(clickedCard));
+
+  const enterDataHandler = (event, card, newText) => {
     if (event.which === 13 && editing) {
-      dispatch(actions.saveCardData(cardId, {text: newData}));
+      dispatch(actions.updCardText(card, newText));
       setEditting(false);
     }
   };
   
-  const card = cards[props.id];
-  const cardRef = useRef(props.id);
-  useOutsideClickSave(cardRef, user, campaign, props.id, editing, setEditting);
-
-  let cardPos = {x: card.views[activeView].x, y: card.views[activeView].y};
-  let cardText = (card.data && card.data.text) ? card.data.text : "";
+  useOutsideClickSave(cardTextRef, cardId, editing, setEditting);
 
   return (
     <Draggable
@@ -58,24 +59,24 @@ const Card = (props) => {
       position={cardPos}
       onStop={onDragStop}
     >
-      <div className="card" onClick={props.id === activeCard ? null : () => onClickCard(props.id)}>
+      <div className="card" onClick={cardId === activeCard ? null : () => onClickCard(cardId)}>
         <div className="header">
-          <header className="title">{card.title ? card.title : (props.id + " | " + card.views[activeView].x + " | " + card.views[activeView].y)}</header>
+          <header className="title">{cardTitle}</header>
           <button className="headerButton">.</button>
-          <button className="headerButton" onClick={removeCard}>X</button>
+          <button className="headerButton" onClick={removeCardFromView}>X</button>
         </div>
         <div className="body">
           <textarea
             className="text"
-            ref={cardRef}
+            ref={cardTextRef}
             onChange={editing ? null : () => setEditting(true)}
             onKeyUp={
-              props.id === activeCard
-                ? (event) => enterDataHandler(event, props.id, cardRef.current.value)
+              cardId === activeCard
+                ? (event) => enterDataHandler(event, cardId, cardTextRef.current.value)
                 : null
             }
             defaultValue={cardText}
-            readOnly={props.id !== activeCard}
+            readOnly={cardId !== activeCard}
             type="text"
           />
         </div>
