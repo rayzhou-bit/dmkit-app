@@ -1,31 +1,18 @@
-import React, { useRef, useState, useEffect, useCallback } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import Draggable from "react-draggable";
+import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { Rnd } from 'react-rnd';
 
-import * as actions from "../../store/actionIndex";
-import "./Card.scss";
+import * as actions from '../../store/actionIndex';
+import './Card.scss';
+import CardHeader from './CardHeader/CardHeader';
+import CardBody from './CardBody/CardBody';
 
-const useOutsideClickSave = (ref, card, editing, setEditting) => {
-  const dispatch = useDispatch();
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (ref.current && !ref.current.contains(event.target) && editing) {
-        dispatch(actions.updCardText(card, ref.current.value));
-        setEditting(false);
-      }
-    };
-    document.addEventListener("mouseup", handleClickOutside);
-    return () => {
-      document.removeEventListener("mouseup", handleClickOutside);
-    };
-  }, [ref, editing]);
-};
+//bubble, short, long modes
 
 const Card = (props) => {
-
   const dispatch = useDispatch();
-  
-  const [editing, setEditting] = useState(false);
+
+  const [editingCard, setEditingCard] = useState(false);
 
   const cardColl = useSelector(state => state.card);
   const activeCard = useSelector(state => state.cardManage.activeCard);
@@ -33,55 +20,46 @@ const Card = (props) => {
 
   const cardId = props.id;
   const cardData = cardColl[cardId];
-  const cardPos = cardData.views[activeView];
-  const cardTitle = (cardData.data && cardData.data.title) ? cardData.data.title : (cardId + " | " + cardPos.x + " | " + cardPos.y)
-  const cardText = (cardData.data && cardData.data.text) ? cardData.data.text : "";
-  const cardTextRef = useRef(cardId);
+  const cardPos = cardData.views[activeView].pos;
+  const cardSize = cardData.views[activeView].size;
+  const cardColor = cardData.views[activeView].color;
 
   const onDragStop = (e, pos) => dispatch(actions.updCardPos(cardId, activeView, {x: pos.x, y: pos.y}));
-  const removeCardFromView = () => dispatch(actions.removeCardFromView(cardId, activeView));
-  const onClickCard = (clickedCard) => dispatch(actions.onClickCard(clickedCard));
-
-  const enterDataHandler = (event, card, newText) => {
-    if (event.which === 13 && editing) {
-      dispatch(actions.updCardText(card, newText));
-      setEditting(false);
+  const onResizeStop = (e, direction, ref, delta, position) => {
+    dispatch(actions.updCardSize(cardId, activeView, {width: ref.style.width, height: ref.style.height}));
+    if (["top", "left", "topRight", "bottomLeft", "topLeft"].indexOf(direction) !== -1) {
+      dispatch(actions.updCardPos(cardId, activeView, {x: position.x, y: position.y}));
     }
   };
-  
-  useOutsideClickSave(cardTextRef, cardId, editing, setEditting);
+
+  const onClickCard = (clickedCard) => dispatch(actions.onClickCard(clickedCard));
+
+  //right + bottom resize work
+  //left + top resize does not work
+  // this is due to how positioning is determined by topleft corner
 
   return (
-    <Draggable
-      //grid={[25, 25]}
+    <Rnd
       bounds="parent"
-      handle="header"
+      onClick={(cardId === activeCard) ? null : (() => onClickCard(cardId))}
+      // position and dragging properties
       position={cardPos}
-      onStop={onDragStop}
+      dragGrid={[25, 25]}
+      dragHandleClassName="header"
+      onDragStop={onDragStop}
+      disableDragging={editingCard}
+      // size and resizing properties
+      size={cardSize}
+      minWidth={150}
+      minHeight={150}
+      resizeGrid={[25, 25]}
+      onResizeStop={onResizeStop}
     >
-      <div className="card" onClick={cardId === activeCard ? null : () => onClickCard(cardId)}>
-        <div className="header">
-          <header className="title">{cardTitle}</header>
-          <button className="headerButton">.</button>
-          <button className="headerButton" onClick={removeCardFromView}>X</button>
-        </div>
-        <div className="body">
-          <textarea
-            className="text"
-            ref={cardTextRef}
-            onChange={editing ? null : () => setEditting(true)}
-            onKeyUp={
-              cardId === activeCard
-                ? (event) => enterDataHandler(event, cardId, cardTextRef.current.value)
-                : null
-            }
-            defaultValue={cardText}
-            readOnly={cardId !== activeCard}
-            type="text"
-          />
-        </div>
+      <div className="card" style={{backgroundColor: cardColor}}>
+        <CardHeader id={cardId} setEditingCard={setEditingCard} />
+        <CardBody id={cardId} setEditingCard={setEditingCard} />
       </div>
-    </Draggable>
+    </Rnd>
   );
 };
 

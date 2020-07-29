@@ -1,5 +1,5 @@
 import * as actionTypes from '../actionTypes';
-import { updateObject } from '../../shared/utility';
+import { updateObject } from '../../shared/utilityFunctions';
 
 // Firebase collections sturcture
 // users: usersTestId
@@ -11,6 +11,7 @@ import { updateObject } from '../../shared/utility';
 const initialState = {
   // view1: {
   //   title: "view title",
+  //   color: "color",
   //   edited: boolean,
   // }
 };
@@ -21,13 +22,9 @@ const saveEditedView = (state, action) => {
 };
 
 const addView = (state, action) => {
-  const view = {
-    [action.view]: {
-      title: "untitled",
-      edited: true
-    }
-  };
-  return updateObject(state, view);
+  let newView = { [action.view]: action.dataPackage };
+  newView = updateObject(newView, {edited: true});
+  return updateObject(state, newView);
 };
 
 const deleteView = (state, action) => {
@@ -43,6 +40,13 @@ const updViewTitle = (state, action) => {
   return updateObject(state, {[action.view]: updatedView});
 };
 
+const updViewColor = (state, action) => {
+  let updatedView = {...state[action.view]};
+  updatedView.color = action.color;
+  updatedView.edited = true;
+  return updateObject(state, {[action.view]: updatedView});
+};
+
 const reducer = (state = initialState, action) => {
   switch(action.type) {
     case actionTypes.LOAD_VIEW_COLL: return updateObject(state, action.viewColl);
@@ -52,6 +56,7 @@ const reducer = (state = initialState, action) => {
     case actionTypes.DELETE_VIEW: return deleteView(state, action);
 
     case actionTypes.UPD_VIEW_TITLE: return updViewTitle(state, action);
+    case actionTypes.UPD_VIEW_COLOR: return updViewColor(state, action);
 
     default: return state;
   }

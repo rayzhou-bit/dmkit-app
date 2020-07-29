@@ -1,0 +1,44 @@
+@import '../../../styles/index.scss';
+
+.header {
+  display: flex;
+  flex-flow: row nowrap;
+
+  height: 38px;
+
+  border-bottom: 1px solid black;
+
+  .title {
+    @extend %title-field;
+    float: left;
+    padding: 7px;
+
+    background: #ddd;
+    
+    text-align: left;
+    font-size: 20px;
+    text-overflow: ellipsis;
+    line-height: 28px;
+    max-height: 38px;
+    line-clamp: 1;
+
+    flex: 2;
+    overflow: hidden;
+
+    // cursor: move;
+
+    &:hover {
+      background-color: lightskyblue;
+    }
+  }
+
+  .headerButton {
+    @extend %small-button;
+    float: right;
+    height: 100%;
+
+    border-left: 1px solid black;
+
+    background: #ddd;
+  }
+}

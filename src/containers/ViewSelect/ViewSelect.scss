@@ -1,0 +1,26 @@
+@import '../../styles/index.scss';
+
+#viewSelect {
+  display: flex;
+  flex-flow: row nowrap;
+
+  overflow: auto;
+
+  #addView {
+    @extend %small-button;
+    float: left;
+    height: 100%;
+    // width: 20px;
+    
+    border-right: 1px solid black;
+  }
+
+  #libraryView {
+    @extend %small-button;
+    position: absolute;
+    right: 0;
+    // height: 100%;
+
+    border-left: 1px solid black;
+  }
+}

@@ -1,14 +1,18 @@
-import React, { useEffect, useCallback } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
-import "./ViewScreen.scss";
-import * as actions from "../../store/actionIndex";
-import Card from "../Card/Card";
+import './ViewScreen.scss';
+import * as actions from '../../store/actionIndex';
+import Auxi from '../../hoc/Auxi';
+import SavePopUp from '../../components/SavePopUp/savePopUp'
+import Card from '../Card/Card';
 
 // ViewScreen is the main portion the user is looking at. This is located in the center of the screen.
 
 const ViewScreen = (props) => {
   const dispatch = useDispatch();
+
+  const [saving, setSaving] = useState(false); //this will look to serverside campaign state later
 
   const user = useSelector(state => state.campaign.user);
   const campaign = useSelector(state => state.campaign.campaign);
@@ -20,11 +24,11 @@ const ViewScreen = (props) => {
   const activeView = useSelector(state => state.viewManage.activeView);
 
   // Fetch card data from server
-  const fetchFromFirebase = useCallback(() => {
+  const fetchFromFirebase = () => {
     dispatch(actions.fetchCardColl(user, campaign));
     dispatch(actions.fetchViewColl(user, campaign, activeView));
-  }, []);
-  useEffect(() => { fetchFromFirebase() }, [fetchFromFirebase]);
+  };
+  useEffect(() => { fetchFromFirebase() }, []);
 
   // Save edited data when closing window
   // const saveEditedData = useCallback(() => {
@@ -50,7 +54,12 @@ const ViewScreen = (props) => {
     }
   }
 
-  return <div id="viewScreen">{cardObjs}</div>;
+  return (
+    <Auxi>
+      <div id="viewScreen"> {cardObjs} </div>
+      {saving ? <SavePopUp /> : null}
+    </Auxi>
+  );
 };
 
 export default ViewScreen;

@@ -1,0 +1,26 @@
+@import '../../../styles/index.scss';
+
+.body {
+  background-color: white;
+  
+  flex: auto;
+  // overflow: auto;
+
+  .textfield {
+    @extend %value-field;
+    height: 100%; width: 100%;
+
+    box-sizing: border-box;
+
+    background: #ddd;
+
+    font-size: 18px;
+
+    resize: none;
+    overflow: auto;
+
+    &:hover {
+      background-color: lightskyblue;
+    }
+  }
+}

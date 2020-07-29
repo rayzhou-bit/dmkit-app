@@ -1,5 +1,5 @@
 import * as actionTypes from '../actionTypes';
-import { updateObject } from '../../shared/utility';
+import { updateObject } from '../../shared/utilityFunctions';
 
 const initialState = {
   cardDelete: [],
@@ -10,7 +10,8 @@ const initialState = {
 
 
 const queueCardDelete = (state, action) => {
-  const updatedCardDelete = [...state.cardDelete].push(action.card);
+  const updatedCardDelete = [...state.cardDelete];
+  updatedCardDelete.push(action.card);
   return updateObject(state, {cardDelete: updatedCardDelete})
 };
  

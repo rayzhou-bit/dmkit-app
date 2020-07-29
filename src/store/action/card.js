@@ -1,15 +1,20 @@
 import * as actionTypes from '../actionTypes';
-import fire from '../../shared/fire';
-import { updateObject } from '../../shared/utility';
+import fire from '../../shared/firebase';
+import { updateObject } from '../../shared/utilityFunctions';
 const db = fire.firestore();
 
 // <-----SIMPLE CARD REDUCER CALLS----->
 const loadCardColl = (cardColl) => { return { type: actionTypes.LOAD_CARD_COLL, cardColl: cardColl }; };
 const saveEditedCard = (card) => { return { type: actionTypes.SAVE_EDITED_CARD, card: card }; };
-const addCard = (card, view, pos) => { return { type: actionTypes.ADD_CARD, card: card, view: view, pos: pos }; };
+const addCard = (card, dataPackage) => { return { type: actionTypes.ADD_CARD, card: card, dataPackage: dataPackage }; };
 const deleteCard = (card) => { return { type: actionTypes.DELETE_CARD, card: card }; };
+export const connectCardToView = (card, view, pos, size, color) => { return { type: actionTypes.CONNECT_CARD_TO_VIEW, card: card, view: view, pos: pos, size: size, color: color }; };
 export const removeCardFromView = (card, view) => { return { type: actionTypes.REMOVE_CARD_FROM_VIEW, card: card, view: view }; };
 export const updCardPos = (card, view, pos) => { return { type: actionTypes.UPD_CARD_POS, card: card, view: view, pos: pos }; };
+export const updCardSize = (card, view, size) => { return { type: actionTypes.UPD_CARD_SIZE, card: card, view: view, size: size }; };
+export const updCardColor = (card, view, color) => { return { type: actionTypes.UPD_CARD_COLOR, card: card, view: view, color: color }; };
+export const updCardColorForAllViews = (card, color) => { return { type: actionTypes.UPD_CARD_COLOR_FOR_ALL_VIEWS, card: card, color: color }; };
+export const updCardTitle = (card, title) => { return { type: actionTypes.UPD_CARD_TITLE, card: card, title: title }; };
 export const updCardText = (card, text) => { return { type: actionTypes.UPD_CARD_TEXT, card: card, text: text }; };
 
 // <-----SIMPLE CARDMANAGE REDUCER CALLS----->
@@ -23,6 +28,7 @@ export const fetchCardColl = (user, campaign) => {
   return dispatch => {
     cardCollRef.get()
       .then(snapshot => {
+        console.log("[fetchCardColl] firebase success: added", snapshot.size, "cards")
         let cardColl = {};
         snapshot.forEach(card => {
           cardColl = updateObject(cardColl, {
@@ -30,15 +36,6 @@ export const fetchCardColl = (user, campaign) => {
           });
         });
         dispatch(loadCardColl(cardColl));
-        // snapshot.forEach(card => {
-        //   let views = card.data().views ? card.data().views : null;
-        //   let data = card.data().data ? card.data().data : null;
-        //   for (let view in views) {
-        //     dispatch(updCardPos(card.id, view, views[view]));
-        //   }
-        //   dispatch(updCardData(card.id, data));
-        //   console.log("[fetchCardColl] firebase fetched card:", card.id, card.data());
-        // });
       })
       .catch(error => console.log("[fetchCardColl] firebase error:", error));
   };
@@ -78,14 +75,32 @@ export const saveCards = (user, campaign, cardColl, cardDelete) => {
 
 export const setCardCreate = (user, campaign, view) => {
   const cardCollRef = db.collection("users").doc(user).collection("campaigns").doc(campaign).collection("cards");
-  let dataPackage = { views: { [view]: {x: 100, y: 100} } };
+  let dataPackage = { 
+    views: { 
+      [view]: { 
+        pos: {
+          x: 100, 
+          y: 100
+        },
+        size: {
+          width: 300,
+          height: 400
+        },
+        color: "gray"
+      }
+    },
+    data: {
+      title: "untitled",
+      text: "Fill me in!"
+    }
+  };
   return dispatch => {
     cardCollRef.add(dataPackage)
       .then(response => {
-        console.log("[setCardCreate] firebase add card success:", response.id);
-        dispatch(addCard(response.id, view));
+        console.log("[setCardCreate] firebase success: added card", response.id);
+        dispatch(addCard(response.id, dataPackage));
       })
-      .catch(error => console.log("[setCardCreate] firebase add card error:", error));
+      .catch(error => console.log("[setCardCreate] firebase error:", error));
   };
 };
 

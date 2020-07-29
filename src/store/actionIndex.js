@@ -4,9 +4,14 @@ export {
 
   setCardCreate,
   setCardDelete,
+  connectCardToView,
   removeCardFromView,
 
   updCardPos,
+  updCardSize,
+  updCardColor,
+  updCardColorForAllViews,
+  updCardTitle,
   updCardText,
 
   onClickCard,

@@ -4,9 +4,14 @@ export const LOAD_CAMPAIGN = 'LOAD_CAMPAIGN';
 export const LOAD_CARD_COLL = 'LOAD_CARD_COLL';
 export const SAVE_EDITED_CARD = 'SAVE_EDITED_CARD';
 export const ADD_CARD = 'ADD_CARD';
-export const REMOVE_CARD_FROM_VIEW = 'REMOVE_CARD_FROM_VIEW';
 export const DELETE_CARD = 'DELETE_CARD';
+export const CONNECT_CARD_TO_VIEW = 'CONNECT_CARD_TO_VIEW';
+export const REMOVE_CARD_FROM_VIEW = 'REMOVE_CARD_FROM_VIEW';
 export const UPD_CARD_POS = 'UPD_CARD_POS';
+export const UPD_CARD_SIZE = 'UPD_CARD_SIZE';
+export const UPD_CARD_COLOR = 'UPD_CARD_COLOR';
+export const UPD_CARD_COLOR_FOR_ALL_VIEWS = 'UPD_CARD_COLOR_FOR_ALL_VIEWS';
+export const UPD_CARD_TITLE = 'UPD_CARD_TITLE';
 export const UPD_CARD_TEXT = 'UPD_CARD_TEXT';
 
 // cardManage reducer
@@ -21,6 +26,7 @@ export const SAVE_EDITED_VIEW = 'SAVE_EDITED_VIEW';
 export const ADD_VIEW = 'ADD_VIEW';
 export const DELETE_VIEW = 'DELETE_VIEW';
 export const UPD_VIEW_TITLE = 'UPD_VIEW_TITLE';
+export const UPD_VIEW_COLOR = 'UPD_VIEW_COLOR';
 
 // viewManage reducer
 export const LOAD_VIEW_ORDER = 'LOAD_VIEW_ORDER';

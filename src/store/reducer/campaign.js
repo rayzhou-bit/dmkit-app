@@ -1,5 +1,5 @@
-import * as actionTypes from '../actionTypes';
-import { updateObject } from '../../shared/utility';
+// import * as actionTypes from '../actionTypes';
+// import { updateObject } from '../../shared/utilityFunctions';
 
 // Firebase collections sturcture
 // users: usersTestId

@@ -1,12 +1,19 @@
 import * as actionTypes from '../actionTypes';
-import { updateObject } from '../../shared/utility';
+import { updateObject } from '../../shared/utilityFunctions';
 
 const initialState = {
   // card1: {
   //   views: {
   //     view1: {
-  //       x: x-position,
-  //       y: y-position,
+  //       pos: {
+  //         x: x integer,
+  //         y: y interger
+  //       },
+  //       size: {
+  //         width: "width px",
+  //         height: "height px",
+  //       },
+  //       color: "color",
   //     },
   //   },
   //   data: {
@@ -23,19 +30,28 @@ const saveEditedCard = (state, action) => {
 };
 
 const addCard = (state, action) => {
-  const card = {
-    [action.card]: {
-      views: {
-        [action.view]: { x: 100, y: 100 }
-      },
-      data: {
-        title: "untitled",
-        text: "Fill me in!"
-      },
-      edited: true
+  let newCard = { [action.card]: action.dataPackage };
+  newCard.edited = true;
+  return updateObject(state, newCard);
+};
+
+const deleteCard = (state, action) => {
+  let updatedCardColl = {...state};
+  delete updatedCardColl[action.card];
+  return updatedCardColl;
+};
+
+const connectCardToView = (state, action) => {
+  let updatedCard = {...state[action.card]};
+  updatedCard.views = updateObject(updatedCard.views, {
+    [action.view]: {
+      pos: action.pos,
+      size: action.size,
+      color: action.color
     }
-  };
-  return updateObject(state, card);
+  });
+  updatedCard.edited = true;
+  return updateObject(state, {[action.card]: updatedCard});
 };
 
 const removeCardFromView = (state, action) => {
@@ -45,34 +61,49 @@ const removeCardFromView = (state, action) => {
   return updateObject(state, {[action.card]: updatedCard});
 };
 
-const deleteCard = (state, action) => {
-  let updatedCardColl = {...state};
-  delete updatedCardColl[action.card];
-  return updatedCardColl;
-};
-
 const updCardPos = (state, action) => {
   let updatedCard = {...state[action.card]};
-  updatedCard.views = updateObject(updatedCard.views, {[action.view]: action.pos});
+  let roundedPos = {
+    x: Math.round(action.pos.x / 25) * 25,
+    y: Math.round(action.pos.y / 25) * 25
+  };
+  updatedCard.views[action.view].pos = roundedPos;
   updatedCard.edited = true;
   return updateObject(state, {[action.card]: updatedCard});
+};
 
-  // let newPos = action.pos ? {[action.view]: action.pos} : null;
-  // let newViews = null;
-  // if (state.cards[action.card]) {
-  //   const oldViews = (state.cards[action.card].views ? state.cards[action.card].views : null);
-  //   if (newPos) {
-  //     newViews = updateObject(oldViews, newPos);
-  //   } else {
-  //     newViews = oldViews;
-  //     delete newViews[action.view];
-  //   }
-  // } else {
-  //   newViews = newPos;
-  // }
-  // const updatedCard = updateObject(state.cards[action.card], {views: newViews})
-  // const updatedCards = updateObject(state.cards, {[action.card]: updatedCard});
-  // return updateObject(state, {cards: updatedCards});
+const updCardSize = (state, action) => {
+  let updatedCard = {...state[action.card]};
+  let roundedSize = {
+    width: (Math.round(action.size.width.split("px").shift() / 25) * 25) + "px",
+    height: (Math.round(action.size.height.split("px").shift() / 25) * 25) + "px"
+  };
+  updatedCard.views[action.view].size = roundedSize;
+  updatedCard.edited = true;
+  return updateObject(state, {[action.card]: updatedCard});
+};
+
+const updCardColor = (state, action) => {
+  let updatedCard = {...state[action.card]};
+  updatedCard.views[action.view].color = action.color;
+  updatedCard.edited = true;
+  return updateObject(state, {[action.card]: updatedCard});
+};
+
+const updCardColorForAllViews = (state, action) => {
+  let updatedCard = {...state[action.card]};
+  for (let view in updatedCard.views) {
+    updatedCard.views[view].color = action.color;
+  }
+  updatedCard.edited = true;
+  return updateObject(state, {[action.card]: updatedCard});
+};
+
+const updCardTitle = (state, action) => {
+  let updatedCard = {...state[action.card]};
+  updatedCard.data.title = action.title;
+  updatedCard.edited = true;
+  return updateObject(state, {[action.card]: updatedCard});
 };
 
 const updCardText = (state, action) => {
@@ -80,15 +111,6 @@ const updCardText = (state, action) => {
   updatedCard.data.text = action.text;
   updatedCard.edited = true;
   return updateObject(state, {[action.card]: updatedCard});
-
-  // let newData = action.data;
-  // if (state.cards[action.card]) {
-  //   const oldData = (state.cards[action.card].data ? state.cards[action.card].data : null);
-  //   newData = updateObject(oldData, action.data);
-  // }
-  // const updatedCard = updateObject(state.cards[action.card], {data: newData});
-  // const updatedCards = updateObject(state.cards, {[action.card]: updatedCard});
-  // return updateObject(state, {cards: updatedCards});
 };
 
 const reducer = (state = initialState, action) => {
@@ -97,10 +119,16 @@ const reducer = (state = initialState, action) => {
     case actionTypes.SAVE_EDITED_CARD: return saveEditedCard(state, action); 
 
     case actionTypes.ADD_CARD: return addCard(state, action);
-    case actionTypes.REMOVE_CARD_FROM_VIEW: return removeCardFromView(state, action);
     case actionTypes.DELETE_CARD: return deleteCard(state, action);
+    case actionTypes.CONNECT_CARD_TO_VIEW: return connectCardToView(state, action);
+    case actionTypes.REMOVE_CARD_FROM_VIEW: return removeCardFromView(state, action);
 
     case actionTypes.UPD_CARD_POS: return updCardPos(state, action);
+    case actionTypes.UPD_CARD_SIZE: return updCardSize(state, action);
+    case actionTypes.UPD_CARD_COLOR: return updCardColor(state, action);
+    case actionTypes.UPD_CARD_COLOR_FOR_ALL_VIEWS: return updCardColorForAllViews(state, action);
+
+    case actionTypes.UPD_CARD_TITLE: return updCardTitle(state, action);
     case actionTypes.UPD_CARD_TEXT: return updCardText(state, action);
 
     default: return state;

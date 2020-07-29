@@ -1,13 +1,13 @@
 import React from 'react';
 
-import './App.scss';
+import Auxi from './hoc/Auxi';
 import Layout from './hoc/Layout/Layout';
 
 const App = props => {
   return (
-    <div>
+    <Auxi>
       <Layout />
-    </div>
+    </Auxi>
   );
 }
 

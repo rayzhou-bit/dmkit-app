@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import './ViewSelect.scss';
@@ -32,8 +32,9 @@ const ViewSelect = props => {
 
   return (
     <div id="viewSelect">
-      <button onClick={setViewCreate}>+</button>
+      <button id="addView" onClick={setViewCreate}>+</button>
       {viewTabs}
+      <button id="libraryView">L</button>
     </div>
   );
 };

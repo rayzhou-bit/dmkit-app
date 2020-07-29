@@ -1,16 +1,18 @@
 import React from 'react';
 
 import './Layout.scss';
-import ViewScreen from '../../containers/View/ViewScreen';
-import ToolMenu from '../../components/ToolMenu/ToolMenu';
-import ViewSelect from '../../components/ViewSelect/ViewSelect';
+import ToolMenu from '../../containers/ToolMenu/ToolMenu';
+import ViewScreen from '../../containers/ViewScreen/ViewScreen';
+import ViewSelect from '../../containers/ViewSelect/ViewSelect';
 
 const layout = props => {
   return (
     <div id="layout">
-      <ViewScreen>{props.children}</ViewScreen>
-      <ToolMenu />
-      <ViewSelect />
+      <div id="userMenu">USER/CAMPAIGN PLACEHOLDER</div>
+      <ToolMenu id="toolMenu" />
+      <ViewScreen id="viewScreen">{props.children}</ViewScreen>
+      <div id="library">P</div>
+      <ViewSelect id="viewSelect" />
     </div>
   );
 }
