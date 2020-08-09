@@ -4,41 +4,44 @@
   display: flex;
   flex-flow: row nowrap;
 
-  height: 38px;
+  // height: 38px;
 
   border-bottom: 1px solid black;
 
   .title {
     @extend %title-field;
-    float: left;
-    padding: 7px;
-
-    background: #ddd;
+    flex: 2;
     
     text-align: left;
     font-size: 20px;
     text-overflow: ellipsis;
-    line-height: 28px;
-    max-height: 38px;
+    line-height: 24px;
+    max-height: 32px;
     line-clamp: 1;
 
-    flex: 2;
     overflow: hidden;
 
-    // cursor: move;
+    -webkit-transition: .4s;
+    transition: .4s;
 
     &:hover {
-      background-color: lightskyblue;
+      cursor: move;
     }
   }
+  
+  .headerButtons {
+    display: flex;
+    flex-flow: row nowrap;
 
-  .headerButton {
-    @extend %small-button;
-    float: right;
     height: 100%;
 
-    border-left: 1px solid black;
-
-    background: #ddd;
+    input {
+      @extend %small-button;
+      height: 25px;
+  
+      border-left: 1px solid black;
+  
+      background: #ddd;
+    }
   }
 }

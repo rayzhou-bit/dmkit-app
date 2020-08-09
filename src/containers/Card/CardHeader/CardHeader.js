@@ -6,14 +6,20 @@ import './CardHeader.scss';
 import * as actions from '../../../store/actionIndex';
 import { TEXT_COLOR_WHEN_BACKGROUND_IS } from '../../../shared/constants/colors';
 import Auxi from '../../../hoc/Auxi';
+import ViewSettings from '../CardHeader/ViewSettings/ViewSettings';
 import ViewList from './ViewList/ViewList';
 import ColorList from './ColorList/ColorList';
+
+import ViewSettingsButton from '../../../media/icons/adjust.svg';
+import ClosingButton from '../../../media/icons/close.svg';
 
 const CardHeader = (props) => {
   const dispatch = useDispatch();
 
   const setEditingCard = props.setEditingCard;
   const [editingTitle, setEditingTitle] = useState(false);
+  const [showViewSettings, setShowViewSettings] = useState(false);
+
   const [showViewList, setShowViewList] = useState(false);
   const [showColorList, setShowColorList] = useState(false);
 
@@ -57,12 +63,16 @@ const CardHeader = (props) => {
           type="text"
           required
         />
-        {!showColorList ? <button className="headerButton" onClick={() => setShowColorList(!showColorList)}>C</button> : null}
-        {!showViewList ? <button className="headerButton" onClick={(() => setShowViewList(true))}>V</button> : null}
-        <button className="headerButton" onClick={removeCardFromThisView}>X</button>
+        <div className="headerButtons">
+          {/* {!showColorList ? <button onClick={() => setShowColorList(!showColorList)}>C</button> : null}
+          {!showViewList ? <button onClick={(() => setShowViewList(true))}>V</button> : null} */}
+          <input type="image" src={ViewSettingsButton} onClick={(e) => setShowViewSettings(!showViewSettings)} />
+          <input type="image" src={ClosingButton} onClick={removeCardFromThisView} />
+        </div>
       </div>
-      <ColorList id={cardId} show={showColorList} setShow={setShowColorList} />
-      <ViewList id={cardId} show={showViewList} setShow={setShowViewList} />
+      <ViewSettings id={cardId} show={showViewSettings} setShow={setShowViewSettings} />
+      {/* <ColorList id={cardId} show={showColorList} setShow={setShowColorList} />
+      <ViewList id={cardId} show={showViewList} setShow={setShowViewList} /> */}
     </Auxi>
   );
 };

@@ -2,8 +2,8 @@ import React, { useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useOutsideClick } from '../../../../shared/utilityFunctions';
 
-import * as actions from '../../../../store/actionIndex';
 import './ViewList.scss';
+import * as actions from '../../../../store/actionIndex';
 
 const ViewList = (props) => {
   const dispatch = useDispatch();

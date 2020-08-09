@@ -1,13 +1,15 @@
 import firebase from 'firebase';
+// import dotenv from 'dotenv';
+// dotenv.config();
 
 const firebaseConfig = {
-  apiKey: "AIzaSyBsTyG7u3jAKpheMyvqD87AKMlBVo7F5TE",
-  authDomain: "dmkit-e7e99.firebaseapp.com",
-  databaseURL: "https://dmkit-e7e99.firebaseio.com",
-  projectId: "dmkit-e7e99",
-  storageBucket: "dmkit-e7e99.appspot.com",
-  messagingSenderId: "843541688602",
-  appId: "1:843541688602:web:1d8c43bebbcbc31a95fca3"
+  apiKey: process.env.REACT_APP_API_KEY,
+  authDomain: process.env.REACT_APP_AUTH_DOMAIN,
+  databaseURL: process.env.REACT_APP_DATABASE_URL,
+  projectId: process.env.REACT_APP_PROJECT_ID,
+  storageBucket: process.env.REACT_APP_STORAGE_BUCKET,
+  messagingSenderId: process.env.REACT_APP_MESSAGE_SENDER_ID,
+  appId: process.env.REACT_APP_APP_ID
 };
 
 const fire = firebase.initializeApp(firebaseConfig);
