@@ -5,7 +5,6 @@ import { useOutsideClick } from '../../../../shared/utilityFunctions';
 import './ViewSettings.scss';
 import * as actions from '../../../../store/actionIndex';
 import { CARD_COLORS } from '../../../../shared/constants/colors';
-import ViewList from '../ViewList/ViewList';
 
 const ViewSettings = (props) => {
   const dispatch = useDispatch();
@@ -42,7 +41,7 @@ const ViewSettings = (props) => {
     }
   };
 
-  useOutsideClick(viewSettingsRef, show, setShow, false);
+  // useOutsideClick(viewSettingsRef, show, setShow, false);
 
   let viewSettings = [];
   for (let x in viewOrder) {

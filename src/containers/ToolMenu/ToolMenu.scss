@@ -1,21 +1,20 @@
+@import '../../styles/globalVariables';
+
 #toolMenu {
-  button {
-    height: 50px;
-    width: 50px;
+  display:flex;
+  flex-flow: column nowrap;
+
+  overflow: hidden;
+
+  input {
+    @extend %small-button;
+    float:left;
+    height: 30px;
+    width: 30px;
+    
+    place-items: center;
+
     border: 1px solid black;
-    padding: 5px;
-    margin: 0;
-  
-    color: black;
-    background-color: lightgray;
-    font-size: 24px;
-    font-weight: bold;
-
-    display: block;
-
-    &:hover {
-      background-color: lightskyblue;
-    }
   }
 }
 

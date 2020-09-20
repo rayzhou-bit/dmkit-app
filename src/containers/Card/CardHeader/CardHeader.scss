@@ -1,22 +1,23 @@
-@import '../../../styles/index.scss';
+@import '../../../styles/globalVariables.scss';
+@import '../../../styles/cardVariables.scss';
 
 .header {
   display: flex;
   flex-flow: row nowrap;
 
-  // height: 38px;
+  height: $card-header-height;
 
   border-bottom: 1px solid black;
 
   .title {
     @extend %title-field;
-    flex: 2;
+    flex: 1;
     
     text-align: left;
-    font-size: 20px;
+    font-size: $card-header-font-size;
     text-overflow: ellipsis;
-    line-height: 24px;
-    max-height: 32px;
+    // line-height: 24px;
+    // max-height: 32px;
     line-clamp: 1;
 
     overflow: hidden;
@@ -30,18 +31,15 @@
   }
   
   .headerButtons {
-    display: flex;
-    flex-flow: row nowrap;
+    border-left: 1px solid black;
+
+    background: #ddd;
 
     height: 100%;
 
     input {
       @extend %small-button;
-      height: 25px;
-  
-      border-left: 1px solid black;
-  
-      background: #ddd;
+      height: 22px;
     }
   }
 }

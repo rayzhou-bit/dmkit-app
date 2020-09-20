@@ -4,6 +4,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import './ToolMenu.scss';
 import * as actions from '../../store/actionIndex';
 
+import AddButton from '../../media/icons/plus.svg';
+import SaveButton from '../../media/icons/save.svg';
+
 const ToolMenu = React.memo(props => {
   const dispatch = useDispatch();
 
@@ -24,8 +27,10 @@ const ToolMenu = React.memo(props => {
 
   return (
     <div id="toolMenu">
-      <button onClick={setCardCreate}>+</button>
-      <button onClick={saveEditedData}>S</button>
+      <input type="image" src={AddButton} alt="Add" onClick={setCardCreate} />
+      <input type="image" src={SaveButton} alt="Save" onClick={saveEditedData} />
+      {/* <button onClick={setCardCreate}>+</button>
+      <button onClick={saveEditedData}>S</button> */}
     </div>
   );
 });

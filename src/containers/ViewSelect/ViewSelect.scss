@@ -1,26 +1,37 @@
-@import '../../styles/index.scss';
+@import '../../styles/globalVariables';
+@import '../../styles/viewVariables.scss';
 
 #viewSelect {
   display: flex;
   flex-flow: row nowrap;
 
-  overflow: auto;
+  // height: $view-select-height;
+
+  overflow: hidden;
+
+  .buttons {
+    @extend %small-button;
+    height: 30px;
+    width: 30px;
+
+    place-items: center;
+  }
 
   #addView {
-    @extend %small-button;
     float: left;
-    height: 100%;
-    // width: 20px;
     
-    border-right: 1px solid black;
+    border: 1px solid black;
   }
 
   #libraryView {
-    @extend %small-button;
     position: absolute;
     right: 0;
-    height: 25px;
 
-    // border-left: 1px solid black;
+    border: 1px solid black;
+  }
+
+  .filler {
+    flex: 1;
+    border-top: 1px solid black;
   }
 }

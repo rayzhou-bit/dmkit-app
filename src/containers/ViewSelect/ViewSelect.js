@@ -5,6 +5,7 @@ import './ViewSelect.scss';
 import * as actions from '../../store/actionIndex';
 import ViewTab from './ViewTab/ViewTab';
 
+import AddButton from '../../media/icons/plus.svg';
 import LibraryButton from '../../media/icons/book.svg';
 
 // ViewSelect is the container for all the ViewTab's. This is located at the bottom of the screen.
@@ -34,9 +35,10 @@ const ViewSelect = props => {
 
   return (
     <div id="viewSelect">
-      <button id="addView" onClick={setViewCreate}>+</button>
+      <input className="buttons" id="addView" type="image" src={AddButton} alt="Add" onClick={setViewCreate} />
       {viewTabs}
-      <input type="image" id="libraryView" alt="Library" src={LibraryButton} />
+      <div className="filler" />
+      <input className="buttons" id="libraryView" type="image" src={LibraryButton} alt="Library" />
     </div>
   );
 };

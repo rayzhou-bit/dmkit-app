@@ -7,10 +7,8 @@ import * as actions from '../../../store/actionIndex';
 import { TEXT_COLOR_WHEN_BACKGROUND_IS } from '../../../shared/constants/colors';
 import Auxi from '../../../hoc/Auxi';
 import ViewSettings from '../CardHeader/ViewSettings/ViewSettings';
-import ViewList from './ViewList/ViewList';
-import ColorList from './ColorList/ColorList';
 
-import ViewSettingsButton from '../../../media/icons/adjust.svg';
+import SettingsButton from '../../../media/icons/adjust.svg';
 import ClosingButton from '../../../media/icons/close.svg';
 
 const CardHeader = (props) => {
@@ -19,9 +17,6 @@ const CardHeader = (props) => {
   const setEditingCard = props.setEditingCard;
   const [editingTitle, setEditingTitle] = useState(false);
   const [showViewSettings, setShowViewSettings] = useState(false);
-
-  const [showViewList, setShowViewList] = useState(false);
-  const [showColorList, setShowColorList] = useState(false);
 
   const cardColl = useSelector(state => state.card);
   const activeView = useSelector(state => state.viewManage.activeView);
@@ -64,21 +59,15 @@ const CardHeader = (props) => {
           required
         />
         <div className="headerButtons">
-          {/* {!showColorList ? <button onClick={() => setShowColorList(!showColorList)}>C</button> : null}
-          {!showViewList ? <button onClick={(() => setShowViewList(true))}>V</button> : null} */}
-          <input type="image" src={ViewSettingsButton} onClick={(e) => setShowViewSettings(!showViewSettings)} />
-          <input type="image" src={ClosingButton} onClick={removeCardFromThisView} />
+          <input type="image" src={SettingsButton} alt="Settings" onClick={(e) => setShowViewSettings(!showViewSettings)} />
+        </div>
+        <div className="headerButtons">
+          <input type="image" src={ClosingButton} alt="Close" onClick={removeCardFromThisView} />
         </div>
       </div>
       <ViewSettings id={cardId} show={showViewSettings} setShow={setShowViewSettings} />
-      {/* <ColorList id={cardId} show={showColorList} setShow={setShowColorList} />
-      <ViewList id={cardId} show={showViewList} setShow={setShowViewList} /> */}
     </Auxi>
   );
 };
 
 export default CardHeader;
-
-// const func = (nestedFunc, args) => {nestedFunc(args)};
-
-// func(nestedFunc, [arg1, arg2]);

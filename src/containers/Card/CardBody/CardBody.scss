@@ -1,4 +1,4 @@
-@import '../../../styles/index.scss';
+@import '../../../styles/globalVariables';
 
 .body {
   background-color: white;
@@ -19,8 +19,8 @@
     resize: none;
     overflow: auto;
 
-    &:hover {
-      background-color: lightskyblue;
-    }
+    // &:hover {
+    //   background-color: lightskyblue;
+    // }
   }
 }

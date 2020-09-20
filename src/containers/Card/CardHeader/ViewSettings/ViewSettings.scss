@@ -1,6 +1,10 @@
+@import '../../../../styles/cardVariables.scss';
+
 .viewSettings {
-  position: static;
-  width: 400px;
+  position: absolute;
+  top: $card-header-height;
+  right: 0;
+  width: $view-setting-width;
 
   border-right: 1px solid black;
   border-bottom: 1px solid black;

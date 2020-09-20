@@ -6,15 +6,11 @@
 
   border: 0;
 
+  font-weight: bold;
   text-align: center;
 
-  &:hover {
-    background-color: lightskyblue;
-  }
-  &:read-only {
-    background-color: lightgray;
-    cursor: default;
-  }
+  @extend %hover-effect;
+  @extend %read-only-effect;
 }
 
 %value-field {
@@ -25,13 +21,7 @@
   
   border: 0;
 
-  &:hover {
-    background-color: lightskyblue;
-  }
-  &:read-only {
-    background-color: lightgray;
-    cursor: default;
-  }
+  @extend %read-only-effect;
 }
 
 %small-button {
@@ -47,8 +37,19 @@
   font-weight: bold;
   text-align: center;
 
+  @extend %hover-effect;
+}
+
+%hover-effect {
   &:hover {
     background-color: lightskyblue;
+  }
+}
+
+%read-only-effect {
+  &:read-only {
+    background-color: lightgray;
+    cursor: default;
   }
 }
 

@@ -40,7 +40,7 @@ const CardBody = (props) => {
         ref={cardTextRef}
         className="textfield"
         onDoubleClick={() => {setEditingTextarea(true); setEditingCard(true)}}
-        onKeyUp={editingTextarea ? (event) => enterDataHandler(event) : null}
+        // onKeyUp={editingTextarea ? (event) => enterDataHandler(event) : null}
         defaultValue={cardText}
         readOnly={!editingTextarea}
         type="text"

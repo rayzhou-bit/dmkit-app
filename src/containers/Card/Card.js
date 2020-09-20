@@ -7,7 +7,7 @@ import './Card.scss';
 import CardHeader from './CardHeader/CardHeader';
 import CardBody from './CardBody/CardBody';
 
-//bubble, short, long modes
+//bubble, card, expanded modes
 
 const Card = (props) => {
   const dispatch = useDispatch();
