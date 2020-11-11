@@ -1,4 +1,4 @@
-export const CARD_COLORS = {
+export const CARD_TITLEBAR_COLORS = {
   red: 'red',
   orange: 'orange',
   yellow: 'yellow',
@@ -9,7 +9,18 @@ export const CARD_COLORS = {
   black: 'black'
 };
 
-export const VIEW_COLORS = {
+export const CARD_TITLEBAR_EDIT_COLORS = {
+  red: 'salmon',
+  orange: 'navajowhite',
+  yellow: 'lightyellow',
+  green: 'lightgreen',
+  blue: 'lightblue',
+  purple: 'violet',
+  gray: 'lightgray',
+  black: 'darkgray'
+};
+
+export const VIEW_TITLEBAR_COLORS = {
   red: 'red',
   orange: 'orange',
   yellow: 'yellow',

@@ -8,8 +8,9 @@ import { useOutsideClick } from "../../../shared/utilityFunctions";
 const CardBody = (props) => {
   const dispatch = useDispatch();
   
+  // VARIABLES
   const setEditingCard = props.setEditingCard;
-  const [editingTextarea, setEditingTextarea] = useState(false);
+  const [editingTextarea, setEditingTextarea] = [props.editingTextarea, props.setEditingTextarea];
 
   const cardColl = useSelector(state => state.card);
   const activeCard = useSelector(state => state.cardManage.activeCard);
@@ -17,33 +18,54 @@ const CardBody = (props) => {
   const cardId = props.id;
   const cardData = cardColl[cardId];
   const cardText = (cardData.data && cardData.data.text) ? cardData.data.text : "";
-  const cardTextRef = useRef(cardId+"text");
+  const cardTextId = cardId+"Textarea";
+  const cardTextRef = useRef(cardTextId);
 
-  const enterDataHandler = (event) => {
-    if (event.which === 13) {
+  // FUNCTIONS
+  const beginEdit = () => {
+    if (!editingTextarea) {
+      const text = document.getElementById(cardTextId);
+      text.focus();
+      text.setSelectionRange(text.value.length, text.value.length);
+      setEditingTextarea(true);
+      setEditingCard(true);
+    }
+  };
+
+  const endEdit = () => {
+    if (editingTextarea) {
       dispatch(actions.updCardText(cardId, cardTextRef.current.value));
       setEditingTextarea(false);
       setEditingCard(false);
     }
   };
-  
-  const outsideClickFunc = () => {
-    dispatch(actions.updCardText(cardId, cardTextRef.current.value));
-    setEditingTextarea(false);
-    setEditingCard(false);
+
+  const keyPressHandler = (event) => {
+    if (cardId === activeCard) {
+      if (event.key === 'Tab') {    // tab key
+        event.preventDefault();
+        endEdit();
+      }
+    }
   };
-  useOutsideClick(cardTextRef, editingTextarea, outsideClickFunc);
+  
+  useOutsideClick(cardTextRef, editingTextarea, endEdit);
+
+  // STYLES
+  const bodyStyle = {
+    backgroundColor: editingTextarea ? "white" : "lightgray",
+    userSelect: "none",
+  };
 
   return (
     <div className="body">
-      <textarea
-        ref={cardTextRef}
-        className="textfield"
-        onDoubleClick={() => {setEditingTextarea(true); setEditingCard(true)}}
-        // onKeyUp={editingTextarea ? (event) => enterDataHandler(event) : null}
+      <textarea ref={cardTextRef} id={cardTextId}
+        className="textfield" style={bodyStyle} type="text"
         defaultValue={cardText}
         readOnly={!editingTextarea}
-        type="text"
+        onClick={(cardId === activeCard) ? beginEdit : null}
+        onDoubleClick={(cardId !== activeCard) ? beginEdit : null}
+        onKeyDown={(e) => keyPressHandler(e)}
       />
     </div>
   );

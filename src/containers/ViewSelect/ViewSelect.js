@@ -35,10 +35,12 @@ const ViewSelect = props => {
 
   return (
     <div id="viewSelect">
-      <input className="buttons" id="addView" type="image" src={AddButton} alt="Add" onClick={setViewCreate} />
+      <input className="buttons" id="addView" type="image" src={AddButton} alt="Add" 
+        onClick={setViewCreate} />
       {viewTabs}
       <div className="filler" />
-      <input className="buttons" id="libraryView" type="image" src={LibraryButton} alt="Library" />
+      <input className="buttons" id="libraryView" type="image" src={LibraryButton} alt="Library"
+        onClick={props.setShowLibrary} />
     </div>
   );
 };

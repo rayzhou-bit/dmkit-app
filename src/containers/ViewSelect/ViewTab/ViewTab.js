@@ -59,7 +59,7 @@ const ViewTab = React.memo((props) => {
         type="text"
         required
       />
-      <label className="headerButtons">
+      <label className="titleBarButtons">
         <input
           type="image"
           src={SettingsButton}
@@ -67,7 +67,7 @@ const ViewTab = React.memo((props) => {
           style={viewId === activeView ? { backgroundColor: "white" } : null}
         />
       </label>
-      <label className="headerButtons">
+      <label className="titleBarButtons">
         <input
           type="image"
           src={ClosingButton}

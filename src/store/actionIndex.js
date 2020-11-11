@@ -14,7 +14,7 @@ export {
   updCardTitle,
   updCardText,
 
-  onClickCard,
+  updActiveCard,
 } from './action/card';
 export {
   fetchViewColl,

@@ -1,0 +1,45 @@
+@import '../../../styles/globalVariables.scss';
+@import '../../../styles/cardVariables.scss';
+
+.titleBar {
+  display: flex;
+  flex-flow: row nowrap;
+
+  height: $card-titleBar-height;
+
+  border-bottom: 1px solid black;
+
+  .title {
+    @extend %title-field;
+    flex: 1;
+    
+    text-align: left;
+    font-size: $card-titleBar-font-size;
+    text-overflow: ellipsis;
+    // line-height: 24px;
+    // max-height: 32px;
+    line-clamp: 1;
+
+    overflow: hidden;
+
+    -webkit-transition: .4s;
+    transition: .4s;
+
+    // &:hover {
+    //   cursor: move;
+    // }
+  }
+  
+  .titleBarButtons {
+    border-left: 1px solid black;
+
+    background: #ddd;
+
+    height: 100%;
+
+    input {
+      @extend %small-button;
+      height: 22px;
+    }
+  }
+}

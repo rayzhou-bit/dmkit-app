@@ -4,7 +4,7 @@ import { useOutsideClick } from '../../../../shared/utilityFunctions';
 
 import './ViewSettings.scss';
 import * as actions from '../../../../store/actionIndex';
-import { CARD_COLORS } from '../../../../shared/constants/colors';
+import { CARD_TITLEBAR_COLORS } from '../../../../shared/constants/colors';
 
 const ViewSettings = (props) => {
   const dispatch = useDispatch();
@@ -41,14 +41,14 @@ const ViewSettings = (props) => {
     }
   };
 
-  // useOutsideClick(viewSettingsRef, show, setShow, false);
+  useOutsideClick(viewSettingsRef, show, setShow, false);
 
   let viewSettings = [];
   for (let x in viewOrder) {
     let view = viewOrder[x];
     if (viewColl[view]) {
       let colorList = [];
-      for (let color in CARD_COLORS) {
+      for (let color in CARD_TITLEBAR_COLORS) {
         let colorStyle = {backgroundColor: color, border: ((cardViews[view] && cardViews[view].color === color) ? "1px solid white" : "1px solid black")};
         colorList = [
           ...colorList,

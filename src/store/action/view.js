@@ -63,13 +63,13 @@ export const saveViews = (user, campaign, viewColl, viewDelete, viewOrder) => {
         let dataPackage = viewColl[view];
         delete dataPackage.edited;
         batch.set(viewRef, dataPackage);
-        console.log("[saveViews] batch set:", view);
+        console.log("[saveViews] batch set:", viewColl[view]);
       }
     }
     for (let view in viewDelete) {
-      let viewRef = viewCollRef.doc(view);
+      let viewRef = viewCollRef.doc(viewDelete[view]);
       batch.delete(viewRef);
-      console.log("[saveViews] batch delete:", view);
+      console.log("[saveViews] batch delete:", viewDelete[view]);
     }
     batch.set(campaignRef, {viewOrder: viewOrder}, {merge: true});
     console.log("[saveViews] batch viewOrder:", viewOrder);

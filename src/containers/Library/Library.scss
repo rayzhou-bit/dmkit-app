@@ -1,0 +1,19 @@
+#library {
+  border-left: 1px solid black;
+
+  background-color: white;
+
+  overflow-y: scroll;
+  
+  -webkit-transition: .4s;
+  transition: .4s;
+
+  #libSearchBar {
+    margin: 10px;
+
+    input {
+      height: 30px;
+      font-size: large;
+    }
+  }
+}

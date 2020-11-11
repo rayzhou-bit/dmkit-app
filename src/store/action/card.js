@@ -20,7 +20,7 @@ export const updCardText = (card, text) => { return { type: actionTypes.UPD_CARD
 // <-----SIMPLE CARDMANAGE REDUCER CALLS----->
 const queueCardDelete = (card) => { return { type: actionTypes.QUEUE_CARD_DELETE, card: card }; };
 const clearCardDelete = () => { return { type: actionTypes.CLEAR_CARD_DELETE }; };
-const updActiveCard = (card) => { return { type: actionTypes.UPD_ACTIVE_CARD, card: card }; };
+export const updActiveCard = (card) => { return { type: actionTypes.UPD_ACTIVE_CARD, card: card }; };
 
 // <-----COMPLEX CALLS----->
 export const fetchCardColl = (user, campaign) => {
@@ -51,13 +51,13 @@ export const saveCards = (user, campaign, cardColl, cardDelete) => {
         let dataPackage = cardColl[card];
         delete dataPackage.edited;
         batch.set(cardRef, dataPackage);
-        console.log("[saveCards] batch set:", card);
+        console.log("[saveCards] batch set:", cardColl[card]);
       }
     }
     for (let card in cardDelete) {
-      let cardRef = cardCollRef.doc(card);
+      let cardRef = cardCollRef.doc(cardDelete[card]);
       batch.delete(cardRef);
-      console.log("[saveCards] batch delete:", card)
+      console.log("[saveCards] batch delete:", cardDelete[card])
     }
     batch.commit()
       .then(response => {
@@ -67,7 +67,7 @@ export const saveCards = (user, campaign, cardColl, cardDelete) => {
             dispatch(saveEditedCard(card));
           }
         }
-        dispatch(clearCardDelete);
+        dispatch(clearCardDelete());
       })
       .catch(error => console.log("[saveCards] firebase batch error:", error));
   };
@@ -109,8 +109,4 @@ export const setCardDelete = (card) => {
     dispatch(deleteCard(card));
     dispatch(queueCardDelete(card));
   };
-};
-
-export const onClickCard = (card) => {
-  return dispatch => dispatch(updActiveCard(card));
 };
