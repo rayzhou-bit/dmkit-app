@@ -42,7 +42,7 @@ const CardBody = (props) => {
 
   const keyPressHandler = (event) => {
     if (cardId === activeCard) {
-      if (event.key === 'Tab') {    // tab key
+      if (event.key === 'Tab') {
         event.preventDefault();
         endEdit();
       }

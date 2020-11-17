@@ -52,10 +52,10 @@ const CardTitleBar = React.memo(props => {
 
   const keyPressHandler = (event) => {
     if (cardId === activeCard) {
-      if (event.key === 'Enter') {   // enter key
+      if (event.key === 'Enter') {
         endEdit();
       }
-      if (event.key === 'Tab' && editingTitle) {    // tab key
+      if (event.key === 'Tab' && editingTitle) {
         event.preventDefault();
         dispatch(actions.updCardTitle(cardId, cardTitleRef.current.value));
         setEditingTitle(false);

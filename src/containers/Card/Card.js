@@ -29,9 +29,9 @@ const Card = React.memo(props => {
   const cardRef = useRef(cardId+"Card");
 
   // FUNCTIONS
-  const dragStopHandler = (e, pos) => dispatch(actions.updCardPos(cardId, activeView, {x: pos.x, y: pos.y}));
+  const dragStopHandler = (event, data) => dispatch(actions.updCardPos(cardId, activeView, {x: data.x, y: data.y}));
 
-  const resizeStopHandler = (e, direction, ref, delta, position) => {
+  const resizeStopHandler = (event, direction, ref, delta, position) => {
     dispatch(actions.updCardSize(cardId, activeView, {width: ref.style.width, height: ref.style.height}));
     if (["top", "left", "topRight", "bottomLeft", "topLeft"].indexOf(direction) !== -1) {
       dispatch(actions.updCardPos(cardId, activeView, {x: position.x, y: position.y}));
@@ -53,13 +53,14 @@ const Card = React.memo(props => {
   const cardStyle = {
     backgroundColor: cardColor,
     border: cardId === activeCard ? '3px solid black' : '1px solid black',
-    margin: cardId === activeCard ? '0px' : '2px'
+    margin: cardId === activeCard ? '0px' : '2px',
+    zIndex: cardId === activeCard ? 10 : 1,
   };
 
   return (
-    <Rnd
-      bounds="parent"
+    <Rnd style={cardStyle}
       // position and dragging properties
+      bounds="parent"
       position={cardPos}
       dragGrid={[25, 25]}
       dragHandleClassName="titleBar"
@@ -74,7 +75,7 @@ const Card = React.memo(props => {
       onResizeStop={resizeStopHandler}
       onClick={clickHandler}
     >
-      <div ref={cardRef} className="card" style={cardStyle}>
+      <div ref={cardRef} className="card" >
         <CardTitleBar id={cardId} 
           setEditingCard={setEditingCard}
           editingTitle={editingTitle} setEditingTitle={setEditingTitle}

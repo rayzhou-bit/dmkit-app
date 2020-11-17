@@ -2,10 +2,12 @@
 @import '../../styles/viewVariables.scss';
 
 #viewSelect {
+  position: relative;
+
   display: flex;
   flex-flow: row nowrap;
 
-  // height: $view-select-height;
+  height: $view-select-height;
 
   background-color: lightgray;
 
@@ -20,13 +22,14 @@
   }
 
   #addView {
-    float: left;
+    float: right;
     
     border: 1px solid black;
   }
 
   #libraryView {
-    position: absolute;
+    float: right;
+    // position: absolute;
     right: 0;
 
     border: 1px solid black;

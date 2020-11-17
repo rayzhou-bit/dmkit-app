@@ -25,4 +25,6 @@ export {
 
   updViewTitle,
   onClickView,
+
+  updViewOrder,
 } from './action/view'

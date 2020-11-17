@@ -30,7 +30,7 @@ const queueViewDelete = (state, action) => {
 
 const reducer = (state = initialState, action) => {
   switch(action.type) {
-    case actionTypes.LOAD_VIEW_ORDER: return updateObject(state, {viewOrder: action.viewOrder});
+    case actionTypes.UPDATE_VIEW_ORDER: return updateObject(state, {viewOrder: action.viewOrder});
     case actionTypes.ADD_TO_VIEW_ORDER: return addToViewOrder(state, action);
     case actionTypes.DELETE_FROM_VIEW_ORDER: return deleteFromViewOrder(state, action);
 

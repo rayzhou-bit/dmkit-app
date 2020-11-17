@@ -11,7 +11,7 @@ export const updViewTitle = (view, title) => { return { type: actionTypes.UPD_VI
 export const updViewColor = (view, color) => { return { type: actionTypes.UPD_VIEW_COLOR, view: view, color: color }; };
 
 // <-----SIMPLE VIEWMANAGE REDUCER CALLS----->
-const loadViewOrder = (viewOrder) => { return { type: actionTypes.LOAD_VIEW_ORDER, viewOrder: viewOrder }; };
+export const updViewOrder = (viewOrder) => { return { type: actionTypes.UPDATE_VIEW_ORDER, viewOrder: viewOrder }; };
 const saveEditedView = (view) => { return { type: actionTypes.SAVE_EDITED_VIEW, view: view }; };
 const addToViewOrder = (view) => { return { type: actionTypes.ADD_TO_VIEW_ORDER, view: view }; };
 const deleteFromViewOrder = (view) => { return { type: actionTypes.DELETE_FROM_VIEW_ORDER, view: view }; };
@@ -40,7 +40,7 @@ export const fetchViewColl = (user, campaign, activeView) => {
     campaignRef.get()
       .then(doc => {
         if (doc.exists && doc.data().viewOrder) {
-          dispatch(loadViewOrder(doc.data().viewOrder));
+          dispatch(updViewOrder(doc.data().viewOrder));
           console.log("[fetchViewColl] firebase success: loaded viewOrder", doc.data().viewOrder);
           if (!activeView) {
             dispatch(updActiveView(doc.data().viewOrder[0]));

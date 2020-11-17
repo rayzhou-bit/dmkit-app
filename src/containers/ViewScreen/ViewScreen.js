@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import './ViewScreen.scss';
@@ -12,6 +12,7 @@ import Card from '../Card/Card';
 const ViewScreen = (props) => {
   const dispatch = useDispatch();
 
+  // VARIABLES
   const [saving, setSaving] = useState(false); //this will look to serverside campaign state later
 
   const user = useSelector(state => state.campaign.user);
@@ -23,7 +24,9 @@ const ViewScreen = (props) => {
   // const viewDelete = useSelector(state => state.viewManage.viewDelete);
   const activeView = useSelector(state => state.viewManage.activeView);
 
-  // Fetch card data from server
+  const viewScreenRef = useRef("viewscreen");
+
+  // FUNCTIONS
   const fetchFromFirebase = () => {
     dispatch(actions.fetchCardColl(user, campaign));
     dispatch(actions.fetchViewColl(user, campaign, activeView));
@@ -56,7 +59,7 @@ const ViewScreen = (props) => {
 
   return (
     <Auxi>
-      <div id="viewScreen"> {cardObjs} </div>
+      <div ref={viewScreenRef} id="viewScreen"> {cardObjs} </div>
       {saving ? <SavePopUp /> : null}
     </Auxi>
   );

@@ -29,7 +29,7 @@ export const UPD_VIEW_TITLE = 'UPD_VIEW_TITLE';
 export const UPD_VIEW_COLOR = 'UPD_VIEW_COLOR';
 
 // viewManage reducer
-export const LOAD_VIEW_ORDER = 'LOAD_VIEW_ORDER';
+export const UPDATE_VIEW_ORDER = 'UPDATE_VIEW_ORDER';
 export const ADD_TO_VIEW_ORDER = 'ADD_TO_VIEW_ORDER';
 export const DELETE_FROM_VIEW_ORDER = 'DELETE_FROM_VIEW_ORDER';
 export const QUEUE_VIEW_DELETE = 'QUEUE_VIEW_DELETE';
