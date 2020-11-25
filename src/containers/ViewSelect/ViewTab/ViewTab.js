@@ -23,14 +23,15 @@ const ViewTab = React.memo((props) => {
   const viewId = props.id;
   const viewData = viewColl[viewId];
   const viewTitle = viewData.title ? viewData.title : "untitled";
-  const viewTitleRef = useRef(viewId + "title");
+  const viewTitleId = viewId+"Title";
+  const viewTitleRef = useRef(viewTitleId);
 
   const tabWidth = 300;
 
   // FUNCTIONS
   const beginEdit = () => {
     if (!editingTitle) {
-      const title = document.getElementById(viewTitleRef);
+      const title = document.getElementById(viewTitleId);
       title.focus();
       title.setSelectionRange(title.value.length, title.value.length);
       setEditingTitle(true);
@@ -47,16 +48,13 @@ const ViewTab = React.memo((props) => {
   const dragStopHandler = (event, data) => {
     const posShift = Math.round((data.x - (viewPos*tabWidth)) / tabWidth);
     let newPos = viewPos + posShift;
-    console.log(viewPos, posShift, newPos)
     if (newPos < 0) {newPos = 0}
     if (newPos >= viewOrder.length) {newPos = viewOrder.length-1}
-    console.log(viewPos, posShift, newPos)
 
     let newViewOrder = [...viewOrder];
     if (newPos !== viewPos) {
       newViewOrder.splice(viewPos, 1);
       newViewOrder.splice(newPos, 0, viewId);
-      console.log(newViewOrder)
       dispatch(actions.updViewOrder(newViewOrder));
     }
   };
@@ -77,18 +75,18 @@ const ViewTab = React.memo((props) => {
 
   const setViewDelete = () => dispatch(actions.setViewDelete(viewId));
 
-  useOutsideClick(viewTitleRef, editingTitle, endEdit);
+  useOutsideClick(viewTitleRef, endEdit);
 
   // STYLES
+  const toFrontStyle = {zIndex: viewId === activeView ? 10 : 0};
   const activeViewStyle = {
     backgroundColor: viewId === activeView ? "white" : "lightgray",
     border: "1px solid black",
     borderTop: viewId === activeView ? "1px solid white" : "1px solid black",
-    zIndex: viewId === activeView ? 10 : 1,
   };
 
   return (
-    <Rnd style={activeViewStyle}
+    <Rnd style={toFrontStyle}
       // position and dragging properties
       bounds="parent" dragAxis="x"
       position={{x: viewPos * tabWidth, y: 0}}
@@ -100,14 +98,14 @@ const ViewTab = React.memo((props) => {
       size={{width: tabWidth, height: 40}}
       // functions
       onDragStop={dragStopHandler}
-      onClick={clickHandler}
     >
-      <div className="viewTab">
-        <input ref={viewTitleRef} className="title"
+      <div className="viewTab" style={activeViewStyle}>
+        <input ref={viewTitleRef} id={viewTitleId}
+          className="title" style={viewId === activeView ? { backgroundColor: "white" } : null}
           type="text" required
-          style={viewId === activeView ? { backgroundColor: "white" } : null}
           defaultValue={viewTitle}
           readOnly={!editingTitle}
+          onClick={clickHandler}
           onDoubleClick={(viewId === activeView) ? beginEdit : null}
           onKeyDown={(e) => keyPressHandler(e)}
         />

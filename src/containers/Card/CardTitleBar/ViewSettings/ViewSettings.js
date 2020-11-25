@@ -9,19 +9,23 @@ import { CARD_TITLEBAR_COLORS } from '../../../../shared/constants/colors';
 const ViewSettings = (props) => {
   const dispatch = useDispatch();
 
+  // VARIABLES
   const cardColl = useSelector(state => state.card);
   const viewColl = useSelector(state => state.view);
   const viewOrder = useSelector(state => state.viewManage.viewOrder);
   const activeView = useSelector(state => state.viewManage.activeView);
   
-  const show = props.show;
-  const setShow = props.setShow;
+  const [show, setShow] = [props.show, props.setShow];
   const cardId = props.id;
   const cardViews = cardColl[cardId].views;
   const cardPos = cardViews[activeView].pos;
   const cardSize = cardViews[activeView].size;
   const cardColor = cardViews[activeView].color;
   const viewSettingsRef = useRef(cardId+activeView+"viewSettings");
+
+  // FUNCTIONS
+  // updating color for all cards on all views will be a future implementation
+  // const updCardColorForAllViews = (color) => dispatch(actions.updCardColorForAllViews(cardId, color));
 
   const updCardColor = (view, color) => {
     if (!cardViews[view]) {
@@ -30,8 +34,6 @@ const ViewSettings = (props) => {
       dispatch(actions.updCardColor(cardId, view, color));
     }
   };
-  // updating color for all cards on all views will be a future implementation
-  // const updCardColorForAllViews = (color) => dispatch(actions.updCardColorForAllViews(cardId, color));
 
   const addOrRemoveCard = (view) => {
     if (cardViews[view]) {
@@ -41,7 +43,10 @@ const ViewSettings = (props) => {
     }
   };
 
-  useOutsideClick(viewSettingsRef, show, setShow, false);
+  const closeSettings = () => {
+    if (show) {setShow(false)}
+  };
+  useOutsideClick(viewSettingsRef, closeSettings);
 
   let viewSettings = [];
   for (let x in viewOrder) {

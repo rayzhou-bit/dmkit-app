@@ -3,47 +3,58 @@ import { useSelector } from 'react-redux';
 
 import './Library.scss';
 import * as actions from '../../store/actionIndex';
-import PreviewCard from './PreviewCard/PreviewCard';
+import LibCard from './LibCard/LibCard';
+
+import LibraryButton from '../../media/icons/book.svg';
 
 const Library = React.memo(props => {
-  const showLibrary = props.show;
+  // VARIABLES
+  const [showLibrary, setShowLibrary] = useState(false);
   const cardColl = useSelector(state => state.card);
-
   const [enteredSearch, setEnteredSearch] = useState('');
   const searchRef = useRef();
 
+  // CARD LIST
   let cardList = [];
   if (cardColl) {
-    for (let cardIndex in cardColl) {
-      const cardTitle = cardColl[cardIndex].data.title;
-      const cardText = cardColl[cardIndex].data.text;
-      if (cardTitle.toLowerCase().includes(enteredSearch.toLowerCase()) ||
-        cardText.toLowerCase().includes(enteredSearch.toLocaleLowerCase())) {
-        cardList = [
-          ...cardList,
-          <PreviewCard key={cardIndex} cardIndex={cardIndex} />
-        ];
+    for (let cardId in cardColl) {
+      if (cardColl[cardId].data) {
+        const cardTitle = cardColl[cardId].data.title ? cardColl[cardId].data.title : "";
+        const cardText = cardColl[cardId].data.text ? cardColl[cardId].data.text : "";
+        if (cardTitle.toLowerCase().includes(enteredSearch.toLowerCase()) ||
+          cardText.toLowerCase().includes(enteredSearch.toLocaleLowerCase())) {
+          cardList = [
+            ...cardList,
+            <LibCard key={cardId} cardIndex={cardId} />
+          ];
+        }
       }
     }
   }
 
-  let libraryStyle = {width: '0px'};
-  if (showLibrary) {
-    libraryStyle = {width: '800px'};
-  }
+  // STYLES
+  let showLibStyle = {
+    width: showLibrary ? '800px' :'0px',
+  };
 
   return (
-    <div id="library" style={libraryStyle}>
-      <div id="libSearchBar">
-        <label>Search Library: </label>
-        <input
-          ref={searchRef}
-          type="text"
-          value={enteredSearch}
-          onChange={event => setEnteredSearch(event.target.value)}
-        />
+    <div id="library">
+      <div id="btnContainer">
+        <input id="showLibButton" type="image" src={LibraryButton} alt="Library"
+          onClick={() => setShowLibrary(!showLibrary)} />
       </div>
-      {cardList}
+      <div id="libPanel" style={showLibStyle}>
+        <div id="libSearchBar">
+          <label>Search Library: </label>
+          <input
+            ref={searchRef}
+            type="text"
+            value={enteredSearch}
+            onChange={event => setEnteredSearch(event.target.value)}
+          />
+        </div>
+        {cardList}
+      </div>
     </div>
   );
 });

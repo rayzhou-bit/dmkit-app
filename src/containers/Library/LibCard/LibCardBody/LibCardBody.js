@@ -1,11 +1,11 @@
 import React, { useRef, useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-import "./CardBody.scss";
-import * as actions from "../../../store/actionIndex";
-import { useOutsideClick } from "../../../shared/utilityFunctions";
+import "./LibCardBody.scss";
+import * as actions from "../../../../store/actionIndex";
+import { useOutsideClick } from "../../../../shared/utilityFunctions";
 
-const CardBody = (props) => {
+const LibCardBody = (props) => {
   const dispatch = useDispatch();
   
   // VARIABLES
@@ -17,12 +17,13 @@ const CardBody = (props) => {
 
   const cardId = props.id;
   const cardData = cardColl[cardId];
-  const cardText = (cardData.data && cardData.data.text) ? cardData.data.text : "";
-  const cardTextId = cardId+"Textarea";
+  const cardText = (cardData.data && cardData.data.text) ? cardData.data.text : "loading...";
+  const cardTextId = cardId+"libTextarea";
   const cardTextRef = useRef(cardTextId);
 
   // FUNCTIONS
   const beginEdit = () => {
+    console.log("here")
     if (!editingTextarea) {
       const text = document.getElementById(cardTextId);
       text.focus();
@@ -72,4 +73,4 @@ const CardBody = (props) => {
   );
 };
 
-export default CardBody;
+export default LibCardBody;

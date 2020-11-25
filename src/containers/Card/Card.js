@@ -3,8 +3,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Rnd } from 'react-rnd';
 import { useOutsideClick } from '../../shared/utilityFunctions';
 
-import * as actions from '../../store/actionIndex';
 import './Card.scss';
+import * as actions from '../../store/actionIndex';
 import CardTitleBar from './CardTitleBar/CardTitleBar';
 import CardBody from './CardBody/CardBody';
 
@@ -12,6 +12,7 @@ const Card = React.memo(props => {
   const dispatch = useDispatch();
 
   // VARIABLES
+  const [isSelected, setIsSelected] = useState(false);
   const [editingCard, setEditingCard] = useState(false);
   const [editingTitle, setEditingTitle] = useState(false);
   const [showViewSettings, setShowViewSettings] = useState(false);
@@ -45,20 +46,22 @@ const Card = React.memo(props => {
   };
 
   const outsideClickHandler = () => {
-    dispatch(actions.updActiveCard(null));
+    if (cardId === activeCard && isSelected) {
+      dispatch(actions.updActiveCard(null));
+    }
   };
-  useOutsideClick(cardRef, cardId === activeCard, outsideClickHandler);
+  useOutsideClick(cardRef, outsideClickHandler);
 
   // STYLES
+  const toFrontStyle = {zIndex: cardId === activeCard ? 10 : 0};
   const cardStyle = {
     backgroundColor: cardColor,
     border: cardId === activeCard ? '3px solid black' : '1px solid black',
     margin: cardId === activeCard ? '0px' : '2px',
-    zIndex: cardId === activeCard ? 10 : 1,
   };
 
   return (
-    <Rnd style={cardStyle}
+    <Rnd style={toFrontStyle}
       // position and dragging properties
       bounds="parent"
       position={cardPos}
@@ -75,7 +78,7 @@ const Card = React.memo(props => {
       onResizeStop={resizeStopHandler}
       onClick={clickHandler}
     >
-      <div ref={cardRef} className="card" >
+      <div ref={cardRef} className="card" style={cardStyle}>
         <CardTitleBar id={cardId} 
           setEditingCard={setEditingCard}
           editingTitle={editingTitle} setEditingTitle={setEditingTitle}

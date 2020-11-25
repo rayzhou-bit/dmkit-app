@@ -7,10 +7,10 @@ export const updateObject = (oldObject, updatedProperties) => {
   };
 };
 
-export const useOutsideClick = (ref, condition, func, args) => {
+export const useOutsideClick = (ref, func, args) => {
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (ref.current && !ref.current.contains(event.target) && condition) {
+      if (ref.current && !ref.current.contains(event.target)) {
         func(args);
       }
     };
@@ -19,5 +19,5 @@ export const useOutsideClick = (ref, condition, func, args) => {
     return () => {
       document.removeEventListener("mouseup", handleClickOutside);
     };
-  }, [ref, condition, func, args]);
+  }, [ref, func, args]);
 };

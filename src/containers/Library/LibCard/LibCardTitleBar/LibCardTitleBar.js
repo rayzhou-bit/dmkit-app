@@ -1,23 +1,20 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useOutsideClick } from '../../../shared/utilityFunctions';
+import { useOutsideClick } from '../../../../shared/utilityFunctions';
 
-import './CardTitleBar.scss';
-import * as actions from '../../../store/actionIndex';
-import { TEXT_COLOR_WHEN_BACKGROUND_IS, CARD_TITLEBAR_EDIT_COLORS } from '../../../shared/constants/colors';
-import Auxi from '../../../hoc/Auxi';
-import ViewSettings from '../CardTitleBar/ViewSettings/ViewSettings';
+import './LibCardTitleBar.scss';
+import * as actions from '../../../../store/actionIndex';
+import { TEXT_COLOR_WHEN_BACKGROUND_IS, CARD_TITLEBAR_EDIT_COLORS } from '../../../../shared/constants/colors';
+import Auxi from '../../../../hoc/Auxi';
 
-import SettingsButton from '../../../media/icons/adjust.svg';
-import ClosingButton from '../../../media/icons/close.svg';
+import DeleteButton from '../../../../media/icons/delete.svg';
 
-const CardTitleBar = React.memo(props => {
+const LibCardTitleBar = React.memo(props => {
   const dispatch = useDispatch();
 
   // VARIABLES
   const setEditingCard = props.setEditingCard;
   const [editingTitle, setEditingTitle] = [props.editingTitle, props.setEditingTitle];
-  const [showViewSettings, setShowViewSettings] = [props.showViewSettings, props.setShowViewSettings];
   const setEditingTextarea = props.setEditingTextarea;
 
   const cardColl = useSelector(state => state.card);
@@ -26,9 +23,9 @@ const CardTitleBar = React.memo(props => {
 
   const cardId = props.id;
   const cardData = cardColl[cardId];
-  const cardColor = cardData.views[activeView].color;
-  const cardTitle = (cardData.data && cardData.data.title) ? cardData.data.title : "untitled";
-  const cardTitleId = cardId+"Title";
+  const cardColor = (cardData.views && cardData.views[activeView]) ? cardData.views[activeView].color : "gray";
+  const cardTitle = (cardData.data && cardData.data.title) ? cardData.data.title : "loading...";
+  const cardTitleId = cardId+"libTitle";
   const cardTitleRef = useRef(cardTitleId);
 
   // FUNCTIONS
@@ -67,11 +64,8 @@ const CardTitleBar = React.memo(props => {
     }
   };
 
-  const removeCardFromThisView = () => {
-    dispatch(actions.removeCardFromView(cardId, activeView));
-    setEditingTitle(false);
-    setEditingCard(false);
-  };
+  // delete should take TWO clicks
+  const setCardDelete = () => dispatch(actions.setCardDelete(cardId));
 
   useOutsideClick(cardTitleRef, endEdit);
 
@@ -96,19 +90,13 @@ const CardTitleBar = React.memo(props => {
           onKeyDown={(e) => keyPressHandler(e)}
         />
         <div className="titleBarButtons">
-          <input type="image" src={SettingsButton} alt="Settings" 
-            onClick={(e) => setShowViewSettings(!showViewSettings)} 
-          />
-        </div>
-        <div className="titleBarButtons">
-          <input type="image" src={ClosingButton} alt="Close" 
-            onClick={removeCardFromThisView} 
+          <input type="image" src={DeleteButton} alt="Delete" 
+            onClick={setCardDelete} 
           />
         </div>
       </div>
-      <ViewSettings id={cardId} show={showViewSettings} setShow={setShowViewSettings} />
     </Auxi>
   );
 });
 
-export default CardTitleBar;
+export default LibCardTitleBar;

@@ -6,6 +6,7 @@ import * as actions from '../../store/actionIndex';
 import Auxi from '../../hoc/Auxi';
 import SavePopUp from '../../components/SavePopUp/savePopUp'
 import Card from '../Card/Card';
+import Library from '../../containers/Library/Library';
 
 // ViewScreen is the main portion the user is looking at. This is located in the center of the screen.
 
@@ -45,13 +46,17 @@ const ViewScreen = (props) => {
   //   }
   // }, [saveEditedData]);
 
+  let viewScreenStyle = {
+    backgroundColor: activeView ? "white" : "lightgray",
+  };
+
   let cardObjs = [];
   if (cardColl) {
-    for (let card in cardColl) {
-      if (cardColl[card].views && cardColl[card].views[activeView]) {
+    for (let cardId in cardColl) {
+      if (cardColl[cardId].views && cardColl[cardId].views[activeView]) {
         cardObjs = [
           ...cardObjs,
-          <Card key={card} id={card}/>,
+          <Card key={cardId} id={cardId}/>,
         ];
       }
     }
@@ -59,8 +64,11 @@ const ViewScreen = (props) => {
 
   return (
     <Auxi>
-      <div ref={viewScreenRef} id="viewScreen"> {cardObjs} </div>
-      {saving ? <SavePopUp /> : null}
+      <div ref={viewScreenRef} id="viewScreen" style={viewScreenStyle}>
+        {cardObjs}
+        {saving ? <SavePopUp /> : null}
+        <Library/>
+      </div>
     </Auxi>
   );
 };
