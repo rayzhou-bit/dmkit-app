@@ -5,10 +5,11 @@ import "./LibCardBody.scss";
 import * as actions from "../../../../store/actionIndex";
 import { useOutsideClick } from "../../../../shared/utilityFunctions";
 
-const LibCardBody = (props) => {
+const LibCardBody = React.memo(props => {
   const dispatch = useDispatch();
   
   // VARIABLES
+  const isSelected = props.isSelected;
   const setEditingCard = props.setEditingCard;
   const [editingTextarea, setEditingTextarea] = [props.editingTextarea, props.setEditingTextarea];
 
@@ -18,12 +19,11 @@ const LibCardBody = (props) => {
   const cardId = props.id;
   const cardData = cardColl[cardId];
   const cardText = (cardData.data && cardData.data.text) ? cardData.data.text : "loading...";
-  const cardTextId = cardId+"libTextarea";
+  const cardTextId = cardId+".libTextarea";
   const cardTextRef = useRef(cardTextId);
 
   // FUNCTIONS
   const beginEdit = () => {
-    console.log("here")
     if (!editingTextarea) {
       const text = document.getElementById(cardTextId);
       text.focus();
@@ -33,16 +33,22 @@ const LibCardBody = (props) => {
     }
   };
 
+  const updEdit = () => {
+    if (editingTextarea) {dispatch(actions.updCardText(cardId, cardTextRef.current.value))}
+  };
+
   const endEdit = () => {
     if (editingTextarea) {
       dispatch(actions.updCardText(cardId, cardTextRef.current.value));
       setEditingTextarea(false);
       setEditingCard(false);
     }
-  };
+  };  //updating the state of the cards stops event bubbling...
+    // this causes issues with outsideclick for the card component
+    // perhaps set one outsideclick event handler in the main???
 
   const keyPressHandler = (event) => {
-    if (cardId === activeCard) {
+    if (cardId === activeCard && isSelected) {
       if (event.key === 'Tab') {
         event.preventDefault();
         endEdit();
@@ -53,24 +59,31 @@ const LibCardBody = (props) => {
   useOutsideClick(cardTextRef, endEdit);
 
   // STYLES
+  const fontSize = 18;
+  const textBox = document.getElementById(cardTextId);
+  let textHeight = textBox ? textBox.scrollHeight : null;
   const bodyStyle = {
+    height: isSelected ? textHeight + 'px' : (fontSize+3)*3+10 + 'px',
+    overflowY: isSelected ? 'hidden' : 'auto',
+    fontSize: fontSize+'px',
     backgroundColor: editingTextarea ? "white" : "lightgray",
     userSelect: "none",
   };
 
   return (
-    <div className="body">
+    <div className="libBody">
       <textarea ref={cardTextRef} id={cardTextId}
-        className="textfield" style={bodyStyle} 
+        className="libTextfield" style={bodyStyle} 
         type="text"
-        defaultValue={cardText}
+        value={cardText}
         readOnly={!editingTextarea}
-        onClick={(cardId === activeCard) ? beginEdit : null}
-        onDoubleClick={(cardId !== activeCard) ? beginEdit : null}
+        onClick={(cardId === activeCard && isSelected) ? beginEdit : null}
+        onDoubleClick={(cardId !== activeCard && !isSelected) ? beginEdit : null}
+        onChange={updEdit}
         onKeyDown={(e) => keyPressHandler(e)}
       />
     </div>
   );
-};
+});
 
 export default LibCardBody;

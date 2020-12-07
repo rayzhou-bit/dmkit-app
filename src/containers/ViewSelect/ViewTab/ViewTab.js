@@ -6,10 +6,9 @@ import "./ViewTab.scss";
 import * as actions from "../../../store/actionIndex";
 import { useOutsideClick } from "../../../shared/utilityFunctions";
 
-import SettingsButton from "../../../media/icons/adjust.svg";
-import ClosingButton from "../../../media/icons/close.svg";
+import ClosingButton from "../../../media/icons/close.png";
 
-const ViewTab = React.memo((props) => {
+const ViewTab = React.memo(props => {
   const dispatch = useDispatch();
 
   // VARIABLES
@@ -23,7 +22,7 @@ const ViewTab = React.memo((props) => {
   const viewId = props.id;
   const viewData = viewColl[viewId];
   const viewTitle = viewData.title ? viewData.title : "untitled";
-  const viewTitleId = viewId+"Title";
+  const viewTitleId = viewId+".title";
   const viewTitleRef = useRef(viewTitleId);
 
   const tabWidth = 300;
@@ -36,6 +35,10 @@ const ViewTab = React.memo((props) => {
       title.setSelectionRange(title.value.length, title.value.length);
       setEditingTitle(true);
     }
+  };
+
+  const updEdit = () => {
+    if (editingTitle) {dispatch(actions.updViewTitle(viewId, viewTitleRef.current.value))}
   };
 
   const endEdit = () => {
@@ -103,10 +106,11 @@ const ViewTab = React.memo((props) => {
         <input ref={viewTitleRef} id={viewTitleId}
           className="title" style={viewId === activeView ? { backgroundColor: "white" } : null}
           type="text" required
-          defaultValue={viewTitle}
+          value={viewTitle}
           readOnly={!editingTitle}
           onClick={clickHandler}
           onDoubleClick={(viewId === activeView) ? beginEdit : null}
+          onChange={updEdit}
           onKeyDown={(e) => keyPressHandler(e)}
         />
         {/* <label className="titleBarButtons">

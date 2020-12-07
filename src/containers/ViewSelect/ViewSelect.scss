@@ -1,5 +1,4 @@
-@import '../../styles/globalVariables';
-@import '../../styles/viewVariables.scss';
+@import '../../shared/styles/globalVariables';
 
 #viewSelect {
   position: relative;
@@ -7,16 +6,13 @@
   display: flex;
   flex-flow: row nowrap;
 
-  height: $view-select-height;
-
   background-color: lightgray;
 
   overflow: hidden;
 
   .buttons {
     @extend %small-button;
-    height: 30px;
-    width: 30px;
+    height: 30px; width: 30px;
 
     place-items: center;
   }

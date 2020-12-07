@@ -10,18 +10,19 @@ const ViewSettings = (props) => {
   const dispatch = useDispatch();
 
   // VARIABLES
+  const [show, setShow] = [props.show, props.setShow];
+  
   const cardColl = useSelector(state => state.card);
   const viewColl = useSelector(state => state.view);
   const viewOrder = useSelector(state => state.viewManage.viewOrder);
   const activeView = useSelector(state => state.viewManage.activeView);
   
-  const [show, setShow] = [props.show, props.setShow];
   const cardId = props.id;
   const cardViews = cardColl[cardId].views;
   const cardPos = cardViews[activeView].pos;
   const cardSize = cardViews[activeView].size;
   const cardColor = cardViews[activeView].color;
-  const viewSettingsRef = useRef(cardId+activeView+"viewSettings");
+  const viewSettingsRef = useRef(cardId+"."+activeView+".viewSettings");
 
   // FUNCTIONS
   // updating color for all cards on all views will be a future implementation
@@ -54,7 +55,10 @@ const ViewSettings = (props) => {
     if (viewColl[view]) {
       let colorList = [];
       for (let color in CARD_TITLEBAR_COLORS) {
-        let colorStyle = {backgroundColor: color, border: ((cardViews[view] && cardViews[view].color === color) ? "1px solid white" : "1px solid black")};
+        let colorStyle = {
+          backgroundColor: color, 
+          border: ((cardViews[view] && cardViews[view].color === color) ? "2px solid white" : "1px solid black")
+        };
         colorList = [
           ...colorList,
           <button key={color} style={colorStyle} onClick={() => updCardColor(view, color)}/>

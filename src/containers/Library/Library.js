@@ -5,14 +5,16 @@ import './Library.scss';
 import * as actions from '../../store/actionIndex';
 import LibCard from './LibCard/LibCard';
 
-import LibraryButton from '../../media/icons/book.svg';
+import LibBtnImg from '../../media/icons/library.png';
 
 const Library = React.memo(props => {
   // VARIABLES
   const [showLibrary, setShowLibrary] = useState(false);
   const cardColl = useSelector(state => state.card);
   const [enteredSearch, setEnteredSearch] = useState('');
-  const searchRef = useRef();
+
+  const searchId = "libSearchBar";
+  const searchRef = useRef(searchId);
 
   // CARD LIST
   let cardList = [];
@@ -25,7 +27,8 @@ const Library = React.memo(props => {
           cardText.toLowerCase().includes(enteredSearch.toLocaleLowerCase())) {
           cardList = [
             ...cardList,
-            <LibCard key={cardId} cardIndex={cardId} />
+            <LibCard key={cardId} cardIndex={cardId} />,
+            <div key={cardId+'.libDivider'} className="libDivider" />
           ];
         }
       }
@@ -33,18 +36,24 @@ const Library = React.memo(props => {
   }
 
   // STYLES
-  let showLibStyle = {
-    width: showLibrary ? '800px' :'0px',
+  const viewScreenWidth = document.getElementById('viewScreen') ? document.getElementById('viewScreen').clientWidth : 0;
+  const libPanelStyle = {
+    width: showLibrary ? viewScreenWidth*.35 : '0px',
+    padding: showLibrary ? '0 10px 0 5px' : '0',
+    borderLeft: showLibrary ? '1px solid black' : '0',
+    overflowY: showLibrary ? 'scroll' : 'hidden',
   };
 
   return (
     <div id="library">
-      <div id="btnContainer">
-        <input id="showLibButton" type="image" src={LibraryButton} alt="Library"
+      <div id="libBtnGrid">
+        <input id="showLibButton" 
+          type="image" src={LibBtnImg} alt="Library"
+          draggable="false"
           onClick={() => setShowLibrary(!showLibrary)} />
       </div>
-      <div id="libPanel" style={showLibStyle}>
-        <div id="libSearchBar">
+      <div id="libPanelGrid" style={libPanelStyle}>
+        <div id={searchId}>
           <label>Search Library: </label>
           <input
             ref={searchRef}
@@ -54,7 +63,7 @@ const Library = React.memo(props => {
           />
         </div>
         {cardList}
-      </div>
+        </div>
     </div>
   );
 });

@@ -8,13 +8,14 @@ import { TEXT_COLOR_WHEN_BACKGROUND_IS, CARD_TITLEBAR_EDIT_COLORS } from '../../
 import Auxi from '../../../hoc/Auxi';
 import ViewSettings from '../CardTitleBar/ViewSettings/ViewSettings';
 
-import SettingsButton from '../../../media/icons/adjust.svg';
-import ClosingButton from '../../../media/icons/close.svg';
+import SettingsButton from '../../../media/icons/view-settings.png';
+import ClosingButton from '../../../media/icons/close.png';
 
 const CardTitleBar = React.memo(props => {
   const dispatch = useDispatch();
 
   // VARIABLES
+  const isSelected = props.isSelected;
   const setEditingCard = props.setEditingCard;
   const [editingTitle, setEditingTitle] = [props.editingTitle, props.setEditingTitle];
   const [showViewSettings, setShowViewSettings] = [props.showViewSettings, props.setShowViewSettings];
@@ -28,7 +29,7 @@ const CardTitleBar = React.memo(props => {
   const cardData = cardColl[cardId];
   const cardColor = cardData.views[activeView].color;
   const cardTitle = (cardData.data && cardData.data.title) ? cardData.data.title : "untitled";
-  const cardTitleId = cardId+"Title";
+  const cardTitleId = cardId+".title";
   const cardTitleRef = useRef(cardTitleId);
 
   // FUNCTIONS
@@ -42,6 +43,10 @@ const CardTitleBar = React.memo(props => {
     }
   };
 
+  const updEdit = () => {
+    if (editingTitle) {dispatch(actions.updCardTitle(cardId, cardTitleRef.current.value))}
+  };
+
   const endEdit = () => {
     if (editingTitle) {
       dispatch(actions.updCardTitle(cardId, cardTitleRef.current.value));
@@ -51,7 +56,7 @@ const CardTitleBar = React.memo(props => {
   };
 
   const keyPressHandler = (event) => {
-    if (cardId === activeCard) {
+    if (cardId === activeCard && isSelected) {
       if (event.key === 'Enter') {
         endEdit();
       }
@@ -59,7 +64,7 @@ const CardTitleBar = React.memo(props => {
         event.preventDefault();
         dispatch(actions.updCardTitle(cardId, cardTitleRef.current.value));
         setEditingTitle(false);
-        const textareaId = document.getElementById(cardId+"Textarea");
+        const textareaId = document.getElementById(cardId+".textarea");
         textareaId.focus();
         textareaId.setSelectionRange(textareaId.value.length, textareaId.value.length);
         setEditingTextarea(true);
@@ -90,21 +95,18 @@ const CardTitleBar = React.memo(props => {
       <div className="titleBar">
         <input ref={cardTitleRef} id={cardTitleId}
           className="title" style={titleBarStyle} type="text" required
-          defaultValue={cardTitle}
+          value={cardTitle}
           readOnly={!editingTitle}
-          onDoubleClick={(cardId === activeCard) ? beginEdit : null}
+          onDoubleClick={(cardId === activeCard && isSelected) ? beginEdit : null}
+          onChange={updEdit}
           onKeyDown={(e) => keyPressHandler(e)}
         />
-        <div className="titleBarButtons">
-          <input type="image" src={SettingsButton} alt="Settings" 
-            onClick={(e) => setShowViewSettings(!showViewSettings)} 
-          />
-        </div>
-        <div className="titleBarButtons">
-          <input type="image" src={ClosingButton} alt="Close" 
-            onClick={removeCardFromThisView} 
-          />
-        </div>
+        <input className="titleBarButtons" type="image" src={SettingsButton} alt="Settings" 
+          onClick={(e) => setShowViewSettings(!showViewSettings)} 
+        />
+        <input className="titleBarButtons" type="image" src={ClosingButton} alt="Close" 
+          onClick={removeCardFromThisView} 
+        />
       </div>
       <ViewSettings id={cardId} show={showViewSettings} setShow={setShowViewSettings} />
     </Auxi>

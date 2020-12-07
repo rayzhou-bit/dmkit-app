@@ -1,11 +1,10 @@
-@import '../../../styles/globalVariables.scss';
-@import '../../../styles/cardVariables.scss';
+@import '../../../shared/styles/globalVariables.scss';
 
 .titleBar {
   display: flex;
   flex-flow: row nowrap;
 
-  height: $card-titleBar-height;
+  height: $grid-size;
 
   border-bottom: 1px solid black;
 
@@ -14,7 +13,7 @@
     flex: 1;
     
     text-align: left;
-    font-size: $card-titleBar-font-size;
+    font-size: 1.5em;
     text-overflow: ellipsis;
     // line-height: 24px;
     // max-height: 32px;
@@ -24,22 +23,12 @@
 
     -webkit-transition: .4s;
     transition: .4s;
-
-    // &:hover {
-    //   cursor: move;
-    // }
   }
   
   .titleBarButtons {
+    @extend %small-button;
+    height: $grid-size - 10; width: $grid-size - 10;
+    
     border-left: 1px solid black;
-
-    background: #ddd;
-
-    height: 100%;
-
-    input {
-      @extend %small-button;
-      height: 22px;
-    }
   }
 }

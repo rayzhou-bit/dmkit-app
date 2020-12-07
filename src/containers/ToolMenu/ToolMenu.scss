@@ -1,16 +1,15 @@
-@import '../../styles/globalVariables';
+@import '../../shared/styles/globalVariables';
 
 #toolMenu {
   display:flex;
   flex-flow: column nowrap;
 
+  margin: 3px 0;
   overflow: hidden;
 
   input {
     @extend %small-button;
-    float:left;
-    height: 30px;
-    width: 30px;
+    height: 30px; width: 30px;
     
     place-items: center;
 

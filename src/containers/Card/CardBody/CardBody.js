@@ -5,10 +5,11 @@ import "./CardBody.scss";
 import * as actions from "../../../store/actionIndex";
 import { useOutsideClick } from "../../../shared/utilityFunctions";
 
-const CardBody = (props) => {
+const CardBody = React.memo(props => {
   const dispatch = useDispatch();
   
   // VARIABLES
+  const isSelected = props.isSelected;
   const setEditingCard = props.setEditingCard;
   const [editingTextarea, setEditingTextarea] = [props.editingTextarea, props.setEditingTextarea];
 
@@ -18,7 +19,7 @@ const CardBody = (props) => {
   const cardId = props.id;
   const cardData = cardColl[cardId];
   const cardText = (cardData.data && cardData.data.text) ? cardData.data.text : "";
-  const cardTextId = cardId+"Textarea";
+  const cardTextId = cardId+".textarea";
   const cardTextRef = useRef(cardTextId);
 
   // FUNCTIONS
@@ -32,6 +33,10 @@ const CardBody = (props) => {
     }
   };
 
+  const updEdit = () => {
+    if (editingTextarea) {dispatch(actions.updCardText(cardId, cardTextRef.current.value))}
+  };
+
   const endEdit = () => {
     if (editingTextarea) {
       dispatch(actions.updCardText(cardId, cardTextRef.current.value));
@@ -41,7 +46,7 @@ const CardBody = (props) => {
   };
 
   const keyPressHandler = (event) => {
-    if (cardId === activeCard) {
+    if (cardId === activeCard && isSelected) {
       if (event.key === 'Tab') {
         event.preventDefault();
         endEdit();
@@ -62,14 +67,15 @@ const CardBody = (props) => {
       <textarea ref={cardTextRef} id={cardTextId}
         className="textfield" style={bodyStyle} 
         type="text"
-        defaultValue={cardText}
+        value={cardText}
         readOnly={!editingTextarea}
-        onClick={(cardId === activeCard) ? beginEdit : null}
-        onDoubleClick={(cardId !== activeCard) ? beginEdit : null}
+        onClick={(cardId === activeCard && isSelected) ? beginEdit : null}
+        onDoubleClick={(cardId !== activeCard && !isSelected) ? beginEdit : null}
+        onChange={updEdit}
         onKeyDown={(e) => keyPressHandler(e)}
       />
     </div>
   );
-};
+});
 
 export default CardBody;

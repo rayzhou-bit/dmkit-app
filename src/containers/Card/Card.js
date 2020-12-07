@@ -1,10 +1,11 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Rnd } from 'react-rnd';
 import { useOutsideClick } from '../../shared/utilityFunctions';
 
 import './Card.scss';
 import * as actions from '../../store/actionIndex';
+import { GRID } from '../../shared/constants/grid';
 import CardTitleBar from './CardTitleBar/CardTitleBar';
 import CardBody from './CardBody/CardBody';
 
@@ -26,8 +27,7 @@ const Card = React.memo(props => {
   const cardData = cardColl[cardId];
   const cardPos = cardData.views[activeView].pos;
   const cardSize = cardData.views[activeView].size;
-  const cardColor = cardData.views[activeView].color;
-  const cardRef = useRef(cardId+"Card");
+  const cardRef = useRef(cardId+".card");
 
   // FUNCTIONS
   const dragStopHandler = (event, data) => dispatch(actions.updCardPos(cardId, activeView, {x: data.x, y: data.y}));
@@ -40,39 +40,38 @@ const Card = React.memo(props => {
   };
 
   const clickHandler = () => {
-    if (cardId !== activeCard) {
-      dispatch(actions.updActiveCard(cardId));
-    }
+    if (cardId !== activeCard) {dispatch(actions.updActiveCard(cardId))}
+    if (!isSelected) {setIsSelected(true)}
   };
 
   const outsideClickHandler = () => {
     if (cardId === activeCard && isSelected) {
       dispatch(actions.updActiveCard(null));
+      setIsSelected(false);
     }
   };
-  useOutsideClick(cardRef, outsideClickHandler);
+  useOutsideClick(cardRef, outsideClickHandler, cardId);
 
   // STYLES
   const toFrontStyle = {zIndex: cardId === activeCard ? 10 : 0};
   const cardStyle = {
-    backgroundColor: cardColor,
     border: cardId === activeCard ? '3px solid black' : '1px solid black',
     margin: cardId === activeCard ? '0px' : '2px',
   };
 
   return (
     <Rnd style={toFrontStyle}
-      // position and dragging properties
       bounds="parent"
-      position={cardPos}
-      dragGrid={[25, 25]}
-      dragHandleClassName="titleBar"
+      // position and dragging properties
       disableDragging={editingCard}
+      position={cardPos}
+      dragGrid={[GRID.size, GRID.size]}
+      dragHandleClassName="titleBar"
       // size and resizing properties
       size={cardSize}
-      minWidth={150}
-      minHeight={150}
-      resizeGrid={[25, 25]}
+      minWidth={GRID.size*5}
+      minHeight={GRID.size*5}
+      resizeGrid={[GRID.size, GRID.size]}
       // functions
       onDragStop={dragStopHandler}
       onResizeStop={resizeStopHandler}
@@ -80,12 +79,14 @@ const Card = React.memo(props => {
     >
       <div ref={cardRef} className="card" style={cardStyle}>
         <CardTitleBar id={cardId} 
+          isSelected={isSelected}
           setEditingCard={setEditingCard}
           editingTitle={editingTitle} setEditingTitle={setEditingTitle}
           showViewSettings={showViewSettings} setShowViewSettings={setShowViewSettings}
           setEditingTextarea={setEditingTextarea}
         />
         <CardBody id={cardId} 
+          isSelected={isSelected}
           setEditingCard={setEditingCard} 
           editingTextarea={editingTextarea} setEditingTextarea={setEditingTextarea}
         />

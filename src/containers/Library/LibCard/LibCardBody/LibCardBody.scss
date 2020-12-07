@@ -1,26 +1,23 @@
-@import '../../../../styles/globalVariables';
+@import '../../../../shared/styles/globalVariables';
 
-.body {
-  background-color: white;
+.libBody {
+  background-color: lightgray;
   
   flex: auto;
-  // overflow: auto;
+  
+  -webkit-transition: .4s;
+  transition: .4s;
 
-  .textfield {
+  .libTextfield {
     @extend %value-field;
-    height: 100%; width: 100%;
+    width: 100%;
 
     box-sizing: border-box;
 
-    background: #ddd;
-
-    font-size: 18px;
-
     resize: none;
     overflow: auto;
-
-    // &:hover {
-    //   background-color: lightskyblue;
-    // }
+    
+    -webkit-transition: .4s;
+    transition: .4s;
   }
 }

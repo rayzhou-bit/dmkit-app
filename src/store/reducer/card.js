@@ -1,4 +1,5 @@
 import * as actionTypes from '../actionTypes';
+import { GRID } from '../../shared/constants/grid';
 import { updateObject } from '../../shared/utilityFunctions';
 
 const initialState = {
@@ -64,8 +65,8 @@ const removeCardFromView = (state, action) => {
 const updCardPos = (state, action) => {
   let updatedCard = {...state[action.card]};
   let roundedPos = {
-    x: Math.round(action.pos.x / 25) * 25,
-    y: Math.round(action.pos.y / 25) * 25
+    x: Math.round(action.pos.x / GRID.size) * GRID.size,
+    y: Math.round(action.pos.y / GRID.size) * GRID.size
   };
   updatedCard.views[action.view].pos = roundedPos;
   updatedCard.edited = true;
@@ -75,8 +76,8 @@ const updCardPos = (state, action) => {
 const updCardSize = (state, action) => {
   let updatedCard = {...state[action.card]};
   let roundedSize = {
-    width: (Math.round(action.size.width.split("px").shift() / 25) * 25) + "px",
-    height: (Math.round(action.size.height.split("px").shift() / 25) * 25) + "px"
+    width: (Math.round(action.size.width.split("px").shift() / GRID.size) * GRID.size) + "px",
+    height: (Math.round(action.size.height.split("px").shift() / GRID.size) * GRID.size) + "px"
   };
   updatedCard.views[action.view].size = roundedSize;
   updatedCard.edited = true;

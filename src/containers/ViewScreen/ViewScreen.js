@@ -3,14 +3,15 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import './ViewScreen.scss';
 import * as actions from '../../store/actionIndex';
+import { GRID } from '../../shared/constants/grid';
 import Auxi from '../../hoc/Auxi';
-import SavePopUp from '../../components/SavePopUp/savePopUp'
+import SaveAlert from '../../components/saveAlert/saveAlert'
 import Card from '../Card/Card';
 import Library from '../../containers/Library/Library';
 
 // ViewScreen is the main portion the user is looking at. This is located in the center of the screen.
 
-const ViewScreen = (props) => {
+const ViewScreen = props => {
   const dispatch = useDispatch();
 
   // VARIABLES
@@ -28,11 +29,29 @@ const ViewScreen = (props) => {
   const viewScreenRef = useRef("viewscreen");
 
   // FUNCTIONS
-  const fetchFromFirebase = () => {
+  useEffect(() => { 
     dispatch(actions.fetchCardColl(user, campaign));
     dispatch(actions.fetchViewColl(user, campaign, activeView));
+  }, [user, campaign]);
+
+  const drop = (event) => {
+    event.preventDefault();
+    const data = event.dataTransfer.getData("text");
+    const targetCardId = data.split(".")[0];
+    if (cardColl[targetCardId] && !cardColl[targetCardId].views[activeView]) {
+      // future update: more precise pos calculation
+      let xCalculation = Math.round((event.clientX-GRID.size-GRID.size)/GRID.size)*GRID.size;
+      if (xCalculation<0) {xCalculation = 0}
+      let yCalculation = Math.round((event.clientY-GRID.size-GRID.size)/GRID.size)*GRID.size;
+      if (yCalculation<0) {yCalculation = 0}
+      const pos = {x: xCalculation, y: yCalculation};
+      const size = {width: GRID.size*10, height: GRID.size*10};
+      const color = "gray";
+      dispatch(actions.connectCardToView(targetCardId, activeView, pos, size, color));
+    }
   };
-  useEffect(() => { fetchFromFirebase() }, []);
+
+  const allowDrop = (event) => {event.preventDefault()};
 
   // Save edited data when closing window
   // const saveEditedData = useCallback(() => {
@@ -46,6 +65,7 @@ const ViewScreen = (props) => {
   //   }
   // }, [saveEditedData]);
 
+  // STYLES
   let viewScreenStyle = {
     backgroundColor: activeView ? "white" : "lightgray",
   };
@@ -64,10 +84,11 @@ const ViewScreen = (props) => {
 
   return (
     <Auxi>
-      <div ref={viewScreenRef} id="viewScreen" style={viewScreenStyle}>
+      <div id="viewScreen" ref={viewScreenRef} style={viewScreenStyle}
+        onDrop={(e)=>drop(e)} onDragOver={(e)=>allowDrop(e)}
+      >
         {cardObjs}
-        {saving ? <SavePopUp /> : null}
-        <Library/>
+        {saving ? <SaveAlert /> : null}
       </div>
     </Auxi>
   );

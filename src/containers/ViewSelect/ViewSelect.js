@@ -5,12 +5,11 @@ import './ViewSelect.scss';
 import * as actions from '../../store/actionIndex';
 import ViewTab from './ViewTab/ViewTab';
 
-import AddButton from '../../media/icons/plus.svg';
-// import LibraryButton from '../../media/icons/book.svg';
+import AddButton from '../../media/icons/add.png';
 
 // ViewSelect is the container for all the ViewTab's. This is located at the bottom of the screen.
 
-const ViewSelect = props => {
+const ViewSelect = React.memo(props => {
   const dispatch = useDispatch();
 
   const user = useSelector(state => state.campaign.user);
@@ -39,10 +38,8 @@ const ViewSelect = props => {
       <div className="filler" />
       <input className="buttons" id="addView" type="image" src={AddButton} alt="Add" 
         onClick={setViewCreate} />
-      {/* <input className="buttons" id="libraryView" type="image" src={LibraryButton} alt="Library"
-        onClick={props.setShowLibrary} /> */}
     </div>
   );
-};
+});
 
 export default ViewSelect;

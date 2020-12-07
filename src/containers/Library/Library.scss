@@ -1,49 +1,49 @@
-@import '../../styles/globalVariables.scss';
+@import '../../shared/styles/globalVariables.scss';
 
 #library {
-  display: grid;
-  grid-template-columns: auto 1fr;
-
   position: absolute;
-  right: 0; top: 0; bottom: 0;
+  right: 0;
+  
+  overflow-x: hidden;
+  -webkit-transition: .4s;
+  transition: .4s;
 
-  z-index: 100;
-
-  #btnContainer {
+  display: grid;
+  grid-template-columns: 41px 1fr;
+  
+  #libBtnGrid {
     grid-column: 1 / 2;
+    height: 100%;
 
     #showLibButton {
       @extend %small-button;
+      left: 0;
       height: 30px; width: 30px;
-      margin-top: 2px;
-
+      margin: 3px 0;
+    
       border: 1px solid black;
       border-right: 0px;
     }
   }
 
-  #libPanel {
+  #libPanelGrid {
     grid-column: 2 / 3;
-
-    position: relative;
-    right: 0; top: 0; bottom: 0;
-
-    border-left: 1px solid black;
-
+    height: 100%;
     background-color: white;
-  
-    overflow-y: scroll;
-  
     -webkit-transition: .4s;
     transition: .4s;
 
     #libSearchBar {
       margin: 10px;
-  
+    
       input {
         height: 30px;
         font-size: large;
       }
+    }
+
+    .libDivider {
+      height: 10px; width: 100%;
     }
   }
 }
