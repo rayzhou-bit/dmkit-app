@@ -43,7 +43,7 @@ const ViewTab = React.memo(props => {
     }
   };
 
-  useOutsideClick(viewTitleRef, editingTitle, endEdit);
+  useOutsideClick([viewTitleRef], editingTitle, endEdit);
 
   const updEdit = () => {
     if (editingTitle) {dispatch(actions.updViewTitle(viewId, viewTitleRef.current.value))}

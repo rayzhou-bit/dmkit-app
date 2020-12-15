@@ -49,24 +49,11 @@ const LibCard = props => {
     }
   };
 
-  // useEffect(() => {
-  //   const outsideClickCardHandler = (event) => {
-  //     if (cardRef.current && !cardRef.current.contains(event.target)) {
-  //       if (cardId === activeCard) {dispatch(actions.updActiveCard(null))}
-  //       setIsSelected(false);
-  //     }
-  //   }
-
-  //   if (isSelected) {document.addEventListener("mousedown", outsideClickCardHandler)}
-  //   return () => {
-  //     document.removeEventListener("mousedown", outsideClickCardHandler);
-  //   }
-  // }, [isSelected]);
   const outsideClickCardHandler = () => {
     if (cardId === activeCard) {dispatch(actions.updActiveCard(null))}
     setIsSelected(false);
   };
-  useOutsideClick(cardRef, isSelected, outsideClickCardHandler);
+  useOutsideClick([cardRef], isSelected, outsideClickCardHandler);
 
   // FUNCTIONS: TITLEBAR
   const startTitleEdit = () => {
@@ -82,19 +69,7 @@ const LibCard = props => {
     if (editingTitle) {setEditingTitle(false)}
   };
 
-  // useEffect(() => {
-  //   const outsideClickTitleHandler = (event) => {
-  //     if (cardTitleRef.current && !cardTitleRef.current.contains(event.target)) {
-  //       endTitleEdit();
-  //     }
-  //   }
-
-  //   if (editingTitle) {document.addEventListener("mousedown", outsideClickTitleHandler)}
-  //   return () => {
-  //     document.removeEventListener("mousedown", outsideClickTitleHandler);
-  //   }
-  // }, [editingTitle]);
-  useOutsideClick(cardTitleRef, editingTitle, endTitleEdit);
+  useOutsideClick([cardTitleRef], editingTitle, endTitleEdit);
 
   const updTitleEdit = () => {
     if (editingTitle) {dispatch(actions.updCardTitle(cardId, cardTitleRef.current.value))}
@@ -121,19 +96,7 @@ const LibCard = props => {
     }
   };
 
-  // useEffect(() => {
-  //   const outsideClickDelBtnHandler = (event) => {
-  //     if (cardDeleteBtnRef.current && !cardDeleteBtnRef.current.contains(event.target)) {
-  //       setConfirmDelete(false);
-  //     }
-  //   }
-
-  //   if (confirmDelete) {document.addEventListener("mousedown", outsideClickDelBtnHandler)}
-  //   return () => {
-  //     document.removeEventListener("mousedown", outsideClickDelBtnHandler);
-  //   }
-  // }, [confirmDelete]);
-  useOutsideClick(cardDeleteBtnRef, confirmDelete, setConfirmDelete, false);
+  useOutsideClick([cardDeleteBtnRef], confirmDelete, setConfirmDelete, false);
 
   // FUNCTIONS: TEXT BODY
   const startTextEdit = () => {
@@ -149,19 +112,7 @@ const LibCard = props => {
     if (editingText) {setEditingText(false)}
   };
 
-  // useEffect(() => {
-  //   const outsideClickTextHandler = (event) => {
-  //     if (cardTextRef.current && !cardTextRef.current.contains(event.target)) {
-  //       endTextEdit();
-  //     }
-  //   }
-
-  //   if (editingText) {document.addEventListener("mousedown", outsideClickTextHandler)}
-  //   return () => {
-  //     document.removeEventListener("mousedown", outsideClickTextHandler);
-  //   }
-  // }, [editingText]);
-  useOutsideClick(cardTextRef, editingText, endTextEdit);
+  useOutsideClick([cardTextRef], editingText, endTextEdit);
 
   const updTextEdit = () => {
     if (editingText) {dispatch(actions.updCardText(cardId, cardTextRef.current.value))}

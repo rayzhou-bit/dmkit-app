@@ -64,24 +64,12 @@ const Card = props => {
       setIsSelected(true);
     }
   };
-  // useEffect(() => {
-  //   const outsideClickCardHandler = (event) => {
-  //     if (cardRef.current && !cardRef.current.contains(event.target)) {
-  //       if (cardId === activeCard) {dispatch(actions.updActiveCard(null))}
-  //       setIsSelected(false);
-  //     }
-  //   }
-
-  //   if (isSelected) {document.addEventListener("mousedown", outsideClickCardHandler)}
-  //   return () => {
-  //     document.removeEventListener("mousedown", outsideClickCardHandler);
-  //   }
-  // }, [isSelected]);
+  
   const outsideClickCardHandler = () => {
     if (cardId === activeCard) {dispatch(actions.updActiveCard(null))}
     setIsSelected(false);
   };
-  useOutsideClick(cardRef, isSelected, outsideClickCardHandler);
+  useOutsideClick([cardRef], isSelected, outsideClickCardHandler);
 
   const onAnimationEnd = () => {
     setCardAnimation({
@@ -128,19 +116,7 @@ const Card = props => {
     }
   };
 
-  // useEffect(() => {
-  //   const outsideClickTitleHandler = (event) => {
-  //     if (cardTitleRef.current && !cardTitleRef.current.contains(event.target)) {
-  //       endTitleEdit();
-  //     }
-  //   }
-
-  //   if (editingTitle) {document.addEventListener("mousedown", outsideClickTitleHandler)}
-  //   return () => {
-  //     document.removeEventListener("mousedown", outsideClickTitleHandler);
-  //   }
-  // }, [editingTitle]);
-  useOutsideClick(cardTitleRef, editingTitle, endTitleEdit);
+  useOutsideClick([cardTitleRef], editingTitle, endTitleEdit);
 
   // FUNCTIONS: TEXT BODY
   const startTextEdit = () => {
@@ -185,34 +161,10 @@ const Card = props => {
     }
   };
 
-  // useEffect(() => {
-  //   const outsideClickTextHandler = (event) => {
-  //     if (cardTextRef.current && !cardTextRef.current.contains(event.target)) {
-  //       endTextEdit();
-  //     }
-  //   }
-
-  //   if (editingText) {document.addEventListener("mousedown", outsideClickTextHandler)}
-  //   return () => {
-  //     document.removeEventListener("mousedown", outsideClickTextHandler);
-  //   }
-  // }, [editingText]);
-  useOutsideClick(cardTextRef, editingText, endTextEdit);
+  useOutsideClick([cardTextRef], editingText, endTextEdit);
 
   // FUNCTIONS: VIEW SETTINGS
-  // useEffect(() => {
-  //   const outsideClickViewSettingsHandler = (event) => {
-  //     if (viewSettingsRef.current && !viewSettingsRef.current.contains(event.target) && !viewSettingsBtnRef.current.contains(event.target)) {
-  //       setShowViewSettings(false);
-  //     }
-  //   }
-
-  //   if (showViewSettings) {document.addEventListener("mousedown", outsideClickViewSettingsHandler)}
-  //   return () => {
-  //     document.removeEventListener("mousedown", outsideClickViewSettingsHandler);
-  //   }
-  // }, [showViewSettings]);
-  useOutsideClick(viewSettingsRef, showViewSettings, setShowViewSettings, false, viewSettingsBtnRef);
+  useOutsideClick([viewSettingsRef, viewSettingsBtnRef], showViewSettings, setShowViewSettings, false);
   
   // FUNCTIONS: BUBBLE
   const changeTypeToCard = () => dispatch(actions.updCardType(cardId, activeView, "card"));
