@@ -4,4 +4,59 @@
   position: relative;
 
   width: 100%;
+
+  .libTitleBar {
+    display: flex;
+    flex-flow: row nowrap;
+  
+    height: $grid-size;
+  
+    border-bottom: 1px solid black;
+  
+    .libTitle {
+      @extend %title-field;
+      flex: 1;
+      
+      text-align: left;
+      font-size: 1.5em;
+      text-overflow: ellipsis;
+      // line-height: 24px;
+      // max-height: 32px;
+      line-clamp: 1;
+  
+      overflow: hidden;
+  
+      -webkit-transition: .4s;
+      transition: .4s;
+    }
+    
+    .libTitleBarButtons {
+      @extend %small-button;
+      height: $grid-size - 10; width: $grid-size - 10;
+      
+      border-left: 1px solid black;
+    }
+  }
+
+  .libBody {
+    background-color: lightgray;
+    
+    flex: auto;
+    
+    -webkit-transition: .4s;
+    transition: .4s;
+  
+    .libTextfield {
+      @extend %value-field;
+      width: 100%;
+  
+      box-sizing: border-box;
+  
+      resize: none;
+      overflow: auto;
+      
+      -webkit-transition: .4s;
+      transition: .4s;
+    }
+  }
 }

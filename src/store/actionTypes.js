@@ -11,6 +11,7 @@ export const UPD_CARD_POS = 'UPD_CARD_POS';
 export const UPD_CARD_SIZE = 'UPD_CARD_SIZE';
 export const UPD_CARD_COLOR = 'UPD_CARD_COLOR';
 export const UPD_CARD_COLOR_FOR_ALL_VIEWS = 'UPD_CARD_COLOR_FOR_ALL_VIEWS';
+export const UPD_CARD_TYPE = 'UPD_CARD_TYPE';
 export const UPD_CARD_TITLE = 'UPD_CARD_TITLE';
 export const UPD_CARD_TEXT = 'UPD_CARD_TEXT';
 

@@ -7,16 +7,17 @@ import { GRID } from '../../shared/constants/grid';
 import Auxi from '../../hoc/Auxi';
 import SaveAlert from '../../components/saveAlert/saveAlert'
 import Card from '../Card/Card';
-import Library from '../../containers/Library/Library';
 
 // ViewScreen is the main portion the user is looking at. This is located in the center of the screen.
 
 const ViewScreen = props => {
   const dispatch = useDispatch();
 
-  // VARIABLES
+  // STATES
+  const [cardAnimation, setCardAnimation] = useState({});
   const [saving, setSaving] = useState(false); //this will look to serverside campaign state later
 
+  // STORE SELECTORS
   const user = useSelector(state => state.campaign.user);
   const campaign = useSelector(state => state.campaign.campaign);
   const cardColl = useSelector(state => state.card);
@@ -26,6 +27,7 @@ const ViewScreen = props => {
   // const viewDelete = useSelector(state => state.viewManage.viewDelete);
   const activeView = useSelector(state => state.viewManage.activeView);
 
+  // VARIABLES
   const viewScreenRef = useRef("viewscreen");
 
   // FUNCTIONS
@@ -38,16 +40,23 @@ const ViewScreen = props => {
     event.preventDefault();
     const data = event.dataTransfer.getData("text");
     const targetCardId = data.split(".")[0];
-    if (cardColl[targetCardId] && !cardColl[targetCardId].views[activeView]) {
-      // future update: more precise pos calculation
-      let xCalculation = Math.round((event.clientX-GRID.size-GRID.size)/GRID.size)*GRID.size;
-      if (xCalculation<0) {xCalculation = 0}
-      let yCalculation = Math.round((event.clientY-GRID.size-GRID.size)/GRID.size)*GRID.size;
-      if (yCalculation<0) {yCalculation = 0}
-      const pos = {x: xCalculation, y: yCalculation};
-      const size = {width: GRID.size*10, height: GRID.size*10};
-      const color = "gray";
-      dispatch(actions.connectCardToView(targetCardId, activeView, pos, size, color));
+    if (cardColl[targetCardId]) {
+      if (!cardColl[targetCardId].views[activeView]) {
+        // future update: more precise pos calculation
+        let xCalculation = Math.round((event.clientX-GRID.size-GRID.size)/GRID.size)*GRID.size;
+        if (xCalculation<0) {xCalculation = 0}
+        let yCalculation = Math.round((event.clientY-GRID.size-GRID.size)/GRID.size)*GRID.size;
+        if (yCalculation<0) {yCalculation = 0}
+        const pos = {x: xCalculation, y: yCalculation};
+        const size = {width: GRID.size*10, height: GRID.size*10};
+        const color = "gray";
+        dispatch(actions.connectCardToView(targetCardId, activeView, pos, size, color));
+      } else {
+        setCardAnimation({
+          ...cardAnimation,
+          [targetCardId]: 'blink .25s step-end 3 alternate',
+        });
+      }
     }
   };
 
@@ -70,27 +79,31 @@ const ViewScreen = props => {
     backgroundColor: activeView ? "white" : "lightgray",
   };
 
-  let cardObjs = [];
+  // CARD LIST
+  let cardList = [];
   if (cardColl) {
     for (let cardId in cardColl) {
       if (cardColl[cardId].views && cardColl[cardId].views[activeView]) {
-        cardObjs = [
-          ...cardObjs,
-          <Card key={cardId} id={cardId}/>,
+        cardList = [
+          ...cardList,
+          <Card key={cardId} 
+            cardId={cardId} cardState={cardColl[cardId]} activeView={activeView}
+            cardAnimation={cardAnimation}
+            setCardAnimation={setCardAnimation}
+          />,
         ];
       }
     }
   }
 
   return (
-    <Auxi>
-      <div id="viewScreen" ref={viewScreenRef} style={viewScreenStyle}
-        onDrop={(e)=>drop(e)} onDragOver={(e)=>allowDrop(e)}
-      >
-        {cardObjs}
-        {saving ? <SaveAlert /> : null}
-      </div>
-    </Auxi>
+    <div id="viewScreen" ref={viewScreenRef} 
+      style={viewScreenStyle}
+      onDrop={(e)=>drop(e)} onDragOver={(e)=>allowDrop(e)}
+    >
+      {cardList}
+      {saving ? <SaveAlert /> : null}
+    </div>
   );
 };
 

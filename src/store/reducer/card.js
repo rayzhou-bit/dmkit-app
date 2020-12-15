@@ -15,6 +15,7 @@ const initialState = {
   //         height: "height px",
   //       },
   //       color: "color",
+  //       cardType: bubble || card,
   //     },
   //   },
   //   data: {
@@ -48,7 +49,7 @@ const connectCardToView = (state, action) => {
     [action.view]: {
       pos: action.pos,
       size: action.size,
-      color: action.color
+      color: action.color,
     }
   });
   updatedCard.edited = true;
@@ -100,6 +101,13 @@ const updCardColorForAllViews = (state, action) => {
   return updateObject(state, {[action.card]: updatedCard});
 };
 
+const updCardType = (state, action) => {
+  let updatedCard = {...state[action.card]};
+  updatedCard.views[action.view].cardType = action.cardType;
+  updatedCard.edited = true;
+  return updateObject(state, {[action.card]: updatedCard});
+}
+
 const updCardTitle = (state, action) => {
   let updatedCard = {...state[action.card]};
   updatedCard.data.title = action.title;
@@ -128,6 +136,7 @@ const reducer = (state = initialState, action) => {
     case actionTypes.UPD_CARD_SIZE: return updCardSize(state, action);
     case actionTypes.UPD_CARD_COLOR: return updCardColor(state, action);
     case actionTypes.UPD_CARD_COLOR_FOR_ALL_VIEWS: return updCardColorForAllViews(state, action);
+    case actionTypes.UPD_CARD_TYPE: return updCardType(state, action);
 
     case actionTypes.UPD_CARD_TITLE: return updCardTitle(state, action);
     case actionTypes.UPD_CARD_TEXT: return updCardText(state, action);

@@ -21,7 +21,7 @@ const ViewTab = React.memo(props => {
 
   const viewId = props.id;
   const viewData = viewColl[viewId];
-  const viewTitle = viewData.title ? viewData.title : "untitled";
+  const viewTitle = viewData.title ? viewData.title : "";
   const viewTitleId = viewId+".title";
   const viewTitleRef = useRef(viewTitleId);
 
@@ -37,15 +37,16 @@ const ViewTab = React.memo(props => {
     }
   };
 
-  const updEdit = () => {
-    if (editingTitle) {dispatch(actions.updViewTitle(viewId, viewTitleRef.current.value))}
-  };
-
   const endEdit = () => {
     if (editingTitle) {
-      dispatch(actions.updViewTitle(viewId, viewTitleRef.current.value));
       setEditingTitle(false);
     }
+  };
+
+  useOutsideClick(viewTitleRef, editingTitle, endEdit);
+
+  const updEdit = () => {
+    if (editingTitle) {dispatch(actions.updViewTitle(viewId, viewTitleRef.current.value))}
   };
 
   const dragStopHandler = (event, data) => {
@@ -78,22 +79,24 @@ const ViewTab = React.memo(props => {
 
   const setViewDelete = () => dispatch(actions.setViewDelete(viewId));
 
-  useOutsideClick(viewTitleRef, endEdit);
-
   // STYLES
   const toFrontStyle = {zIndex: viewId === activeView ? 10 : 0};
+  
   const activeViewStyle = {
     backgroundColor: viewId === activeView ? "white" : "lightgray",
     border: "1px solid black",
     borderTop: viewId === activeView ? "1px solid white" : "1px solid black",
   };
 
+  const titleStyle = {
+    backgroundColor: editingTitle ? 'lightskyblue' : 'transparent',
+  }
+
   return (
     <Rnd style={toFrontStyle}
       // position and dragging properties
       bounds="parent" dragAxis="x"
       position={{x: viewPos * tabWidth, y: 0}}
-      // dragGrid={[tabWidth, 0]}
       disableDragging={editingTitle || (viewId !== activeView)}
       dragHandleClassName="title"
       // size and resizing properties
@@ -103,8 +106,8 @@ const ViewTab = React.memo(props => {
       onDragStop={dragStopHandler}
     >
       <div className="viewTab" style={activeViewStyle}>
-        <input ref={viewTitleRef} id={viewTitleId}
-          className="title" style={viewId === activeView ? { backgroundColor: "white" } : null}
+        <input id={viewTitleId} ref={viewTitleRef}
+          className="title" style={titleStyle}
           type="text" required
           value={viewTitle}
           readOnly={!editingTitle}

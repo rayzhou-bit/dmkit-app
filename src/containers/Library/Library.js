@@ -7,14 +7,25 @@ import LibCard from './LibCard/LibCard';
 
 import LibBtnImg from '../../media/icons/library.png';
 
-const Library = React.memo(props => {
+const Library = props => {
   // VARIABLES
   const [showLibrary, setShowLibrary] = useState(false);
-  const cardColl = useSelector(state => state.card);
   const [enteredSearch, setEnteredSearch] = useState('');
+
+  const cardColl = useSelector(state => state.card);
+  const activeView = useSelector(state => state.viewManage.activeView);
 
   const searchId = "libSearchBar";
   const searchRef = useRef(searchId);
+
+  // STYLES
+  const viewScreenWidth = document.getElementById('viewScreen') ? document.getElementById('viewScreen').clientWidth : 0;
+  const libPanelStyle = {
+    width: showLibrary ? viewScreenWidth*.35 : '0px',
+    padding: showLibrary ? '0 10px 0 5px' : '0',
+    borderLeft: showLibrary ? '1px solid black' : '0',
+    overflowY: showLibrary ? 'scroll' : 'hidden',
+  };
 
   // CARD LIST
   let cardList = [];
@@ -27,22 +38,15 @@ const Library = React.memo(props => {
           cardText.toLowerCase().includes(enteredSearch.toLocaleLowerCase())) {
           cardList = [
             ...cardList,
-            <LibCard key={cardId} cardIndex={cardId} />,
+            <LibCard key={cardId} 
+              cardId={cardId} cardState={cardColl[cardId]} activeView={activeView}
+            />,
             <div key={cardId+'.libDivider'} className="libDivider" />
           ];
         }
       }
     }
   }
-
-  // STYLES
-  const viewScreenWidth = document.getElementById('viewScreen') ? document.getElementById('viewScreen').clientWidth : 0;
-  const libPanelStyle = {
-    width: showLibrary ? viewScreenWidth*.35 : '0px',
-    padding: showLibrary ? '0 10px 0 5px' : '0',
-    borderLeft: showLibrary ? '1px solid black' : '0',
-    overflowY: showLibrary ? 'scroll' : 'hidden',
-  };
 
   return (
     <div id="library">
@@ -66,6 +70,6 @@ const Library = React.memo(props => {
         </div>
     </div>
   );
-});
+};
 
 export default Library;

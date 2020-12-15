@@ -1,85 +1,246 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useOutsideClick } from '../../../shared/utilityFunctions';
 
 import './LibCard.scss';
 import * as actions from '../../../store/actionIndex';
 import { GRID } from '../../../shared/constants/grid';
-import LibCardTitleBar from './LibCardTitleBar/LibCardTitleBar';
-import LibCardBody from './LibCardBody/LibCardBody';
+import { TEXT_COLOR_WHEN_BACKGROUND_IS, CARD_TITLEBAR_EDIT_COLORS } from '../../../shared/constants/colors';
 
-const LibCard = React.memo(props => {
+import DeleteButton from '../../../media/icons/delete.png';
+
+const LibCard = props => {
+  const {cardId, cardState, activeView} = props;
   const dispatch = useDispatch();
 
-  // VARIABLES
+  // STATES
   const [isSelected, setIsSelected] = useState(false);
-  const [editingCard, setEditingCard] = useState(false);
   const [editingTitle, setEditingTitle] = useState(false);
-  const [editingTextarea, setEditingTextarea] = useState(false);
-  const [existsAlert, setExistsAlert] = useState(false);
+  const [editingText, setEditingText] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const editingCard = (editingTitle || editingText) ? true : false;
 
-  const cardColl = useSelector(state => state.card);
+  // STORE SELECTORS
   const activeCard = useSelector(state => state.cardManage.activeCard);
-  const activeView = useSelector(state => state.viewManage.activeView);
 
-  const cardId = props.cardIndex;
-  const cardData = cardColl[cardId];
-  const cardText = (cardData.data && cardData.data.text) ? cardData.data.text : "loading...";
+  // VARIABLES
+  const cardViews = cardState.views;
+  const cardData = cardState.data;
+  const cardColor = (cardViews && cardViews[activeView]) ? cardViews[activeView].color : "gray";
+  const cardTitle = cardData ? cardData.title : "";
+  const cardText = cardData ? cardData.text : "";
+
+  // IDS & REFS
   const cardLibId = cardId + ".libCard";
   const cardRef = useRef(cardLibId);
+  const cardTitleId = cardId+".libTitle";
+  const cardTitleRef = useRef(cardTitleId);
+  const cardDeleteBtnRef = useRef(cardId+".deleteButton");
+  const cardTextId = cardId+".libTextarea";
+  const cardTextRef = useRef(cardTextId);
 
-  // FUNCTIONS
-  const clickHandler = () => {
-    if (cardId !== activeCard) {dispatch(actions.updActiveCard(cardId))}
-    if (!isSelected) {setIsSelected(true)}
-  };
-  
-  const outsideClickHandler = () => {
-    if (cardId === activeCard && isSelected) {
-      dispatch(actions.updActiveCard(null));
-      setIsSelected(false);
-    }
-  };
-  useOutsideClick(cardRef, outsideClickHandler);
-
+  // FUNCTIONS: CARD
   const drag = (event) => {event.dataTransfer.setData("text", event.target.id)};
 
-  const drop = (event) => {
-    if (cardColl[cardId].views[activeView]) {
-      setExistsAlert(true);
-      window.setTimeout(() => setExistsAlert(false), 2000);
+  const cardClickHandler = () => {
+    if (!isSelected) {
+      if (cardId !== activeCard) {dispatch(actions.updActiveCard(cardId))}
+      setIsSelected(true);
     }
   };
 
-  // STYLES
+  // useEffect(() => {
+  //   const outsideClickCardHandler = (event) => {
+  //     if (cardRef.current && !cardRef.current.contains(event.target)) {
+  //       if (cardId === activeCard) {dispatch(actions.updActiveCard(null))}
+  //       setIsSelected(false);
+  //     }
+  //   }
+
+  //   if (isSelected) {document.addEventListener("mousedown", outsideClickCardHandler)}
+  //   return () => {
+  //     document.removeEventListener("mousedown", outsideClickCardHandler);
+  //   }
+  // }, [isSelected]);
+  const outsideClickCardHandler = () => {
+    if (cardId === activeCard) {dispatch(actions.updActiveCard(null))}
+    setIsSelected(false);
+  };
+  useOutsideClick(cardRef, isSelected, outsideClickCardHandler);
+
+  // FUNCTIONS: TITLEBAR
+  const startTitleEdit = () => {
+    if (!editingTitle) {
+      const title = document.getElementById(cardTitleId);
+      title.focus();
+      title.setSelectionRange(title.value.length, title.value.length);
+      setEditingTitle(true);
+    }
+  };
+
+  const endTitleEdit = () => {
+    if (editingTitle) {setEditingTitle(false)}
+  };
+
+  // useEffect(() => {
+  //   const outsideClickTitleHandler = (event) => {
+  //     if (cardTitleRef.current && !cardTitleRef.current.contains(event.target)) {
+  //       endTitleEdit();
+  //     }
+  //   }
+
+  //   if (editingTitle) {document.addEventListener("mousedown", outsideClickTitleHandler)}
+  //   return () => {
+  //     document.removeEventListener("mousedown", outsideClickTitleHandler);
+  //   }
+  // }, [editingTitle]);
+  useOutsideClick(cardTitleRef, editingTitle, endTitleEdit);
+
+  const updTitleEdit = () => {
+    if (editingTitle) {dispatch(actions.updCardTitle(cardId, cardTitleRef.current.value))}
+  };
+
+  const keyPressTitleHandler = (event) => {
+    if (isSelected && editingTitle) {
+      if (event.key === 'Enter') {
+        endTitleEdit();
+      }
+      if (event.key === 'Tab') {
+        event.preventDefault();
+        endTitleEdit();
+        startTextEdit();
+      }
+    }
+  };
+
+  const deleteCard = () => {
+    if (!confirmDelete) {
+      setConfirmDelete(true);
+    } else {
+      dispatch(actions.setCardDelete(cardId));
+    }
+  };
+
+  // useEffect(() => {
+  //   const outsideClickDelBtnHandler = (event) => {
+  //     if (cardDeleteBtnRef.current && !cardDeleteBtnRef.current.contains(event.target)) {
+  //       setConfirmDelete(false);
+  //     }
+  //   }
+
+  //   if (confirmDelete) {document.addEventListener("mousedown", outsideClickDelBtnHandler)}
+  //   return () => {
+  //     document.removeEventListener("mousedown", outsideClickDelBtnHandler);
+  //   }
+  // }, [confirmDelete]);
+  useOutsideClick(cardDeleteBtnRef, confirmDelete, setConfirmDelete, false);
+
+  // FUNCTIONS: TEXT BODY
+  const startTextEdit = () => {
+    if (!editingText) {
+      const text = document.getElementById(cardTextId);
+      text.focus();
+      text.setSelectionRange(text.value.length, text.value.length);
+      setEditingText(true);
+    }
+  };
+
+  const endTextEdit = () => {
+    if (editingText) {setEditingText(false)}
+  };
+
+  // useEffect(() => {
+  //   const outsideClickTextHandler = (event) => {
+  //     if (cardTextRef.current && !cardTextRef.current.contains(event.target)) {
+  //       endTextEdit();
+  //     }
+  //   }
+
+  //   if (editingText) {document.addEventListener("mousedown", outsideClickTextHandler)}
+  //   return () => {
+  //     document.removeEventListener("mousedown", outsideClickTextHandler);
+  //   }
+  // }, [editingText]);
+  useOutsideClick(cardTextRef, editingText, endTextEdit);
+
+  const updTextEdit = () => {
+    if (editingText) {dispatch(actions.updCardText(cardId, cardTextRef.current.value))}
+  };
+
+  const keyPressTextHandler = (event) => {
+    if (isSelected && editingText) {
+      if (event.key === 'Tab') {
+        event.preventDefault();
+        endTextEdit();
+      }
+    }
+  };
+
+  // STYLES: CARD
   const cardStyle = {
     border: cardId === activeCard ? '3px solid black' : '1px solid black',
     margin: cardId === activeCard ? '0px' : '2px',
   };
 
-  const existsAlertStyle = {
-    visibility: existsAlert ? "visible" : "hidden",
-    opacity: existsAlert ? 1 : 0,
+  // STYLES: TITLEBAR
+  const titleBarStyle = {
+    color: TEXT_COLOR_WHEN_BACKGROUND_IS[cardColor], 
+    backgroundColor: editingTitle ? CARD_TITLEBAR_EDIT_COLORS[cardColor] : cardColor, 
+    cursor: editingTitle ? "text" : "move",
+    MozUserSelect: editingTitle ? "default" : "none",
+    WebkitUserSelect: editingTitle ? "default" : "none",
+    msUserSelect: editingTitle ? "default" : "none",
+  };
+
+  const deleteButtonStyle = {
+    backgroundColor: confirmDelete ? "red" : "lightgray",
+  };
+
+  // STYLES: BODY TEXT
+  const fontSize = 18;
+  const textBox = document.getElementById(cardTextId);
+  let textHeight = textBox ? textBox.scrollHeight : null;
+  const bodyStyle = {
+    height: isSelected ? textHeight + 'px' : (fontSize+3)*3+10 + 'px',
+    overflowY: isSelected ? 'hidden' : 'auto',
+    fontSize: fontSize+'px',
+    backgroundColor: editingText ? "white" : "lightgray",
+    userSelect: "none",
   };
 
   return (
-    <div ref={cardRef} id={cardLibId}
+    <div id={cardLibId} ref={cardRef}
       className="libCard" style={cardStyle} 
-      draggable onDragStart={(e)=>drag(e)} onDragEnd={(e)=>drop(e)}
-      onClick={clickHandler}>
-      <LibCardTitleBar id={cardId}
-        isSelected={isSelected}
-        setEditingCard={setEditingCard}
-        editingTitle={editingTitle} setEditingTitle={setEditingTitle}
-        setEditingTextarea={setEditingTextarea}
-      />
-      <LibCardBody id={cardId}
-        isSelected={isSelected}
-        setEditingCard={setEditingCard}
-        editingTextarea={editingTextarea} setEditingTextarea={setEditingTextarea}
-      />
+      draggable={!editingCard} onDragStart={(e)=>drag(e)}
+      onClick={cardClickHandler}
+    >
+      <div className="libTitleBar">
+        <input ref={cardTitleRef} id={cardTitleId}
+          className="libTitle" style={titleBarStyle} type="text" required
+          value={cardTitle} readOnly={!editingTitle}
+          onDoubleClick={(cardId === activeCard) ? startTitleEdit : null}
+          onChange={updTitleEdit}
+          onKeyDown={(e) => keyPressTitleHandler(e)}
+        />
+        <input ref={cardDeleteBtnRef}
+          className="libTitleBarButtons" style={deleteButtonStyle}
+          type="image" src={DeleteButton} alt="Delete" 
+          onClick={deleteCard} 
+        />
+      </div>
+      <div className="libBody">
+        <textarea ref={cardTextRef} id={cardTextId}
+          className="libTextfield" style={bodyStyle} 
+          type="text"
+          value={cardText} readOnly={!editingText}
+          onClick={(cardId === activeCard) ? startTextEdit : null}
+          onDoubleClick={(cardId !== activeCard) ? startTextEdit : null}
+          onChange={updTextEdit}
+          onKeyDown={(e) => keyPressTextHandler(e)}
+        />
+      </div>
     </div>
   );
-});
+};
 
 export default LibCard;

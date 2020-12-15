@@ -7,17 +7,25 @@ export const updateObject = (oldObject, updatedProperties) => {
   };
 };
 
-export const useOutsideClick = (ref, func, args) => {
+export const useOutsideClick = (ref, cond, func, args, optionalRef) => {
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (ref.current && !ref.current.contains(event.target)) {
-        func(args);
+      if (optionalRef) {
+        if (ref.current && !ref.current.contains(event.target) && !optionalRef.current.contains(event.target)) {
+          func(args);
+        }
+      } else {
+        if (ref.current && !ref.current.contains(event.target)) {
+          func(args);
+        }
       }
     };
 
-    document.addEventListener("mouseup", handleClickOutside);
+    if (cond) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
     return () => {
-      document.removeEventListener("mouseup", handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [ref, func, args]);
+  }, [cond]);
 };

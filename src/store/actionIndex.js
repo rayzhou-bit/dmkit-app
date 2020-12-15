@@ -6,11 +6,13 @@ export {
   setCardDelete,
   connectCardToView,
   removeCardFromView,
+  copyCard,
 
   updCardPos,
   updCardSize,
   updCardColor,
   updCardColorForAllViews,
+  updCardType,
   updCardTitle,
   updCardText,
 

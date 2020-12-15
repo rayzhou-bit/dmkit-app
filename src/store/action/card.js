@@ -1,6 +1,7 @@
 import * as actionTypes from '../actionTypes';
 import fire from '../../shared/firebase';
 import { updateObject } from '../../shared/utilityFunctions';
+import { GRID } from '../../shared/constants/grid';
 const db = fire.firestore();
 
 // <-----SIMPLE CARD REDUCER CALLS----->
@@ -14,6 +15,7 @@ export const updCardPos = (card, view, pos) => { return { type: actionTypes.UPD_
 export const updCardSize = (card, view, size) => { return { type: actionTypes.UPD_CARD_SIZE, card: card, view: view, size: size }; };
 export const updCardColor = (card, view, color) => { return { type: actionTypes.UPD_CARD_COLOR, card: card, view: view, color: color }; };
 export const updCardColorForAllViews = (card, color) => { return { type: actionTypes.UPD_CARD_COLOR_FOR_ALL_VIEWS, card: card, color: color }; };
+export const updCardType = (card, view, cardType) => { return { type: actionTypes.UPD_CARD_TYPE, card: card, view: view, cardType: cardType }; };
 export const updCardTitle = (card, title) => { return { type: actionTypes.UPD_CARD_TITLE, card: card, title: title }; };
 export const updCardText = (card, text) => { return { type: actionTypes.UPD_CARD_TEXT, card: card, text: text }; };
 
@@ -78,21 +80,16 @@ export const setCardCreate = (user, campaign, view) => {
   let dataPackage = { 
     views: { 
       [view]: { 
-        pos: {
-          x: 100, 
-          y: 100
-        },
-        size: {
-          width: 300,
-          height: 400
-        },
-        color: "gray"
-      }
+        pos: {x: 100, y: 100},
+        size: {width: 300, height: 400},
+        color: "gray",
+        cardType: "card",
+      },
     },
     data: {
       title: "untitled",
       text: "Fill me in!"
-    }
+    },
   };
   return dispatch => {
     cardCollRef.add(dataPackage)
@@ -108,5 +105,29 @@ export const setCardDelete = (card) => {
   return dispatch => {
     dispatch(deleteCard(card));
     dispatch(queueCardDelete(card));
+  };
+};
+
+export const copyCard = (user, campaign, cardState, view) => {
+  const cardCollRef = db.collection("users").doc(user).collection("campaigns").doc(campaign).collection("cards");
+  let dataPackage = {
+    views: {
+      [view]: {
+        ...cardState.views[view],
+        pos: {x: cardState.views[view].pos.x + GRID.size, y: cardState.views[view].pos.y + GRID.size},
+        // size: {width: cardState.views[view].size.width, height: cardState.views[view].size.height},
+        // color: cardState.views[view].color,
+        // cardType: cardState.views[view].cardType,
+      },
+    },
+    data: {...cardState.data},
+  };
+  return dispatch => {
+    cardCollRef.add(dataPackage)
+      .then(response => {
+        console.log("[copyCard] firebase success: copied card", response.id);
+        dispatch(addCard(response.id, dataPackage));
+      })
+      .catch(error => console.log("[copyCard] firebase error:", error));
   };
 };
