@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef } from 'react';
 
 import './Layout.scss';
 import ToolMenu from '../../containers/ToolMenu/ToolMenu';
@@ -7,13 +7,13 @@ import Library from '../../containers/Library/Library';
 import ViewSelect from '../../containers/ViewSelect/ViewSelect';
 
 const Layout = props => {
-  // const [showLibrary, setShowLibrary] = useState(false);
+  const toolMenuRef = useRef("toolMenu");
 
   return (
     <div id="layout">
       <div id="userMenu">USER/CAMPAIGN PLACEHOLDER</div>
-      <ToolMenu id="toolMenu" />
-      <ViewScreen id="viewScreen">{props.children}</ViewScreen>
+      <ToolMenu id="toolMenu" toolMenuRef={toolMenuRef} />
+      <ViewScreen id="viewScreen" toolMenuRef={toolMenuRef} />
       <Library id="library" />
       <ViewSelect id="viewSelect" />
     </div>

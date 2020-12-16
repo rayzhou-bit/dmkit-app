@@ -9,6 +9,7 @@ import CopyButton from '../../media/icons/copy.png';
 import SaveButton from '../../media/icons/save.png';
 
 const ToolMenu = React.memo(props => {
+  const {toolMenuRef} = props;
   const dispatch = useDispatch();
 
   // VARIABLES
@@ -29,7 +30,7 @@ const ToolMenu = React.memo(props => {
     console.log(activeCard)
     // redo the activecard system i guess...
     if (activeCard) {
-      dispatch(actions.copyCard(user, campaign, activeCard, activeView));
+      dispatch(actions.copyCard(user, campaign, cardColl[activeCard], activeView));
     }
   };
 
@@ -39,7 +40,7 @@ const ToolMenu = React.memo(props => {
   };
 
   return (
-    <div id="toolMenu">
+    <div id="toolMenu" ref={toolMenuRef}>
       <input type="image" src={AddButton} alt="Add" onClick={setCardCreate} />
       <input type="image" src={CopyButton} alt="Copy" onClick={copyCard} />
       <input type="image" src={SaveButton} alt="Save" onClick={saveEditedData} />

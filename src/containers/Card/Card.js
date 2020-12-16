@@ -13,7 +13,7 @@ import SettingsButton from '../../media/icons/view-settings.png';
 import ClosingButton from '../../media/icons/close.png';
 
 const Card = props => {
-  const {cardId, cardState, activeView, cardAnimation, setCardAnimation} = props;
+  const {cardId, cardState, activeView, cardAnimation, setCardAnimation, toolMenuRef} = props;
   const dispatch = useDispatch();
 
   // STATES
@@ -69,7 +69,7 @@ const Card = props => {
     if (cardId === activeCard) {dispatch(actions.updActiveCard(null))}
     setIsSelected(false);
   };
-  useOutsideClick([cardRef], isSelected, outsideClickCardHandler);
+  useOutsideClick([cardRef, toolMenuRef], isSelected, outsideClickCardHandler);
 
   const onAnimationEnd = () => {
     setCardAnimation({
@@ -116,7 +116,7 @@ const Card = props => {
     }
   };
 
-  useOutsideClick([cardTitleRef], editingTitle, endTitleEdit);
+  useOutsideClick([cardTitleRef, toolMenuRef], editingTitle, endTitleEdit);
 
   // FUNCTIONS: TEXT BODY
   const startTextEdit = () => {
@@ -161,7 +161,7 @@ const Card = props => {
     }
   };
 
-  useOutsideClick([cardTextRef], editingText, endTextEdit);
+  useOutsideClick([cardTextRef, toolMenuRef], editingText, endTextEdit);
 
   // FUNCTIONS: VIEW SETTINGS
   useOutsideClick([viewSettingsRef, viewSettingsBtnRef], showViewSettings, setShowViewSettings, false);

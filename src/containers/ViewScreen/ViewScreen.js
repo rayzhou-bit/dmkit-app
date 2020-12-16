@@ -11,6 +11,7 @@ import Card from '../Card/Card';
 // ViewScreen is the main portion the user is looking at. This is located in the center of the screen.
 
 const ViewScreen = props => {
+  const {toolMenuRef} = props;
   const dispatch = useDispatch();
 
   // STATES
@@ -86,7 +87,7 @@ const ViewScreen = props => {
       if (cardColl[cardId].views && cardColl[cardId].views[activeView]) {
         cardList = [
           ...cardList,
-          <Card key={cardId} 
+          <Card key={cardId} toolMenuRef={toolMenuRef}
             cardId={cardId} cardState={cardColl[cardId]} activeView={activeView}
             cardAnimation={cardAnimation}
             setCardAnimation={setCardAnimation}
