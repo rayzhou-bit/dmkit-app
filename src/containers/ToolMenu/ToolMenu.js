@@ -27,8 +27,6 @@ const ToolMenu = React.memo(props => {
   const setCardCreate = () => dispatch(actions.setCardCreate(user, campaign, activeView));
 
   const copyCard = () => {
-    console.log(activeCard)
-    // redo the activecard system i guess...
     if (activeCard) {
       dispatch(actions.copyCard(user, campaign, cardColl[activeCard], activeView));
     }
@@ -41,9 +39,18 @@ const ToolMenu = React.memo(props => {
 
   return (
     <div id="toolMenu" ref={toolMenuRef}>
-      <input type="image" src={AddButton} alt="Add" onClick={setCardCreate} />
-      <input type="image" src={CopyButton} alt="Copy" onClick={copyCard} />
-      <input type="image" src={SaveButton} alt="Save" onClick={saveEditedData} />
+      <div class="tooltip" onClick={setCardCreate}>
+        <img src={AddButton} alt="Add" />
+        <span class="tooltiptext">Add a card</span>
+      </div>
+      <div class="tooltip" onClick={copyCard}>
+        <img src={CopyButton} alt="Copy" />
+        <span class="tooltiptext">Copy selected card</span>
+      </div>
+      <div class="tooltip" onClick={saveEditedData}>
+        <img src={SaveButton} alt="Save" />
+        <span class="tooltiptext">Save</span>
+      </div>
     </div>
   );
 });
