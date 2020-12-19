@@ -4,9 +4,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import './ToolMenu.scss';
 import * as actions from '../../store/actionIndex';
 
-import AddButton from '../../media/icons/add.png';
-import CopyButton from '../../media/icons/copy.png';
-import SaveButton from '../../media/icons/save.png';
+import AddImg from '../../media/icons/add.png';
+import CopyImg from '../../media/icons/copy.png';
+import SaveImg from '../../media/icons/save.png';
 
 const ToolMenu = React.memo(props => {
   const {toolMenuRef} = props;
@@ -37,20 +37,28 @@ const ToolMenu = React.memo(props => {
     dispatch(actions.saveViews(user, campaign, viewColl, viewDelete, viewOrder));
   };
 
+  // STYLES
+  const topOffset = 50;
+  const buttonHeight = 30 + 11;
+  const dividerHeight = 30 / 4;
+
   return (
     <div id="toolMenu" ref={toolMenuRef}>
-      <div class="tooltip" onClick={setCardCreate}>
-        <img src={AddButton} alt="Add" />
-        <span class="tooltiptext">Add a card</span>
+      <div className="divider" />
+      <div className="button" onClick={setCardCreate}>
+        <img src={AddImg} alt="Add" draggable="false" />
+        <span className="tooltip" style={{top: topOffset+(buttonHeight*0)+(dividerHeight*1)+'px'}}>Add a card</span>
       </div>
-      <div class="tooltip" onClick={copyCard}>
-        <img src={CopyButton} alt="Copy" />
-        <span class="tooltiptext">Copy selected card</span>
+      <div className="button" onClick={copyCard}>
+        <img src={CopyImg} alt="Copy" draggable="false" />
+        <span className="tooltip" style={{top: topOffset+(buttonHeight*1)+(dividerHeight*1)+'px'}}>Copy selected card</span>
       </div>
-      <div class="tooltip" onClick={saveEditedData}>
-        <img src={SaveButton} alt="Save" />
-        <span class="tooltiptext">Save</span>
+      <div className="divider" />
+      <div className="button" onClick={saveEditedData}>
+        <img src={SaveImg} alt="Save" draggable="false" />
+        <span className="tooltip" style={{top: topOffset+(buttonHeight*2)+(dividerHeight*2)+'px'}}>Save project</span>
       </div>
+      <div className="divider" />
     </div>
   );
 });

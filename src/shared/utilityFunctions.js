@@ -7,29 +7,6 @@ export const updateObject = (oldObject, updatedProperties) => {
   };
 };
 
-// export const useOutsideClick = (ref, cond, func, args, optionalRef) => {
-//   useEffect(() => {
-//     const handleClickOutside = (event) => {
-//       if (optionalRef) {
-//         if (ref.current && !ref.current.contains(event.target) && !optionalRef.current.contains(event.target)) {
-//           func(args);
-//         }
-//       } else {
-//         if (ref.current && !ref.current.contains(event.target)) {
-//           func(args);
-//         }
-//       }
-//     };
-
-//     if (cond) {
-//       document.addEventListener("mousedown", handleClickOutside);
-//     }
-//     return () => {
-//       document.removeEventListener("mousedown", handleClickOutside);
-//     };
-//   }, [cond]);
-// };
-
 export const useOutsideClick = (refArray, cond, func, args) => {
   // refArray contains an array of references that the user can click without triggering the function
   useEffect(() => {
@@ -53,5 +30,8 @@ export const useOutsideClick = (refArray, cond, func, args) => {
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
+
+    // changing the dependency below triggers updates too often
+    // this can keep other useOutsideClicks from running
   }, [cond]);
 };

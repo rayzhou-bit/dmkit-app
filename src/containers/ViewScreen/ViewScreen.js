@@ -4,7 +4,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import './ViewScreen.scss';
 import * as actions from '../../store/actionIndex';
 import { GRID } from '../../shared/constants/grid';
-import Auxi from '../../hoc/Auxi';
 import SaveAlert from '../../components/saveAlert/saveAlert'
 import Card from '../Card/Card';
 

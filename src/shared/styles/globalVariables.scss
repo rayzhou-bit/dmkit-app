@@ -1,10 +1,8 @@
 $grid-size: 30px;
 
-// bubble variables
-
-// card variables
-
-// expanded variables
+$button-height: 30px;
+$button-width: 30px;
+$divider-height: $button-height / 4;
 
 %title-field {
   margin: 0;  padding: 5px;
@@ -16,7 +14,6 @@ $grid-size: 30px;
   font-weight: bold;
   text-align: center;
 
-  @extend %hover-effect;
   @extend %read-only-effect;
 }
 
@@ -36,17 +33,6 @@ $grid-size: 30px;
   color: black;
   background-color: lightgray;
 
-  border: none;
-  text-decoration: none;
-
-  font-size: 22px;
-  font-weight: bold;
-  text-align: center;
-
-  @extend %hover-effect;
-}
-
-%hover-effect {
   &:hover {
     background-color: lightskyblue;
   }
@@ -63,7 +49,61 @@ input:focus, textarea:focus, select:focus {
   outline: none;
 }
 
-// ::selection {
-//   color: none;
-//   background: none;
-// }
+// TOOLTIP CSS
+%tooltip {
+  visibility: hidden;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px;
+  font-size: medium;
+}
+
+%tooltip-left-arrow {
+  //set this in .tooltip::after
+  content: " ";
+  position: absolute;
+  top: 50%;
+  right: 100%; /* To the left of the tooltip */
+  margin-top: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: transparent black transparent transparent;
+}
+
+%tooltip-right-arrow {
+  //set this in .tooltip::after
+  content: " ";
+  position: absolute;
+  top: 50%;
+  left: 100%; /* To the right of the tooltip */
+  margin-top: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: transparent transparent transparent black;
+}
+
+%tooltip-top-arrow {
+  //set this in .tooltip::after
+  content: " ";
+  position: absolute;
+  bottom: 100%;  /* At the top of the tooltip */
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: transparent transparent black transparent;
+}
+
+%tooltip-bottom-arrow {
+  //set this in .tooltip::after
+  content: " ";
+  position: absolute;
+  top: 100%; /* At the bottom of the tooltip */
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: black transparent transparent transparent;
+}

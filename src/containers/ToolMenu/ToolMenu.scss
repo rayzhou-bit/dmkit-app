@@ -4,58 +4,37 @@
   display:flex;
   flex-flow: column nowrap;
 
-  margin: 3px 0;
   overflow: hidden;
 
-  .tooltip {
+  .button {
     @extend %small-button;
-    height: 30px; width: 30px;
+    height: $button-height; width: $button-width;
     
     place-items: center;
 
     border: 1px solid black;
     border-left: 0px;
 
-    .tooltiptext {
-      visibility: hidden;
-      width: 120px;
-      background-color: black;
-      color: #fff;
-      text-align: center;
-      border-radius: 6px;
-      padding: 5px 0;
+    &:hover .tooltip {
+      visibility: visible;
+    }
+
+    .tooltip {
+      @extend %tooltip;
     
       /* Position the tooltip */
       position: absolute;
       left: 50px;
-      top: 50px;
       z-index: 1;
     }
 
-    .tooltiptext::after {
-      content: " ";
-      position: absolute;
-      top: 50%;
-      right: 100%; /* To the left of the tooltip */
-      margin-top: -5px;
-      border-width: 5px;
-      border-style: solid;
-      border-color: transparent black transparent transparent;
+    .tooltip::after {
+      @extend %tooltip-left-arrow
     }
   }
 
-  .tooltip:hover .tooltiptext {
-    visibility: visible;
-  }
-
-  input {
-    @extend %small-button;
-    height: 30px; width: 30px;
-    
-    place-items: center;
-
-    border: 1px solid black;
-    border-left: 0px;
+  .divider {
+    height: $divider-height;
   }
 }
 

@@ -1,10 +1,9 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useOutsideClick } from '../../../shared/utilityFunctions';
 
 import './LibCard.scss';
 import * as actions from '../../../store/actionIndex';
-import { GRID } from '../../../shared/constants/grid';
 import { TEXT_COLOR_WHEN_BACKGROUND_IS, CARD_TITLEBAR_EDIT_COLORS } from '../../../shared/constants/colors';
 
 import DeleteButton from '../../../media/icons/delete.png';

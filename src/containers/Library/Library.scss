@@ -18,11 +18,40 @@
     #showLibButton {
       @extend %small-button;
       left: 0;
-      height: 30px; width: 30px;
-      margin: 3px 0;
+      height: $button-height; width: $button-width;
     
       border: 1px solid black;
       border-right: 0px;
+    }
+
+    .button {
+      @extend %small-button;
+      height: $button-height; width: $button-width;
+      
+      place-items: center;
+  
+      border: 1px solid black;
+      border-right: 0px;
+
+      &:hover .tooltip {
+        visibility: visible;
+      }
+  
+      .tooltip {
+        @extend %tooltip;
+      
+        /* Position the tooltip */
+        position: absolute;
+        z-index: 100;
+      }
+  
+      .tooltip::after {
+        @extend %tooltip-right-arrow;
+      }
+    }
+    
+    .divider {
+      height: $divider-height;
     }
   }
 
@@ -34,13 +63,40 @@
     transition: .4s;
 
     #libSearchBar {
+      grid-column: 1 / 3;
+      grid-row: 1 / 2;
       margin: 10px;
+
+      display: grid;
+      grid-template-columns: 41px 1fr;
     
+      img {
+        grid-column: 1 / 2;
+        margin: auto;
+      }
+
       input {
+        grid-column: 2 / 3;
+        margin: 5px;
         height: 30px;
         font-size: large;
       }
+
+      #cardTab {
+        margin: auto;
+      }
+  
+      #viewTab {
+        margin: auto;
+      }
     }
+  }
+
+  #libSearchResults {
+
+    height: 100%;
+
+    border-top: 1px solid black;
 
     .libDivider {
       height: 10px; width: 100%;
