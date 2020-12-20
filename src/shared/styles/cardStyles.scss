@@ -1,0 +1,42 @@
+%card-title {
+  height: 30px;
+  margin: 0;  padding: 5px;
+  border: 0;
+
+  flex: auto;
+
+  text-align: left;
+  font-weight: bold;
+  font-size: large;
+  text-overflow: ellipsis;
+  line-clamp: 1;
+
+  overflow: hidden;
+
+  -webkit-transition: .4s;
+  transition: .4s;
+
+  &:read-only {
+    background-color: lightgray;
+    cursor: default;
+  }
+}
+
+%card-text {
+  box-sizing: border-box;
+  height: 100%; width: 100%;
+
+  margin: 0;  padding: 5px;
+  border: 0;
+
+  background-color: #ddd;
+  font-size: large;
+
+  resize: none;
+  overflow: auto;
+  
+  &:read-only {
+    background-color: lightgray;
+    cursor: default;
+  }
+}

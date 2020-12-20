@@ -12,7 +12,7 @@ import SearchImg from '../../media/icons/search2.png';
 const Library = props => {
   // VARIABLES
   const [showLibrary, setShowLibrary] = useState(false);
-  const [librarySize, setLibrarySize] = useState(2); // 1 is small, 2 is big
+  const [librarySize, setLibrarySize] = useState(1); // 1 is small, 2 is big
   const [enteredSearch, setEnteredSearch] = useState('');
   const [displayedItems, setDisplayedItems] = useState('cards');
 
@@ -84,12 +84,12 @@ const Library = props => {
         <div id={searchId}>
           <img src={SearchImg} />
           <input ref={searchRef}
-            type="text"
+            type="search" placeholder="Search..."
             value={enteredSearch}
             onChange={event => setEnteredSearch(event.target.value)}
           />
-          <div id="cardTab">Cards</div>
-          <div id="viewTab">Views</div>
+          {/* <div id="cardTab">Cards</div>
+          <div id="viewTab">Views</div> */}
         </div>
         <div id="libSearchResults">
           {cardList}

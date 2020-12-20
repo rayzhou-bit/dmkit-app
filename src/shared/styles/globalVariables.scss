@@ -1,8 +1,6 @@
 $grid-size: 30px;
 
-$button-height: 30px;
-$button-width: 30px;
-$divider-height: $button-height / 4;
+$divider-height: 8px;
 
 %title-field {
   margin: 0;  padding: 5px;
@@ -17,18 +15,18 @@ $divider-height: $button-height / 4;
   @extend %read-only-effect;
 }
 
-%value-field {
-  margin: 0;  padding: 5px;
-
-  color: black;
-  
-  border: 0;
-
-  @extend %read-only-effect;
+%read-only-effect {
+  &:read-only {
+    background-color: lightgray;
+    cursor: default;
+  }
 }
 
-%small-button {
-  margin: 0;  padding: 5px;
+// BUTTONS
+%button-24 {
+  box-sizing: content-box;
+  height: 24px; width: 24px;
+  margin: 0;  padding: 3px;
 
   color: black;
   background-color: lightgray;
@@ -38,18 +36,20 @@ $divider-height: $button-height / 4;
   }
 }
 
-%read-only-effect {
-  &:read-only {
-    background-color: lightgray;
-    cursor: default;
+%button-32 {
+  box-sizing: content-box;
+  height: 32px; width: 32px;
+  margin: 0;  padding: 4px;
+
+  color: black;
+  background-color: lightgray;
+
+  &:hover {
+    background-color: lightskyblue;
   }
 }
 
-input:focus, textarea:focus, select:focus {
-  outline: none;
-}
-
-// TOOLTIP CSS
+// TOOLTIP
 %tooltip {
   visibility: hidden;
   background-color: black;

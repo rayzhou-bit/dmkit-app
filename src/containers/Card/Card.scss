@@ -1,69 +1,60 @@
 @import '../../shared/styles/globalVariables.scss';
+@import '../../shared/styles/cardStyles.scss';
 
-$row-height: $grid-size;
+$view-setting-row-height: $grid-size;
 $view-setting-width: 400px;
 
 .card {
   position: absolute;
-  // width: 100%;
-  // height: 100%;
   top: 0; left: 0; right: 0; bottom: 0;
   
-  border-radius: 4px;
+  border-radius: 7px;
 
   display: flex;
   flex-flow: column nowrap;
 
   .titleBar {
+    border-bottom: 1px solid black;
+
     display: flex;
     flex-flow: row nowrap;
   
-    height: $grid-size;
-  
-    border-bottom: 1px solid black;
-  
     .titleInput {
-      @extend %title-field;
-      flex: 1;
-      
-      text-align: left;
-      font-size: 1.5em;
-      text-overflow: ellipsis;
-      // line-height: 24px;
-      // max-height: 32px;
-      line-clamp: 1;
-  
-      overflow: hidden;
-  
-      -webkit-transition: .4s;
-      transition: .4s;
+      @extend %card-title;
     }
     
-    .titleButtons {
-      @extend %small-button;
-      height: $grid-size - 10; width: $grid-size - 10;
+    .button {
+      @extend %button-24;
       
+      place-items: center;
+
       border-left: 1px solid black;
+
+      &:hover .tooltip {
+        visibility: visible;
+      }
+
+      .tooltip {
+        @extend %tooltip;
+      
+        /* Position the tooltip */
+        position: absolute;
+        top: 50px;
+        z-index: 1;
+      }
+
+      .tooltip::after {
+        @extend %tooltip-top-arrow
+      }
     }
   }
 
   .textBody {
     background-color: white;
-    
     flex: auto;
   
     .textTextarea {
-      @extend %value-field;
-      height: 100%; width: 100%;
-  
-      box-sizing: border-box;
-  
-      background: #ddd;
-  
-      font-size: 18px;
-  
-      resize: none;
-      overflow: auto;
+      @extend %card-text;
     }
   }
 
@@ -78,7 +69,7 @@ $view-setting-width: 400px;
     .viewRow {
       display: grid;
       grid-template-columns: 40% auto;
-      height: $row-height;
+      height: $view-setting-row-height;
   
       border-bottom: 1px solid black;
       border-left: 1px solid black;
@@ -86,12 +77,12 @@ $view-setting-width: 400px;
       .viewToggle {
         display: flex;
         flex-flow: row nowrap;
-        height: $row-height;
+        height: $view-setting-row-height;
   
         .switch {
           position: relative;
           display: inline-block;
-          height: $row-height; width: ($row-height) * 2;
+          height: $view-setting-row-height; width: ($view-setting-row-height) * 2;
         }
         
         .switch input { 
@@ -133,7 +124,7 @@ $view-setting-width: 400px;
         }
   
         .viewName {
-          height: $row-height - 10;
+          height: $view-setting-row-height - 10;
           padding: 5px;
           border-left: 1px solid black;
   
@@ -146,7 +137,7 @@ $view-setting-width: 400px;
       .colorSelection {
         display: grid;
         border-left: 1px solid black;
-        grid-template-columns: repeat(8, $row-height);
+        grid-template-columns: repeat(8, $view-setting-row-height);
         button {
           padding: 0;
           outline: none;

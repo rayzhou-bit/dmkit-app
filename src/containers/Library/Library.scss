@@ -16,17 +16,15 @@
     height: 100%;
 
     #showLibButton {
-      @extend %small-button;
+      @extend %button-32;
       left: 0;
-      height: $button-height; width: $button-width;
     
       border: 1px solid black;
       border-right: 0px;
     }
 
     .button {
-      @extend %small-button;
-      height: $button-height; width: $button-width;
+      @extend %button-32;
       
       place-items: center;
   

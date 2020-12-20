@@ -6,7 +6,7 @@ import './LibCard.scss';
 import * as actions from '../../../store/actionIndex';
 import { TEXT_COLOR_WHEN_BACKGROUND_IS, CARD_TITLEBAR_EDIT_COLORS } from '../../../shared/constants/colors';
 
-import DeleteButton from '../../../media/icons/delete.png';
+import DeleteImg from '../../../media/icons/delete-24.png';
 
 const LibCard = props => {
   const {cardId, cardState, activeView} = props;
@@ -172,13 +172,12 @@ const LibCard = props => {
           onChange={updTitleEdit}
           onKeyDown={(e) => keyPressTitleHandler(e)}
         />
-        <input ref={cardDeleteBtnRef}
-          className="libTitleBarButtons" style={deleteButtonStyle}
-          type="image" src={DeleteButton} alt="Delete" 
-          onClick={deleteCard} 
-        />
+        <div ref={cardDeleteBtnRef} className="button" onClick={deleteCard}>
+          <img src={DeleteImg} alt="Delete" draggable="false" />
+          <span className="tooltip">Delete card</span>
+        </div>
       </div>
-      <div className="libBody">
+      <div className="libBody" style={{backgroundColor: editingText ? 'white' : 'lightgray'}}>
         <textarea ref={cardTextRef} id={cardTextId}
           className="libTextfield" style={bodyStyle} 
           type="text"

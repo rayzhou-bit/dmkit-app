@@ -8,9 +8,9 @@ import * as actions from '../../store/actionIndex';
 import { GRID } from '../../shared/constants/grid';
 import { TEXT_COLOR_WHEN_BACKGROUND_IS, CARD_TITLEBAR_EDIT_COLORS, CARD_TITLEBAR_COLORS } from '../../shared/constants/colors';
 
-import BubbleButton from '../../media/icons/reduce.png';
-import SettingsButton from '../../media/icons/view-settings.png';
-import ClosingButton from '../../media/icons/close.png';
+import ShrinkImg from '../../media/icons/shrink-24.png';
+import DotDotDotImg from '../../media/icons/view-settings-24.png';
+import CloseImg from '../../media/icons/remove-24.png';
 
 const Card = props => {
   const {cardId, cardState, activeView, cardAnimation, setCardAnimation, toolMenuRef} = props;
@@ -50,27 +50,23 @@ const Card = props => {
 
   // FUNCTIONS: CARD
   const dragStopHandler = (event, data) => dispatch(actions.updCardPos(cardId, activeView, {x: data.x, y: data.y}));
-
   const resizeStopHandler = (event, direction, ref, delta, position) => {
     dispatch(actions.updCardSize(cardId, activeView, {width: ref.style.width, height: ref.style.height}));
     if (["top", "left", "topRight", "bottomLeft", "topLeft"].indexOf(direction) !== -1) {
       dispatch(actions.updCardPos(cardId, activeView, {x: position.x, y: position.y}));
     }
   };
-
   const cardClickHandler = () => {
     if (!isSelected) {
       if (cardId !== activeCard) {dispatch(actions.updActiveCard(cardId))}
       setIsSelected(true);
     }
   };
-  
   const outsideClickCardHandler = () => {
     if (cardId === activeCard) {dispatch(actions.updActiveCard(null))}
     setIsSelected(false);
   };
   useOutsideClick([cardRef, toolMenuRef], isSelected, outsideClickCardHandler);
-
   const onAnimationEnd = () => {
     setCardAnimation({
       ...cardAnimation,
@@ -87,15 +83,12 @@ const Card = props => {
       setEditingTitle(true);
     }
   };
-
   const endTitleEdit = () => {
     if (editingTitle) {setEditingTitle(false)}
   };
-
   const updTitleEdit = () => {
     if (editingTitle) {dispatch(actions.updCardTitle(cardId, cardTitleRef.current.value))}
   };
-
   const keyPressTitleHandler = (event) => {
     if (isSelected && editingTitle) {
       if (event.key === 'Enter') {
@@ -108,14 +101,12 @@ const Card = props => {
       }
     }
   };
-
   const removeCardFromThisView = () => {
     if (!editingCard) {
       dispatch(actions.removeCardFromView(cardId, activeView));
       endTitleEdit();
     }
   };
-
   useOutsideClick([cardTitleRef, toolMenuRef], editingTitle, endTitleEdit);
 
   // FUNCTIONS: TEXT BODY
@@ -127,15 +118,12 @@ const Card = props => {
       setEditingText(true);
     }
   };
-
   const endTextEdit = () => {
     if (editingText) {setEditingText(false)}
   };
-
   const updTextEdit = () => {
     if (editingText) {dispatch(actions.updCardText(cardId, cardTextRef.current.value))}
   };
-
   const keyPressTextHandler = (event) => {
     if (isSelected && editingText) {
       if (event.key === 'Tab') {
@@ -144,7 +132,6 @@ const Card = props => {
       }
     }
   };
-
   const updCardColor = (view, color) => {
     if (!cardViews[view]) {
       dispatch(actions.connectCardToView(cardId, view, cardPos, cardSize, color));
@@ -152,7 +139,6 @@ const Card = props => {
       dispatch(actions.updCardColor(cardId, view, color));
     }
   };
-
   const addOrRemoveCard = (view) => {
     if (cardViews[view]) {
       dispatch(actions.removeCardFromView(cardId, view));
@@ -160,7 +146,6 @@ const Card = props => {
       dispatch(actions.connectCardToView(cardId, view, cardPos, cardSize, cardColor));
     }
   };
-
   useOutsideClick([cardTextRef, toolMenuRef], editingText, endTextEdit);
 
   // FUNCTIONS: VIEW SETTINGS
@@ -168,12 +153,10 @@ const Card = props => {
   
   // FUNCTIONS: BUBBLE
   const changeTypeToCard = () => dispatch(actions.updCardType(cardId, activeView, "card"));
-
   const changeTypeToBubble = () => dispatch(actions.updCardType(cardId, activeView, "bubble"));
 
   // STYLES: CARD
   const toFrontStyle = {zIndex: cardId === activeCard ? 10 : 0};
-
   const cardStyle = {
     backgroundColor: cardColor,
     border: cardId === activeCard ? '3px solid black' : '1px solid black',
@@ -260,16 +243,18 @@ const Card = props => {
             onChange={updTitleEdit}
             onKeyUp={(e) => keyPressTitleHandler(e)}
           />
-          <input className="titleButtons" type="image" src={BubbleButton} alt="Reduce"
-            onClick={changeTypeToBubble}
-          />
-          <input ref={viewSettingsBtnRef}
-            className="titleButtons" type="image" src={SettingsButton} alt="Settings" 
-            onClick={() => setShowViewSettings(!showViewSettings)} 
-          />
-          <input className="titleButtons" type="image" src={ClosingButton} alt="Close" 
-            onClick={removeCardFromThisView} 
-          />
+          <div className="button" onClick={changeTypeToBubble}>
+            <img src={ShrinkImg} alt="Shrink" draggable="false" />
+            <span className="tooltip">Shrink card</span>
+          </div>
+          <div ref={viewSettingsBtnRef} className="button" onClick={() => setShowViewSettings(!showViewSettings)}>
+            <img src={DotDotDotImg} alt="Settings" draggable="false" />
+            <span className="tooltip">Show view settings</span>
+          </div>
+          <div className="button" onClick={removeCardFromThisView}>
+            <img src={CloseImg} alt="Close" draggable="false" />
+            <span className="tooltip">Remove card from this view</span>
+          </div>
         </div>
         <div className="textBody">
           <textarea id={cardTextId} ref={cardTextRef}

@@ -7,8 +7,7 @@
   overflow: hidden;
 
   .button {
-    @extend %small-button;
-    height: $button-height; width: $button-width;
+    @extend %button-32;
     
     place-items: center;
 

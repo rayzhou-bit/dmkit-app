@@ -5,7 +5,7 @@ import './ViewSelect.scss';
 import * as actions from '../../store/actionIndex';
 import ViewTab from './ViewTab/ViewTab';
 
-import AddButton from '../../media/icons/add.png';
+import AddImg from '../../media/icons/add.png';
 
 // ViewSelect is the container for all the ViewTab's. This is located at the bottom of the screen.
 
@@ -34,10 +34,14 @@ const ViewSelect = React.memo(props => {
 
   return (
     <div id="viewSelect">
-      {viewTabs}
+      <div id="addView" onClick={setViewCreate}>
+        <img src={AddImg} alt="Add" draggable="false" />
+        <span className="tooltip">Add a view</span>
+      </div>
+      <div>
+        {/* {viewTabs} */}
+      </div>
       <div className="filler" />
-      <input className="buttons" id="addView" type="image" src={AddButton} alt="Add" 
-        onClick={setViewCreate} />
     </div>
   );
 });

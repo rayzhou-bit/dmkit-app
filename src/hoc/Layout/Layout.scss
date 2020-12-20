@@ -1,3 +1,19 @@
+* {
+  box-sizing: border-box;
+
+  -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+     -khtml-user-select: none; /* Konqueror HTML */
+       -moz-user-select: none; /* Old versions of Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome, Edge, Opera and Firefox */
+}
+
+input:focus, textarea:focus, select:focus {
+  outline: none;
+}
+
 #layout {
   position: absolute;
   top: 0; right: 0; bottom: 0; left: 0;
@@ -7,17 +23,9 @@
 
   overflow: hidden;
 
-  -webkit-transition: .4s;
-  transition: .4s;
+  // -webkit-transition: .4s;
+  // transition: .4s;
   
-  -webkit-touch-callout: none; /* iOS Safari */
-    -webkit-user-select: none; /* Safari */
-     -khtml-user-select: none; /* Konqueror HTML */
-       -moz-user-select: none; /* Old versions of Firefox */
-        -ms-user-select: none; /* Internet Explorer/Edge */
-            user-select: none; /* Non-prefixed version, currently
-                                  supported by Chrome, Edge, Opera and Firefox */
-
   display: grid;
   grid-template: 42px 1fr 42px / 42px 1fr auto;
 
