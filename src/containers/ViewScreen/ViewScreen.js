@@ -76,7 +76,8 @@ const ViewScreen = props => {
 
   // STYLES
   let viewScreenStyle = {
-    backgroundColor: activeView ? "white" : "lightgray",
+    // backgroundColor: activeView ? "white" : "lightgray",
+    backgroundColor: 'transparent',
   };
 
   // CARD LIST

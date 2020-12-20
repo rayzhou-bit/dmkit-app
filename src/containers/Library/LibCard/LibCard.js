@@ -151,11 +151,11 @@ const LibCard = props => {
   const textBox = document.getElementById(cardTextId);
   let textHeight = textBox ? textBox.scrollHeight : null;
   const bodyStyle = {
-    height: isSelected ? textHeight + 'px' : (fontSize+3)*3+10 + 'px',
-    overflowY: isSelected ? 'hidden' : 'auto',
     fontSize: fontSize+'px',
+    height: isSelected ? textHeight + 'px' : (fontSize+3)*3+10 + 'px',
+    // overflowY: isSelected ? 'hidden' : 'auto',
+    overflowY: 'hidden',
     backgroundColor: editingText ? "white" : "lightgray",
-    userSelect: "none",
   };
 
   return (
@@ -165,7 +165,7 @@ const LibCard = props => {
       onClick={cardClickHandler}
     >
       <div className="libTitleBar">
-        <input ref={cardTitleRef} id={cardTitleId}
+        <input id={cardTitleId} ref={cardTitleRef}
           className="libTitle" style={titleBarStyle} type="text" required
           value={cardTitle} readOnly={!editingTitle}
           onDoubleClick={(cardId === activeCard) ? startTitleEdit : null}
@@ -178,7 +178,7 @@ const LibCard = props => {
         </div>
       </div>
       <div className="libBody" style={{backgroundColor: editingText ? 'white' : 'lightgray'}}>
-        <textarea ref={cardTextRef} id={cardTextId}
+        <textarea id={cardTextId} ref={cardTextRef}
           className="libTextfield" style={bodyStyle} 
           type="text"
           value={cardText} readOnly={!editingText}

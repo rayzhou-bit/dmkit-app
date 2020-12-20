@@ -6,7 +6,6 @@
 
   float: left;
   height: 100%;
-  width: 300px;
   padding: 0;  margin: 0;
 
   overflow: hidden;
@@ -18,7 +17,7 @@
 
     width: 100%;
 
-    font-size: 24px;
+    font-size: 22px;
     font-weight: bold;
 
     text-align: center;
@@ -34,6 +33,35 @@
       height: 26px; width: 26px;
       
       border-left: 1px solid black;
+    }
+  }
+
+  .divider {
+    height: 32px; width: 1px;
+    margin: auto;
+    background-color: black;
+  }
+
+  .button {
+    @extend %button-32;
+    
+    place-items: center;
+
+    &:hover .tooltip {
+      visibility: visible;
+    }
+
+    .tooltip {
+      @extend %tooltip;
+    
+      /* Position the tooltip */
+      position: absolute;
+      bottom: 40px;
+      z-index: 1;
+    }
+
+    .tooltip::after {
+      @extend %tooltip-bottom-arrow
     }
   }
 }

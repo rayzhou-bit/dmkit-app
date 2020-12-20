@@ -38,8 +38,10 @@ $view-setting-width: 400px;
         @extend %tooltip;
       
         /* Position the tooltip */
-        position: absolute;
-        top: 50px;
+        position: relative;
+        display:inline-block;
+        top: 8px;
+        left: -16px;
         z-index: 1;
       }
 
@@ -67,12 +69,13 @@ $view-setting-width: 400px;
     background-color: white;
   
     .viewRow {
-      display: grid;
-      grid-template-columns: 40% auto;
       height: $view-setting-row-height;
   
       border-bottom: 1px solid black;
       border-left: 1px solid black;
+      
+      display: grid;
+      grid-template-columns: 40% auto;
   
       .viewToggle {
         display: flex;

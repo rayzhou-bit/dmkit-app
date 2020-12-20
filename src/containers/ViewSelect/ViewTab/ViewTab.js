@@ -6,7 +6,7 @@ import "./ViewTab.scss";
 import * as actions from "../../../store/actionIndex";
 import { useOutsideClick } from "../../../shared/utilityFunctions";
 
-import ClosingButton from "../../../media/icons/close.png";
+import CloseImg from "../../../media/icons/close.png";
 
 const ViewTab = React.memo(props => {
   const dispatch = useDispatch();
@@ -25,7 +25,7 @@ const ViewTab = React.memo(props => {
   const viewTitleId = viewId+".title";
   const viewTitleRef = useRef(viewTitleId);
 
-  const tabWidth = 300;
+  const tabWidth = 250;
 
   // FUNCTIONS
   const beginEdit = () => {
@@ -81,10 +81,10 @@ const ViewTab = React.memo(props => {
 
   // STYLES
   const toFrontStyle = {zIndex: viewId === activeView ? 10 : 0};
-  
+
   const activeViewStyle = {
     backgroundColor: viewId === activeView ? "white" : "lightgray",
-    border: "1px solid black",
+    borderRight: "1px solid black",
     borderTop: viewId === activeView ? "1px solid white" : "1px solid black",
   };
 
@@ -122,13 +122,12 @@ const ViewTab = React.memo(props => {
             src={SettingsButton} alt="Settings"
           />
         </label> */}
-        <label className="titleBarButtons">
-          <input type="image"
-            style={viewId === activeView ? { backgroundColor: "white" } : null}
-            src={ClosingButton} alt="Delete"
-            onClick={setViewDelete}
-          />
-        </label>
+        <div className="divider" />
+        <div className="button" style={viewId === activeView ? { backgroundColor: "white" } : null}
+          onClick={setViewDelete}>
+          <img src={CloseImg} alt="Delete" draggable="false" />
+          <span className="tooltip">Delete view</span>
+        </div>
       </div>
     </Rnd>
   );

@@ -5,11 +5,13 @@
   background-color: lightgray;
   overflow: hidden;
 
-  display: flex;
-  flex-flow: row nowrap;
+  display: grid;
+  grid-template-columns: 41px 1fr;
   
   #addView {
     @extend %button-32;
+
+    grid-column: 1 / 2;
     
     border-top: 1px solid black;
     border-right: 1px solid black;
@@ -32,8 +34,11 @@
     }
   }
 
-  .filler {
-    flex: 1;
-    border-top: 1px solid black;
+  #viewTabs {
+    grid-column: 2 / 3;
+
+    .filler {
+      border-top: 1px solid black;
+    }
   }
 }

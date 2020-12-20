@@ -38,10 +38,10 @@ const ViewSelect = React.memo(props => {
         <img src={AddImg} alt="Add" draggable="false" />
         <span className="tooltip">Add a view</span>
       </div>
-      <div>
-        {/* {viewTabs} */}
+      <div id="viewTabs">
+        {viewTabs}
+        <div className="filler" />
       </div>
-      <div className="filler" />
     </div>
   );
 });
