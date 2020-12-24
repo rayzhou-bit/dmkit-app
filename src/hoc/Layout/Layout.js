@@ -13,9 +13,9 @@ const Layout = props => {
     <div id="layout">
       <div id="userMenu">USER/CAMPAIGN PLACEHOLDER</div>
       <ToolMenu id="toolMenu" toolMenuRef={toolMenuRef} />
-      <ViewScreen id="viewScreen" toolMenuRef={toolMenuRef} />
       <Library id="library" />
       <ViewSelect id="viewSelect" />
+      <ViewScreen id="viewScreen" toolMenuRef={toolMenuRef} />
     </div>
   );
 }

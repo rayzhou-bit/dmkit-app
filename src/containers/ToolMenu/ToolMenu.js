@@ -47,16 +47,16 @@ const ToolMenu = React.memo(props => {
       <div className="divider" />
       <div className="button" onClick={setCardCreate}>
         <img src={AddImg} alt="Add" draggable="false" />
-        <span className="tooltip" style={{top: topOffset+(buttonHeight*0)+(dividerHeight*1)+'px'}}>Add a card</span>
+        <span className="tooltip">Add a card</span>
       </div>
       <div className="button" onClick={copyCard}>
         <img src={CopyImg} alt="Copy" draggable="false" />
-        <span className="tooltip" style={{top: topOffset+(buttonHeight*1)+(dividerHeight*1)+'px'}}>Copy selected card</span>
+        <span className="tooltip">Copy selected card</span>
       </div>
       <div className="divider" />
       <div className="button" onClick={saveEditedData}>
         <img src={SaveImg} alt="Save" draggable="false" />
-        <span className="tooltip" style={{top: topOffset+(buttonHeight*2)+(dividerHeight*2)+'px'}}>Save project</span>
+        <span className="tooltip">Save project</span>
       </div>
       <div className="divider" />
     </div>

@@ -1,9 +1,7 @@
 @import '../../shared/styles/globalVariables';
 
 #viewSelect {
-  position: relative;
   background-color: lightgray;
-  overflow: hidden;
 
   display: grid;
   grid-template-columns: 41px 1fr;
@@ -12,6 +10,9 @@
     @extend %button-32;
 
     grid-column: 1 / 2;
+
+    position: relative;
+    z-index: 10;
     
     border-top: 1px solid black;
     border-right: 1px solid black;
@@ -22,20 +23,27 @@
 
     .tooltip {
       @extend %tooltip;
+      white-space: nowrap;
     
       /* Position the tooltip */
       position: absolute;
-      bottom: 50px;
+      left: 120%;
       z-index: 1;
     }
 
     .tooltip::after {
-      @extend %tooltip-bottom-arrow
+      @extend %tooltip-left-arrow
     }
   }
 
   #viewTabs {
     grid-column: 2 / 3;
+    
+    position: relative;
+    z-index: 0;
+
+    white-space: nowrap;
+    overflow: auto;
 
     .filler {
       border-top: 1px solid black;

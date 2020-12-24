@@ -51,13 +51,14 @@ $divider-height: 8px;
 
 // TOOLTIP
 %tooltip {
-  visibility: hidden;
-  background-color: black;
-  color: #fff;
-  text-align: center;
-  border-radius: 6px;
+  display: inline-block;
   padding: 5px;
+  border-radius: 6px;
+  color: #fff;
+  background-color: black;
+  text-align: center;
   font-size: medium;
+  visibility: hidden;
 }
 
 %tooltip-left-arrow {

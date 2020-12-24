@@ -56,12 +56,13 @@
     
       /* Position the tooltip */
       position: absolute;
-      bottom: 40px;
+      bottom: 120%;
+      right: -8%;
       z-index: 1;
     }
 
     .tooltip::after {
-      @extend %tooltip-bottom-arrow
+      @extend %tooltip-bottom-arrow;
     }
   }
 }

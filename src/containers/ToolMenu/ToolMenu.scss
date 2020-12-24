@@ -4,8 +4,6 @@
   display:flex;
   flex-flow: column nowrap;
 
-  overflow: hidden;
-
   .button {
     @extend %button-32;
     
@@ -20,10 +18,11 @@
 
     .tooltip {
       @extend %tooltip;
+      white-space: nowrap;
     
       /* Position the tooltip */
       position: absolute;
-      left: 50px;
+      left: 120%;
       z-index: 1;
     }
 

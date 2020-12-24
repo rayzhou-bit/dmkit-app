@@ -28,8 +28,10 @@ const Library = props => {
   const dividerHeight = 30 / 4;
 
   const viewScreenWidth = document.getElementById('viewScreen') ? document.getElementById('viewScreen').clientWidth : 0;
+  console.log(viewScreenWidth)
   const libPanelStyle = {
-    width: showLibrary ? viewScreenWidth*(0.4*librarySize)+'px' : '0px',
+    // width: showLibrary ? viewScreenWidth*(0.4*librarySize)+'px' : '0px',
+    width: showLibrary ? 40*librarySize+'vw' : '0',
     padding: showLibrary ? '0 10px 0 5px' : '0',
     borderLeft: showLibrary ? '1px solid black' : '0',
     overflowY: showLibrary ? 'scroll' : 'hidden',
@@ -62,21 +64,23 @@ const Library = props => {
         <div className="divider" />
         <div className="button" onClick={() => setShowLibrary(!showLibrary)}>
           <img src={LibBtnImg} />
-          {/* <span className="tooltip" 
-            style={{top: topOffset+(buttonHeight*0)+(dividerHeight*1)+'px',
-                  right: viewScreenWidth*(0.4*librarySize)+50+'px'}}>
+          <span className="tooltip" 
+            // style={{top: topOffset+(buttonHeight*0)+(dividerHeight*1)+'px',
+            //       right: viewScreenWidth*(0.4*librarySize)+50+'px'}}
+                  >
               Show library
-          </span> */}
+          </span>
         </div>
         <div className="divider" />
         <div className="button" style={{display: showLibrary ? 'block' : 'none'}}
           onClick={(librarySize==1) ? ()=>setLibrarySize(2) : ()=>setLibrarySize(1)}>
           <img src={(librarySize==1) ? ExpandImg : ShrinkImg} />
-          {/* <span className="tooltip" 
-            style={{top: topOffset+(buttonHeight*0)+(dividerHeight*1)+'px',
-                  right: viewScreenWidth*(0.4*librarySize)+50+'px'}}>
-              Show library
-          </span> */}
+          <span className="tooltip" 
+            // style={{top: topOffset+(buttonHeight*0)+(dividerHeight*1)+'px',
+            //       right: viewScreenWidth*(0.4*librarySize)+50+'px'}}
+                  >
+              {(librarySize==1) ? "Expand" : "Shrink"}
+          </span>
         </div>
         <div className="divider" />
       </div>

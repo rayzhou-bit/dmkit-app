@@ -39,9 +39,8 @@ $view-setting-width: 400px;
       
         /* Position the tooltip */
         position: relative;
-        display:inline-block;
-        top: 8px;
-        left: -16px;
+        top: 50%;
+        left: -70%;
         z-index: 1;
       }
 
