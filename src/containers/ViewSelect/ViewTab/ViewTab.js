@@ -123,7 +123,7 @@ const ViewTab = React.memo(props => {
           />
         </label> */}
         <div className="divider" />
-        <div className="button" style={viewId === activeView ? { backgroundColor: "white" } : null}
+        <div className="button" 
           onClick={setViewDelete}>
           <img src={CloseImg} alt="Delete" draggable="false" />
           <span className="tooltip">Delete view</span>

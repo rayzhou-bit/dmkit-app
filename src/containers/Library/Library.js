@@ -64,22 +64,16 @@ const Library = props => {
         <div className="divider" />
         <div className="button" onClick={() => setShowLibrary(!showLibrary)}>
           <img src={LibBtnImg} />
-          <span className="tooltip" 
-            // style={{top: topOffset+(buttonHeight*0)+(dividerHeight*1)+'px',
-            //       right: viewScreenWidth*(0.4*librarySize)+50+'px'}}
-                  >
-              Show library
+          <span className="tooltip" style={{right: (showLibrary) ? ((librarySize==1) ? '102%' : '101%') : '120%'}}>
+            Show library
           </span>
         </div>
         <div className="divider" />
         <div className="button" style={{display: showLibrary ? 'block' : 'none'}}
           onClick={(librarySize==1) ? ()=>setLibrarySize(2) : ()=>setLibrarySize(1)}>
           <img src={(librarySize==1) ? ExpandImg : ShrinkImg} />
-          <span className="tooltip" 
-            // style={{top: topOffset+(buttonHeight*0)+(dividerHeight*1)+'px',
-            //       right: viewScreenWidth*(0.4*librarySize)+50+'px'}}
-                  >
-              {(librarySize==1) ? "Expand" : "Shrink"}
+          <span className="tooltip" style={{right: (librarySize==1) ? '102%' : '101%'}}>
+            {(librarySize==1) ? "Expand" : "Shrink"}
           </span>
         </div>
         <div className="divider" />
