@@ -4,7 +4,7 @@ import './cardExistsAlert.scss';
 
 const cardExistsAlert = React.memo(props => {
   return (
-    <div className="existsAlert" style={existsAlertStyle}>
+    <div className="exists-alert" style={existsAlertStyle}>
       <p>Card already exists in this canvas!</p>
     </div>
   );

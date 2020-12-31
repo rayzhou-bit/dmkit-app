@@ -1,18 +1,18 @@
 @import '../../../shared/styles/globalVariables.scss';
 @import '../../../shared/styles/cardStyles.scss';
 
-.libCard {
+.lib-card {
   position: relative;
 
   width: 100%;
 
-  .libTitleBar {
+  .lib-title-bar {
     border-bottom: 1px solid black;
 
     display: flex;
     flex-flow: row nowrap;
   
-    .libTitle {
+    .lib-title {
       @extend %card-title;
     }
     
@@ -42,13 +42,13 @@
     }
   }
 
-  .libBody {
+  .lib-body {
     flex: auto;
     
     -webkit-transition: .4s;
     transition: .4s;
   
-    .libTextfield {
+    .lib-textfield {
       @extend %card-text;
       
       -webkit-transition: .4s;

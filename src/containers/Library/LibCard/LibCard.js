@@ -160,13 +160,13 @@ const LibCard = props => {
 
   return (
     <div id={cardLibId} ref={cardRef}
-      className="libCard" style={cardStyle} 
+      className="lib-card" style={cardStyle} 
       draggable={!editingCard} onDragStart={(e)=>drag(e)}
       onClick={cardClickHandler}
     >
-      <div className="libTitleBar">
+      <div className="lib-title-bar">
         <input id={cardTitleId} ref={cardTitleRef}
-          className="libTitle" style={titleBarStyle} type="text" required
+          className="lib-title" style={titleBarStyle} type="text" required
           value={cardTitle} readOnly={!editingTitle}
           onDoubleClick={(cardId === activeCard) ? startTitleEdit : null}
           onChange={updTitleEdit}
@@ -177,9 +177,9 @@ const LibCard = props => {
           <span className="tooltip">Delete card</span>
         </div>
       </div>
-      <div className="libBody" style={{backgroundColor: editingText ? 'white' : 'lightgray'}}>
+      <div className="lib-body" style={{backgroundColor: editingText ? 'white' : 'lightgray'}}>
         <textarea id={cardTextId} ref={cardTextRef}
-          className="libTextfield" style={bodyStyle} 
+          className="lib-textfield" style={bodyStyle} 
           type="text"
           value={cardText} readOnly={!editingText}
           onClick={(cardId === activeCard) ? startTextEdit : null}

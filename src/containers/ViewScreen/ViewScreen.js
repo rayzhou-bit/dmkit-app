@@ -18,8 +18,8 @@ const ViewScreen = props => {
   const [saving, setSaving] = useState(false); //this will look to serverside campaign state later
 
   // STORE SELECTORS
-  const user = useSelector(state => state.campaign.user);
-  const campaign = useSelector(state => state.campaign.campaign);
+  const user = useSelector(state => state.account.user);
+  const campaign = useSelector(state => state.account.campaign);
   const cardColl = useSelector(state => state.card);
   // const cardDelete = useSelector(state => state.cardManage.cardDelete);
   // const viewColl = useSelector(state => state.view);

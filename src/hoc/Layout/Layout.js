@@ -1,6 +1,7 @@
 import React, { useRef } from 'react';
 
 import './Layout.scss';
+import UserMenu from '../../containers/UserMenu/UserMenu';
 import ToolMenu from '../../containers/ToolMenu/ToolMenu';
 import ViewScreen from '../../containers/ViewScreen/ViewScreen';
 import Library from '../../containers/Library/Library';
@@ -11,7 +12,7 @@ const Layout = props => {
 
   return (
     <div id="layout">
-      <div id="userMenu">USER/CAMPAIGN PLACEHOLDER</div>
+      <UserMenu id="userMenu" />
       <ToolMenu id="toolMenu" toolMenuRef={toolMenuRef} />
       <Library id="library" />
       <ViewSelect id="viewSelect" />

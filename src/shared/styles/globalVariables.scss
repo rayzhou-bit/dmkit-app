@@ -49,6 +49,17 @@ $divider-height: 8px;
   }
 }
 
+%button-any {
+  box-sizing: content-box;
+  margin: 0;
+  color: black;
+  background-color: lightgray;
+
+  &:hover {
+    background-color: lightskyblue;
+  }
+}
+
 // TOOLTIP
 %tooltip {
   display: inline-block;

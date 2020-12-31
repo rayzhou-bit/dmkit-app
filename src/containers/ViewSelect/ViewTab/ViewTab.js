@@ -116,12 +116,6 @@ const ViewTab = React.memo(props => {
           onChange={updEdit}
           onKeyDown={(e) => keyPressHandler(e)}
         />
-        {/* <label className="titleBarButtons">
-          <input type="image"
-            style={viewId === activeView ? { backgroundColor: "white" } : null}
-            src={SettingsButton} alt="Settings"
-          />
-        </label> */}
         <div className="divider" />
         <div className="button" 
           onClick={setViewDelete}>

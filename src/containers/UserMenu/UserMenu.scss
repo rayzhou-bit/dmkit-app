@@ -1,0 +1,39 @@
+@import '../../shared/styles/globalVariables';
+
+#userMenu {
+  background-color: sienna;
+
+  display: grid;
+  grid-template-rows: 1fr;
+  grid-template-columns: 1fr 200px 200px;
+
+  .dmkit-title {
+    grid-column: 1 / 2;
+    font-size: 30px;
+    text-align: center;
+    line-height: 41px;
+  }
+
+  .campaign {
+    grid-column: 2 / 3;
+    text-align: center;
+    line-height: 41px;
+  }
+
+  .user {
+    grid-column: 3 / 4;
+    text-align: center;
+    line-height: 41px;
+  }
+
+  .drop-down {
+    height: auto;
+    border: 1px solid black;
+    border-top: none;
+    background-color: white;
+  }
+
+  .button {
+    @extend %button-any;
+  }
+} 

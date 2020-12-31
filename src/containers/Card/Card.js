@@ -200,15 +200,15 @@ const Card = props => {
       }
       viewSettings = [
         ...viewSettings,
-        <div key={view} className="viewRow">
-          <div className="viewToggle">
+        <div key={view} className="view-row">
+          <div className="view-toggle">
             <label className="switch">
               <input id={cardId+view} type="checkbox" checked={cardViews[view]} disabled={view===activeView} onChange={() => addOrRemoveCard(view)} />
               <span className="slider" style={(cardViews[view]) ? {backgroundColor: cardViews[view].color} : null}/>
             </label>
-            <label className="viewName" htmlFor={cardId+view} style={(view===activeView ? {fontWeight: "bold"} : null)}>{viewColl[view].title}</label>
+            <label className="view-name" htmlFor={cardId+view} style={(view===activeView ? {fontWeight: "bold"} : null)}>{viewColl[view].title}</label>
           </div>
-          <div className="colorSelection">{colorList}</div>
+          <div className="color-selection">{colorList}</div>
         </div>
       ];
     }
@@ -221,7 +221,7 @@ const Card = props => {
       disableDragging={editingCard}
       position={cardPos}
       dragGrid={[GRID.size, GRID.size]}
-      dragHandleClassName="titleBar"
+      dragHandleClassName="title-bar"
       // size and resizing properties
       size={cardSize}
       minWidth={GRID.size*5}
@@ -234,9 +234,9 @@ const Card = props => {
     >
       <div ref={cardRef} className="card" style={cardStyle}
         onAnimationEnd={onAnimationEnd}>
-        <div className="titleBar">
+        <div className="title-bar">
           <input id={cardTitleId} ref={cardTitleRef}
-            className="titleInput" style={titleBarStyle}
+            className="title-input" style={titleBarStyle}
             type="text" required
             value={cardTitle} readOnly={!editingTitle}
             onDoubleClick={(cardId === activeCard) ? startTitleEdit : null}
@@ -256,9 +256,9 @@ const Card = props => {
             <span className="tooltip">Remove card from this view</span>
           </div>
         </div>
-        <div className="textBody">
+        <div className="text-body">
           <textarea id={cardTextId} ref={cardTextRef}
-            className="textTextarea" style={textBodyStyle} 
+            className="text-textarea" style={textBodyStyle} 
             type="text"
             value={cardText} readOnly={!editingText}
             onClick={(cardId === activeCard) ? startTextEdit : null}
@@ -267,7 +267,8 @@ const Card = props => {
             onKeyDown={(e) => keyPressTextHandler(e)}
           />
         </div>
-        <div ref={viewSettingsRef} className="viewSettings" style={!showViewSettings ? {display: "none"} : null}>
+        <div ref={viewSettingsRef} 
+          className="view-settings" style={{display: showViewSettings ? "block" : "none"}}>
           {viewSettings}
         </div>
       </div>

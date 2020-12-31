@@ -1,4 +1,6 @@
-export const LOAD_CAMPAIGN = 'LOAD_CAMPAIGN';
+// account reducer
+export const UPD_USER = 'UPD_USER';
+export const UPD_CAMPAIGN = 'UPD_CAMPAIGN';
 
 // card reducer
 export const LOAD_CARD_COLL = 'LOAD_CARD_COLL';

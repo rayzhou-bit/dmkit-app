@@ -5,7 +5,7 @@ import { createStore, applyMiddleware, compose, combineReducers } from 'redux';
 import thunk from 'redux-thunk';
 
 import App from './App';
-import campaignReducer from './store/reducer/campaign';
+import accountReducer from './store/reducer/account';
 import cardReducer from './store/reducer/card';
 import cardManageReducer from './store/reducer/cardManage';
 import viewReducer from './store/reducer/view';
@@ -18,7 +18,7 @@ const composeEnhancers =
   : null || compose;
 
 const rootReducer = combineReducers({
-  campaign: campaignReducer,
+  account: accountReducer,
   card: cardReducer,
   cardManage: cardManageReducer,
   view: viewReducer,

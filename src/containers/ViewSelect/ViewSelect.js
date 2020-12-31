@@ -12,8 +12,8 @@ import AddImg from '../../media/icons/add.png';
 const ViewSelect = React.memo(props => {
   const dispatch = useDispatch();
 
-  const user = useSelector(state => state.campaign.user);
-  const campaign = useSelector(state => state.campaign.campaign);
+  const user = useSelector(state => state.account.user);
+  const campaign = useSelector(state => state.account.campaign);
   const viewColl = useSelector(state => state.view);
   const viewOrder = useSelector(state => state.viewManage.viewOrder);
 

@@ -13,13 +13,13 @@ $view-setting-width: 400px;
   display: flex;
   flex-flow: column nowrap;
 
-  .titleBar {
+  .title-bar {
     border-bottom: 1px solid black;
 
     display: flex;
     flex-flow: row nowrap;
   
-    .titleInput {
+    .title-input {
       @extend %card-title;
     }
     
@@ -50,16 +50,16 @@ $view-setting-width: 400px;
     }
   }
 
-  .textBody {
+  .text-body {
     background-color: white;
     flex: auto;
   
-    .textTextarea {
+    .text-textarea {
       @extend %card-text;
     }
   }
 
-  .viewSettings {
+  .view-settings {
     position: absolute;
     top: $grid-size + 1; right: 0;
     width: $view-setting-width;
@@ -67,7 +67,7 @@ $view-setting-width: 400px;
     border: 1px solid black;
     background-color: white;
   
-    .viewRow {
+    .view-row {
       height: $view-setting-row-height;
   
       border-bottom: 1px solid black;
@@ -76,7 +76,7 @@ $view-setting-width: 400px;
       display: grid;
       grid-template-columns: 40% auto;
   
-      .viewToggle {
+      .view-toggle {
         display: flex;
         flex-flow: row nowrap;
         height: $view-setting-row-height;
@@ -125,7 +125,7 @@ $view-setting-width: 400px;
           transform: translateX(26px);
         }
   
-        .viewName {
+        .view-name {
           height: $view-setting-row-height - 10;
           padding: 5px;
           border-left: 1px solid black;
@@ -136,7 +136,7 @@ $view-setting-width: 400px;
         }
       }
   
-      .colorSelection {
+      .color-selection {
         display: grid;
         border-left: 1px solid black;
         grid-template-columns: repeat(8, $view-setting-row-height);

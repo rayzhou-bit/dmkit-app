@@ -38,7 +38,7 @@ const Library = props => {
   };
 
   // CARD LIST
-  let cardList = [<div key={'1.libDivider'} className="libDivider" />];
+  let cardList = [<div key={'first.libDivider'} className="lib-divider" />];
   if (cardColl) {
     for (let cardId in cardColl) {
       if (cardColl[cardId].data) {
@@ -51,7 +51,7 @@ const Library = props => {
             <LibCard key={cardId} 
               cardId={cardId} cardState={cardColl[cardId]} activeView={activeView}
             />,
-            <div key={cardId+'.libDivider'} className="libDivider" />
+            <div key={cardId+'.libDivider'} className="lib-divider" />
           ];
         }
       }

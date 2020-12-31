@@ -13,8 +13,8 @@ const ToolMenu = React.memo(props => {
   const dispatch = useDispatch();
 
   // VARIABLES
-  const user = useSelector(state => state.campaign.user);
-  const campaign = useSelector(state => state.campaign.campaign);
+  const user = useSelector(state => state.account.user);
+  const campaign = useSelector(state => state.account.campaign);
   const cardColl = useSelector(state => state.card);
   const activeCard = useSelector(state => state.cardManage.activeCard);
   const cardDelete = useSelector(state => state.cardManage.cardDelete);
@@ -45,16 +45,16 @@ const ToolMenu = React.memo(props => {
   return (
     <div id="toolMenu" ref={toolMenuRef}>
       <div className="divider" />
-      <div className="button" onClick={setCardCreate}>
+      <div className="create-card button" onClick={setCardCreate}>
         <img src={AddImg} alt="Add" draggable="false" />
         <span className="tooltip">Add a card</span>
       </div>
-      <div className="button" onClick={copyCard}>
+      <div className="copy-card button" onClick={copyCard}>
         <img src={CopyImg} alt="Copy" draggable="false" />
         <span className="tooltip">Copy selected card</span>
       </div>
       <div className="divider" />
-      <div className="button" onClick={saveEditedData}>
+      <div className="save-campaign button" onClick={saveEditedData}>
         <img src={SaveImg} alt="Save" draggable="false" />
         <span className="tooltip">Save project</span>
       </div>
