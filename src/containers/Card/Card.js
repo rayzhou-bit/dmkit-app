@@ -25,7 +25,7 @@ const Card = props => {
 
   // STORE SELECTORS
   const activeCard = useSelector(state => state.cardManage.activeCard);
-  const viewColl = useSelector(state => state.view);
+  const viewColl = useSelector(state => state.viewColl);
   const viewOrder = useSelector(state => state.viewManage.viewOrder);
 
   // VARIABLES
@@ -206,7 +206,7 @@ const Card = props => {
               <input id={cardId+view} type="checkbox" checked={cardViews[view]} disabled={view===activeView} onChange={() => addOrRemoveCard(view)} />
               <span className="slider" style={(cardViews[view]) ? {backgroundColor: cardViews[view].color} : null}/>
             </label>
-            <label className="view-name" htmlFor={cardId+view} style={(view===activeView ? {fontWeight: "bold"} : null)}>{viewColl[view].title}</label>
+            <label className="view-title" htmlFor={cardId+view} style={(view===activeView ? {fontWeight: "bold"} : null)}>{viewColl[view].title}</label>
           </div>
           <div className="color-selection">{colorList}</div>
         </div>
@@ -261,6 +261,7 @@ const Card = props => {
             className="text-textarea" style={textBodyStyle} 
             type="text"
             value={cardText} readOnly={!editingText}
+            placeholder="Fill me in!"
             onClick={(cardId === activeCard) ? startTextEdit : null}
             onDoubleClick={(cardId !== activeCard) ? startTextEdit : null}
             onChange={updTextEdit}

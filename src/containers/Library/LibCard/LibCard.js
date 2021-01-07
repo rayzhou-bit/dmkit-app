@@ -87,7 +87,7 @@ const LibCard = props => {
     }
   };
 
-  const deleteCard = () => {
+  const deleteCardFromStore = () => {
     if (!confirmDelete) {
       setConfirmDelete(true);
     } else {
@@ -172,7 +172,7 @@ const LibCard = props => {
           onChange={updTitleEdit}
           onKeyDown={(e) => keyPressTitleHandler(e)}
         />
-        <div ref={cardDeleteBtnRef} className="button" onClick={deleteCard}>
+        <div ref={cardDeleteBtnRef} className="button" onClick={deleteCardFromStore}>
           <img src={DeleteImg} alt="Delete" draggable="false" />
           <span className="tooltip">Delete card</span>
         </div>

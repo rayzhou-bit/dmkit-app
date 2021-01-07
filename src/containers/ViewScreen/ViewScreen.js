@@ -6,6 +6,7 @@ import * as actions from '../../store/actionIndex';
 import { GRID } from '../../shared/constants/grid';
 import SaveAlert from '../../components/saveAlert/saveAlert'
 import Card from '../Card/Card';
+import fire from '../../shared/firebase';
 
 // ViewScreen is the main portion the user is looking at. This is located in the center of the screen.
 
@@ -18,12 +19,14 @@ const ViewScreen = props => {
   const [saving, setSaving] = useState(false); //this will look to serverside campaign state later
 
   // STORE SELECTORS
-  const user = useSelector(state => state.account.user);
-  const campaign = useSelector(state => state.account.campaign);
-  const cardColl = useSelector(state => state.card);
+  const userId = useSelector(state => state.user.user);
+  const campaignId = useSelector(state => state.campaignManage.activeCampaign);
+  const cardColl = useSelector(state => state.cardColl);
+  // const cardCreate = useSelector(state => state.cardManage.cardCreate);
   // const cardDelete = useSelector(state => state.cardManage.cardDelete);
-  // const viewColl = useSelector(state => state.view);
+  // const viewColl = useSelector(state => state.viewColl);
   // const viewOrder = useSelector(state => state.viewManage.viewOrder);
+  // const editedViewOrder = useSelector(state => state.viewManage.editedViewOrder);
   // const viewDelete = useSelector(state => state.viewManage.viewDelete);
   const activeView = useSelector(state => state.viewManage.activeView);
 
@@ -31,10 +34,13 @@ const ViewScreen = props => {
   const viewScreenRef = useRef("viewscreen");
 
   // FUNCTIONS
-  useEffect(() => { 
-    dispatch(actions.fetchCardColl(user, campaign));
-    dispatch(actions.fetchViewColl(user, campaign, activeView));
-  }, [user, campaign]);
+  useEffect(() => {
+    dispatch(actions.authCheck(userId));
+  }, [userId]);
+
+  useEffect(() => {
+    dispatch(actions.fetchCampaignDataFromServer(userId, campaignId));
+  }, [campaignId]);
 
   const drop = (event) => {
     event.preventDefault();
@@ -61,18 +67,6 @@ const ViewScreen = props => {
   };
 
   const allowDrop = (event) => {event.preventDefault()};
-
-  // Save edited data when closing window
-  // const saveEditedData = useCallback(() => {
-  //   dispatch(actions.saveCards(user, campaign, cardColl, cardDelete));
-  //   dispatch(actions.saveViews(user, campaign, viewColl, viewDelete, viewOrder));
-  // }, []);
-  // useEffect(() => {
-  //   window.addEventListener("beforeunload", saveEditedData);
-  //   return () => {
-  //     document.removeEventListener("beforeunload", saveEditedData);
-  //   }
-  // }, [saveEditedData]);
 
   // STYLES
   let viewScreenStyle = {

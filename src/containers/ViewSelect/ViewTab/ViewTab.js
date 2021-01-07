@@ -14,7 +14,7 @@ const ViewTab = React.memo(props => {
   // VARIABLES
   const [editingTitle, setEditingTitle] = useState(false);
 
-  const viewColl = useSelector(state => state.view);
+  const viewColl = useSelector(state => state.viewColl);
   const activeView = useSelector(state => state.viewManage.activeView);
   const viewOrder = useSelector(state => state.viewManage.viewOrder);
   const viewPos = Number(props.position); // positions start at 0
@@ -57,15 +57,15 @@ const ViewTab = React.memo(props => {
 
     let newViewOrder = [...viewOrder];
     if (newPos !== viewPos) {
-      newViewOrder.splice(viewPos, 1);
-      newViewOrder.splice(newPos, 0, viewId);
+      newViewOrder.splice(viewPos, 1);          // removes view from viewPos
+      newViewOrder.splice(newPos, 0, viewId);   // re-inserts view at newPos
       dispatch(actions.updViewOrder(newViewOrder));
     }
   };
 
   const clickHandler = () => {
     if (viewId !== activeView) {
-      dispatch(actions.onClickView(viewId));
+      dispatch(actions.updActiveView(viewId));
     }
   };
 

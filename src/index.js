@@ -5,10 +5,12 @@ import { createStore, applyMiddleware, compose, combineReducers } from 'redux';
 import thunk from 'redux-thunk';
 
 import App from './App';
-import accountReducer from './store/reducer/account';
-import cardReducer from './store/reducer/card';
+import userReducer from './store/reducer/user';
+import campaignCollReducer from './store/reducer/campaignCollection';
+import cardCollReducer from './store/reducer/cardCollection';
+import viewCollReducer from './store/reducer/viewCollection';
+import campaignManageReducer from './store/reducer/campaignManage';
 import cardManageReducer from './store/reducer/cardManage';
-import viewReducer from './store/reducer/view';
 import viewManageReducer from './store/reducer/viewManage';
 import * as serviceWorker from './serviceWorker';
 
@@ -18,10 +20,12 @@ const composeEnhancers =
   : null || compose;
 
 const rootReducer = combineReducers({
-  account: accountReducer,
-  card: cardReducer,
+  user: userReducer,
+  campaignColl: campaignCollReducer,
+  cardColl: cardCollReducer,
+  viewColl: viewCollReducer,
+  campaignManage: campaignManageReducer,
   cardManage: cardManageReducer,
-  view: viewReducer,
   viewManage: viewManageReducer,
 });
 

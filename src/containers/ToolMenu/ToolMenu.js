@@ -13,28 +13,34 @@ const ToolMenu = React.memo(props => {
   const dispatch = useDispatch();
 
   // VARIABLES
-  const user = useSelector(state => state.account.user);
-  const campaign = useSelector(state => state.account.campaign);
-  const cardColl = useSelector(state => state.card);
+  const userId = useSelector(state => state.user.user);
+  const campaignId = useSelector(state => state.campaignManage.activeCampaign);
+  const cardColl = useSelector(state => state.cardColl);
   const activeCard = useSelector(state => state.cardManage.activeCard);
+  const cardCreate = useSelector(state => state.cardManage.cardCreate);
+  const cardCreateCnt = useSelector(state => state.cardManage.createCount);
   const cardDelete = useSelector(state => state.cardManage.cardDelete);
-  const viewColl = useSelector(state => state.view);
+  const viewColl = useSelector(state => state.viewColl);
   const viewDelete = useSelector(state => state.viewManage.viewDelete);
   const activeView = useSelector(state => state.viewManage.activeView);
   const viewOrder = useSelector(state => state.viewManage.viewOrder);
+  const editedViewOrder = useSelector(state => state.viewManage.editedViewOrder);
 
   // FUNCTIONS
-  const setCardCreate = () => dispatch(actions.setCardCreate(user, campaign, activeView));
+  const setCardCreate = () => dispatch(actions.setCardCreate(cardCreateCnt, activeView));
 
-  const copyCard = () => {
+  const setCardCopy = () => {
     if (activeCard) {
-      dispatch(actions.copyCard(user, campaign, cardColl[activeCard], activeView));
+      dispatch(actions.setCardCopy(cardColl[activeCard], activeView, cardCreateCnt));
     }
   };
 
   const saveEditedData = () => {
-    dispatch(actions.saveCards(user, campaign, cardColl, cardDelete));
-    dispatch(actions.saveViews(user, campaign, viewColl, viewDelete, viewOrder));
+    if (userId) {
+      // IMPLEMENT: dispatch(actions.saveCampaignDataToServer())
+    } else {
+      // IMPLEMENT: ask for player log in or sign up
+    }
   };
 
   // STYLES
@@ -49,7 +55,7 @@ const ToolMenu = React.memo(props => {
         <img src={AddImg} alt="Add" draggable="false" />
         <span className="tooltip">Add a card</span>
       </div>
-      <div className="copy-card button" onClick={copyCard}>
+      <div className="copy-card button" onClick={setCardCopy}>
         <img src={CopyImg} alt="Copy" draggable="false" />
         <span className="tooltip">Copy selected card</span>
       </div>

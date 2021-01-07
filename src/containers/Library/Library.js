@@ -16,7 +16,7 @@ const Library = props => {
   const [enteredSearch, setEnteredSearch] = useState('');
   const [displayedItems, setDisplayedItems] = useState('cards');
 
-  const cardColl = useSelector(state => state.card);
+  const cardColl = useSelector(state => state.cardColl);
   const activeView = useSelector(state => state.viewManage.activeView);
 
   const searchId = "libSearchBar";
@@ -28,7 +28,6 @@ const Library = props => {
   const dividerHeight = 30 / 4;
 
   const viewScreenWidth = document.getElementById('viewScreen') ? document.getElementById('viewScreen').clientWidth : 0;
-  console.log(viewScreenWidth)
   const libPanelStyle = {
     // width: showLibrary ? viewScreenWidth*(0.4*librarySize)+'px' : '0px',
     width: showLibrary ? 40*librarySize+'vw' : '0',

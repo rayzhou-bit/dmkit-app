@@ -1,32 +1,67 @@
+// SERVERCALLS
 export {
-  fetchCardColl,
-  saveCards,
+  authCheck,
+  emailSignIn, emailSignOut, emailSignUp,
 
-  setCardCreate,
-  setCardDelete,
-  connectCardToView,
-  removeCardFromView,
-  copyCard,
+  fetchUserDataFromServer, saveUserDataToServer,
 
-  updCardPos,
-  updCardSize,
-  updCardColor,
-  updCardColorForAllViews,
+  fetchCampaignDataFromServer, saveCampaignDataToServer,
+  createCampaignOnServer,
+} from './action/serverCalls';
+
+// USER
+export {
+  updUser,
+} from './action/user';
+
+// CAMPAIGN
+export {
+  loadCampaignColl, unloadCampaignColl,
+  setCampaignEdit, resetCampaignEdit,
+
+  addCampaign,
+
+  updCampaignTitle,
+
+  updActiveCampaign,
+} from './action/campaign';
+
+// CARD
+export {
+  loadCardColl, unloadCardColl,
+  resetCardEdit,
+
+  addCardToStore, deleteCardFromStore,
+  connectCardToView, removeCardFromView,
+  setCardCreate, setCardDelete,
+  setCardCopy,
+
+  updCardPos, updCardSize,
+  updCardColor, updCardColorForAllViews,
   updCardType,
-  updCardTitle,
-  updCardText,
+  updCardTitle, updCardText,
 
   updActiveCard,
-} from './action/card';
-export {
-  fetchViewColl,
-  saveViews,
 
-  setViewCreate,
-  setViewDelete,
+  dequeueCardCreate,
+  clearCardDelete,
+} from './action/card';
+
+// VIEW
+export {
+  loadViewOrder, unloadViewColl,
+  resetViewEdit,
+
+  addViewToStore, deleteViewFromStore,
+  
+  saveViewsToServer,
+
+  setViewCreate, setViewDelete,
 
   updViewTitle,
-  onClickView,
 
   updViewOrder,
+  updActiveView,
+  dequeueViewCreate,
+  clearViewDelete,
 } from './action/view'
