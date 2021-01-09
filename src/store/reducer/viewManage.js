@@ -2,7 +2,7 @@ import * as actionTypes from '../actionTypes';
 import { updateObject } from '../../shared/utilityFunctions';
 
 const initialState = {
-  viewOrder: [],            // array that tracks the position of the views
+  viewOrder: ["view1"],            // array that tracks the position of the views
   editedViewOrder: false,
 
   activeView: "view1",

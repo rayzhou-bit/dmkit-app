@@ -2,10 +2,10 @@ import * as actionTypes from '../actionTypes';
 import { updateObject } from '../../shared/utilityFunctions';
 
 const initialState = {
-  // campaign1: {
+  // exampleCampaign1: {
   //   title: "campaign title",
   //   edited: boolean, ???
-  // }
+  // },
 };
 
 const reducer = (state = initialState, action) => {

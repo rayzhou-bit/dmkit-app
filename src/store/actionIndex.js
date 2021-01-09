@@ -49,17 +49,16 @@ export {
 
 // VIEW
 export {
-  loadViewOrder, unloadViewColl,
+  loadViewColl, unloadViewColl,
   resetViewEdit,
 
   addViewToStore, deleteViewFromStore,
-  
-  saveViewsToServer,
 
   setViewCreate, setViewDelete,
 
   updViewTitle,
 
+  loadViewOrder,
   updViewOrder,
   updActiveView,
   dequeueViewCreate,

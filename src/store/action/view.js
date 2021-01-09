@@ -11,7 +11,7 @@ export const updViewTitle = (viewId, title) => { return { type: actionTypes.UPD_
 export const updViewColor = (viewId, color) => { return { type: actionTypes.UPD_VIEW_COLOR, viewId: viewId, color: color }; };
 
 // <-----SIMPLE VIEWMANAGE REDUCER CALLS----->
-export const loadViewOrder = () => { return { type: actionTypes.LOAD_VIEW_ORDER, viewOrder: viewOrder }; };
+export const loadViewOrder = (viewOrder) => { return { type: actionTypes.LOAD_VIEW_ORDER, viewOrder: viewOrder }; };
 export const unloadViewOrder = () => { return { type: actionTypes.UNLOAD_VIEW_ORDER }; };
 export const updViewOrder = (viewOrder) => { return { type: actionTypes.UPD_VIEW_ORDER, viewOrder: viewOrder }; };
 const addToViewOrder = (viewId) => { return { type: actionTypes.ADD_TO_VIEW_ORDER, viewId: viewId }; };

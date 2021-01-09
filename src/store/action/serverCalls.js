@@ -27,7 +27,7 @@ export const authCheck = (prevUser) => {
               }
             }
           })
-          .catch(error => console.log("[authCheck] firstTimeSetup failed", error));
+          .catch(error => console.log("[authCheck] failed:", error));
         
         // dispatch(updUser(userId.uid));
       } else {

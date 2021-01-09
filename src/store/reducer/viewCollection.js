@@ -9,13 +9,13 @@ import { updateObject } from '../../shared/utilityFunctions';
 //     viewOrder: []
 
 const initialState = {
-  // view1: {
+  // exampleView1: {
   //   title: "view title",
   //   color: "color",
   //   edited: boolean,
   // },
   view1: {
-    title: "untitled",
+    title: "A new adventure",
   },
 };
 

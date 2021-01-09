@@ -3,7 +3,7 @@ import { GRID } from '../../shared/constants/grid';
 import { updateObject } from '../../shared/utilityFunctions';
 
 const initialState = {
-  // card1: {
+  // exampleCard1: {
   //   views: {
   //     view1: {
   //       pos: {
@@ -21,6 +21,11 @@ const initialState = {
   //   data: {
   //     title: "card title",
   //     text: "text field,
+  //     statblock: {
+  //       active: boolean,
+  //       attributes: {str: 10, dex: 10, con: 10, int: 10, wis: 10, cha: 10},
+  //       profBonus: 2,
+  //     },
   //   },
   //   edited: boolean,
   // },

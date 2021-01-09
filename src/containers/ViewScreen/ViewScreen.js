@@ -29,17 +29,19 @@ const ViewScreen = props => {
   // const editedViewOrder = useSelector(state => state.viewManage.editedViewOrder);
   // const viewDelete = useSelector(state => state.viewManage.viewDelete);
   const activeView = useSelector(state => state.viewManage.activeView);
-
+  
   // VARIABLES
   const viewScreenRef = useRef("viewscreen");
 
   // FUNCTIONS
-  useEffect(() => {
-    dispatch(actions.authCheck(userId));
-  }, [userId]);
+  // useEffect(() => {
+  //   dispatch(actions.authCheck(userId));
+  // }, [userId]);
 
   useEffect(() => {
-    dispatch(actions.fetchCampaignDataFromServer(userId, campaignId));
+    if (campaignId) {
+      dispatch(actions.fetchCampaignDataFromServer(userId, campaignId));
+    }
   }, [campaignId]);
 
   const drop = (event) => {

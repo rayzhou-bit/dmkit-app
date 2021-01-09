@@ -90,7 +90,7 @@ const UserMenu = React.memo(props => {
       <div className="dmkit-title">DM Kit</div>
       <div className="campaign button" onClick={() => setShowCampaignDropDown(!showCampaignDropDown)}>
         CAMPAIGNS
-        IMPLEMENT: SHOW THIS ONLY IF LOGGED IN
+        {/* IMPLEMENT: SHOW THIS ONLY IF LOGGED IN */}
         <img />
       </div>
       <div className="user button" onClick={() => setShowUserDropDown(!showUserDropDown)}>
