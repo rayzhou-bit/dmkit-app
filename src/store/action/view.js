@@ -2,6 +2,7 @@ import * as actionTypes from '../actionTypes';
 import { updateObject } from '../../shared/utilityFunctions';
 
 // <-----SIMPLE VIEW REDUCER CALLS----->
+export const initViewColl = () => { return { type: actionTypes.INIT_VIEW_COLL }; };
 export const loadViewColl = (viewColl) => { return { type: actionTypes.LOAD_VIEW_COLL, viewColl: viewColl }; };
 export const unloadViewColl = () => { return { type: actionTypes.UNLOAD_VIEW_COLL }; };
 export const resetViewEdit = (viewId) => { return { type: actionTypes.RESET_VIEW_EDIT, viewId: viewId }; };
@@ -11,6 +12,7 @@ export const updViewTitle = (viewId, title) => { return { type: actionTypes.UPD_
 export const updViewColor = (viewId, color) => { return { type: actionTypes.UPD_VIEW_COLOR, viewId: viewId, color: color }; };
 
 // <-----SIMPLE VIEWMANAGE REDUCER CALLS----->
+export const initViewManage = () => { return { type: actionTypes.INIT_CARD_MANAGE }; };
 export const loadViewOrder = (viewOrder) => { return { type: actionTypes.LOAD_VIEW_ORDER, viewOrder: viewOrder }; };
 export const unloadViewOrder = () => { return { type: actionTypes.UNLOAD_VIEW_ORDER }; };
 export const updViewOrder = (viewOrder) => { return { type: actionTypes.UPD_VIEW_ORDER, viewOrder: viewOrder }; };

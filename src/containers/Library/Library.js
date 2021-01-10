@@ -14,7 +14,7 @@ const Library = props => {
   const [showLibrary, setShowLibrary] = useState(false);
   const [librarySize, setLibrarySize] = useState(1); // 1 is small, 2 is big
   const [enteredSearch, setEnteredSearch] = useState('');
-  const [displayedItems, setDisplayedItems] = useState('cards');
+  // const [displayedItems, setDisplayedItems] = useState('cards');
 
   const cardColl = useSelector(state => state.cardColl);
   const activeView = useSelector(state => state.viewManage.activeView);
@@ -23,11 +23,11 @@ const Library = props => {
   const searchRef = useRef(searchId);
 
   // STYLES
-  const topOffset = 46;
-  const buttonHeight = 30 + 10 + 2;
-  const dividerHeight = 30 / 4;
+  // const topOffset = 46;
+  // const buttonHeight = 30 + 10 + 2;
+  // const dividerHeight = 30 / 4;
 
-  const viewScreenWidth = document.getElementById('viewScreen') ? document.getElementById('viewScreen').clientWidth : 0;
+  // const viewScreenWidth = document.getElementById('viewScreen') ? document.getElementById('viewScreen').clientWidth : 0;
   const libPanelStyle = {
     // width: showLibrary ? viewScreenWidth*(0.4*librarySize)+'px' : '0px',
     width: showLibrary ? 40*librarySize+'vw' : '0',
@@ -62,16 +62,16 @@ const Library = props => {
       <div id="libBtnGrid">
         <div className="divider" />
         <div className="button" onClick={() => setShowLibrary(!showLibrary)}>
-          <img src={LibBtnImg} />
-          <span className="tooltip" style={{right: (showLibrary) ? ((librarySize==1) ? '102%' : '101%') : '120%'}}>
+          <img src={LibBtnImg} alt="Library" />
+          <span className="tooltip" style={{right: (showLibrary) ? ((librarySize===1) ? '102%' : '101%') : '120%'}}>
             Show library
           </span>
         </div>
         <div className="divider" />
         <div className="button" style={{display: showLibrary ? 'block' : 'none'}}
-          onClick={(librarySize==1) ? ()=>setLibrarySize(2) : ()=>setLibrarySize(1)}>
-          <img src={(librarySize==1) ? ExpandImg : ShrinkImg} />
-          <span className="tooltip" style={{right: (librarySize==1) ? '102%' : '101%'}}>
+          onClick={(librarySize===1) ? ()=>setLibrarySize(2) : ()=>setLibrarySize(1)}>
+          <img src={(librarySize===1) ? ExpandImg : ShrinkImg} alt="Expand/Shrink" />
+          <span className="tooltip" style={{right: (librarySize===1) ? '102%' : '101%'}}>
             {(librarySize==1) ? "Expand" : "Shrink"}
           </span>
         </div>
@@ -79,7 +79,7 @@ const Library = props => {
       </div>
       <div id="libPanelGrid" style={libPanelStyle}>
         <div id={searchId}>
-          <img src={SearchImg} />
+          <img src={SearchImg} alt="Search" />
           <input ref={searchRef}
             type="search" placeholder="Search..."
             value={enteredSearch}

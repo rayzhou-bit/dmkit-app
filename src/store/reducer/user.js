@@ -2,12 +2,13 @@ import * as actionTypes from '../actionTypes';
 import { updateObject } from '../../shared/utilityFunctions';
 
 const initialState = {
-  user: "",
+  user: null,
 };
 
 const reducer = (state = initialState, action) => {
   switch(action.type) {
-    case actionTypes.UPD_USER: return updateObject(state, action);
+    case actionTypes.LOAD_USER: return updateObject(state, action);
+    case actionTypes.UNLOAD_USER: return {};
     
     default: return state;
   }

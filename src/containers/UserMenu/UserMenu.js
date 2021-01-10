@@ -11,12 +11,13 @@ const UserMenu = React.memo(props => {
   const [showCampaignDropDown, setShowCampaignDropDown] = useState(false);
   const [showUserDropDown, setShowUserDropDown] = useState(false);
   const [authForm, setAuthForm] = useState('signin');  // signedin, signin or signup
-
-  // VARIABLES
-  const user = useSelector(state => state.user.user);
-  const campaign = useSelector(state => state.campaignManage.activeCampaign);
   const [email, setEmail] = useState("");
   const [psw, setPsw] = useState("");
+
+  // VARIABLES
+  const userId = useSelector(state => state.user.user);
+  const campaignId = useSelector(state => state.campaignManage.activeCampaign);
+  const campaignColl = useSelector(state => state.campaignColl);
 
   // IDS & REFS
   const campaignDropDownRef = useRef("campaignDropDown");
@@ -28,7 +29,6 @@ const UserMenu = React.memo(props => {
     dispatch(actions.emailSignIn(email, psw))
   };
   const emailSignUp = () => dispatch(actions.emailSignUp());
-
   
   let campaignPanel = <div/>;
   // add campaign button
@@ -53,10 +53,7 @@ const UserMenu = React.memo(props => {
               value={psw} onChange={e=>setPsw(e.target.value)} />
             <button type="submit">Log In</button>
           </form>
-          <div className="register">
-            Don't have an account?
-            <a onClick={()=>setAuthForm('signup')}>Sign up now</a>
-          </div>
+          <a onClick={()=>setAuthForm('signup')}>Don't have an account? Sign up now</a>
         </div>
       );
       break;
@@ -73,10 +70,7 @@ const UserMenu = React.memo(props => {
               value={psw} onChange={e=>setPsw(e.target.value)} />
             <button type="submit">Sign Up</button>
           </form>
-          <div>
-            Already have an account?
-            <a onClick={()=>setAuthForm('login')}>Log in here</a>
-          </div>
+          <a onClick={()=>setAuthForm('signin')}>Already have an account? Log in here</a>
         </div>
       );
       break;
@@ -88,12 +82,16 @@ const UserMenu = React.memo(props => {
   return (
     <div id="userMenu">
       <div className="dmkit-title">DM Kit</div>
-      <div className="campaign button" onClick={() => setShowCampaignDropDown(!showCampaignDropDown)}>
+      <div className="campaign button" style={{display: userId ? "block" : "none"}}
+        onClick={() => setShowCampaignDropDown(!showCampaignDropDown)}
+      >
         CAMPAIGNS
         {/* IMPLEMENT: SHOW THIS ONLY IF LOGGED IN */}
         <img />
       </div>
-      <div className="user button" onClick={() => setShowUserDropDown(!showUserDropDown)}>
+      <div className="user button" 
+        onClick={() => setShowUserDropDown(!showUserDropDown)}
+      >
         LOGIN / SIGN UP
         <img />
       </div>

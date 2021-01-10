@@ -172,7 +172,9 @@ const LibCard = props => {
           onChange={updTitleEdit}
           onKeyDown={(e) => keyPressTitleHandler(e)}
         />
-        <div ref={cardDeleteBtnRef} className="button" onClick={deleteCardFromStore}>
+        <div ref={cardDeleteBtnRef} className="button" style={deleteButtonStyle}
+          onClick={deleteCardFromStore}
+        >
           <img src={DeleteImg} alt="Delete" draggable="false" />
           <span className="tooltip">Delete card</span>
         </div>

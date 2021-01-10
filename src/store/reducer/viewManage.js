@@ -15,6 +15,8 @@ const initialState = {
 
 const reducer = (state = initialState, action) => {
   switch(action.type) {
+    case actionTypes.INIT_VIEW_MANAGE: return initialState;
+
     // viewOrder
     case actionTypes.LOAD_VIEW_ORDER: return updateObject(state, {viewOrder: action.viewOrder});
     case actionTypes.UNLOAD_VIEW_ORDER: return updateObject(state, {viewOrder: []});

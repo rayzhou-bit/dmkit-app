@@ -28,6 +28,7 @@ export {
 
 // CARD
 export {
+  initCardColl,
   loadCardColl, unloadCardColl,
   resetCardEdit,
 
@@ -43,12 +44,13 @@ export {
 
   updActiveCard,
 
-  dequeueCardCreate,
-  clearCardDelete,
+  initCardManage,
+  dequeueCardCreate, clearCardDelete,
 } from './action/card';
 
 // VIEW
 export {
+  initViewColl,
   loadViewColl, unloadViewColl,
   resetViewEdit,
 
@@ -58,9 +60,8 @@ export {
 
   updViewTitle,
 
-  loadViewOrder,
-  updViewOrder,
+  initViewManage,
+  loadViewOrder, updViewOrder,
   updActiveView,
-  dequeueViewCreate,
-  clearViewDelete,
+  dequeueViewCreate, clearViewDelete,
 } from './action/view'

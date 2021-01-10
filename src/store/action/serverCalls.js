@@ -1,14 +1,13 @@
 import * as actionTypes from '../actionTypes';
 import * as actions from '../actionIndex';
-import fire from '../../shared/firebase';
+import { auth, store } from '../../shared/firebase';
 import { updateObject } from '../../shared/utilityFunctions';
-const db = fire.firestore();
 
 export const authCheck = (prevUser) => {
-  const userCollRef = db.collection("users");
+  const userCollRef = store.collection("users");
   // this observes user changes
   return dispatch => {
-    fire.auth().onAuthStateChanged(userId => {
+    auth.onAuthStateChanged(userId => {
       console.log("[authCheck] firebase response:", userId);
       if (userId) {
         // Signed In
@@ -31,10 +30,14 @@ export const authCheck = (prevUser) => {
         
         // dispatch(updUser(userId.uid));
       } else {
-        // Signed Out         
+        // Signed Out
         dispatch(actions.unloadCampaignColl());
-        dispatch(actions.unloadCardColl());
-        dispatch(actions.unloadViewColl());
+        dispatch(actions.initCardColl());
+        dispatch(actions.initCardManage());
+        dispatch(actions.initViewColl());
+        dispatch(actions.initViewManage());
+        // dispatch(actions.unloadCardColl());
+        // dispatch(actions.unloadViewColl());
       }
     });
   };
@@ -43,7 +46,7 @@ export const authCheck = (prevUser) => {
 const firstTimeSetup = (userId) => {
   // This will set up firebase collections for a campaign.
   // This is to be expanded upon in the future.
-  const userRef = db.collection("users").doc(userId);
+  const userRef = store.collection("users").doc(userId);
   userRef.set({
     firstTimeSetup: true,
   }, {merge: true})
@@ -53,7 +56,7 @@ const firstTimeSetup = (userId) => {
 
 export const emailSignIn = (email, psw) => {
   return dispatch => {
-    fire.auth().signInWithEmailAndPassword(email, psw)
+    auth.signInWithEmailAndPassword(email, psw)
       .then(response => {
         console.log("[emailSignIn] firebase response:", response);
         dispatch(actions.updUser(response.user.uid));
@@ -64,7 +67,7 @@ export const emailSignIn = (email, psw) => {
 
 export const emailSignUp = (email, psw) => {
   return dispatch => {
-    fire.auth().createUserWithEmailAndPassword(email, psw)
+    auth.createUserWithEmailAndPassword(email, psw)
       .then(response => {
         console.log("[emailSignUp] firebase response:", response);
         // IMPLEMENT: SIGN UP PROCEDURES
@@ -75,7 +78,7 @@ export const emailSignUp = (email, psw) => {
 
 export const emailSignOut = () => {
   return dispatch => {
-    fire.auth().signOut()
+    auth.signOut()
       .then(() => {
         console.log("[emailSignout] firebase sign out successful");
         dispatch(actions.updUser(null));
@@ -85,8 +88,8 @@ export const emailSignOut = () => {
 };
 
 export const fetchUserDataFromServer = (userId) => {
-  const userRef = db.collection("users").doc(userId);
-  const campaignCollRef = db.collection("users").doc(userId).collection("campaigns");
+  const userRef = store.collection("users").doc(userId);
+  const campaignCollRef = store.collection("users").doc(userId).collection("campaigns");
   return dispatch => {
     // USER: fetch user data here in the future
     // CAMPAIGN: fetch campaign collection
@@ -125,9 +128,9 @@ export const saveUserDataToServer = () => {
 };
 
 export const fetchCampaignDataFromServer = (userId, campaignId) => {
-  const campaignRef = db.collection("users").doc(userId).collection("campaigns").doc(campaignId);
-  const cardCollRef = db.collection("users").doc(userId).collection("campaigns").doc(campaignId).collection("cards");
-  const viewCollRef = db.collection("users").doc(userId).collection("campaigns").doc(campaignId).collection("views");
+  const campaignRef = store.collection("users").doc(userId).collection("campaigns").doc(campaignId);
+  const cardCollRef = store.collection("users").doc(userId).collection("campaigns").doc(campaignId).collection("cards");
+  const viewCollRef = store.collection("users").doc(userId).collection("campaigns").doc(campaignId).collection("views");
   return dispatch => {
     // CAMPAIGN: Campaign data is fetched when fetchUserDataFromServer is called
     // CARD: Fetch card collection
@@ -176,12 +179,12 @@ export const fetchCampaignDataFromServer = (userId, campaignId) => {
 
 export const saveCampaignDataToServer = (userId, campaignId, campaignColl, cardColl, cardCreate, cardDelete, viewColl, viewCreate, viewDelete, viewOrder, activeView) => {
   // Saves everything from the campaign to the server
-  const userRef = db.collection("users").doc(userId);
-  const campaignRef = db.collection("users").doc(userId).collection("campaigns").doc(campaignId);
-  const cardCollRef = db.collection("users").doc(userId).collection("campaigns").doc(campaignId).collection("cards");
-  const viewCollRef = db.collection("users").doc(userId).collection("campaigns").doc(campaignId).collection("views");
+  const userRef = store.collection("users").doc(userId);
+  const campaignRef = store.collection("users").doc(userId).collection("campaigns").doc(campaignId);
+  const cardCollRef = store.collection("users").doc(userId).collection("campaigns").doc(campaignId).collection("cards");
+  const viewCollRef = store.collection("users").doc(userId).collection("campaigns").doc(campaignId).collection("views");
   return dispatch => {
-    let batch = db.batch();
+    let batch = store.batch();
     let newViewOrder = [...viewOrder];
 
     // CAMPAIGN (batched): Save campaign data
@@ -294,11 +297,11 @@ export const saveCampaignDataToServer = (userId, campaignId, campaignColl, cardC
 
 export const autoSaveCampaignDataToServer = (userId, campaignId, campaignColl, cardColl, cardCreate, cardDelete, viewColl) => {
   // IMPLEMENT: this should only save edited stuff
-  const campaignRef = db.collection("users").doc(userId).collection("campaigns").doc(campaignId);
-  const cardCollRef = db.collection("users").doc(userId).collection("campaigns").doc(campaignId).collection("cards");
-  const viewCollRef = db.collection("users").doc(userId).collection("campaigns").doc(campaignId).collection("views");
+  const campaignRef = store.collection("users").doc(userId).collection("campaigns").doc(campaignId);
+  const cardCollRef = store.collection("users").doc(userId).collection("campaigns").doc(campaignId).collection("cards");
+  const viewCollRef = store.collection("users").doc(userId).collection("campaigns").doc(campaignId).collection("views");
   return dispatch => {
-    let batch = db.batch();
+    let batch = store.batch();
 
     // CAMPAIGN (batched): Save campaign data
     if (campaignColl[campaignId].title){
@@ -372,7 +375,7 @@ export const autoSaveCampaignDataToServer = (userId, campaignId, campaignColl, c
 
 export const createCampaignOnServer = (userId) => {
   // IMPLEMENT: This may need to be updated for when a new user saves a campaign
-  const campaignCollRef = db.collection("users").doc(userId).collection("campaigns");
+  const campaignCollRef = store.collection("users").doc(userId).collection("campaigns");
   let dataPackage = {
     title: "untitled",
     viewOrder: [],

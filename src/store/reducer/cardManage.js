@@ -7,11 +7,13 @@ const initialState = {
   cardCreate: ["card1"],         // array for new cards that do not have a firebase id
   createCount: 1,
 
-  cardDelete: [],         // array for cards to delete from firebase
+  cardDelete: [],               // array for cards to delete from firebase
 };
  
 const reducer = (state = initialState, action) => {
   switch(action.type) {
+    case actionTypes.INIT_CARD_MANAGE: return initialState;
+
     // activeCard
     case actionTypes.UPD_ACTIVE_CARD: return updateObject(state, {activeCard: action.activeCard});
 

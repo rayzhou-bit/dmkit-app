@@ -48,6 +48,7 @@ const initialState = {
 const reducer = (state = initialState, action) => {
   switch(action.type) {
     // CARD AND SERVER
+    case actionTypes.INIT_CARD_COLL: return initialState;
     case actionTypes.LOAD_CARD_COLL: return updateObject(state, action.cardColl);
     case actionTypes.UNLOAD_CARD_COLL: return {};
     case actionTypes.RESET_CARD_EDIT: return resetCardEdit(state, action.cardId); 

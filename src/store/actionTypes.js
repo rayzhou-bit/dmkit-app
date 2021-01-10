@@ -1,5 +1,6 @@
 // user reducer
-export const UPD_USER = 'UPD_USER';
+export const LOAD_USER = 'LOAD_USER';
+export const UNLOAD_USER = 'UNLOAD_USER';
 
 // campaign reducer
 export const LOAD_CAMPAIGN_COLL = 'LOAD_CAMPAIGN_COLL';
@@ -13,6 +14,7 @@ export const UPD_CAMPAIGN_TITLE = 'UPD_CAMPAIGN_TITLE';
 export const UPD_ACTIVE_CAMPAIGN = 'UPD_ACTIVE_CAMPAIGN';
 
 // card reducer
+export const INIT_CARD_COLL = 'INIT_CARD_COLL';
 export const LOAD_CARD_COLL = 'LOAD_CARD_COLL';
 export const UNLOAD_CARD_COLL = 'UNLOAD_CARD_COLL';
 export const RESET_CARD_EDIT = 'RESET_CARD_EDIT';
@@ -28,6 +30,8 @@ export const UPD_CARD_TYPE = 'UPD_CARD_TYPE';
 export const UPD_CARD_TITLE = 'UPD_CARD_TITLE';
 export const UPD_CARD_TEXT = 'UPD_CARD_TEXT';
 
+// cardManage reducer
+export const INIT_CARD_MANAGE = 'INIT_CARD_MANAGE';
 // cardManage reducer: activeCard
 export const UPD_ACTIVE_CARD = 'UPD_ACTIVE_CARD';
 // cardManage reducer: cardCreate
@@ -39,6 +43,7 @@ export const QUEUE_CARD_DELETE = 'QUEUE_CARD_DELETE';
 export const CLEAR_CARD_DELETE = 'CLEAR_CARD_DELETE';
 
 // view reducer
+export const INIT_VIEW_COLL = 'INIT_VIEW_COLL';
 export const LOAD_VIEW_COLL = 'LOAD_VIEW_COLL';
 export const UNLOAD_VIEW_COLL = 'UNLOAD_VIEW_COLL';
 export const RESET_VIEW_EDIT = 'RESET_VIEW_EDIT';
@@ -47,6 +52,8 @@ export const DELETE_VIEW = 'DELETE_VIEW';
 export const UPD_VIEW_TITLE = 'UPD_VIEW_TITLE';
 export const UPD_VIEW_COLOR = 'UPD_VIEW_COLOR';
 
+// viewManage reducer
+export const INIT_VIEW_MANAGE = 'INIT_VIEW_MANAGE';
 // viewManage reducer: viewOrder
 export const LOAD_VIEW_ORDER = 'LOAD_VIEW_ORDER';
 export const UNLOAD_VIEW_ORDER = 'UNLOAD_VIEW_ORDER';

@@ -4,6 +4,7 @@ import { updateObject } from '../../shared/utilityFunctions';
 import { GRID } from '../../shared/constants/grid';
 
 // <-----SIMPLE CARD REDUCER CALLS----->
+export const initCardColl = () => { return { type: actionTypes.INIT_CARD_COLL }; };
 export const loadCardColl = (cardColl) => { return { type: actionTypes.LOAD_CARD_COLL, cardColl: cardColl }; };
 export const unloadCardColl = () => { return { type: actionTypes.UNLOAD_CARD_COLL }; };
 export const resetCardEdit = (cardId) => { return { type: actionTypes.RESET_CARD_EDIT, cardId: cardId }; };
@@ -20,6 +21,7 @@ export const updCardTitle = (cardId, title) => { return { type: actionTypes.UPD_
 export const updCardText = (cardId, text) => { return { type: actionTypes.UPD_CARD_TEXT, cardId: cardId, text: text }; };
 
 // <-----SIMPLE CARDMANAGE REDUCER CALLS----->
+export const initCardManage = () => { return { type: actionTypes.INIT_CARD_MANAGE }; };
 export const updActiveCard = (activeCard) => { return { type: actionTypes.UPD_ACTIVE_CARD, activeCard: activeCard }; };
 const queueCardCreate = (cardId) => { return { type: actionTypes.QUEUE_CARD_CREATE, cardId: cardId }; };
 export const dequeueCardCreate = (cardId) => { return { type: actionTypes.DEQUEUE_CARD_CREATE, cardId: cardId }; };

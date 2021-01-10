@@ -6,7 +6,6 @@ import * as actions from '../../store/actionIndex';
 import { GRID } from '../../shared/constants/grid';
 import SaveAlert from '../../components/saveAlert/saveAlert'
 import Card from '../Card/Card';
-import fire from '../../shared/firebase';
 
 // ViewScreen is the main portion the user is looking at. This is located in the center of the screen.
 
@@ -34,9 +33,11 @@ const ViewScreen = props => {
   const viewScreenRef = useRef("viewscreen");
 
   // FUNCTIONS
-  // useEffect(() => {
-  //   dispatch(actions.authCheck(userId));
-  // }, [userId]);
+  const firstCheck = useRef(true);
+  useEffect(() => {
+    if (firstCheck.current) {firstCheck.current = false; return}
+    dispatch(actions.authCheck(userId));
+  }, [userId]);
 
   useEffect(() => {
     if (campaignId) {

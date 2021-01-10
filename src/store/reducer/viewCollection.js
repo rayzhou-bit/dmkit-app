@@ -21,6 +21,7 @@ const initialState = {
 
 const reducer = (state = initialState, action) => {
   switch(action.type) {
+    case actionTypes.INIT_VIEW_COLL: return initialState;
     case actionTypes.LOAD_VIEW_COLL: return updateObject(state, action.viewColl);
     case actionTypes.UNLOAD_VIEW_COLL: return {};
     case actionTypes.RESET_VIEW_EDIT: return resetViewEdit(state, action.viewId);
