@@ -8,7 +8,7 @@ export const updateObject = (oldObject, updatedProperties) => {
 };
 
 export const useOutsideClick = (refArray, cond, func, args) => {
-  // refArray contains an array of references that the user can click without triggering the function
+  // refArray contains an array of references that the user can click without triggering func
   useEffect(() => {
     const handleClickOutside = (event) => {
       let runFunc = true;
@@ -31,7 +31,7 @@ export const useOutsideClick = (refArray, cond, func, args) => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
 
-    // changing the dependency below triggers updates too often
-    // this can keep other useOutsideClicks from running
-  }, [cond]);
+    // adding refArray as a dependency below causes an issue with re-renders
+    // these re-renders keep other useOutsideClicks from completing their run
+  }, [cond, func, args]);
 };

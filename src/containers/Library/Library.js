@@ -54,7 +54,7 @@ const Library = props => {
           ];
         }
       }
-    }
+    };
   }
 
   return (
@@ -72,7 +72,7 @@ const Library = props => {
           onClick={(librarySize===1) ? ()=>setLibrarySize(2) : ()=>setLibrarySize(1)}>
           <img src={(librarySize===1) ? ExpandImg : ShrinkImg} alt="Expand/Shrink" />
           <span className="tooltip" style={{right: (librarySize===1) ? '102%' : '101%'}}>
-            {(librarySize==1) ? "Expand" : "Shrink"}
+            {(librarySize===1) ? "Expand" : "Shrink"}
           </span>
         </div>
         <div className="divider" />

@@ -1,10 +1,9 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import './ViewScreen.scss';
 import * as actions from '../../store/actionIndex';
 import { GRID } from '../../shared/constants/grid';
-import SaveAlert from '../../components/saveAlert/saveAlert'
 import Card from '../Card/Card';
 
 // ViewScreen is the main portion the user is looking at. This is located in the center of the screen.
@@ -15,11 +14,10 @@ const ViewScreen = props => {
 
   // STATES
   const [cardAnimation, setCardAnimation] = useState({});
-  const [saving, setSaving] = useState(false); //this will look to serverside campaign state later
 
   // STORE SELECTORS
-  const userId = useSelector(state => state.user.user);
-  const campaignId = useSelector(state => state.campaignManage.activeCampaign);
+  // const userId = useSelector(state => state.user.user);
+  // const campaignId = useSelector(state => state.campaignManage.activeCampaign);
   const cardColl = useSelector(state => state.cardColl);
   // const cardCreate = useSelector(state => state.cardManage.cardCreate);
   // const cardDelete = useSelector(state => state.cardManage.cardDelete);
@@ -33,18 +31,6 @@ const ViewScreen = props => {
   const viewScreenRef = useRef("viewscreen");
 
   // FUNCTIONS
-  const firstCheck = useRef(true);
-  useEffect(() => {
-    if (firstCheck.current) {firstCheck.current = false; return}
-    dispatch(actions.authCheck(userId));
-  }, [userId]);
-
-  useEffect(() => {
-    if (campaignId) {
-      dispatch(actions.fetchCampaignDataFromServer(userId, campaignId));
-    }
-  }, [campaignId]);
-
   const drop = (event) => {
     event.preventDefault();
     const data = event.dataTransfer.getData("text");
@@ -100,7 +86,6 @@ const ViewScreen = props => {
       onDrop={(e)=>drop(e)} onDragOver={(e)=>allowDrop(e)}
     >
       {cardList}
-      {saving ? <SaveAlert /> : null}
     </div>
   );
 };

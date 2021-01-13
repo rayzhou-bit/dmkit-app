@@ -13,18 +13,16 @@ const ToolMenu = React.memo(props => {
   const dispatch = useDispatch();
 
   // VARIABLES
+  const campaignColl = useSelector(state => state.campaignColl);
+  const cardColl = useSelector(state => state.cardColl);
+  const viewColl = useSelector(state => state.viewColl);
+  const cardManage = useSelector(state => state.cardManage);
+  const viewManage = useSelector(state => state.viewManage);
   const userId = useSelector(state => state.user.user);
   const campaignId = useSelector(state => state.campaignManage.activeCampaign);
-  const cardColl = useSelector(state => state.cardColl);
   const activeCard = useSelector(state => state.cardManage.activeCard);
-  const cardCreate = useSelector(state => state.cardManage.cardCreate);
-  const cardCreateCnt = useSelector(state => state.cardManage.createCount);
-  const cardDelete = useSelector(state => state.cardManage.cardDelete);
-  const viewColl = useSelector(state => state.viewColl);
-  const viewDelete = useSelector(state => state.viewManage.viewDelete);
   const activeView = useSelector(state => state.viewManage.activeView);
-  const viewOrder = useSelector(state => state.viewManage.viewOrder);
-  const editedViewOrder = useSelector(state => state.viewManage.editedViewOrder);
+  const cardCreateCnt = useSelector(state => state.cardManage.createCount);
 
   // FUNCTIONS
   const setCardCreate = () => dispatch(actions.setCardCreate(cardCreateCnt, activeView));
@@ -37,7 +35,7 @@ const ToolMenu = React.memo(props => {
 
   const saveEditedData = () => {
     if (userId) {
-      // IMPLEMENT: dispatch(actions.saveCampaignDataToServer())
+      // dispatch(actions.saveCampaignDataToServer(campaignId, campaignColl, cardColl, viewColl, cardManage, viewManage));
     } else {
       // IMPLEMENT: ask for player log in or sign up
     }

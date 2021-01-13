@@ -1,17 +1,13 @@
 // SERVERCALLS
 export {
-  authCheck,
+  initAuthCheck,
   emailSignIn, emailSignOut, emailSignUp,
-
-  fetchUserDataFromServer, saveUserDataToServer,
-
-  fetchCampaignDataFromServer, saveCampaignDataToServer,
-  createCampaignOnServer,
+  switchCampaign, createCampaign,
 } from './action/serverCalls';
 
 // USER
 export {
-  updUser,
+  loadUser, unloadUser,
 } from './action/user';
 
 // CAMPAIGN
@@ -45,7 +41,8 @@ export {
   updActiveCard,
 
   initCardManage,
-  dequeueCardCreate, clearCardDelete,
+  dequeueCardCreate, clearCardCreate,
+  clearCardDelete,
 } from './action/card';
 
 // VIEW
@@ -61,7 +58,8 @@ export {
   updViewTitle,
 
   initViewManage,
-  loadViewOrder, updViewOrder,
+  loadViewOrder, unloadViewOrder, updViewOrder,
   updActiveView,
-  dequeueViewCreate, clearViewDelete,
+  dequeueViewCreate, clearViewCreate,
+  clearViewDelete,
 } from './action/view'

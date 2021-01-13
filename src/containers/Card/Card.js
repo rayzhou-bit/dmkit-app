@@ -50,23 +50,27 @@ const Card = props => {
 
   // FUNCTIONS: CARD
   const dragStopHandler = (event, data) => dispatch(actions.updCardPos(cardId, activeView, {x: data.x, y: data.y}));
+
   const resizeStopHandler = (event, direction, ref, delta, position) => {
     dispatch(actions.updCardSize(cardId, activeView, {width: ref.style.width, height: ref.style.height}));
     if (["top", "left", "topRight", "bottomLeft", "topLeft"].indexOf(direction) !== -1) {
       dispatch(actions.updCardPos(cardId, activeView, {x: position.x, y: position.y}));
     }
   };
+
   const cardClickHandler = () => {
     if (!isSelected) {
       if (cardId !== activeCard) {dispatch(actions.updActiveCard(cardId))}
       setIsSelected(true);
     }
   };
+
   const outsideClickCardHandler = () => {
     if (cardId === activeCard) {dispatch(actions.updActiveCard(null))}
     setIsSelected(false);
   };
   useOutsideClick([cardRef, toolMenuRef], isSelected, outsideClickCardHandler);
+
   const onAnimationEnd = () => {
     setCardAnimation({
       ...cardAnimation,
@@ -83,12 +87,15 @@ const Card = props => {
       setEditingTitle(true);
     }
   };
+
   const endTitleEdit = () => {
     if (editingTitle) {setEditingTitle(false)}
   };
+
   const updTitleEdit = () => {
     if (editingTitle) {dispatch(actions.updCardTitle(cardId, cardTitleRef.current.value))}
   };
+
   const keyPressTitleHandler = (event) => {
     if (isSelected && editingTitle) {
       if (event.key === 'Enter') {
@@ -101,12 +108,14 @@ const Card = props => {
       }
     }
   };
+
   const removeCardFromThisView = () => {
     if (!editingCard) {
       dispatch(actions.removeCardFromView(cardId, activeView));
       endTitleEdit();
     }
   };
+  
   useOutsideClick([cardTitleRef, toolMenuRef], editingTitle, endTitleEdit);
 
   // FUNCTIONS: TEXT BODY

@@ -32,7 +32,7 @@ const initialState = {
   card1: {
     views: {
       view1: {
-        pos: {x: 200, y: 200},
+        pos: {x: 60, y: 60},
         size: {width: 600, height: 450},
         color: "green",
         cardType: "card",
@@ -43,6 +43,7 @@ const initialState = {
       text: "Welcome to DM Kit, a tool to help plan your next adventure."
     },
   },
+  edited: false,
 };
 
 const reducer = (state = initialState, action) => {

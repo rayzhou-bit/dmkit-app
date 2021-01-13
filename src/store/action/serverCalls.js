@@ -1,194 +1,223 @@
-import * as actionTypes from '../actionTypes';
 import * as actions from '../actionIndex';
 import { auth, store } from '../../shared/firebase';
 import { updateObject } from '../../shared/utilityFunctions';
+import { updActiveCampaign } from './campaign';
 
-export const authCheck = (prevUser) => {
-  const userCollRef = store.collection("users");
-  // this observes user changes
+export const initAuthCheck = () => {
+  const userId = authUserId();
   return dispatch => {
-    auth.onAuthStateChanged(userId => {
-      console.log("[authCheck] firebase response:", userId);
-      if (userId) {
-        // Signed In
-        // 1) Check for first time setup.
-        // 2) If there is an unsaved campaign, prompt the user if he wants to create a new campaign 
-        //    under the user. Set this as the activeCampaign.
-        // 3) If there is no unsaved campaign, load the activeCampaign.
-        userCollRef.doc(userId).get()
-          .then(doc => {
-            if (doc.exists) {
-              if (!doc.data().firstTimeSetup) {
-                firstTimeSetup(userId);
-              }
-              if (!doc.data().activeCampaign) {
-                dispatch(actions.updActiveCampaign(doc.data().activeCampaign));
-              }
-            }
-          })
-          .catch(error => console.log("[authCheck] failed:", error));
-        
-        // dispatch(updUser(userId.uid));
-      } else {
-        // Signed Out
-        dispatch(actions.unloadCampaignColl());
-        dispatch(actions.initCardColl());
-        dispatch(actions.initCardManage());
-        dispatch(actions.initViewColl());
-        dispatch(actions.initViewManage());
-        // dispatch(actions.unloadCardColl());
-        // dispatch(actions.unloadViewColl());
-      }
-    });
-  };
-};
-
-const firstTimeSetup = (userId) => {
-  // This will set up firebase collections for a campaign.
-  // This is to be expanded upon in the future.
-  const userRef = store.collection("users").doc(userId);
-  userRef.set({
-    firstTimeSetup: true,
-  }, {merge: true})
-  .then(response => console.log("[firstTimeSetup] setup success:", response))
-  .catch(error => console.log("[firstTimeSetup] firebase error:", error));
-};
-
-export const emailSignIn = (email, psw) => {
-  return dispatch => {
-    auth.signInWithEmailAndPassword(email, psw)
-      .then(response => {
-        console.log("[emailSignIn] firebase response:", response);
-        dispatch(actions.updUser(response.user.uid));
-      })
-      .catch(error => console.log("[emailSignIn] firebase error:", error.code, error.message));
-  };
+    if (userId) {
+      console.log("[initAuthCheck] signed in");
+      dispatch(fetchUserDataFromServer());
+      dispatch(unloadCampaign());
+      dispatch(fetchCampaignDataFromServer(userId));
+    } else {
+      console.log("[initAuthCheck] not signed in");
+      dispatch(loadInitCampaign());
+    }
+  }
 };
 
 export const emailSignUp = (email, psw) => {
   return dispatch => {
     auth.createUserWithEmailAndPassword(email, psw)
-      .then(response => {
-        console.log("[emailSignUp] firebase response:", response);
-        // IMPLEMENT: SIGN UP PROCEDURES
+      .then(resp => {
+        console.log("[emailSignUp] sign up successful:", resp);
+        // IMPLEMENT: sign up procedures and first time setup
+        const userId = resp.user.uid;
+        store.collection("users").doc(userId).set({firstTimeSetup: true});
       })
-      .catch(error => console.log("[emailSignUp] firebase error:", error.code, error.message));
+      .catch(err => console.log("[emailSignUp] error:", err));
+  };
+};
+
+export const emailSignIn = (email, psw) => {
+  return dispatch => {
+    auth.signInWithEmailAndPassword(email, psw)
+      .then(resp => {
+        console.log("[emailSignIn] sign in successful:", resp);
+        if (resp.user.uid) {
+          const userId = resp.user.uid;
+          dispatch(actions.loadUser(resp.user.uid, resp.user.email));
+          dispatch(unloadCampaign());
+          dispatch(fetchCampaignDataFromServer(userId));
+        }
+      })
+      .catch(err => console.log("[emailSignIn] error:", err));
   };
 };
 
 export const emailSignOut = () => {
   return dispatch => {
     auth.signOut()
-      .then(() => {
-        console.log("[emailSignout] firebase sign out successful");
-        dispatch(actions.updUser(null));
+      .then(resp => {
+        console.log("[emailSignout] sign out successful:", resp);
+        dispatch(actions.unloadUser());
+        dispatch(actions.unloadCampaignColl());
+        dispatch(loadInitCampaign());  // This doubles as a campaign unload.
       })
-      .catch(error => console.log("[emailSignOut] firebase error:", error));
+      .catch(err => console.log("[emailSignOut] error:", err));
   };
 };
 
-export const fetchUserDataFromServer = (userId) => {
-  const userRef = store.collection("users").doc(userId);
-  const campaignCollRef = store.collection("users").doc(userId).collection("campaigns");
+export const switchCampaign = (nextCampId, currCampId, campaignColl, cardColl, viewColl, cardManage, viewManage) => {
+  // IMPLEMENT: prompt user if they want to save current campaign. give option to say no
+  const userId = authUserId();
   return dispatch => {
-    // USER: fetch user data here in the future
-    // CAMPAIGN: fetch campaign collection
-    campaignCollRef.get()
-      .then(snapshot => {
-        console.log("[fetchUserDataFromServer] loaded", snapshot.size, "campaigns");
+    if (currCampId) {
+      // Save current campaign.
+      dispatch(saveCampaignDataToServer(userId, currCampId, campaignColl, cardColl, viewColl, cardManage, viewManage));
+      // Unload current campaign.
+      dispatch(unloadCampaign());
+    }
+    // Update active campaign.
+    store.collection("users").doc(userId).set({activeCampaign: nextCampId})
+      .then(resp => {
+        dispatch(updActiveCampaign(nextCampId));
+        console.log("[switchCampaign] set activeCampaign from", currCampId, "to", nextCampId);
+      }).catch(err => console.log("[switchCampaign] error setting activeCampaign:", err));
+    // Fetch updated active campaign.
+    dispatch(fetchCampaignDataFromServer(userId));
+  };
+};
+
+export const createCampaign = (currCampId, campaignColl, cardColl, viewColl, cardManage, viewManage) => {
+  const userId = authUserId();
+  const dataPackage = {
+    title: "untitled",
+    viewOrder: [],
+  };
+  return dispatch => {
+    // Create a new campaign on the server.
+    if (userId) {
+      store.collection("users").doc(userId).collection("campaigns").add(dataPackage)
+        .then(resp => {
+          // Add campaign to client.
+          dispatch(actions.addCampaign(resp.id, dataPackage));
+          // Switch to new campaign.
+          dispatch(switchCampaign(resp.id, currCampId, campaignColl, cardColl, viewColl, cardManage, viewManage));
+          console.log("[addCampaign] added campaign", resp.id);
+        }).catch(err => console.log("[addCampaign] error adding campaign", err));
+    }
+  };
+};
+
+const authUserId = () => {  // DO NOT EXPORT
+  let userId = null;
+  auth.onAuthStateChanged(resp => userId = (resp && resp.uid) ? resp.uid : null);
+  console.log("[authUserId] retrieved user id:", userId);
+  return userId;
+};
+
+const loadInitCampaign = () => {
+  return dispatch => {
+    dispatch(actions.initCardColl());
+    dispatch(actions.initViewColl());
+    dispatch(actions.initCardManage());
+    dispatch(actions.initViewManage());
+  };
+};
+
+const unloadCampaign = () => {  
+  return dispatch => {
+    dispatch(actions.unloadCardColl());
+    dispatch(actions.unloadViewColl());
+    dispatch(actions.updActiveCard(null));
+    dispatch(actions.clearCardCreate());
+    dispatch(actions.clearCardDelete());
+    dispatch(actions.unloadViewOrder());
+    dispatch(actions.updActiveView(null));
+    dispatch(actions.clearViewCreate());
+    dispatch(actions.clearViewDelete());
+  };
+};
+
+const fetchUserDataFromServer = () => {  // DO NOT EXPORT
+  return dispatch => {
+    auth.onAuthStateChanged(resp => {
+      dispatch(actions.loadUser(resp.user.uid, resp.user.email))
+    });
+  };
+};
+
+const saveUserDataToServer = () => {
+  // IMPLEMENT
+  return dispatch => {
+
+  };
+};
+
+const fetchCampaignDataFromServer = (userId) => {  // DO NOT EXPORT
+  let campaignId = null;
+  return dispatch => {
+    // USER LEVEL: fetch activeCampaign
+    store.collection("users").doc(userId).get()
+      .then(userData => {
+        if (userData.exists) {
+          if (userData.data().activeCampaign) {
+            campaignId = userData.data().activeCampaign;
+            dispatch(actions.updActiveCampaign(campaignId));
+            console.log("[fetchCampaignDataFromServer] loaded activeCampaign")
+          }
+        }
+      }).catch(err => console.log("[fetchCampaignDataFromServer] user level error:", err));
+    // CAMPAIGN LEVEL: fetch campaignCollection, viewOrder, activeView
+    store.collection("users").doc(userId).collection("campaigns").get()
+      .then(campaignSnapshot => {
         let campaignColl = {};
-        snapshot.forEach(campaign => {
+        campaignSnapshot.forEach(campaign => {
           campaignColl = updateObject(campaignColl, {
-            [campaign.id]: {
-              title: campaign.data().title
-            }
-          })
-        });
-        dispatch(actions.loadCampaignColl(campaignColl));
-      })
-      .catch(error => console.log("[fetchUserDataFromServer] error fetching campaign collection:", error));
-    // CAMPAIGN: fetch activeCampaign
-    userRef.get()
-    .then(doc => {
-      if (doc.exists) {
-        if (doc.data().activeCampaign) {
-          dispatch(actions.updActiveCampaign(doc.data().activeCampaign));
-          console.log("[fetchUserDataFromServer] fetched activeCampaign:", doc.data().activeCampaign);
-        }
-      }
-    })
-    .catch(error => console.log("[fetchUserDataFromServer] error fetching activeCampaign:", error));
-  };
-};
-
-export const saveUserDataToServer = () => {
-  return dispatch => {
-
-  };
-};
-
-export const fetchCampaignDataFromServer = (userId, campaignId) => {
-  const campaignRef = store.collection("users").doc(userId).collection("campaigns").doc(campaignId);
-  const cardCollRef = store.collection("users").doc(userId).collection("campaigns").doc(campaignId).collection("cards");
-  const viewCollRef = store.collection("users").doc(userId).collection("campaigns").doc(campaignId).collection("views");
-  return dispatch => {
-    // CAMPAIGN: Campaign data is fetched when fetchUserDataFromServer is called
-    // CARD: Fetch card collection
-    cardCollRef.get()
-      .then(snapshot => {
-        console.log("[fetchCampaignDataFromServer] fetched", snapshot.size, "cards")
-        let cardColl = {};
-        snapshot.forEach(card => {
-          cardColl = updateObject(cardColl, {
-            [card.id]: card.data()
+            [campaign.id]: {title: campaign.data().title}
           });
-        });
-        dispatch(actions.loadCardColl(cardColl));
-      })
-      .catch(error => console.log("[fetchCampaignDataFromServer] error fetching cards:", error));
-    // VIEW: Fetch view collection
-    viewCollRef.get()
-    .then(snapshot => {
-      console.log("[fetchCampaignDataFromServer] fetched", snapshot.size, "views");
-      let viewColl = {};
-      snapshot.forEach(view => {
-        viewColl = updateObject(viewColl, {
-          [view.id]: view.data(),
-        });
-      });
-      dispatch(actions.loadViewColl(viewColl));
-    })
-    .catch(error => console.log("[fetchCampaignDataFromServer] error fetching views:", error));
-    // VIEW: Fetch viewOrder and activeView
-    campaignRef.get()
-      .then(doc => {
-        if (doc.exists) {
-          if (doc.data().viewOrder) {
-            dispatch(actions.loadViewOrder(doc.data().viewOrder));
-            console.log("[fetchCampaignDataFromServer] loaded viewOrder", doc.data().viewOrder);
+          if (campaign.id === campaignId) {
+            if (campaign.data().viewOrder) {
+              dispatch(actions.loadViewOrder(campaign.data().viewOrder));
+              console.log("[fetchCampaignDataFromServer] loaded viewOrder:", campaign.data().viewOrder);
+            }
+            if (campaign.data().activeView) {
+              dispatch(actions.updActiveView(campaign.data().activeView));
+              console.log("[fetchCampaignDataFromServer] loaded activeView:", campaign.data().activeView);
+            }
           }
-          if (doc.data().activeView) {
-            dispatch(actions.updActiveView(doc.data().activeView));
-            console.log("[fetchCampaignDataFromServer] set activeView", doc.data().activeView);
-          }
-        }
-      })
-      .catch(error => console.log("[fetchCampaignDataFromServer] error fetching viewOrder and activeView:", error));
+        });
+        dispatch(actions.loadCampaignColl);
+        console.log("[fetchCampaignDataFromServer] loaded", campaignSnapshot.size, "campaign ids");
+      }).catch(err => console.log("[fetchCampaignDataFromServer] campaign level error:", err));
+    if (campaignId) {
+      // CARD LEVEL: fetch cardCollection
+      store.collection("users").doc(userId).collection("campaigns").doc(campaignId).collection("cards").get()
+        .then(cardSnapshot => {
+          let cardColl = {};
+          cardSnapshot.forEach(card => {
+            cardColl = updateObject(cardColl, {[card.id]: card.data()});
+          });
+          dispatch(actions.loadCardColl(cardColl));
+          console.log("[fetchCampaignDataFromServer] loaded", cardSnapshot.size, "cards");
+        }).catch(err => console.log("[fetchCampaignDataFromServer] card level error:", err));
+      // VIEW LEVEL: fetch viewCollection
+      store.collection("users").doc(userId).collection("campaigns").doc(campaignId).collection("views").get()
+        .then(viewSnapshot => {
+          let viewColl = {};
+          viewSnapshot.forEach(view => {
+            viewColl = updateObject(viewColl, {[view.id]: view.data()})
+          });
+          dispatch(actions.loadViewColl(viewColl));
+          console.log("[fetchCampaignDataFromServer] loaded", viewSnapshot.size, "views");
+        }).catch(err => console.log("[fetchCampaignDataFromServer] view level error:", err));
+    }
   };
 };
 
-export const saveCampaignDataToServer = (userId, campaignId, campaignColl, cardColl, cardCreate, cardDelete, viewColl, viewCreate, viewDelete, viewOrder, activeView) => {
+const saveCampaignDataToServer = (userId, campaignId, campaignColl, cardColl, viewColl, cardManage, viewManage) => {
   // Saves everything from the campaign to the server
-  const userRef = store.collection("users").doc(userId);
   const campaignRef = store.collection("users").doc(userId).collection("campaigns").doc(campaignId);
   const cardCollRef = store.collection("users").doc(userId).collection("campaigns").doc(campaignId).collection("cards");
   const viewCollRef = store.collection("users").doc(userId).collection("campaigns").doc(campaignId).collection("views");
   return dispatch => {
     let batch = store.batch();
-    let newViewOrder = [...viewOrder];
+    let newViewOrder = [...viewManage.viewOrder];
 
     // CAMPAIGN (batched): Save campaign data
-    batch.set(userRef, {activeCampaign: campaignId}, {merge: true});
     if (campaignColl[campaignId].title){
       batch.set(campaignRef, {title: campaignColl[campaignId].title}, {merge: true});
       console.log("[saveCampaignDataToServer] batch campaign:", campaignId);
@@ -196,20 +225,20 @@ export const saveCampaignDataToServer = (userId, campaignId, campaignColl, cardC
 
     // CARD (batched and not batched): Save card data
     cardColl.forEach(cardId => {
-      if (cardCreate.includes(cardId)) {
+      if (cardManage.cardCreate.includes(cardId)) {
         // Save new cards with no server id
         let dataPackage = cardColl[cardId];
         delete dataPackage.edited;
         // IMPLEMENT: maybe use add with the batch. check what the batch commits responds with
         cardCollRef.add(dataPackage)
-          .then(response => {
-            console.log("[saveCampaignDataToServer] added card", response.id);
+          .then(resp => {
             // create a card using server id and delete card with temp id
-            dispatch(actions.addCardToStore(response.id, dataPackage));
+            dispatch(actions.addCardToStore(resp.id, dataPackage));
             dispatch(actions.deleteCardFromStore(cardId));
             dispatch(actions.dequeueCardCreate(cardId));
+            console.log("[saveCampaignDataToServer] added card", resp.id);
           })
-          .catch(error => console.log("[saveCampaignDataToServer] error adding card", cardId, ":", error));
+          .catch(err => console.log("[saveCampaignDataToServer] error adding card", cardId, ":", err));
       } else {
         // Save cards with server id
         const cardRef = cardCollRef.doc(cardId);
@@ -221,7 +250,7 @@ export const saveCampaignDataToServer = (userId, campaignId, campaignColl, cardC
     });
 
     // CARD (batched): Delete cards from the cardDelete queue
-    cardDelete.forEach(cardId => {
+    cardManage.cardDelete.forEach(cardId => {
       const cardRef = cardCollRef.doc(cardId);
       batch.delete(cardRef);
       console.log("[saveCampaignDataToServer] batch delete card:", cardId);
@@ -229,23 +258,23 @@ export const saveCampaignDataToServer = (userId, campaignId, campaignColl, cardC
 
     // VIEW (batched and not batched): Save view data
     viewColl.forEach(viewId => {
-      if (viewCreate.includes(viewId)){
+      if (viewManage.viewCreate.includes(viewId)){
         // Save new views with no server id
         let dataPackage = viewColl[viewId];
         delete dataPackage.edited;
         // IMPLEMENT: maybe use add with the batch. check what the batch commits responds with
         viewCollRef.add(dataPackage)
-          .then(response => {
-            console.log("[saveCampaignDataToServer] added view", response.id);
+          .then(resp => {
             // create a view using server id and delete view with temp id
-            dispatch(actions.addViewToStore(response.id, dataPackage));
+            dispatch(actions.addViewToStore(resp.id, dataPackage));
             dispatch(actions.deleteViewFromStore(viewId));
             dispatch(actions.dequeueViewCreate(viewId));
+            console.log("[saveCampaignDataToServer] added view", resp.id);
             // replace the view in viewOrder
             const viewPos = newViewOrder.indexOf(viewId);
-            newViewOrder.splice(viewPos, 1, response.id);
+            newViewOrder.splice(viewPos, 1, resp.id);
           })
-          .catch(error => console.log("[saveCampaignDataToServer] error adding view", viewId, ":", error));
+          .catch(err => console.log("[saveCampaignDataToServer] error adding view", viewId, ":", err));
       } else {
         // Save views with server id
         const viewRef = viewCollRef.doc(viewId);
@@ -257,7 +286,7 @@ export const saveCampaignDataToServer = (userId, campaignId, campaignColl, cardC
     });
 
     // VIEW (batched): Delete views from the viewDelete queue
-    viewDelete.forEach(viewId => {
+    viewManage.viewDelete.forEach(viewId => {
       const viewRef = viewCollRef.doc(viewId);
       batch.delete(viewRef);
       console.log("[saveCampaignDataToServer] batch delete view:", viewId);
@@ -266,36 +295,38 @@ export const saveCampaignDataToServer = (userId, campaignId, campaignColl, cardC
     // VIEW (batched): Save viewOrder and activeView
     batch.set(campaignRef, {viewOrder: newViewOrder}, {merge: true});
     console.log("[saveCampaignDataToServer] batch set viewOrder:", newViewOrder);
-    batch.set(campaignRef, {activeView: activeView}, {merge: true});
-    console.log("[saveCampaignDataToServer] batch set activeView:", activeView);
+    batch.set(campaignRef, {activeView: viewManage.activeView}, {merge: true});
+    console.log("[saveCampaignDataToServer] batch set activeView:", viewManage.activeView);
     
     // SEND BATCH
     batch.commit()
-    .then(response => {
-      console.log("[saveCampaignDataToServer] batch commit success:", response);
+    .then(resp => {
+      console.log("[saveCampaignDataToServer] batch commit success:", resp);
       // CAMPAIGN: cleanup
       dispatch(actions.resetCampaignEdit(campaignId));
       // CARD: cleanup
       cardColl.forEach(cardId => {
         dispatch(actions.resetCardEdit(cardId));
       });
+      dispatch(actions.clearCardCreate());
       dispatch(actions.clearCardDelete());
       // VIEW: cleanup
       viewColl.forEach(viewId => {
         dispatch(actions.resetViewEdit(viewId));
       });
+      dispatch(actions.clearViewCreate());
       dispatch(actions.clearViewDelete());
       dispatch(actions.updViewOrder(newViewOrder));
     })
-    .catch(error => {
-      console.log("[saveCampaignDataToServer] batch commit error:", error);
+    .catch(err => {
+      console.log("[saveCampaignDataToServer] batch commit error:", err);
       // NON-BATCH CLEANUP
       dispatch(actions.updViewOrder(newViewOrder));
     });
   };
 };
 
-export const autoSaveCampaignDataToServer = (userId, campaignId, campaignColl, cardColl, cardCreate, cardDelete, viewColl) => {
+const autoSaveCampaignDataToServer = (userId, campaignId, campaignColl, cardColl, cardCreate, cardDelete, viewColl) => {
   // IMPLEMENT: this should only save edited stuff
   const campaignRef = store.collection("users").doc(userId).collection("campaigns").doc(campaignId);
   const cardCollRef = store.collection("users").doc(userId).collection("campaigns").doc(campaignId).collection("cards");
@@ -316,14 +347,14 @@ export const autoSaveCampaignDataToServer = (userId, campaignId, campaignColl, c
         let dataPackage = cardColl[card];
         delete dataPackage.edited;
         cardCollRef.add(dataPackage)
-          .then(response => {
-            console.log("[autoSaveCampaignDataToServer] added card", response.id);
+          .then(resp => {
+            console.log("[autoSaveCampaignDataToServer] added card", resp.id);
             // create a card using server id and delete card with temp id
-            dispatch(actions.addCardToStore(response.id, dataPackage));
+            dispatch(actions.addCardToStore(resp.id, dataPackage));
             dispatch(actions.deleteCardFromStore(card));
             dispatch(actions.dequeueCardCreate(card));
           })
-          .catch(error => console.log("[autoSaveCampaignDataToServer] error adding card", card, ":", error));
+          .catch(err => console.log("[autoSaveCampaignDataToServer] error adding card", card, ":", err));
       }
     }
     // CARD (batched): Save edited cards not from the cardCreate queue
@@ -356,8 +387,8 @@ export const autoSaveCampaignDataToServer = (userId, campaignId, campaignColl, c
     
     // SEND BATCH
     batch.commit()
-    .then(response => {
-      console.log("[autoSaveCampaignDataToServer] batch commit successful:", response);
+    .then(resp => {
+      console.log("[autoSaveCampaignDataToServer] batch commit successful:", resp);
       // CAMPAIGN: cleanup
       dispatch(actions.resetCampaignEdit(campaignId));
       // CARD: cleanup
@@ -369,23 +400,6 @@ export const autoSaveCampaignDataToServer = (userId, campaignId, campaignColl, c
       dispatch(actions.clearCardDelete());
       // VIEW: cleanup
     })
-    .catch(error => console.log("[autoSaveCampaignDataToServer] batch commit error:", error));
-  };
-};
-
-export const createCampaignOnServer = (userId) => {
-  // IMPLEMENT: This may need to be updated for when a new user saves a campaign
-  const campaignCollRef = store.collection("users").doc(userId).collection("campaigns");
-  let dataPackage = {
-    title: "untitled",
-    viewOrder: [],
-  };
-  return dispatch => {
-    campaignCollRef.add(dataPackage)
-      .then(response => {
-        console.log("[createCampaignOnServer] created campaign", response.id);
-        dispatch(actions.addCampaign(response.id, dataPackage));
-      })
-      .catch(error => console.log("[createCampaignOnServer] error creating campaign:", error));
+    .catch(err => console.log("[autoSaveCampaignDataToServer] batch commit error:", err));
   };
 };

@@ -1,5 +1,6 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useOutsideClick } from '../../shared/utilityFunctions';
 
 import './UserMenu.scss';
 import * as actions from '../../store/actionIndex';
@@ -10,95 +11,122 @@ const UserMenu = React.memo(props => {
   // STATES
   const [showCampaignDropDown, setShowCampaignDropDown] = useState(false);
   const [showUserDropDown, setShowUserDropDown] = useState(false);
-  const [authForm, setAuthForm] = useState('signin');  // signedin, signin or signup
+  const [authForm, setAuthForm] = useState('signin');  // signin or signup
   const [email, setEmail] = useState("");
   const [psw, setPsw] = useState("");
 
   // VARIABLES
-  const userId = useSelector(state => state.user.user);
-  const campaignId = useSelector(state => state.campaignManage.activeCampaign);
   const campaignColl = useSelector(state => state.campaignColl);
+  const cardColl = useSelector(state => state.cardColl);
+  const viewColl = useSelector(state => state.viewColl);
+  const cardManage = useSelector(state => state.cardManage);
+  const viewManage = useSelector(state => state.viewManage);
+  const userId = useSelector(state => state.user.user);
+  const userEmail = useSelector(state => state.user.email);
+  const campaignId = useSelector(state => state.campaignManage.activeCampaign);
+  const campaignTitle = (campaignColl[campaignId] && campaignColl[campaignId].title) ? campaignColl[campaignId].title : null;
 
   // IDS & REFS
+  const campaignButtonRef = useRef("campaignButton");
+  const userButtonRef = useRef("userButton");
   const campaignDropDownRef = useRef("campaignDropDown");
   const userDropDownRef = useRef("userDropDown");
 
   // FUNCTIONS
-  const emailSignIn = (event) => {
-    event.preventDefault();
-    dispatch(actions.emailSignIn(email, psw))
-  };
-  const emailSignUp = () => dispatch(actions.emailSignUp());
-  
-  let campaignPanel = <div/>;
-  // add campaign button
+  useEffect(() => {
+    dispatch(actions.initAuthCheck());
+  });
 
-  let userPanel = <div/>;
-  switch (authForm) {
-    case 'signedin': 
-      userPanel = (
-        <a>Sign Out</a>
-      );
-      break;
-    case 'signin':
-      userPanel = (
-        <div className="sign-in panel">
-          <h1>Login</h1>
-          <form id="sign-in-form" onSubmit={e=>emailSignIn(e)}>
-            <label htmlFor="email"><b>Email</b></label>
-            <input type="email" placeholder="Enter Email" name="email" required 
-              value={email} onChange={e=>setEmail(e.target.value)} />
-            <label htmlFor="psw"><b>Password</b></label>
-            <input type="password" placeholder="Enter Password" name="psw" required 
-              value={psw} onChange={e=>setPsw(e.target.value)} />
-            <button type="submit">Log In</button>
-          </form>
-          <a onClick={()=>setAuthForm('signup')}>Don't have an account? Sign up now</a>
-        </div>
-      );
-      break;
-    case 'signup':
+  const emailSignUp = (event) => {event.preventDefault(); dispatch(actions.emailSignUp(email, psw)); setShowUserDropDown(false)};
+  const emailSignIn = (event) => {event.preventDefault(); dispatch(actions.emailSignIn(email, psw)); setShowUserDropDown(false)};
+  const emailSignOut = (event) => {event.preventDefault(); dispatch(actions.emailSignOut()); setShowUserDropDown(false)};
+
+  const switchCampaign = (campId) => dispatch(actions.switchCampaign(campId, campaignId, campaignColl, cardColl, viewColl, cardManage, viewManage));
+  const newCampaign = () => dispatch(actions.createCampaign(campaignId, campaignColl, cardColl, viewColl, cardManage, viewManage));
+
+  useOutsideClick([campaignDropDownRef, campaignButtonRef], showCampaignDropDown, setShowCampaignDropDown, false);
+  useOutsideClick([userDropDownRef, userButtonRef], showUserDropDown, setShowUserDropDown, false);
+  
+  let campaignList = [];
+  if (userId) {
+    if (campaignColl) {
+      for (let campId in campaignColl) {
+        campaignList = [
+          ...campaignList,
+          <div key={campId} onClick={() => switchCampaign(campId)}>
+            {campaignColl[campId].title ? campaignColl[campId].title : ""}
+          </div>
+        ];
+      };
+    }
+    campaignList = [
+      ...campaignList,
+      <div key={"newCampaign"} onClick={newCampaign}>
+        New Campaign
+      </div>
+    ];
+  }
+  
+  let userPanel = null;
+  if (userId) {
+    userPanel = (
+      <div onClick={e => emailSignOut(e)}>Sign Out</div>
+    );
+  } else {
+    if (authForm === 'signup') {
       userPanel = (
         <div className="sign-up panel">
           <h1>Sign Up</h1>
-          <form id="sign-up-form">
+          <form id="sign-up-form" onSubmit={e => emailSignUp(e)}>
             <label htmlFor="email"><b>Email</b></label>
             <input type="email" placeholder="Enter Email" name="email" required
-              value={email} onChange={e=>setEmail(e.target.value)} />
+              value={email} onChange={e => setEmail(e.target.value)} />
             <label htmlFor="psw"><b>Password</b></label>
             <input type="password" placeholder="Enter Password" name="psw" required 
-              value={psw} onChange={e=>setPsw(e.target.value)} />
+              value={psw} onChange={e => setPsw(e.target.value)} />
             <button type="submit">Sign Up</button>
           </form>
-          <a onClick={()=>setAuthForm('signin')}>Already have an account? Log in here</a>
+          <div onClick={() => setAuthForm('signin')}>Already have an account? Log in here</div>
         </div>
       );
-      break;
-    default:
-      console.log("Invalid auth value");
-      break;
-  };
+    } else {
+      userPanel = (
+        <div className="sign-in panel">
+          <h1>Login</h1>
+          <form id="sign-in-form" onSubmit={e => emailSignIn(e)}>
+            <label htmlFor="email"><b>Email</b></label>
+            <input type="email" placeholder="Enter Email" name="email" required 
+              value={email} onChange={e => setEmail(e.target.value)} />
+            <label htmlFor="psw"><b>Password</b></label>
+            <input type="password" placeholder="Enter Password" name="psw" required 
+              value={psw} onChange={e => setPsw(e.target.value)} />
+            <button type="submit">Log In</button>
+          </form>
+          <div onClick={() => setAuthForm('signup')}>Don't have an account? Sign up now</div>
+        </div>
+      );
+    }
+  }
 
   return (
     <div id="userMenu">
-      <div className="dmkit-title">DM Kit</div>
-      <div className="campaign button" style={{display: userId ? "block" : "none"}}
-        onClick={() => setShowCampaignDropDown(!showCampaignDropDown)}
+      <div className="dmkit-title">{campaignTitle ? campaignTitle : "DM Kit"}</div>
+      <div ref={campaignButtonRef}
+        className="campaign button" style={{display: userId ? "block" : "none"}}
+        onClick={campaignColl ? ()=>newCampaign() : ()=>setShowCampaignDropDown(!showCampaignDropDown)}
       >
-        CAMPAIGNS
-        {/* IMPLEMENT: SHOW THIS ONLY IF LOGGED IN */}
-        <img />
+        {campaignColl ? "New Campaign" : "Campaigns"}
       </div>
-      <div className="user button" 
+      <div ref={userButtonRef}
+        className="user button" 
         onClick={() => setShowUserDropDown(!showUserDropDown)}
       >
-        LOGIN / SIGN UP
-        <img />
+        {userId ? userEmail.split('@')[0] : "SIGN IN"}
       </div>
-
       <div ref={campaignDropDownRef} 
-        className="campaign drop-down" style={{display: showCampaignDropDown ? "block" : "none"}}>
-        {campaignPanel}
+        className="campaign drop-down" style={{display: showCampaignDropDown ? "block" : "none"}}
+      >
+        {campaignList}
       </div>
       <div ref={userDropDownRef} 
         className="user drop-down" style={{display: showUserDropDown ? "block" : "none"}}>

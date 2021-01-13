@@ -1,5 +1,4 @@
 import * as actionTypes from '../actionTypes';
-import { updateObject } from '../../shared/utilityFunctions';
 
 // <-----SIMPLE VIEW REDUCER CALLS----->
 export const initViewColl = () => { return { type: actionTypes.INIT_VIEW_COLL }; };
@@ -12,7 +11,7 @@ export const updViewTitle = (viewId, title) => { return { type: actionTypes.UPD_
 export const updViewColor = (viewId, color) => { return { type: actionTypes.UPD_VIEW_COLOR, viewId: viewId, color: color }; };
 
 // <-----SIMPLE VIEWMANAGE REDUCER CALLS----->
-export const initViewManage = () => { return { type: actionTypes.INIT_CARD_MANAGE }; };
+export const initViewManage = () => { return { type: actionTypes.INIT_VIEW_MANAGE }; };
 export const loadViewOrder = (viewOrder) => { return { type: actionTypes.LOAD_VIEW_ORDER, viewOrder: viewOrder }; };
 export const unloadViewOrder = () => { return { type: actionTypes.UNLOAD_VIEW_ORDER }; };
 export const updViewOrder = (viewOrder) => { return { type: actionTypes.UPD_VIEW_ORDER, viewOrder: viewOrder }; };
@@ -21,7 +20,7 @@ const deleteFromViewOrder = (viewId) => { return { type: actionTypes.DELETE_FROM
 export const updActiveView = (viewId) => { return { type: actionTypes.UPD_ACTIVE_VIEW, viewId: viewId }; };
 const queueViewCreate = (viewId) => { return { type: actionTypes.QUEUE_VIEW_CREATE, viewId: viewId}; };
 export const dequeueViewCreate = (viewId) => { return { type: actionTypes.DEQUEUE_VIEW_CREATE, viewId: viewId}; };
-const clearViewCreate = () => { return { type: actionTypes.CLEAR_VIEW_CREATE }; };
+export const clearViewCreate = () => { return { type: actionTypes.CLEAR_VIEW_CREATE }; };
 const queueViewDelete = (viewId) => { return { type: actionTypes.QUEUE_VIEW_DELETE, viewId: viewId }; };
 export const clearViewDelete = () => { return { type: actionTypes.CLEAR_VIEW_DELETE }; };
 

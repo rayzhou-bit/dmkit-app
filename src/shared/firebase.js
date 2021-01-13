@@ -5,8 +5,6 @@ import "firebase/firestore";
 // dotenv.config();
 // require('dotenv').config()
 
-console.log(process.env)
-
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_API_KEY,
   authDomain: process.env.REACT_APP_AUTH_DOMAIN,
@@ -19,6 +17,6 @@ const firebaseConfig = {
 
 const fire = firebase.initializeApp(firebaseConfig);
 
-export const auth = fire.auth();
+export const auth = firebase.auth();
 export const store = fire.firestore();
 export default fire;

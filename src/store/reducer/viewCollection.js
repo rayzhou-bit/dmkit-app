@@ -1,13 +1,6 @@
 import * as actionTypes from '../actionTypes';
 import { updateObject } from '../../shared/utilityFunctions';
 
-// Firebase collections sturcture
-// users: usersTestId
-//   campaigns: campaignTestId
-//     cards: cardsTestId
-//     views: viewsTestId
-//     viewOrder: []
-
 const initialState = {
   // exampleView1: {
   //   title: "view title",
@@ -15,7 +8,8 @@ const initialState = {
   //   edited: boolean,
   // },
   view1: {
-    title: "A new adventure",
+    title: "Welcome!",
+    edited: false,
   },
 };
 
