@@ -3,10 +3,12 @@ import { updateObject } from '../../shared/utilityFunctions';
 
 const initialState = {
   activeCampaign: null,
+  createCount: 0,
+  // IMPLEMENT: need to implement campaign edit setups and checks for auto-save
   edited: false,
 };
 
-const reducer = (state = initialState, action) => {
+const reducer = (state = {}, action) => {
   switch(action.type) {
     case actionTypes.UPD_ACTIVE_CAMPAIGN: return updateObject(state, {activeCampaign: action.activeCampaign});
 

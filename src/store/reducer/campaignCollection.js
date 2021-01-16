@@ -7,7 +7,7 @@ const initialState = {
   // },
 };
 
-const reducer = (state = initialState, action) => {
+const reducer = (state = {}, action) => {
   switch(action.type) {
     case actionTypes.LOAD_CAMPAIGN_COLL: return updateObject(state, action.campaignColl);
     case actionTypes.UNLOAD_CAMPAIGN_COLL: return {};

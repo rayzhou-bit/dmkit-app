@@ -1,8 +1,14 @@
 // SERVERCALLS
 export {
-  initAuthCheck,
+  getUserId, getUserEmail,
+
   emailSignIn, emailSignOut, emailSignUp,
+
   switchCampaign, createCampaign,
+  loadInitCampaign, unloadCampaign,
+
+  fetchUserDataFromServer,
+  fetchCampaignDataFromServer,
 } from './action/serverCalls';
 
 // USER

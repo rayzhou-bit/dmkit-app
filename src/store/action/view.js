@@ -26,7 +26,7 @@ export const clearViewDelete = () => { return { type: actionTypes.CLEAR_VIEW_DEL
 
 // <-----COMPLEX CALLS----->
 export const setViewCreate = (viewCreateCnt) => {
-  const viewId = "view" + (viewCreateCnt++);
+  const viewId = "view" + (viewCreateCnt+1);
   const viewData = { 
     title: "untitled"
   };

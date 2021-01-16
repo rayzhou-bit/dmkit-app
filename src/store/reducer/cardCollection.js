@@ -46,7 +46,7 @@ const initialState = {
   edited: false,
 };
 
-const reducer = (state = initialState, action) => {
+const reducer = (state = {}, action) => {
   switch(action.type) {
     // CARD AND SERVER
     case actionTypes.INIT_CARD_COLL: return initialState;

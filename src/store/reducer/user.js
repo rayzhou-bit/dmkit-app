@@ -6,7 +6,7 @@ const initialState = {
   email: null,
 };
 
-const reducer = (state = initialState, action) => {
+const reducer = (state = {}, action) => {
   switch(action.type) {
     case actionTypes.LOAD_USER: return updateObject(state, {user: action.user, email: action.email});
     case actionTypes.UNLOAD_USER: return {};

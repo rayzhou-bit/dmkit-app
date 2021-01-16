@@ -18,7 +18,7 @@ const ToolMenu = React.memo(props => {
   const viewColl = useSelector(state => state.viewColl);
   const cardManage = useSelector(state => state.cardManage);
   const viewManage = useSelector(state => state.viewManage);
-  const userId = useSelector(state => state.user.user);
+  const userId = actions.getUserId();
   const campaignId = useSelector(state => state.campaignManage.activeCampaign);
   const activeCard = useSelector(state => state.cardManage.activeCard);
   const activeView = useSelector(state => state.viewManage.activeView);

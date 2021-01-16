@@ -1,11 +1,11 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useOutsideClick } from '../../shared/utilityFunctions';
 
 import './UserMenu.scss';
 import * as actions from '../../store/actionIndex';
 
-const UserMenu = React.memo(props => {
+const UserMenu = props => {
   const dispatch = useDispatch();
 
   // STATES
@@ -21,8 +21,8 @@ const UserMenu = React.memo(props => {
   const viewColl = useSelector(state => state.viewColl);
   const cardManage = useSelector(state => state.cardManage);
   const viewManage = useSelector(state => state.viewManage);
-  const userId = useSelector(state => state.user.user);
-  const userEmail = useSelector(state => state.user.email);
+  const userId = actions.getUserId();
+  const userEmail = actions.getUserEmail();
   const campaignId = useSelector(state => state.campaignManage.activeCampaign);
   const campaignTitle = (campaignColl[campaignId] && campaignColl[campaignId].title) ? campaignColl[campaignId].title : null;
 
@@ -33,13 +33,18 @@ const UserMenu = React.memo(props => {
   const userDropDownRef = useRef("userDropDown");
 
   // FUNCTIONS
-  useEffect(() => {
-    dispatch(actions.initAuthCheck());
-  });
+  // useEffect(() => {
+  //   dispatch(actions.initAuthCheck());
+  // }, [dispatch]);
 
-  const emailSignUp = (event) => {event.preventDefault(); dispatch(actions.emailSignUp(email, psw)); setShowUserDropDown(false)};
-  const emailSignIn = (event) => {event.preventDefault(); dispatch(actions.emailSignIn(email, psw)); setShowUserDropDown(false)};
-  const emailSignOut = (event) => {event.preventDefault(); dispatch(actions.emailSignOut()); setShowUserDropDown(false)};
+  const emailSignUp = (event) => {event.preventDefault(); actions.emailSignUp(email, psw); setShowUserDropDown(false)};
+  const emailSignIn = (event) => {event.preventDefault(); actions.emailSignIn(email, psw); setShowUserDropDown(false)};
+  const emailSignOut = (event) => {
+    event.preventDefault(); 
+    actions.emailSignOut(); 
+    setShowUserDropDown(false);
+    // IMPLEMENT: ask if save campaign
+  };
 
   const switchCampaign = (campId) => dispatch(actions.switchCampaign(campId, campaignId, campaignColl, cardColl, viewColl, cardManage, viewManage));
   const newCampaign = () => dispatch(actions.createCampaign(campaignId, campaignColl, cardColl, viewColl, cardManage, viewManage));
@@ -113,15 +118,15 @@ const UserMenu = React.memo(props => {
       <div className="dmkit-title">{campaignTitle ? campaignTitle : "DM Kit"}</div>
       <div ref={campaignButtonRef}
         className="campaign button" style={{display: userId ? "block" : "none"}}
-        onClick={campaignColl ? ()=>newCampaign() : ()=>setShowCampaignDropDown(!showCampaignDropDown)}
+        onClick={Object.keys(campaignColl).length>0 ? ()=>setShowCampaignDropDown(!showCampaignDropDown) : ()=>newCampaign()}
       >
-        {campaignColl ? "New Campaign" : "Campaigns"}
+        {Object.keys(campaignColl).length>0 ? "Campaigns" : "New Campaign"}
       </div>
       <div ref={userButtonRef}
         className="user button" 
         onClick={() => setShowUserDropDown(!showUserDropDown)}
       >
-        {userId ? userEmail.split('@')[0] : "SIGN IN"}
+        {userEmail ? userEmail.split('@')[0] : "SIGN IN"}
       </div>
       <div ref={campaignDropDownRef} 
         className="campaign drop-down" style={{display: showCampaignDropDown ? "block" : "none"}}
@@ -134,6 +139,6 @@ const UserMenu = React.memo(props => {
       </div>
     </div>
   );
-});
+};
 
 export default UserMenu;

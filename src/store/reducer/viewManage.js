@@ -13,7 +13,7 @@ const initialState = {
   viewDelete: [],           // array for views to delete from firebase
 };
 
-const reducer = (state = initialState, action) => {
+const reducer = (state = {}, action) => {
   switch(action.type) {
     case actionTypes.INIT_VIEW_MANAGE: return initialState;
 
@@ -55,9 +55,10 @@ const deleteFromViewOrder = (state, deletedView) => {
 const queueViewCreate = (state, queuedView) => {
   let updatedViewCreate = [...state.viewCreate];
   updatedViewCreate.push(queuedView);
+  console.log(state.createCount)
   return updateObject(state, {
     viewCreate: updatedViewCreate, 
-    createCount: state.createCount++,
+    createCount: state.createCount+1,
     activeView: queuedView,
   });
 };

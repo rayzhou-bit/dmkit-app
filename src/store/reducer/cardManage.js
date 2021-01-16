@@ -10,7 +10,7 @@ const initialState = {
   cardDelete: [],               // array for cards to delete from firebase
 };
  
-const reducer = (state = initialState, action) => {
+const reducer = (state = {}, action) => {
   switch(action.type) {
     case actionTypes.INIT_CARD_MANAGE: return initialState;
 
@@ -36,7 +36,7 @@ const queueCardCreate = (state, queuedCard) => {
   updatedCardCreate.push(queuedCard);
   return updateObject(state, {
     cardCreate: updatedCardCreate, 
-    createCount: state.createCount++,
+    createCount: state.createCount+1,
     activeCard: queuedCard,
   });
 };

@@ -13,7 +13,7 @@ const initialState = {
   },
 };
 
-const reducer = (state = initialState, action) => {
+const reducer = (state = {}, action) => {
   switch(action.type) {
     case actionTypes.INIT_VIEW_COLL: return initialState;
     case actionTypes.LOAD_VIEW_COLL: return updateObject(state, action.viewColl);
@@ -36,9 +36,8 @@ const resetViewEdit = (state, viewId) => {
 };
 
 const addViewToStore = (state, viewId, dataPackage) => {
-  let newView = { [viewId]: dataPackage };
-  newView = updateObject(newView, {edited: true});
-  return updateObject(state, newView);
+  const newView = updateObject(dataPackage, {edited: true});
+  return updateObject(state, {[viewId]: newView});
 };
 
 const deleteViewFromStore = (state, viewId) => {

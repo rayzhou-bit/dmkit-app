@@ -29,7 +29,7 @@ export const clearCardDelete = () => { return { type: actionTypes.CLEAR_CARD_DEL
 
 // <-----COMPLEX CALLS----->
 export const setCardCreate = (cardCreateCnt, viewId) => {
-  const cardId = "card" + (cardCreateCnt++);
+  const cardId = "card" + (cardCreateCnt+1);
   const cardData = { 
     views: { 
       [viewId]: { 
@@ -58,7 +58,7 @@ export const setCardDelete = (cardId) => {
 };
 
 export const setCardCopy = (cardState, view, cardCreateCnt) => {
-  const cardId = "card" + (cardCreateCnt++);
+  const cardId = "card" + (cardCreateCnt+1);
   const dataPackage = {
     views: {
       [view]: {
