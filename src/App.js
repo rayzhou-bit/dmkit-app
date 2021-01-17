@@ -17,6 +17,7 @@ const App = props => {
   const toolMenuRef = useRef("toolMenu");
   
   auth.onAuthStateChanged(resp => {
+    // IMPLEMENT: loading start
     if (resp && resp.uid) {
       // Signed in
       console.log("[authObserver] signed in user:", resp.uid);
@@ -24,12 +25,14 @@ const App = props => {
       // IMPLEMENT: prompt if user would like to save the campaign. maybe add to unloadCampaign
       dispatch(actions.unloadCampaign());
       dispatch(actions.fetchCampaignDataFromServer());
+      // IMPLEMENT: loading end
     } else {
       // Signed out
       console.log("[authObserver] signed out");
       dispatch(actions.unloadUser());
       dispatch(actions.unloadCampaign());
       dispatch(actions.loadInitCampaign());  // This doubles as a campaign unload.
+      // IMPLEMENT: loading end
     }
   });
 

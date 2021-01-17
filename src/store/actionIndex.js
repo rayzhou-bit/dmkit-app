@@ -11,14 +11,9 @@ export {
   fetchCampaignDataFromServer,
 } from './action/serverCalls';
 
-// USER
-export {
-  loadUser, unloadUser,
-} from './action/user';
-
 // CAMPAIGN
 export {
-  loadCampaignColl, unloadCampaignColl,
+  initCampaignColl, loadCampaignColl, unloadCampaignColl,
   setCampaignEdit, resetCampaignEdit,
 
   addCampaign,
@@ -30,12 +25,11 @@ export {
 
 // CARD
 export {
-  initCardColl,
-  loadCardColl, unloadCardColl,
-  resetCardEdit,
+  initCardColl, loadCardColl, unloadCardColl,
+  unsetCardEdit,
 
-  addCardToStore, deleteCardFromStore,
-  connectCardToView, removeCardFromView,
+  addCard, removeCard,
+  connectCardToView, disconnectCardFromView,
   setCardCreate, setCardDelete,
   setCardCopy,
 
@@ -53,19 +47,19 @@ export {
 
 // VIEW
 export {
-  initViewColl,
-  loadViewColl, unloadViewColl,
-  resetViewEdit,
+  initViewColl, loadViewColl, unloadViewColl,
+  unsetViewEdit,
 
-  addViewToStore, deleteViewFromStore,
+  addView, removeView,
 
-  setViewCreate, setViewDelete,
+  createView, destroyView,
 
   updViewTitle,
 
-  initViewManage,
-  loadViewOrder, unloadViewOrder, updViewOrder,
-  updActiveView,
+  shiftViewInViewOrder,
+
+  updActiveViewId,
+
   dequeueViewCreate, clearViewCreate,
   clearViewDelete,
 } from './action/view'

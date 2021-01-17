@@ -13,7 +13,7 @@ import DotDotDotImg from '../../media/icons/view-settings-24.png';
 import CloseImg from '../../media/icons/remove-24.png';
 
 const Card = props => {
-  const {cardId, cardState, activeView, cardAnimation, setCardAnimation, toolMenuRef} = props;
+  const {cardId, cardState, activeViewId, cardAnimation, setCardAnimation, toolMenuRef} = props;
   const dispatch = useDispatch();
 
   // STATES
@@ -24,17 +24,17 @@ const Card = props => {
   const editingCard = (editingTitle || editingText) ? true : false;
 
   // STORE SELECTORS
-  const activeCard = useSelector(state => state.cardManage.activeCard);
+  const activeCardId = useSelector(state => state.cardManager.activeCardId);
   const viewColl = useSelector(state => state.viewColl);
-  const viewOrder = useSelector(state => state.viewManage.viewOrder);
+  const viewOrder = useSelector(state => state.viewManager.viewOrder);
 
   // VARIABLES
   const cardViews = cardState.views;
   const cardData = cardState.data;
-  const cardPos = cardViews[activeView].pos;
-  const cardSize = cardViews[activeView].size;
-  const cardColor = cardViews[activeView].color;
-  const cardType = cardViews[activeView].cardType;
+  const cardPos = cardViews[activeViewId].pos;
+  const cardSize = cardViews[activeViewId].size;
+  const cardColor = cardViews[activeViewId].color;
+  const cardType = cardViews[activeViewId].cardType;
   const cardTitle = cardData ? cardData.title : "";
   const cardText = cardData ? cardData.text : "";
 
@@ -44,29 +44,29 @@ const Card = props => {
   const cardTitleRef = useRef(cardTitleId);
   const cardTextId = cardId+".textarea";
   const cardTextRef = useRef(cardTextId);
-  const viewSettingsId = cardId+"."+activeView+".viewSettings";
+  const viewSettingsId = cardId+"."+activeViewId+".viewSettings";
   const viewSettingsRef = useRef(viewSettingsId);
   const viewSettingsBtnRef = useRef(viewSettingsId+".btn")
 
   // FUNCTIONS: CARD
-  const dragStopHandler = (event, data) => dispatch(actions.updCardPos(cardId, activeView, {x: data.x, y: data.y}));
+  const dragStopHandler = (event, data) => dispatch(actions.updCardPos(cardId, activeViewId, {x: data.x, y: data.y}));
 
   const resizeStopHandler = (event, direction, ref, delta, position) => {
-    dispatch(actions.updCardSize(cardId, activeView, {width: ref.style.width, height: ref.style.height}));
+    dispatch(actions.updCardSize(cardId, activeViewId, {width: ref.style.width, height: ref.style.height}));
     if (["top", "left", "topRight", "bottomLeft", "topLeft"].indexOf(direction) !== -1) {
-      dispatch(actions.updCardPos(cardId, activeView, {x: position.x, y: position.y}));
+      dispatch(actions.updCardPos(cardId, activeViewId, {x: position.x, y: position.y}));
     }
   };
 
   const cardClickHandler = () => {
     if (!isSelected) {
-      if (cardId !== activeCard) {dispatch(actions.updActiveCard(cardId))}
+      if (cardId !== activeCardId) {dispatch(actions.updActiveCard(cardId))}
       setIsSelected(true);
     }
   };
 
   const outsideClickCardHandler = () => {
-    if (cardId === activeCard) {dispatch(actions.updActiveCard(null))}
+    if (cardId === activeCardId) {dispatch(actions.updActiveCard(null))}
     setIsSelected(false);
   };
   useOutsideClick([cardRef, toolMenuRef], isSelected, outsideClickCardHandler);
@@ -111,7 +111,7 @@ const Card = props => {
 
   const removeCardFromThisView = () => {
     if (!editingCard) {
-      dispatch(actions.removeCardFromView(cardId, activeView));
+      dispatch(actions.disconnectCardFromView(cardId, activeViewId));
       endTitleEdit();
     }
   };
@@ -150,7 +150,7 @@ const Card = props => {
   };
   const addOrRemoveCard = (view) => {
     if (cardViews[view]) {
-      dispatch(actions.removeCardFromView(cardId, view));
+      dispatch(actions.disconnectCardFromView(cardId, view));
     } else {
       dispatch(actions.connectCardToView(cardId, view, cardPos, cardSize, cardColor));
     }
@@ -161,15 +161,15 @@ const Card = props => {
   useOutsideClick([viewSettingsRef, viewSettingsBtnRef], showViewSettings, setShowViewSettings, false);
   
   // FUNCTIONS: BUBBLE
-  const changeTypeToCard = () => dispatch(actions.updCardType(cardId, activeView, "card"));
-  const changeTypeToBubble = () => dispatch(actions.updCardType(cardId, activeView, "bubble"));
+  const changeTypeToCard = () => dispatch(actions.updCardType(cardId, activeViewId, "card"));
+  const changeTypeToBubble = () => dispatch(actions.updCardType(cardId, activeViewId, "bubble"));
 
   // STYLES: CARD
-  const toFrontStyle = {zIndex: cardId === activeCard ? 10 : 0};
+  const toFrontStyle = {zIndex: cardId === activeCardId ? 10 : 0};
   const cardStyle = {
     backgroundColor: cardColor,
-    border: cardId === activeCard ? '3px solid black' : '1px solid black',
-    margin: cardId === activeCard ? '0px' : '2px',
+    border: cardId === activeCardId ? '3px solid black' : '1px solid black',
+    margin: cardId === activeCardId ? '0px' : '2px',
     animation: cardAnimation ? cardAnimation[cardId] : null,
   };
   
@@ -212,10 +212,10 @@ const Card = props => {
         <div key={view} className="view-row">
           <div className="view-toggle">
             <label className="switch">
-              <input id={cardId+view} type="checkbox" checked={cardViews[view]} disabled={view===activeView} onChange={() => addOrRemoveCard(view)} />
+              <input id={cardId+view} type="checkbox" checked={cardViews[view]} disabled={view===activeViewId} onChange={() => addOrRemoveCard(view)} />
               <span className="slider" style={(cardViews[view]) ? {backgroundColor: cardViews[view].color} : null}/>
             </label>
-            <label className="view-title" htmlFor={cardId+view} style={(view===activeView ? {fontWeight: "bold"} : null)}>{viewColl[view].title}</label>
+            <label className="view-title" htmlFor={cardId+view} style={(view===activeViewId ? {fontWeight: "bold"} : null)}>{viewColl[view].title}</label>
           </div>
           <div className="color-selection">{colorList}</div>
         </div>
@@ -248,7 +248,7 @@ const Card = props => {
             className="title-input" style={titleBarStyle}
             type="text" required
             value={cardTitle} readOnly={!editingTitle}
-            onDoubleClick={(cardId === activeCard) ? startTitleEdit : null}
+            onDoubleClick={(cardId === activeCardId) ? startTitleEdit : null}
             onChange={updTitleEdit}
             onKeyUp={(e) => keyPressTitleHandler(e)}
           />
@@ -271,8 +271,8 @@ const Card = props => {
             type="text"
             value={cardText} readOnly={!editingText}
             placeholder="Fill me in!"
-            onClick={(cardId === activeCard) ? startTextEdit : null}
-            onDoubleClick={(cardId !== activeCard) ? startTextEdit : null}
+            onClick={(cardId === activeCardId) ? startTextEdit : null}
+            onDoubleClick={(cardId !== activeCardId) ? startTextEdit : null}
             onChange={updTextEdit}
             onKeyDown={(e) => keyPressTextHandler(e)}
           />

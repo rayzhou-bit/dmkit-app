@@ -29,9 +29,9 @@ const initialState = {
   //   },
   //   edited: boolean,
   // },
-  card1: {
+  card0: {
     views: {
-      view1: {
+      view0: {
         pos: {x: 60, y: 60},
         size: {width: 600, height: 450},
         color: "green",
@@ -48,26 +48,26 @@ const initialState = {
 
 const reducer = (state = {}, action) => {
   switch(action.type) {
-    // CARD AND SERVER
+    // Collection load/unload
     case actionTypes.INIT_CARD_COLL: return initialState;
     case actionTypes.LOAD_CARD_COLL: return updateObject(state, action.cardColl);
     case actionTypes.UNLOAD_CARD_COLL: return {};
-    case actionTypes.RESET_CARD_EDIT: return resetCardEdit(state, action.cardId); 
+    case actionTypes.UNSET_CARD_EDIT: return unsetCardEdit(state, action.cardId); 
 
-    // ADD/REMOVE CARD
-    case actionTypes.ADD_CARD: return addCardToStore(state, action.cardId, action.cardData);
-    case actionTypes.DELETE_CARD: return deleteCardFromStore(state, action.cardId);
+    // Add/Remove
+    case actionTypes.ADD_CARD: return addCard(state, action.cardId, action.cardData);
+    case actionTypes.REMOVE_CARD: return removeCard(state, action.cardId);
     case actionTypes.CONNECT_CARD_TO_VIEW: return connectCardToView(state, action.cardId, action.viewId, action.pos, action.size, action.color);
-    case actionTypes.REMOVE_CARD_FROM_VIEW: return removeCardFromView(state, action.cardId, action.viewId);
+    case actionTypes.DISCONNECT_CARD_FROM_VIEW: return disconnectCardFromView(state, action.cardId, action.viewId);
 
-    // CARD VISUAL
+    // Update visuals
     case actionTypes.UPD_CARD_POS: return updCardPos(state, action.cardId, action.viewId, action.pos.x, action.pos.y);
     case actionTypes.UPD_CARD_SIZE: return updCardSize(state, action.cardId, action.viewId, action.size.width, action.size.height);
     case actionTypes.UPD_CARD_COLOR: return updCardColor(state, action.cardId, action.viewId, action.color);
     case actionTypes.UPD_CARD_COLOR_FOR_ALL_VIEWS: return updCardColorForAllViews(state, action.cardId, action.color);
     case actionTypes.UPD_CARD_TYPE: return updCardType(state, action.cardId, action.viewId, action.cardType);
 
-    // CARD DATA
+    // Update data
     case actionTypes.UPD_CARD_TITLE: return updCardTitle(state, action.cardId, action.title);
     case actionTypes.UPD_CARD_TEXT: return updCardText(state, action.cardId, action.text);
 
@@ -75,18 +75,18 @@ const reducer = (state = {}, action) => {
   }
 };
 
-const resetCardEdit = (state, cardId) => {
+const unsetCardEdit = (state, cardId) => {
   const updatedCard = updateObject(state[cardId], {edited: false});
   return updateObject(state, updatedCard);
 };
 
-const addCardToStore = (state, cardId, cardData) => {
+const addCard = (state, cardId, cardData) => {
   let newCard = { [cardId]: cardData };
   newCard.edited = true;
   return updateObject(state, newCard);
 };
 
-const deleteCardFromStore = (state, cardId) => {
+const removeCard = (state, cardId) => {
   let updatedCardColl = {...state};
   delete updatedCardColl[cardId];
   return updatedCardColl;
@@ -105,7 +105,7 @@ const connectCardToView = (state, cardId, viewId, pos, size, color) => {
   return updateObject(state, {[cardId]: updatedCard});
 };
 
-const removeCardFromView = (state, cardId, viewId) => {
+const disconnectCardFromView = (state, cardId, viewId) => {
   let updatedCard = {...state[cardId]};
   delete updatedCard.views[viewId];
   updatedCard.edited = true;

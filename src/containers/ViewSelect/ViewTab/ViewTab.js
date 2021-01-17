@@ -15,8 +15,9 @@ const ViewTab = React.memo(props => {
   const [editingTitle, setEditingTitle] = useState(false);
 
   const viewColl = useSelector(state => state.viewColl);
-  const activeView = useSelector(state => state.viewManage.activeView);
-  const viewOrder = useSelector(state => state.viewManage.viewOrder);
+  const campaignId = useSelector(state => state.dataManager.activeCampaignId);
+  const campaignData = useSelector(state => state.campaignColl[campaignId]);
+  const activeViewId = campaignData.activeViewId;
   const viewPos = Number(props.position); // positions start at 0
 
   const viewId = props.id;
@@ -50,42 +51,34 @@ const ViewTab = React.memo(props => {
   };
 
   const dragStopHandler = (event, data) => {
+    // IMPLEMENT: viewPos needs updating... and posShift definition
     const posShift = Math.round((data.x - (viewPos*tabWidth)) / tabWidth);
-    let newPos = viewPos + posShift;
-    if (newPos < 0) {newPos = 0}
-    if (newPos >= viewOrder.length) {newPos = viewOrder.length-1}
-
-    let newViewOrder = [...viewOrder];
-    if (newPos !== viewPos) {
-      newViewOrder.splice(viewPos, 1);          // removes view from viewPos
-      newViewOrder.splice(newPos, 0, viewId);   // re-inserts view at newPos
-      dispatch(actions.updViewOrder(newViewOrder));
-    }
+    dispatch(actions.shiftViewInViewOrder(campaignId, viewId, posShift));
   };
 
   const clickHandler = () => {
-    if (viewId !== activeView) {
-      dispatch(actions.updActiveView(viewId));
+    if (viewId !== activeViewId) {
+      dispatch(actions.updActiveViewId(campaignId, viewId));
     }
   };
 
   const keyPressHandler = (event) => {
-    if (viewId === activeView) {
+    if (viewId === activeViewId) {
       if (event.key === 'Enter') {
         endEdit();
       }
     }
   };
 
-  const setViewDelete = () => dispatch(actions.setViewDelete(viewId));
+  const destroyView = () => dispatch(actions.destroyView(campaignId, viewId));
 
   // STYLES
-  const toFrontStyle = {zIndex: viewId === activeView ? 10 : 0};
+  const toFrontStyle = {zIndex: viewId === activeViewId ? 10 : 0};
 
   const activeViewStyle = {
-    backgroundColor: viewId === activeView ? "white" : "lightgray",
+    backgroundColor: viewId === activeViewId ? "white" : "lightgray",
     borderRight: "1px solid black",
-    borderTop: viewId === activeView ? "1px solid white" : "1px solid black",
+    borderTop: viewId === activeViewId ? "1px solid white" : "1px solid black",
   };
 
   const titleStyle = {
@@ -97,7 +90,7 @@ const ViewTab = React.memo(props => {
       // position and dragging properties
       bounds="parent" dragAxis="x"
       position={{x: viewPos * tabWidth, y: 0}}
-      disableDragging={editingTitle || (viewId !== activeView)}
+      disableDragging={editingTitle || (viewId !== activeViewId)}
       dragHandleClassName="title"
       // size and resizing properties
       enableResizing={false}
@@ -112,13 +105,13 @@ const ViewTab = React.memo(props => {
           value={viewTitle}
           readOnly={!editingTitle}
           onClick={clickHandler}
-          onDoubleClick={(viewId === activeView) ? beginEdit : null}
+          onDoubleClick={(viewId === activeViewId) ? beginEdit : null}
           onChange={updEdit}
           onKeyDown={(e) => keyPressHandler(e)}
         />
         <div className="divider" />
         <div className="button" 
-          onClick={setViewDelete}>
+          onClick={destroyView}>
           <img src={CloseImg} alt="Delete" draggable="false" />
           <span className="tooltip">Delete view</span>
         </div>

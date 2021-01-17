@@ -7,7 +7,7 @@ const initialState = {
   //   color: "color",
   //   edited: boolean,
   // },
-  view1: {
+  view0: {
     title: "Welcome!",
     edited: false,
   },
@@ -15,32 +15,37 @@ const initialState = {
 
 const reducer = (state = {}, action) => {
   switch(action.type) {
+    // Collection load/unload
     case actionTypes.INIT_VIEW_COLL: return initialState;
     case actionTypes.LOAD_VIEW_COLL: return updateObject(state, action.viewColl);
     case actionTypes.UNLOAD_VIEW_COLL: return {};
-    case actionTypes.RESET_VIEW_EDIT: return resetViewEdit(state, action.viewId);
+    case actionTypes.UNSET_VIEW_EDIT: return unsetViewEdit(state, action.viewId);
 
-    case actionTypes.ADD_VIEW: return addViewToStore(state, action.viewId, action.dataPackage);
-    case actionTypes.DELETE_VIEW: return deleteViewFromStore(state, action.viewId);
+    // Add/Remove
+    case actionTypes.ADD_VIEW: return addView(state, action.viewId, action.dataPackage);
+    case actionTypes.REMOVE_VIEW: return removeView(state, action.viewId);
 
-    case actionTypes.UPD_VIEW_TITLE: return updViewTitle(state, action.viewId, action.title);
+    // Update visuals
     case actionTypes.UPD_VIEW_COLOR: return updViewColor(state, action.viewId, action.color);
+
+    // Update data
+    case actionTypes.UPD_VIEW_TITLE: return updViewTitle(state, action.viewId, action.title);
 
     default: return state;
   }
 };
 
-const resetViewEdit = (state, viewId) => {
+const unsetViewEdit = (state, viewId) => {
   const updatedView = updateObject(state[viewId], {edited: false});
   return updateObject(state, {[viewId]: updatedView});
 };
 
-const addViewToStore = (state, viewId, dataPackage) => {
+const addView = (state, viewId, dataPackage) => {
   const newView = updateObject(dataPackage, {edited: true});
   return updateObject(state, {[viewId]: newView});
 };
 
-const deleteViewFromStore = (state, viewId) => {
+const removeView = (state, viewId) => {
   let updatedViews = {...state};
   delete updatedViews[viewId];
   return updatedViews;

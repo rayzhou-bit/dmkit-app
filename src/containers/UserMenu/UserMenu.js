@@ -19,11 +19,11 @@ const UserMenu = props => {
   const campaignColl = useSelector(state => state.campaignColl);
   const cardColl = useSelector(state => state.cardColl);
   const viewColl = useSelector(state => state.viewColl);
-  const cardManage = useSelector(state => state.cardManage);
-  const viewManage = useSelector(state => state.viewManage);
+  const cardManager = useSelector(state => state.cardManager);
+  const viewManager = useSelector(state => state.viewManager);
   const userId = actions.getUserId();
   const userEmail = actions.getUserEmail();
-  const campaignId = useSelector(state => state.campaignManage.activeCampaign);
+  const campaignId = useSelector(state => state.dataManager.activeCampaignId);
   const campaignTitle = (campaignColl[campaignId] && campaignColl[campaignId].title) ? campaignColl[campaignId].title : null;
 
   // IDS & REFS
@@ -46,8 +46,8 @@ const UserMenu = props => {
     // IMPLEMENT: ask if save campaign
   };
 
-  const switchCampaign = (campId) => dispatch(actions.switchCampaign(campId, campaignId, campaignColl, cardColl, viewColl, cardManage, viewManage));
-  const newCampaign = () => dispatch(actions.createCampaign(campaignId, campaignColl, cardColl, viewColl, cardManage, viewManage));
+  const switchCampaign = (nextCampaignId) => dispatch(actions.switchCampaign(nextCampaignId, campaignId, campaignColl, cardColl, viewColl, cardManager, viewManager));
+  const newCampaign = () => dispatch(actions.createCampaign(campaignId, campaignColl, cardColl, viewColl, cardManager, viewManager));
 
   useOutsideClick([campaignDropDownRef, campaignButtonRef], showCampaignDropDown, setShowCampaignDropDown, false);
   useOutsideClick([userDropDownRef, userButtonRef], showUserDropDown, setShowUserDropDown, false);
@@ -55,11 +55,11 @@ const UserMenu = props => {
   let campaignList = [];
   if (userId) {
     if (campaignColl) {
-      for (let campId in campaignColl) {
+      for (let campaignId in campaignColl) {
         campaignList = [
           ...campaignList,
-          <div key={campId} onClick={() => switchCampaign(campId)}>
-            {campaignColl[campId].title ? campaignColl[campId].title : ""}
+          <div key={campaignId} onClick={() => switchCampaign(campaignId)}>
+            {campaignColl[campaignId].title ? campaignColl[campaignId].title : ""}
           </div>
         ];
       };

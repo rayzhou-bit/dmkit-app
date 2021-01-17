@@ -13,29 +13,28 @@ const ToolMenu = React.memo(props => {
   const dispatch = useDispatch();
 
   // VARIABLES
+  const userId = actions.getUserId();
   const campaignColl = useSelector(state => state.campaignColl);
   const cardColl = useSelector(state => state.cardColl);
   const viewColl = useSelector(state => state.viewColl);
-  const cardManage = useSelector(state => state.cardManage);
-  const viewManage = useSelector(state => state.viewManage);
-  const userId = actions.getUserId();
-  const campaignId = useSelector(state => state.campaignManage.activeCampaign);
-  const activeCard = useSelector(state => state.cardManage.activeCard);
-  const activeView = useSelector(state => state.viewManage.activeView);
-  const cardCreateCnt = useSelector(state => state.cardManage.createCount);
+  const campaignId = useSelector(state => state.dataManager.activeCampaignId);
+  const campaignData = campaignColl[campaignId];
+  const activeViewId = campaignData.activeViewId;
+  const activeCardId = useSelector(state => state.dataManager.activeCardId);
+  const cardCreateCnt = campaignData.cardCreateCnt;
 
   // FUNCTIONS
-  const setCardCreate = () => dispatch(actions.setCardCreate(cardCreateCnt, activeView));
+  const setCardCreate = () => dispatch(actions.setCardCreate(cardCreateCnt, activeViewId));
 
   const setCardCopy = () => {
-    if (activeCard) {
-      dispatch(actions.setCardCopy(cardColl[activeCard], activeView, cardCreateCnt));
+    if (activeCardId) {
+      dispatch(actions.setCardCopy(cardColl[activeCardId], activeViewId, cardCreateCnt));
     }
   };
 
   const saveEditedData = () => {
     if (userId) {
-      // dispatch(actions.saveCampaignDataToServer(campaignId, campaignColl, cardColl, viewColl, cardManage, viewManage));
+      // dispatch(actions.saveCampaignDataToServer(campaignId, campaignColl, cardColl, viewColl, cardManager, viewManager));
     } else {
       // IMPLEMENT: ask for player log in or sign up
     }

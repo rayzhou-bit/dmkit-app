@@ -16,16 +16,10 @@ const ViewScreen = props => {
   const [cardAnimation, setCardAnimation] = useState({});
 
   // STORE SELECTORS
-  // const userId = useSelector(state => state.user.user);
-  // const campaignId = useSelector(state => state.campaignManage.activeCampaign);
   const cardColl = useSelector(state => state.cardColl);
-  // const cardCreate = useSelector(state => state.cardManage.cardCreate);
-  // const cardDelete = useSelector(state => state.cardManage.cardDelete);
-  // const viewColl = useSelector(state => state.viewColl);
-  // const viewOrder = useSelector(state => state.viewManage.viewOrder);
-  // const editedViewOrder = useSelector(state => state.viewManage.editedViewOrder);
-  // const viewDelete = useSelector(state => state.viewManage.viewDelete);
-  const activeView = useSelector(state => state.viewManage.activeView);
+  const campaignId = useSelector(state => state.dataManager.activeCampaignId);
+  const campaignData = useSelector(state => state.campaignColl[campaignId]);
+  const activeViewId = campaignData.activeViewId;
   
   // VARIABLES
   const viewScreenRef = useRef("viewscreen");
@@ -36,7 +30,7 @@ const ViewScreen = props => {
     const data = event.dataTransfer.getData("text");
     const targetCardId = data.split(".")[0];
     if (cardColl[targetCardId]) {
-      if (!cardColl[targetCardId].views[activeView]) {
+      if (!cardColl[targetCardId].views[activeViewId]) {
         // future update: more precise pos calculation
         let xCalculation = Math.round((event.clientX-GRID.size-GRID.size)/GRID.size)*GRID.size;
         if (xCalculation<0) {xCalculation = 0}
@@ -45,7 +39,7 @@ const ViewScreen = props => {
         const pos = {x: xCalculation, y: yCalculation};
         const size = {width: GRID.size*10, height: GRID.size*10};
         const color = "gray";
-        dispatch(actions.connectCardToView(targetCardId, activeView, pos, size, color));
+        dispatch(actions.connectCardToView(targetCardId, activeViewId, pos, size, color));
       } else {
         setCardAnimation({
           ...cardAnimation,
@@ -59,7 +53,7 @@ const ViewScreen = props => {
 
   // STYLES
   let viewScreenStyle = {
-    // backgroundColor: activeView ? "white" : "lightgray",
+    // backgroundColor: activeViewId ? "white" : "lightgray",
     backgroundColor: 'transparent',
   };
 
@@ -67,11 +61,11 @@ const ViewScreen = props => {
   let cardList = [];
   if (cardColl) {
     for (let cardId in cardColl) {
-      if (cardColl[cardId].views && cardColl[cardId].views[activeView]) {
+      if (cardColl[cardId].views && cardColl[cardId].views[activeViewId]) {
         cardList = [
           ...cardList,
           <Card key={cardId} toolMenuRef={toolMenuRef}
-            cardId={cardId} cardState={cardColl[cardId]} activeView={activeView}
+            cardId={cardId} cardState={cardColl[cardId]} activeViewId={activeViewId}
             cardAnimation={cardAnimation}
             setCardAnimation={setCardAnimation}
           />,

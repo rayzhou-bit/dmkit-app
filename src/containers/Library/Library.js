@@ -17,7 +17,9 @@ const Library = props => {
   // const [displayedItems, setDisplayedItems] = useState('cards');
 
   const cardColl = useSelector(state => state.cardColl);
-  const activeView = useSelector(state => state.viewManage.activeView);
+  const campaignId = useSelector(state => state.dataManager.activeCampaignId);
+  const campaignData = useSelector(state => state.campaignColl[campaignId]);
+  const activeViewId = campaignData.activeViewId;
 
   const searchId = "libSearchBar";
   const searchRef = useRef(searchId);
@@ -48,7 +50,7 @@ const Library = props => {
           cardList = [
             ...cardList,
             <LibCard key={cardId} 
-              cardId={cardId} cardState={cardColl[cardId]} activeView={activeView}
+              cardId={cardId} cardState={cardColl[cardId]} activeViewId={activeViewId}
             />,
             <div key={cardId+'.libDivider'} className="lib-divider" />
           ];

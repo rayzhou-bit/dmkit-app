@@ -1,36 +1,24 @@
 import * as actionTypes from '../actionTypes';
 import { updateObject } from '../../shared/utilityFunctions';
 
+// IMPLEMENT: MOVE CONTENTS TO OTHER COMPONENTS
 const initialState = {
-  viewOrder: ["view1"],            // array that tracks the position of the views
-  editedViewOrder: false,
+  viewOrder: ["view0"],            // array that tracks the position of the views
+  activeViewId: "view0",
+  viewCreateCnt: 1,
 
-  activeView: "view1",
-
-  viewCreate: ["view1"],      // array for new views that do not have firebase ids
-  createCount: 1,
-
+  viewCreate: ["view0"],      // array for new views that do not have firebase ids
   viewDelete: [],           // array for views to delete from firebase
 };
 
 const reducer = (state = {}, action) => {
   switch(action.type) {
-    case actionTypes.INIT_VIEW_MANAGE: return initialState;
-
     // viewOrder
-    case actionTypes.LOAD_VIEW_ORDER: return updateObject(state, {viewOrder: action.viewOrder});
-    case actionTypes.UNLOAD_VIEW_ORDER: return updateObject(state, {viewOrder: []});
-    case actionTypes.UPD_VIEW_ORDER: return updateObject(state, {viewOrder: action.viewOrder});
-    case actionTypes.ADD_TO_VIEW_ORDER: return addToViewOrder(state, action.viewId);
-    case actionTypes.DELETE_FROM_VIEW_ORDER: return deleteFromViewOrder(state, action.viewId);
-
-    // activeView
-    case actionTypes.UPD_ACTIVE_VIEW: return updateObject(state, {activeView: action.viewId});
-
-    // viewCreate
+    // activeViewId
+    // viewCreate PICK UP HERE
     case actionTypes.QUEUE_VIEW_CREATE: return queueViewCreate(state, action.viewId);
     case actionTypes.DEQUEUE_VIEW_CREATE: return dequeueViewCreate(state, action.viewId);
-    case actionTypes.CLEAR_VIEW_CREATE: return updateObject(state, {viewCreate: [], createCount: 0});
+    case actionTypes.CLEAR_VIEW_CREATE: return updateObject(state, {viewCreate: []});
 
     // viewDelete
     case actionTypes.QUEUE_VIEW_DELETE: return queueViewDelete(state, action.viewId);
@@ -44,22 +32,21 @@ const reducer = (state = {}, action) => {
 const addToViewOrder = (state, addedView) => {
   const updatedViewOrder = [...state.viewOrder];
   updatedViewOrder.push(addedView);
-  return updateObject(state, {viewOrder: updatedViewOrder, editedViewOrder: true});
+  return updateObject(state, {viewOrder: updatedViewOrder});
 };
 const deleteFromViewOrder = (state, deletedView) => {
   const updatedViewOrder = [...state.viewOrder].filter(view => view !== deletedView);
-  return updateObject(state, {viewOrder: updatedViewOrder, activeView: updatedViewOrder[0], editedViewOrder: true});
+  return updateObject(state, {viewOrder: updatedViewOrder, activeViewId: updatedViewOrder[0]});
 };
 
 //viewCreate
 const queueViewCreate = (state, queuedView) => {
   let updatedViewCreate = [...state.viewCreate];
   updatedViewCreate.push(queuedView);
-  console.log(state.createCount)
   return updateObject(state, {
     viewCreate: updatedViewCreate, 
-    createCount: state.createCount+1,
-    activeView: queuedView,
+    viewCreateCnt: state.viewCreateCnt+1,
+    activeViewId: queuedView,
   });
 };
 const dequeueViewCreate = (state, dequeuedView) => {
@@ -71,7 +58,7 @@ const dequeueViewCreate = (state, dequeuedView) => {
 const queueViewDelete = (state, queuedView) => {
   let updatedViewCreate = [...state.viewCreate];
   let updatedViewDelete = [...state.viewDelete];
-  let updatedActiveView = (queuedView !== state.activeView) ? state.activeView : null;
+  let updatedActiveView = (queuedView !== state.activeViewId) ? state.activeViewId : null;
   if (updatedViewCreate.includes(queuedView)) {
     // if view to be deleted has yet to be saved to server, remove from viewCreate
     const i = updatedViewCreate.indexOf(queuedView);
@@ -82,7 +69,7 @@ const queueViewDelete = (state, queuedView) => {
   return updateObject(state, {
     viewCreate: updatedViewCreate,
     viewDelete: updatedViewDelete,
-    activeView: updatedActiveView,
+    activeViewId: updatedActiveView,
   });
 };
 

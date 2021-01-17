@@ -9,7 +9,7 @@ import { TEXT_COLOR_WHEN_BACKGROUND_IS, CARD_TITLEBAR_EDIT_COLORS } from '../../
 import DeleteImg from '../../../media/icons/delete-24.png';
 
 const LibCard = props => {
-  const {cardId, cardState, activeView} = props;
+  const {cardId, cardState, activeViewId} = props;
   const dispatch = useDispatch();
 
   // STATES
@@ -20,12 +20,12 @@ const LibCard = props => {
   const editingCard = (editingTitle || editingText) ? true : false;
 
   // STORE SELECTORS
-  const activeCard = useSelector(state => state.cardManage.activeCard);
+  const activeCardId = useSelector(state => state.cardManager.activeCardId);
 
   // VARIABLES
   const cardViews = cardState.views;
   const cardData = cardState.data;
-  const cardColor = (cardViews && cardViews[activeView]) ? cardViews[activeView].color : "gray";
+  const cardColor = (cardViews && cardViews[activeViewId]) ? cardViews[activeViewId].color : "gray";
   const cardTitle = cardData ? cardData.title : "";
   const cardText = cardData ? cardData.text : "";
 
@@ -43,13 +43,13 @@ const LibCard = props => {
 
   const cardClickHandler = () => {
     if (!isSelected) {
-      if (cardId !== activeCard) {dispatch(actions.updActiveCard(cardId))}
+      if (cardId !== activeCardId) {dispatch(actions.updActiveCard(cardId))}
       setIsSelected(true);
     }
   };
 
   const outsideClickCardHandler = () => {
-    if (cardId === activeCard) {dispatch(actions.updActiveCard(null))}
+    if (cardId === activeCardId) {dispatch(actions.updActiveCard(null))}
     setIsSelected(false);
   };
   useOutsideClick([cardRef], isSelected, outsideClickCardHandler);
@@ -87,7 +87,7 @@ const LibCard = props => {
     }
   };
 
-  const deleteCardFromStore = () => {
+  const removeCard = () => {
     if (!confirmDelete) {
       setConfirmDelete(true);
     } else {
@@ -128,8 +128,8 @@ const LibCard = props => {
 
   // STYLES: CARD
   const cardStyle = {
-    border: cardId === activeCard ? '3px solid black' : '1px solid black',
-    margin: cardId === activeCard ? '0px' : '2px',
+    border: cardId === activeCardId ? '3px solid black' : '1px solid black',
+    margin: cardId === activeCardId ? '0px' : '2px',
   };
 
   // STYLES: TITLEBAR
@@ -168,12 +168,12 @@ const LibCard = props => {
         <input id={cardTitleId} ref={cardTitleRef}
           className="lib-title" style={titleBarStyle} type="text" required
           value={cardTitle} readOnly={!editingTitle}
-          onDoubleClick={(cardId === activeCard) ? startTitleEdit : null}
+          onDoubleClick={(cardId === activeCardId) ? startTitleEdit : null}
           onChange={updTitleEdit}
           onKeyDown={(e) => keyPressTitleHandler(e)}
         />
         <div ref={cardDeleteBtnRef} className="button" style={deleteButtonStyle}
-          onClick={deleteCardFromStore}
+          onClick={removeCard}
         >
           <img src={DeleteImg} alt="Delete" draggable="false" />
           <span className="tooltip">Delete card</span>
@@ -184,8 +184,8 @@ const LibCard = props => {
           className="lib-textfield" style={bodyStyle} 
           type="text"
           value={cardText} readOnly={!editingText}
-          onClick={(cardId === activeCard) ? startTextEdit : null}
-          onDoubleClick={(cardId !== activeCard) ? startTextEdit : null}
+          onClick={(cardId === activeCardId) ? startTextEdit : null}
+          onDoubleClick={(cardId !== activeCardId) ? startTextEdit : null}
           onChange={updTextEdit}
           onKeyDown={(e) => keyPressTextHandler(e)}
         />

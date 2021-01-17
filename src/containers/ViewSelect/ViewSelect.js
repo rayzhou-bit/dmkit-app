@@ -13,10 +13,13 @@ const ViewSelect = React.memo(props => {
   const dispatch = useDispatch();
 
   const viewColl = useSelector(state => state.viewColl);
-  const viewOrder = useSelector(state => state.viewManage.viewOrder);
-  const viewCreateCnt = useSelector(state => state.viewManage.createCount);
+  const campaignId = useSelector(state => state.dataManager.activeCampaignId);
+  const campaignData = useSelector(state => state.campaignColl[campaignId]);
+  const activeViewId = campaignData.activeViewId;
+  const viewOrder = campaignData.viewOrder;
+  const viewCreateCnt = campaignData.viewCreateCnt;
 
-  const setViewCreate = () => dispatch(actions.setViewCreate(viewCreateCnt));
+  const createView = () => dispatch(actions.createView(campaignId, activeViewId, viewCreateCnt));
 
   let viewTabs = [];
   if (viewColl) {
@@ -33,7 +36,7 @@ const ViewSelect = React.memo(props => {
 
   return (
     <div id="viewSelect">
-      <div id="addView" onClick={setViewCreate}>
+      <div id="addView" onClick={createView}>
         <img src={AddImg} alt="Add" draggable="false" />
         <span className="tooltip">Add a view</span>
       </div>

@@ -1,12 +1,12 @@
 import * as actionTypes from '../actionTypes';
 import { updateObject } from '../../shared/utilityFunctions';
 
+// IMPLEMENT: MOVE CONTENTS TO OTHER COMPONENTS
 const initialState = {
-  activeCard: "card1",
+  activeCardId: "card0",
+  cardCreateCnt: 1,
 
-  cardCreate: ["card1"],         // array for new cards that do not have a firebase id
-  createCount: 1,
-
+  cardCreate: ["card0"],         // array for new cards that do not have a firebase id
   cardDelete: [],               // array for cards to delete from firebase
 };
  
@@ -14,13 +14,13 @@ const reducer = (state = {}, action) => {
   switch(action.type) {
     case actionTypes.INIT_CARD_MANAGE: return initialState;
 
-    // activeCard
-    case actionTypes.UPD_ACTIVE_CARD: return updateObject(state, {activeCard: action.activeCard});
+    // activeCardId
+    case actionTypes.UPD_ACTIVE_CARD: return updateObject(state, {activeCardId: action.activeCardId});
 
     // cardCreate
     case actionTypes.QUEUE_CARD_CREATE: return queueCardCreate(state, action.cardId);
     case actionTypes.DEQUEUE_CARD_CREATE: return dequeueCardCreate(state, action.cardId);
-    case actionTypes.CLEAR_CARD_CREATE: return updateObject(state, {cardCreate: [], createCount: 0});
+    case actionTypes.CLEAR_CARD_CREATE: return updateObject(state, {cardCreate: []});
     
     // cardDelete
     case actionTypes.QUEUE_CARD_DELETE: return queueCardDelete(state, action.cardId);
@@ -36,8 +36,8 @@ const queueCardCreate = (state, queuedCard) => {
   updatedCardCreate.push(queuedCard);
   return updateObject(state, {
     cardCreate: updatedCardCreate, 
-    createCount: state.createCount+1,
-    activeCard: queuedCard,
+    cardCreateCnt: state.cardCreateCnt+1,
+    activeCardId: queuedCard,
   });
 };
 const dequeueCardCreate = (state, dequeuedCard) => {
@@ -49,7 +49,7 @@ const dequeueCardCreate = (state, dequeuedCard) => {
 const queueCardDelete = (state, queuedCard) => {
   let updatedCardCreate = [...state.cardCreate];
   let updatedCardDelete = [...state.cardDelete];
-  let updatedActiveCard = (queuedCard !== state.activeCard) ? state.activeCard : null;
+  let updatedActiveCard = (queuedCard !== state.activeCardId) ? state.activeCardId : null;
   if (updatedCardCreate.includes(queuedCard)) {
     // if card to be deleted has yet to be saved to server, remove from cardCreate
     const i = updatedCardCreate.indexOf(queuedCard);
@@ -60,7 +60,7 @@ const queueCardDelete = (state, queuedCard) => {
   return updateObject(state, {
     cardCreate: updatedCardCreate,
     cardDelete: updatedCardDelete, 
-    activeCard: updatedActiveCard,
+    activeCardId: updatedActiveCard,
   });
 };
 

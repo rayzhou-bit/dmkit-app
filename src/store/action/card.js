@@ -5,11 +5,11 @@ import { GRID } from '../../shared/constants/grid';
 export const initCardColl = () => { return { type: actionTypes.INIT_CARD_COLL }; };
 export const loadCardColl = (cardColl) => { return { type: actionTypes.LOAD_CARD_COLL, cardColl: cardColl }; };
 export const unloadCardColl = () => { return { type: actionTypes.UNLOAD_CARD_COLL }; };
-export const resetCardEdit = (cardId) => { return { type: actionTypes.RESET_CARD_EDIT, cardId: cardId }; };
-export const addCardToStore = (cardId, cardData) => { return { type: actionTypes.ADD_CARD, cardId: cardId, cardData: cardData }; };
-export const deleteCardFromStore = (cardId) => { return { type: actionTypes.DELETE_CARD, cardId: cardId }; };
+export const unsetCardEdit = (cardId) => { return { type: actionTypes.UNSET_CARD_EDIT, cardId: cardId }; };
+export const addCard = (cardId, cardData) => { return { type: actionTypes.ADD_CARD, cardId: cardId, cardData: cardData }; };
+export const removeCard = (cardId) => { return { type: actionTypes.REMOVE_CARD, cardId: cardId }; };
 export const connectCardToView = (cardId, viewId, pos, size, color) => { return { type: actionTypes.CONNECT_CARD_TO_VIEW, cardId: cardId, viewId: viewId, pos: pos, size: size, color: color }; };
-export const removeCardFromView = (cardId, viewId) => { return { type: actionTypes.REMOVE_CARD_FROM_VIEW, cardId: cardId, viewId: viewId }; };
+export const disconnectCardFromView = (cardId, viewId) => { return { type: actionTypes.DISCONNECT_CARD_FROM_VIEW, cardId: cardId, viewId: viewId }; };
 export const updCardPos = (cardId, viewId, pos) => { return { type: actionTypes.UPD_CARD_POS, cardId: cardId, viewId: viewId, pos: pos }; };
 export const updCardSize = (cardId, viewId, size) => { return { type: actionTypes.UPD_CARD_SIZE, cardId: cardId, viewId: viewId, size: size }; };
 export const updCardColor = (cardId, viewId, color) => { return { type: actionTypes.UPD_CARD_COLOR, cardId: cardId, viewId: viewId, color: color }; };
@@ -20,7 +20,7 @@ export const updCardText = (cardId, text) => { return { type: actionTypes.UPD_CA
 
 // <-----SIMPLE CARDMANAGE REDUCER CALLS----->
 export const initCardManage = () => { return { type: actionTypes.INIT_CARD_MANAGE }; };
-export const updActiveCard = (activeCard) => { return { type: actionTypes.UPD_ACTIVE_CARD, activeCard: activeCard }; };
+export const updActiveCard = (activeCardId) => { return { type: actionTypes.UPD_ACTIVE_CARD, activeCardId: activeCardId }; };
 const queueCardCreate = (cardId) => { return { type: actionTypes.QUEUE_CARD_CREATE, cardId: cardId }; };
 export const dequeueCardCreate = (cardId) => { return { type: actionTypes.DEQUEUE_CARD_CREATE, cardId: cardId }; };
 export const clearCardCreate = () => { return { type: actionTypes.CLEAR_CARD_CREATE }; };
@@ -29,7 +29,7 @@ export const clearCardDelete = () => { return { type: actionTypes.CLEAR_CARD_DEL
 
 // <-----COMPLEX CALLS----->
 export const setCardCreate = (cardCreateCnt, viewId) => {
-  const cardId = "card" + (cardCreateCnt+1);
+  const cardId = "card" + (cardCreateCnt);
   const cardData = { 
     views: { 
       [viewId]: { 
@@ -45,20 +45,20 @@ export const setCardCreate = (cardCreateCnt, viewId) => {
     },
   };
   return dispatch => {
-    dispatch(addCardToStore(cardId, cardData));
+    dispatch(addCard(cardId, cardData));
     dispatch(queueCardCreate(cardId));
   };
 };
 
 export const setCardDelete = (cardId) => {
   return dispatch => {
-    dispatch(deleteCardFromStore(cardId));
+    dispatch(removeCard(cardId));
     dispatch(queueCardDelete(cardId));
   };
 };
 
 export const setCardCopy = (cardState, view, cardCreateCnt) => {
-  const cardId = "card" + (cardCreateCnt+1);
+  const cardId = "card" + cardCreateCnt;
   const dataPackage = {
     views: {
       [view]: {
@@ -69,7 +69,7 @@ export const setCardCopy = (cardState, view, cardCreateCnt) => {
     data: {...cardState.data},
   };
   return dispatch => {
-    dispatch(addCardToStore(cardId, dataPackage));
+    dispatch(addCard(cardId, dataPackage));
     dispatch(queueCardCreate(cardId));
   };
 };
