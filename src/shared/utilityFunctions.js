@@ -31,7 +31,7 @@ export const useOutsideClick = (refArray, cond, func, args) => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
 
-    // adding refArray as a dependency below causes an issue with re-renders
+    // adding refArray and func as dependencies below causes an issue with re-renders
     // these re-renders keep other useOutsideClicks from completing their run
-  }, [cond, func, args]);
+  }, [cond, args]);
 };

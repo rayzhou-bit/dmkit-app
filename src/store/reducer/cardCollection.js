@@ -18,7 +18,7 @@ const initialState = {
   //       cardType: "bubble" || "card",
   //     },
   //   },
-  //   data: {
+  //   content: {
   //     title: "card title",
   //     text: "text field,
   //     statblock: {
@@ -27,7 +27,6 @@ const initialState = {
   //       profBonus: 2,
   //     },
   //   },
-  //   edited: boolean,
   // },
   card0: {
     views: {
@@ -38,12 +37,11 @@ const initialState = {
         cardType: "card",
       },
     },
-    data: {
+    content: {
       title: "Greetings Traveler!",
       text: "Welcome to DM Kit, a tool to help plan your next adventure."
     },
   },
-  edited: false,
 };
 
 const reducer = (state = {}, action) => {
@@ -52,10 +50,9 @@ const reducer = (state = {}, action) => {
     case actionTypes.INIT_CARD_COLL: return initialState;
     case actionTypes.LOAD_CARD_COLL: return updateObject(state, action.cardColl);
     case actionTypes.UNLOAD_CARD_COLL: return {};
-    case actionTypes.UNSET_CARD_EDIT: return unsetCardEdit(state, action.cardId); 
 
     // Add/Remove
-    case actionTypes.ADD_CARD: return addCard(state, action.cardId, action.cardData);
+    case actionTypes.ADD_CARD: return updateObject(state, {[action.cardId]: action.cardData});
     case actionTypes.REMOVE_CARD: return removeCard(state, action.cardId);
     case actionTypes.CONNECT_CARD_TO_VIEW: return connectCardToView(state, action.cardId, action.viewId, action.pos, action.size, action.color);
     case actionTypes.DISCONNECT_CARD_FROM_VIEW: return disconnectCardFromView(state, action.cardId, action.viewId);
@@ -67,23 +64,12 @@ const reducer = (state = {}, action) => {
     case actionTypes.UPD_CARD_COLOR_FOR_ALL_VIEWS: return updCardColorForAllViews(state, action.cardId, action.color);
     case actionTypes.UPD_CARD_TYPE: return updCardType(state, action.cardId, action.viewId, action.cardType);
 
-    // Update data
+    // Update content
     case actionTypes.UPD_CARD_TITLE: return updCardTitle(state, action.cardId, action.title);
     case actionTypes.UPD_CARD_TEXT: return updCardText(state, action.cardId, action.text);
 
     default: return state;
   }
-};
-
-const unsetCardEdit = (state, cardId) => {
-  const updatedCard = updateObject(state[cardId], {edited: false});
-  return updateObject(state, updatedCard);
-};
-
-const addCard = (state, cardId, cardData) => {
-  let newCard = { [cardId]: cardData };
-  newCard.edited = true;
-  return updateObject(state, newCard);
 };
 
 const removeCard = (state, cardId) => {
@@ -101,14 +87,12 @@ const connectCardToView = (state, cardId, viewId, pos, size, color) => {
       color: color,
     }
   });
-  updatedCard.edited = true;
   return updateObject(state, {[cardId]: updatedCard});
 };
 
 const disconnectCardFromView = (state, cardId, viewId) => {
   let updatedCard = {...state[cardId]};
   delete updatedCard.views[viewId];
-  updatedCard.edited = true;
   return updateObject(state, {[cardId]: updatedCard});
 };
 
@@ -119,7 +103,6 @@ const updCardPos = (state, cardId, viewId, x, y) => {
     y: Math.round(y / GRID.size) * GRID.size
   };
   updatedCard.views[viewId].pos = roundedPos;
-  updatedCard.edited = true;
   return updateObject(state, {[cardId]: updatedCard});
 };
 
@@ -130,14 +113,12 @@ const updCardSize = (state, cardId, viewId, width, height) => {
     height: (Math.round(height.split("px").shift() / GRID.size) * GRID.size) + "px"
   };
   updatedCard.views[viewId].size = roundedSize;
-  updatedCard.edited = true;
   return updateObject(state, {[cardId]: updatedCard});
 };
 
 const updCardColor = (state, cardId, viewId, color) => {
   let updatedCard = {...state[cardId]};
   updatedCard.views[viewId].color = color;
-  updatedCard.edited = true;
   return updateObject(state, {[cardId]: updatedCard});
 };
 
@@ -146,28 +127,24 @@ const updCardColorForAllViews = (state, cardId, color) => {
   for (let view in updatedCard.views) {
     updatedCard.views[view].color = color;
   }
-  updatedCard.edited = true;
   return updateObject(state, {[cardId]: updatedCard});
 };
 
 const updCardType = (state, cardId, viewId, cardType) => {
   let updatedCard = {...state[cardId]};
   updatedCard.views[viewId].cardType = cardType;
-  updatedCard.edited = true;
   return updateObject(state, {[cardId]: updatedCard});
 }
 
 const updCardTitle = (state, cardId, title) => {
   let updatedCard = {...state[cardId]};
-  updatedCard.data.title = title;
-  updatedCard.edited = true;
+  updatedCard.content.title = title;
   return updateObject(state, {[cardId]: updatedCard});
 };
 
 const updCardText = (state, cardId, text) => {
   let updatedCard = {...state[cardId]};
-  updatedCard.data.text = text;
-  updatedCard.edited = true;
+  updatedCard.content.text = text;
   return updateObject(state, {[cardId]: updatedCard});
 };
 

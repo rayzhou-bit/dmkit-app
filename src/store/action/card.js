@@ -1,11 +1,10 @@
 import * as actionTypes from '../actionTypes';
 import { GRID } from '../../shared/constants/grid';
 
-// <-----SIMPLE CARD REDUCER CALLS----->
+// <-----cardCollection REDUCER CALLS----->
 export const initCardColl = () => { return { type: actionTypes.INIT_CARD_COLL }; };
 export const loadCardColl = (cardColl) => { return { type: actionTypes.LOAD_CARD_COLL, cardColl: cardColl }; };
 export const unloadCardColl = () => { return { type: actionTypes.UNLOAD_CARD_COLL }; };
-export const unsetCardEdit = (cardId) => { return { type: actionTypes.UNSET_CARD_EDIT, cardId: cardId }; };
 export const addCard = (cardId, cardData) => { return { type: actionTypes.ADD_CARD, cardId: cardId, cardData: cardData }; };
 export const removeCard = (cardId) => { return { type: actionTypes.REMOVE_CARD, cardId: cardId }; };
 export const connectCardToView = (cardId, viewId, pos, size, color) => { return { type: actionTypes.CONNECT_CARD_TO_VIEW, cardId: cardId, viewId: viewId, pos: pos, size: size, color: color }; };
@@ -18,58 +17,56 @@ export const updCardType = (cardId, viewId, cardType) => { return { type: action
 export const updCardTitle = (cardId, title) => { return { type: actionTypes.UPD_CARD_TITLE, cardId: cardId, title: title }; };
 export const updCardText = (cardId, text) => { return { type: actionTypes.UPD_CARD_TEXT, cardId: cardId, text: text }; };
 
-// <-----SIMPLE CARDMANAGE REDUCER CALLS----->
-export const initCardManage = () => { return { type: actionTypes.INIT_CARD_MANAGE }; };
-export const updActiveCard = (activeCardId) => { return { type: actionTypes.UPD_ACTIVE_CARD, activeCardId: activeCardId }; };
-const queueCardCreate = (cardId) => { return { type: actionTypes.QUEUE_CARD_CREATE, cardId: cardId }; };
-export const dequeueCardCreate = (cardId) => { return { type: actionTypes.DEQUEUE_CARD_CREATE, cardId: cardId }; };
-export const clearCardCreate = () => { return { type: actionTypes.CLEAR_CARD_CREATE }; };
-const queueCardDelete = (cardId) => { return { type: actionTypes.QUEUE_CARD_DELETE, cardId: cardId }; };
+// <-----campaignCollection REDUCER CALLS----->
+const incrementCardCreateCnt = (campaignId) => { return { type: actionTypes.INCREMENT_CARD_CREATE_CNT }; };
+
+// <-----dataManager REDUCER CALLS----->
+export const updActiveCardId = (cardId) => { return { type: actionTypes.UPD_ACTIVE_CARD_ID, cardId: cardId }; };
+const enqueueCardDelete = (cardId) => { return { type: actionTypes.ENQUEUE_CARD_DELETE, cardId: cardId }; };
 export const clearCardDelete = () => { return { type: actionTypes.CLEAR_CARD_DELETE }; };
 
 // <-----COMPLEX CALLS----->
-export const setCardCreate = (cardCreateCnt, viewId) => {
-  const cardId = "card" + (cardCreateCnt);
-  const cardData = { 
-    views: { 
-      [viewId]: { 
-        pos: {x: 100, y: 100},
-        size: {width: 300, height: 400},
+export const createCard = (cardCreateCnt, viewId) => {
+  const cardId = "card" + cardCreateCnt;
+  const cardData = {
+    views: {
+      [viewId]: {
+        pos: {x: 3*GRID.size, y: 3*GRID.size},
+        size: {width: 8*GRID.size, height: 10*GRID.size},
         color: "gray",
         cardType: "card",
       },
     },
-    data: {
-      title: "untitled",
-      text: ""
-    },
+    content: {title: "untitled", text: ""},
   };
   return dispatch => {
     dispatch(addCard(cardId, cardData));
-    dispatch(queueCardCreate(cardId));
+    dispatch(updActiveCardId(cardId));
+    dispatch(incrementCardCreateCnt());
   };
 };
 
-export const setCardDelete = (cardId) => {
+export const destroyCard = (cardId) => {
   return dispatch => {
     dispatch(removeCard(cardId));
-    dispatch(queueCardDelete(cardId));
+    dispatch(enqueueCardDelete(cardId));
   };
 };
 
-export const setCardCopy = (cardState, view, cardCreateCnt) => {
+export const copyCard = (cardData, viewId, cardCreateCnt) => {
   const cardId = "card" + cardCreateCnt;
-  const dataPackage = {
+  const newCardData = {
     views: {
-      [view]: {
-        ...cardState.views[view],
-        pos: {x: cardState.views[view].pos.x + GRID.size, y: cardState.views[view].pos.y + GRID.size},
+      [viewId]: {
+        ...cardData.views[viewId],
+        pos: {x: cardData.views[viewId].pos.x + GRID.size, y: cardData.views[viewId].pos.y + GRID.size},
       },
     },
-    data: {...cardState.data},
+    content: {...cardData.data},
   };
   return dispatch => {
-    dispatch(addCard(cardId, dataPackage));
-    dispatch(queueCardCreate(cardId));
+    dispatch(addCard(cardId, newCardData));
+    dispatch(updActiveCardId(cardId));
+    dispatch(incrementCardCreateCnt());
   };
 };

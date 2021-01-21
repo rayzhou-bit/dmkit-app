@@ -13,7 +13,7 @@ import DotDotDotImg from '../../media/icons/view-settings-24.png';
 import CloseImg from '../../media/icons/remove-24.png';
 
 const Card = props => {
-  const {cardId, cardState, activeViewId, cardAnimation, setCardAnimation, toolMenuRef} = props;
+  const {cardId, cardData, activeViewId, cardAnimation, setCardAnimation, toolMenuRef} = props;
   const dispatch = useDispatch();
 
   // STATES
@@ -24,19 +24,20 @@ const Card = props => {
   const editingCard = (editingTitle || editingText) ? true : false;
 
   // STORE SELECTORS
-  const activeCardId = useSelector(state => state.cardManager.activeCardId);
   const viewColl = useSelector(state => state.viewColl);
-  const viewOrder = useSelector(state => state.viewManager.viewOrder);
+  const campaignId = useSelector(state => state.dataManager.activeCampaignId);
+  const activeCardId = useSelector(state => state.dataManager.activeCardId);
+  const viewOrder = useSelector(state => state.campaignColl[campaignId].viewOrder);
 
   // VARIABLES
-  const cardViews = cardState.views;
-  const cardData = cardState.data;
+  const cardViews = cardData.views;
+  const cardContent = cardData.content;
   const cardPos = cardViews[activeViewId].pos;
   const cardSize = cardViews[activeViewId].size;
   const cardColor = cardViews[activeViewId].color;
   const cardType = cardViews[activeViewId].cardType;
-  const cardTitle = cardData ? cardData.title : "";
-  const cardText = cardData ? cardData.text : "";
+  const cardTitle = cardContent ? cardContent.title : "";
+  const cardText = cardContent ? cardContent.text : "";
 
   // IDS & REFS
   const cardRef = useRef(cardId+".card");
@@ -60,16 +61,10 @@ const Card = props => {
 
   const cardClickHandler = () => {
     if (!isSelected) {
-      if (cardId !== activeCardId) {dispatch(actions.updActiveCard(cardId))}
+      if (cardId !== activeCardId) {dispatch(actions.updActiveCardId(cardId))}
       setIsSelected(true);
     }
   };
-
-  const outsideClickCardHandler = () => {
-    if (cardId === activeCardId) {dispatch(actions.updActiveCard(null))}
-    setIsSelected(false);
-  };
-  useOutsideClick([cardRef, toolMenuRef], isSelected, outsideClickCardHandler);
 
   const onAnimationEnd = () => {
     setCardAnimation({
@@ -115,8 +110,6 @@ const Card = props => {
       endTitleEdit();
     }
   };
-  
-  useOutsideClick([cardTitleRef, toolMenuRef], editingTitle, endTitleEdit);
 
   // FUNCTIONS: TEXT BODY
   const startTextEdit = () => {
@@ -127,12 +120,15 @@ const Card = props => {
       setEditingText(true);
     }
   };
+
   const endTextEdit = () => {
     if (editingText) {setEditingText(false)}
   };
+
   const updTextEdit = () => {
     if (editingText) {dispatch(actions.updCardText(cardId, cardTextRef.current.value))}
   };
+
   const keyPressTextHandler = (event) => {
     if (isSelected && editingText) {
       if (event.key === 'Tab') {
@@ -141,6 +137,7 @@ const Card = props => {
       }
     }
   };
+
   const updCardColor = (view, color) => {
     if (!cardViews[view]) {
       dispatch(actions.connectCardToView(cardId, view, cardPos, cardSize, color));
@@ -148,6 +145,7 @@ const Card = props => {
       dispatch(actions.updCardColor(cardId, view, color));
     }
   };
+
   const addOrRemoveCard = (view) => {
     if (cardViews[view]) {
       dispatch(actions.disconnectCardFromView(cardId, view));
@@ -155,9 +153,15 @@ const Card = props => {
       dispatch(actions.connectCardToView(cardId, view, cardPos, cardSize, cardColor));
     }
   };
-  useOutsideClick([cardTextRef, toolMenuRef], editingText, endTextEdit);
 
-  // FUNCTIONS: VIEW SETTINGS
+  // FUNCTIONS: OUTSIDECLICKS
+  const outsideClickCardHandler = () => {
+    if (cardId === activeCardId) {dispatch(actions.updActiveCardId(null))}
+    setIsSelected(false);
+  };
+  useOutsideClick([cardRef, toolMenuRef], isSelected, outsideClickCardHandler);
+  useOutsideClick([cardTitleRef, toolMenuRef], editingTitle, endTitleEdit);
+  useOutsideClick([cardTextRef, toolMenuRef], editingText, endTextEdit);
   useOutsideClick([viewSettingsRef, viewSettingsBtnRef], showViewSettings, setShowViewSettings, false);
   
   // FUNCTIONS: BUBBLE
@@ -250,7 +254,7 @@ const Card = props => {
             value={cardTitle} readOnly={!editingTitle}
             onDoubleClick={(cardId === activeCardId) ? startTitleEdit : null}
             onChange={updTitleEdit}
-            onKeyUp={(e) => keyPressTitleHandler(e)}
+            onKeyUp={e => keyPressTitleHandler(e)}
           />
           <div className="button" onClick={changeTypeToBubble}>
             <img src={ShrinkImg} alt="Shrink" draggable="false" />

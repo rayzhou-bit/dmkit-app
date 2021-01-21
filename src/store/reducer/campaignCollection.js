@@ -8,7 +8,6 @@ const initialState = {
   //   activeViewId: "view0",
   //   cardCreateCnt: 0,
   //   viewCreateCnt: 0,
-  //   edited: false,
   // },
   introCampaign: {
     title: "DM Kit",
@@ -16,7 +15,6 @@ const initialState = {
     activeViewId: "view0",
     cardCreateCnt: 1,
     viewCreateCnt: 1,
-    edited: false,
   },
 };
 
@@ -26,7 +24,6 @@ const reducer = (state = {}, action) => {
     case actionTypes.INIT_CAMPAIGN_COLL: return initialState;
     case actionTypes.LOAD_CAMPAIGN_COLL: return updateObject(state, action.campaignColl);
     case actionTypes.UNLOAD_CAMPAIGN_COLL: return {};
-    //IMPLEMENT: CAMPAIGN EDIT!
 
     // Add/Remove campaign
     case actionTypes.ADD_CAMPAIGN: return updateObject(state, {[action.campaignId]: action.campaignData});
@@ -43,6 +40,8 @@ const reducer = (state = {}, action) => {
     case actionTypes.UPD_ACTIVE_VIEW_ID: return updActiveViewId(state, action.campaignId, action.viewId);
 
     // Creation counter
+    case actionTypes.INCREMENT_CARD_CREATE_CNT: return incrementCardCreateCnt(state, action.campaignId);
+    case actionTypes.INCREMENT_VIEW_CREATE_CNT: return incrementViewCreateCnt(state, action.campaignId);
 
     default: return state;
   }
@@ -51,38 +50,34 @@ const reducer = (state = {}, action) => {
 const updCampaignTitle = (state, campaignId, title) => {
   let updatedCampaign = {...state[campaignId]};
   updatedCampaign.title = title;
-  updatedCampaign.edited = true;
   return updateObject(state, {[campaignId]: updatedCampaign});
 };
 
 const insertViewToViewOrder = (state, campaignId, insertedViewId, activeViewId) => {
   let updatedCampaign = {...state[campaignId]};
-  let updatedViewOrder = {...state[campaignId].viewOrder};
-  const pos = currViewId ? updatedViewOrder.indexOf(activeViewId) + 1 : 0;
+  let updatedViewOrder = [...state[campaignId].viewOrder];
+  const pos = activeViewId ? updatedViewOrder.indexOf(activeViewId) + 1 : 0;
   updatedViewOrder.splice(pos, 0, insertedViewId);
   updatedCampaign.viewOrder = updatedViewOrder;
-  updatedCampaign.edited = true;
   return updateObject(state, {[campaignId]: updatedCampaign});
 };
 
 const extractViewFromViewOrder = (state, campaignId, extractedViewId) => {
   let updatedCampaign = {...state[campaignId]};
-  let updatedViewOrder = {...state[campaignId].viewOrder};
-  updatedViewOrder = updatedViewOrder.filter(viewId => viewId !== extractedViewId);
+  let updatedViewOrder = [...state[campaignId].viewOrder];
+  updatedViewOrder = updatedViewOrder.filter(id => id !== extractedViewId);
   updatedCampaign.viewOrder = updatedViewOrder;
-  updatedCampaign.edited = true;
   return updateObject(state, {[campaignId]: updatedCampaign});
 };
 
 const shiftViewInViewOrder = (state, campaignId, shiftedViewId, posShift) => {
   let updatedCampaign = {...state[campaignId]};
-  let updatedViewOrder = {...state[campaignId].viewOrder};
-  if (pos !== 0) {
+  let updatedViewOrder = [...state[campaignId].viewOrder];
+  if (posShift !== 0) {
     const newPos = updatedViewOrder.indexOf(shiftedViewId) + posShift;
-    updatedViewOrder = updatedViewOrder.filter(viewId => viewId !== shiftedViewId);
+    updatedViewOrder = updatedViewOrder.filter(id => id !== shiftedViewId);
     updatedViewOrder.splice(newPos, 0, shiftedViewId);
     updatedCampaign.viewOrder = updatedViewOrder;
-    updatedCampaign.edited = true;
   }
   return updateObject(state, {[campaignId]: updatedCampaign});
 };
@@ -90,8 +85,20 @@ const shiftViewInViewOrder = (state, campaignId, shiftedViewId, posShift) => {
 const updActiveViewId = (state, campaignId, viewId) => {
   let updatedCampaign = {...state[campaignId]};
   updatedCampaign.activeViewId = viewId;
-  updatedCampaign.edited = true;
   return updateObject(state, {[campaignId]: updatedCampaign});
 };
+
+const incrementCardCreateCnt = (state, campaignId) => {
+  let updatedCampaign = {...state[campaignId]};
+  updatedCampaign.cardCreateCnt = updatedCampaign.cardCreateCnt + 1;
+  return updateObject(state, {[campaignId]: updatedCampaign});
+};
+
+const incrementViewCreateCnt = (state, campaignId) => {
+  let updatedCampaign = {...state[campaignId]};
+  updatedCampaign.viewCreateCnt = updatedCampaign.viewCreateCnt + 1;
+  return updateObject(state, {[campaignId]: updatedCampaign});
+};
+
 
 export default reducer;

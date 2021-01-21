@@ -9,8 +9,6 @@ import campaignCollReducer from './store/reducer/campaignCollection';
 import cardCollReducer from './store/reducer/cardCollection';
 import viewCollReducer from './store/reducer/viewCollection';
 import dataManagerReducer from './store/reducer/dataManager';
-import cardManagerReducer from './store/reducer/cardManager';
-import viewManagerReducer from './store/reducer/viewManager';
 import * as serviceWorker from './serviceWorker';
 
 const composeEnhancers = 
@@ -23,8 +21,6 @@ const rootReducer = combineReducers({
   cardColl: cardCollReducer,
   viewColl: viewCollReducer,
   dataManager: dataManagerReducer,
-  cardManager: cardManagerReducer,
-  viewManager: viewManagerReducer,
 });
 
 const store = createStore(rootReducer, composeEnhancers(

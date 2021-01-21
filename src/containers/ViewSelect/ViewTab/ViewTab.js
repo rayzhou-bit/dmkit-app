@@ -16,8 +16,7 @@ const ViewTab = React.memo(props => {
 
   const viewColl = useSelector(state => state.viewColl);
   const campaignId = useSelector(state => state.dataManager.activeCampaignId);
-  const campaignData = useSelector(state => state.campaignColl[campaignId]);
-  const activeViewId = campaignData.activeViewId;
+  const activeViewId = useSelector(state => campaignId ? state.campaignColl[campaignId].activeViewId : null);
   const viewPos = Number(props.position); // positions start at 0
 
   const viewId = props.id;

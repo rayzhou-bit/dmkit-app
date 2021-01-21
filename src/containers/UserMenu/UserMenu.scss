@@ -9,19 +9,34 @@
 
   .dmkit-title {
     grid-column: 1 / 2;
-    font-size: 30px;
-    text-align: center;
-    line-height: 41px;
+    width: 100%;
+    border-bottom: 1px solid black;
+
+    .title-text {
+      @extend %title-field;
+
+      width: 100%;
+    
+      flex: auto;
+    
+      font-size: 30px;
+      text-overflow: ellipsis;
+      line-height: 41px;
+    
+      overflow: hidden;
+    }
   }
 
   .campaign {
     grid-column: 2 / 3;
+    border-bottom: 1px solid black;
     text-align: center;
     line-height: 41px;
   }
 
   .user {
     grid-column: 3 / 4;
+    border-bottom: 1px solid black;
     text-align: center;
     line-height: 41px;
   }

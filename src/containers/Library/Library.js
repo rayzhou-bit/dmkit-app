@@ -16,10 +16,10 @@ const Library = props => {
   const [enteredSearch, setEnteredSearch] = useState('');
   // const [displayedItems, setDisplayedItems] = useState('cards');
 
+  const campaignColl = useSelector(state => state.campaignColl);
   const cardColl = useSelector(state => state.cardColl);
   const campaignId = useSelector(state => state.dataManager.activeCampaignId);
-  const campaignData = useSelector(state => state.campaignColl[campaignId]);
-  const activeViewId = campaignData.activeViewId;
+  const activeViewId = campaignColl[campaignId] ? campaignColl[campaignId].activeViewId : null;
 
   const searchId = "libSearchBar";
   const searchRef = useRef(searchId);
@@ -50,7 +50,7 @@ const Library = props => {
           cardList = [
             ...cardList,
             <LibCard key={cardId} 
-              cardId={cardId} cardState={cardColl[cardId]} activeViewId={activeViewId}
+              cardId={cardId} cardData={cardColl[cardId]} activeViewId={activeViewId}
             />,
             <div key={cardId+'.libDivider'} className="lib-divider" />
           ];

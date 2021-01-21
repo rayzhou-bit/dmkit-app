@@ -3,63 +3,59 @@ export {
   getUserId, getUserEmail,
 
   emailSignIn, emailSignOut, emailSignUp,
+  receiveSignInData,
 
-  switchCampaign, createCampaign,
   loadInitCampaign, unloadCampaign,
+  switchCampaign, createCampaign,
 
-  fetchUserDataFromServer,
-  fetchCampaignDataFromServer,
+  sendCampaignData, receiveCampaignData,
 } from './action/serverCalls';
+
+// USER
+export {
+  initDataManager,
+  loadUser, unloadUser,
+} from './action/user';
 
 // CAMPAIGN
 export {
   initCampaignColl, loadCampaignColl, unloadCampaignColl,
-  setCampaignEdit, resetCampaignEdit,
 
   addCampaign,
 
   updCampaignTitle,
 
-  updActiveCampaign,
+  updActiveCampaignId,
 } from './action/campaign';
 
 // CARD
 export {
   initCardColl, loadCardColl, unloadCardColl,
-  unsetCardEdit,
 
   addCard, removeCard,
   connectCardToView, disconnectCardFromView,
-  setCardCreate, setCardDelete,
-  setCardCopy,
+  createCard, destroyCard, copyCard,
 
   updCardPos, updCardSize,
   updCardColor, updCardColorForAllViews,
   updCardType,
+
   updCardTitle, updCardText,
 
-  updActiveCard,
-
-  initCardManage,
-  dequeueCardCreate, clearCardCreate,
+  updActiveCardId,
   clearCardDelete,
 } from './action/card';
 
 // VIEW
 export {
   initViewColl, loadViewColl, unloadViewColl,
-  unsetViewEdit,
 
   addView, removeView,
-
-  createView, destroyView,
+  createView, destroyView, copyView,
 
   updViewTitle,
 
   shiftViewInViewOrder,
-
   updActiveViewId,
-
-  dequeueViewCreate, clearViewCreate,
   clearViewDelete,
 } from './action/view'

@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import './ViewScreen.scss';
@@ -16,15 +16,19 @@ const ViewScreen = props => {
   const [cardAnimation, setCardAnimation] = useState({});
 
   // STORE SELECTORS
+  const campaignColl = useSelector(state => state.campaignColl);
   const cardColl = useSelector(state => state.cardColl);
   const campaignId = useSelector(state => state.dataManager.activeCampaignId);
-  const campaignData = useSelector(state => state.campaignColl[campaignId]);
-  const activeViewId = campaignData.activeViewId;
+  const activeViewId = campaignColl[campaignId] ? campaignColl[campaignId].activeViewId : null;
   
   // VARIABLES
   const viewScreenRef = useRef("viewscreen");
 
   // FUNCTIONS
+  useEffect(() => {
+    dispatch(actions.receiveCampaignData(campaignId));
+  }, [campaignId]);
+
   const drop = (event) => {
     event.preventDefault();
     const data = event.dataTransfer.getData("text");
@@ -65,7 +69,7 @@ const ViewScreen = props => {
         cardList = [
           ...cardList,
           <Card key={cardId} toolMenuRef={toolMenuRef}
-            cardId={cardId} cardState={cardColl[cardId]} activeViewId={activeViewId}
+            cardId={cardId} cardData={cardColl[cardId]} activeViewId={activeViewId}
             cardAnimation={cardAnimation}
             setCardAnimation={setCardAnimation}
           />,

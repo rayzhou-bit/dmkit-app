@@ -21,17 +21,13 @@ const App = props => {
     if (resp && resp.uid) {
       // Signed in
       console.log("[authObserver] signed in user:", resp.uid);
-      dispatch(actions.fetchUserDataFromServer());
+      dispatch(actions.receiveSignInData());
       // IMPLEMENT: prompt if user would like to save the campaign. maybe add to unloadCampaign
-      dispatch(actions.unloadCampaign());
-      dispatch(actions.fetchCampaignDataFromServer());
       // IMPLEMENT: loading end
     } else {
       // Signed out
-      console.log("[authObserver] signed out");
-      dispatch(actions.unloadUser());
-      dispatch(actions.unloadCampaign());
-      dispatch(actions.loadInitCampaign());  // This doubles as a campaign unload.
+      console.log("[authObserver] signed out:", resp);
+      dispatch(actions.loadInitCampaign());
       // IMPLEMENT: loading end
     }
   });

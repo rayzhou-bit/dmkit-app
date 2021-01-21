@@ -12,13 +12,15 @@ import AddImg from '../../media/icons/add.png';
 const ViewSelect = React.memo(props => {
   const dispatch = useDispatch();
 
+  // STORE VALUES
+  const campaignColl = useSelector(state => state.campaignColl);
   const viewColl = useSelector(state => state.viewColl);
   const campaignId = useSelector(state => state.dataManager.activeCampaignId);
-  const campaignData = useSelector(state => state.campaignColl[campaignId]);
-  const activeViewId = campaignData.activeViewId;
-  const viewOrder = campaignData.viewOrder;
-  const viewCreateCnt = campaignData.viewCreateCnt;
+  const activeViewId = campaignColl[campaignId] ? campaignColl[campaignId].activeViewId : null;
+  const viewOrder = campaignColl[campaignId] ? campaignColl[campaignId].viewOrder : [];
+  const viewCreateCnt = campaignColl[campaignId] ? campaignColl[campaignId].viewCreateCnt : [];
 
+  // FUNCTIONS
   const createView = () => dispatch(actions.createView(campaignId, activeViewId, viewCreateCnt));
 
   let viewTabs = [];

@@ -14,29 +14,53 @@ const UserMenu = props => {
   const [authForm, setAuthForm] = useState('signin');  // signin or signup
   const [email, setEmail] = useState("");
   const [psw, setPsw] = useState("");
+  const [editingTitle, setEditingTitle] = useState(false);
 
   // VARIABLES
+  const userId = actions.getUserId();
+  const userEmail = actions.getUserEmail();
+  const dataManager = useSelector(state => state.dataManager);
   const campaignColl = useSelector(state => state.campaignColl);
   const cardColl = useSelector(state => state.cardColl);
   const viewColl = useSelector(state => state.viewColl);
-  const cardManager = useSelector(state => state.cardManager);
-  const viewManager = useSelector(state => state.viewManager);
-  const userId = actions.getUserId();
-  const userEmail = actions.getUserEmail();
   const campaignId = useSelector(state => state.dataManager.activeCampaignId);
-  const campaignTitle = (campaignColl[campaignId] && campaignColl[campaignId].title) ? campaignColl[campaignId].title : null;
+  const campaignTitle = campaignColl[campaignId] ? campaignColl[campaignId].title : "";
 
   // IDS & REFS
   const campaignButtonRef = useRef("campaignButton");
   const userButtonRef = useRef("userButton");
   const campaignDropDownRef = useRef("campaignDropDown");
   const userDropDownRef = useRef("userDropDown");
+  const campaignTitleId = "campaignTitle"
+  const campaignTitleRef = useRef(campaignTitleId);
 
-  // FUNCTIONS
-  // useEffect(() => {
-  //   dispatch(actions.initAuthCheck());
-  // }, [dispatch]);
+  // FUNCTIONS: CAMPAIGN TITLE
+  const startTitleEdit = () => {
+    if (!editingTitle) {
+      const title = document.getElementById(campaignTitleId);
+      title.focus();
+      title.setSelectionRange(title.value.length, title.value.length);
+      setEditingTitle(true);
+    }
+  };
 
+  const endTitleEdit = () => {
+    if (editingTitle) {setEditingTitle(false)}
+  };
+
+  const updTitleEdit = () => {
+    if (editingTitle) {dispatch(actions.updCampaignTitle(campaignId, campaignTitleRef.current.value))}
+  };
+
+  const keyPressTitleHandler = (event) => {
+    if (editingTitle) {
+      if (event.key === 'Enter') {
+        endTitleEdit();
+      }
+    }
+  };  
+
+  // FUNCTIONS: SIGN IN
   const emailSignUp = (event) => {event.preventDefault(); actions.emailSignUp(email, psw); setShowUserDropDown(false)};
   const emailSignIn = (event) => {event.preventDefault(); actions.emailSignIn(email, psw); setShowUserDropDown(false)};
   const emailSignOut = (event) => {
@@ -46,12 +70,20 @@ const UserMenu = props => {
     // IMPLEMENT: ask if save campaign
   };
 
-  const switchCampaign = (nextCampaignId) => dispatch(actions.switchCampaign(nextCampaignId, campaignId, campaignColl, cardColl, viewColl, cardManager, viewManager));
-  const newCampaign = () => dispatch(actions.createCampaign(campaignId, campaignColl, cardColl, viewColl, cardManager, viewManager));
+  // FUNCTIONS: CAMPAIGN MENU
+  const switchCampaign = (nextCampaignId) => dispatch(actions.switchCampaign(nextCampaignId, campaignId, campaignColl, cardColl, viewColl, dataManager));
+  const newCampaign = () => dispatch(actions.createCampaign(campaignId, campaignColl, cardColl, viewColl, dataManager));
 
+  // FUNCTIONS: OUTSIDECLICKS
+  useOutsideClick([campaignTitleRef], editingTitle, endTitleEdit);
   useOutsideClick([campaignDropDownRef, campaignButtonRef], showCampaignDropDown, setShowCampaignDropDown, false);
   useOutsideClick([userDropDownRef, userButtonRef], showUserDropDown, setShowUserDropDown, false);
   
+  // STYLES: CAMPAIGN TITLE
+  const campaignTitleStyle = {
+  };
+
+  // DISPLAY ELEMENTS
   let campaignList = [];
   if (userId) {
     if (campaignColl) {
@@ -115,7 +147,16 @@ const UserMenu = props => {
 
   return (
     <div id="userMenu">
-      <div className="dmkit-title">{campaignTitle ? campaignTitle : "DM Kit"}</div>
+      <div className="dmkit-title">
+        <input id={campaignTitleId} ref={campaignTitleRef}
+          className="title-text" style={campaignTitleStyle}
+          type="text" required draggable="false"
+          value={userId ? campaignTitle : "DM Kit"} readOnly={!editingTitle}
+          onDoubleClick={userId ? startTitleEdit : null}
+          onChange={userId ? updTitleEdit : null}
+          onKeyUp={userId ? (e => keyPressTitleHandler(e)) : null}
+        />
+      </div>
       <div ref={campaignButtonRef}
         className="campaign button" style={{display: userId ? "block" : "none"}}
         onClick={Object.keys(campaignColl).length>0 ? ()=>setShowCampaignDropDown(!showCampaignDropDown) : ()=>newCampaign()}

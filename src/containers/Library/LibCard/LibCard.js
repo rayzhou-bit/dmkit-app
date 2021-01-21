@@ -9,7 +9,7 @@ import { TEXT_COLOR_WHEN_BACKGROUND_IS, CARD_TITLEBAR_EDIT_COLORS } from '../../
 import DeleteImg from '../../../media/icons/delete-24.png';
 
 const LibCard = props => {
-  const {cardId, cardState, activeViewId} = props;
+  const {cardId, cardData, activeViewId} = props;
   const dispatch = useDispatch();
 
   // STATES
@@ -20,14 +20,14 @@ const LibCard = props => {
   const editingCard = (editingTitle || editingText) ? true : false;
 
   // STORE SELECTORS
-  const activeCardId = useSelector(state => state.cardManager.activeCardId);
+  const activeCardId = useSelector(state => state.dataManager.activeCardId);
 
   // VARIABLES
-  const cardViews = cardState.views;
-  const cardData = cardState.data;
+  const cardViews = cardData.views;
+  const cardContent = cardData.content;
   const cardColor = (cardViews && cardViews[activeViewId]) ? cardViews[activeViewId].color : "gray";
-  const cardTitle = cardData ? cardData.title : "";
-  const cardText = cardData ? cardData.text : "";
+  const cardTitle = cardContent ? cardContent.title : "";
+  const cardText = cardContent ? cardContent.text : "";
 
   // IDS & REFS
   const cardLibId = cardId + ".libCard";
@@ -43,13 +43,13 @@ const LibCard = props => {
 
   const cardClickHandler = () => {
     if (!isSelected) {
-      if (cardId !== activeCardId) {dispatch(actions.updActiveCard(cardId))}
+      if (cardId !== activeCardId) {dispatch(actions.updActiveCardId(cardId))}
       setIsSelected(true);
     }
   };
 
   const outsideClickCardHandler = () => {
-    if (cardId === activeCardId) {dispatch(actions.updActiveCard(null))}
+    if (cardId === activeCardId) {dispatch(actions.updActiveCardId(null))}
     setIsSelected(false);
   };
   useOutsideClick([cardRef], isSelected, outsideClickCardHandler);
@@ -91,7 +91,7 @@ const LibCard = props => {
     if (!confirmDelete) {
       setConfirmDelete(true);
     } else {
-      dispatch(actions.setCardDelete(cardId));
+      dispatch(actions.destroyCard(cardId));
     }
   };
 

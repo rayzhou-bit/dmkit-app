@@ -12,32 +12,28 @@ const ToolMenu = React.memo(props => {
   const {toolMenuRef} = props;
   const dispatch = useDispatch();
 
-  // VARIABLES
-  const userId = actions.getUserId();
+  // STORE VALUES
+  const dataManager = useSelector(state => state.dataManager);
   const campaignColl = useSelector(state => state.campaignColl);
   const cardColl = useSelector(state => state.cardColl);
   const viewColl = useSelector(state => state.viewColl);
   const campaignId = useSelector(state => state.dataManager.activeCampaignId);
-  const campaignData = campaignColl[campaignId];
-  const activeViewId = campaignData.activeViewId;
   const activeCardId = useSelector(state => state.dataManager.activeCardId);
-  const cardCreateCnt = campaignData.cardCreateCnt;
+  const activeViewId = campaignColl[campaignId] ? campaignColl[campaignId].activeViewId : null;
+  const cardCreateCnt = campaignColl[campaignId] ? campaignColl[campaignId].cardCreateCnt : null;
 
   // FUNCTIONS
-  const setCardCreate = () => dispatch(actions.setCardCreate(cardCreateCnt, activeViewId));
+  const createCard = () => dispatch(actions.createCard(cardCreateCnt, activeViewId)); 
+  // IMPLEMENT: set cursor to the card title after card creation
 
-  const setCardCopy = () => {
+  const copyCard = () => {
     if (activeCardId) {
-      dispatch(actions.setCardCopy(cardColl[activeCardId], activeViewId, cardCreateCnt));
+      dispatch(actions.copyCard(cardColl[activeCardId], activeViewId, cardCreateCnt));
     }
   };
 
   const saveEditedData = () => {
-    if (userId) {
-      // dispatch(actions.saveCampaignDataToServer(campaignId, campaignColl, cardColl, viewColl, cardManager, viewManager));
-    } else {
-      // IMPLEMENT: ask for player log in or sign up
-    }
+    dispatch(actions.sendCampaignData(campaignId, campaignColl, cardColl, viewColl, dataManager));
   };
 
   // STYLES
@@ -48,11 +44,11 @@ const ToolMenu = React.memo(props => {
   return (
     <div id="toolMenu" ref={toolMenuRef}>
       <div className="divider" />
-      <div className="create-card button" onClick={setCardCreate}>
+      <div className="create-card button" onClick={createCard}>
         <img src={AddImg} alt="Add" draggable="false" />
         <span className="tooltip">Add a card</span>
       </div>
-      <div className="copy-card button" onClick={setCardCopy}>
+      <div className="copy-card button" onClick={copyCard}>
         <img src={CopyImg} alt="Copy" draggable="false" />
         <span className="tooltip">Copy selected card</span>
       </div>
