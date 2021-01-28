@@ -18,7 +18,7 @@ export const updCardTitle = (cardId, title) => { return { type: actionTypes.UPD_
 export const updCardText = (cardId, text) => { return { type: actionTypes.UPD_CARD_TEXT, cardId: cardId, text: text }; };
 
 // <-----campaignCollection REDUCER CALLS----->
-const incrementCardCreateCnt = (campaignId) => { return { type: actionTypes.INCREMENT_CARD_CREATE_CNT }; };
+const incrementCardCreateCnt = (campaignId) => { return { type: actionTypes.INCREMENT_CARD_CREATE_CNT, campaignId: campaignId }; };
 
 // <-----dataManager REDUCER CALLS----->
 export const updActiveCardId = (cardId) => { return { type: actionTypes.UPD_ACTIVE_CARD_ID, cardId: cardId }; };
@@ -26,7 +26,7 @@ const enqueueCardDelete = (cardId) => { return { type: actionTypes.ENQUEUE_CARD_
 export const clearCardDelete = () => { return { type: actionTypes.CLEAR_CARD_DELETE }; };
 
 // <-----COMPLEX CALLS----->
-export const createCard = (cardCreateCnt, viewId) => {
+export const createCard = (campaignId, viewId, cardCreateCnt) => {
   const cardId = "card" + cardCreateCnt;
   const cardData = {
     views: {
@@ -37,12 +37,12 @@ export const createCard = (cardCreateCnt, viewId) => {
         cardType: "card",
       },
     },
-    content: {title: "untitled", text: ""},
+    content: {title: cardId, text: ""},
   };
   return dispatch => {
     dispatch(addCard(cardId, cardData));
     dispatch(updActiveCardId(cardId));
-    dispatch(incrementCardCreateCnt());
+    dispatch(incrementCardCreateCnt(campaignId));
   };
 };
 
@@ -53,7 +53,7 @@ export const destroyCard = (cardId) => {
   };
 };
 
-export const copyCard = (cardData, viewId, cardCreateCnt) => {
+export const copyCard = (campaignId, cardData, viewId, cardCreateCnt) => {
   const cardId = "card" + cardCreateCnt;
   const newCardData = {
     views: {
@@ -67,6 +67,6 @@ export const copyCard = (cardData, viewId, cardCreateCnt) => {
   return dispatch => {
     dispatch(addCard(cardId, newCardData));
     dispatch(updActiveCardId(cardId));
-    dispatch(incrementCardCreateCnt());
+    dispatch(incrementCardCreateCnt(campaignId));
   };
 };

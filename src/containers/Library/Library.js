@@ -5,23 +5,25 @@ import './Library.scss';
 import LibCard from './LibCard/LibCard';
 
 import LibBtnImg from '../../media/icons/library.png';
-import ExpandImg from '../../media/icons/left-arrow.png';
-import ShrinkImg from '../../media/icons/right-arrow.png';
+import ExpandImg from '../../media/icons/left-arrow-32.png';
+import ShrinkImg from '../../media/icons/right-arrow-32.png';
 import SearchImg from '../../media/icons/search2.png';
 
 const Library = props => {
-  // VARIABLES
+  // STATES
   const [showLibrary, setShowLibrary] = useState(false);
   const [librarySize, setLibrarySize] = useState(1); // 1 is small, 2 is big
   const [enteredSearch, setEnteredSearch] = useState('');
   // const [displayedItems, setDisplayedItems] = useState('cards');
 
+  // STORE SELECTORS
   const campaignColl = useSelector(state => state.campaignColl);
   const cardColl = useSelector(state => state.cardColl);
   const campaignId = useSelector(state => state.dataManager.activeCampaignId);
   const activeViewId = campaignColl[campaignId] ? campaignColl[campaignId].activeViewId : null;
 
-  const searchId = "libSearchBar";
+  // IDS & REFS
+  const searchId = "lib-search-bar";
   const searchRef = useRef(searchId);
 
   // STYLES
@@ -39,12 +41,12 @@ const Library = props => {
   };
 
   // CARD LIST
-  let cardList = [<div key={'first.libDivider'} className="lib-divider" />];
+  let cardList = [<div key={'first.lib-divider'} className="lib-divider" />];
   if (cardColl) {
     for (let cardId in cardColl) {
-      if (cardColl[cardId].data) {
-        const cardTitle = cardColl[cardId].data.title ? cardColl[cardId].data.title : "";
-        const cardText = cardColl[cardId].data.text ? cardColl[cardId].data.text : "";
+      if (cardColl[cardId].content) {
+        const cardTitle = cardColl[cardId].content.title ? cardColl[cardId].content.title : "";
+        const cardText = cardColl[cardId].content.text ? cardColl[cardId].content.text : "";
         if (cardTitle.toLowerCase().includes(enteredSearch.toLowerCase()) ||
           cardText.toLowerCase().includes(enteredSearch.toLocaleLowerCase())) {
           cardList = [
@@ -52,7 +54,7 @@ const Library = props => {
             <LibCard key={cardId} 
               cardId={cardId} cardData={cardColl[cardId]} activeViewId={activeViewId}
             />,
-            <div key={cardId+'.libDivider'} className="lib-divider" />
+            <div key={cardId+'.lib-divider'} className="lib-divider" />
           ];
         }
       }
@@ -61,7 +63,7 @@ const Library = props => {
 
   return (
     <div id="library">
-      <div id="libBtnGrid">
+      <div id="lib-btn-grid">
         <div className="divider" />
         <div className="button" onClick={() => setShowLibrary(!showLibrary)}>
           <img src={LibBtnImg} alt="Library" />
@@ -79,7 +81,7 @@ const Library = props => {
         </div>
         <div className="divider" />
       </div>
-      <div id="libPanelGrid" style={libPanelStyle}>
+      <div id="lib-panel-grid" style={libPanelStyle}>
         <div id={searchId}>
           <img src={SearchImg} alt="Search" />
           <input ref={searchRef}
@@ -90,7 +92,7 @@ const Library = props => {
           {/* <div id="cardTab">Cards</div>
           <div id="viewTab">Views</div> */}
         </div>
-        <div id="libSearchResults">
+        <div id="lib-search-results">
           {cardList}
         </div>
       </div>

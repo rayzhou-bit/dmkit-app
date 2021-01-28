@@ -27,6 +27,7 @@ const reducer = (state = {}, action) => {
 
     // Add/Remove campaign
     case actionTypes.ADD_CAMPAIGN: return updateObject(state, {[action.campaignId]: action.campaignData});
+    case actionTypes.REMOVE_CAMPAIGN: return removeCampaign(state, action.campaignId);
 
     // Update campaign data
     case actionTypes.UPD_CAMPAIGN_TITLE: return updCampaignTitle(state, action.campaignId, action.title);
@@ -34,7 +35,7 @@ const reducer = (state = {}, action) => {
     // viewOrder
     case actionTypes.INSERT_VIEW_TO_VIEW_ORDER: return insertViewToViewOrder(state, action.campaignId, action.insertedViewId, action.currViewId);
     case actionTypes.EXTRACT_VIEW_FROM_VIEW_ORDER: return extractViewFromViewOrder(state, action.campaignId, action.extractedViewId);
-    case actionTypes.SHIFT_VIEW_IN_VIEW_ORDER: return shiftViewInViewOrder(state, action.campaignId, action.shiftViewInViewOrder, action.posShift);
+    case actionTypes.SHIFT_VIEW_IN_VIEW_ORDER: return shiftViewInViewOrder(state, action.campaignId, action.shiftedViewId, action.posShift);
 
     // activeViewId
     case actionTypes.UPD_ACTIVE_VIEW_ID: return updActiveViewId(state, action.campaignId, action.viewId);
@@ -45,6 +46,12 @@ const reducer = (state = {}, action) => {
 
     default: return state;
   }
+};
+
+const removeCampaign = (state, campaignId) => {
+  let updatedCampaignColl = {...state};
+  delete updatedCampaignColl[campaignId];
+  return updatedCampaignColl;
 };
 
 const updCampaignTitle = (state, campaignId, title) => {

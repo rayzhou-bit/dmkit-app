@@ -1,6 +1,6 @@
 @import '../../shared/styles/globalVariables';
 
-#userMenu {
+#user-menu {
   background-color: sienna;
 
   display: grid;
@@ -11,17 +11,17 @@
     grid-column: 1 / 2;
     width: 100%;
     border-bottom: 1px solid black;
+    line-height: 41px;
 
     .title-text {
       @extend %title-field;
 
-      width: 100%;
+      width: 100%; height: 100%;
     
       flex: auto;
     
-      font-size: 30px;
+      font-size: 22px;
       text-overflow: ellipsis;
-      line-height: 41px;
     
       overflow: hidden;
     }
@@ -32,6 +32,22 @@
     border-bottom: 1px solid black;
     text-align: center;
     line-height: 41px;
+
+    .new-campaign {
+      height: 31px;
+      margin: 0;  padding: 5px;
+      border: 0;
+    
+      flex: auto;
+    
+      text-align: center;
+      font-weight: bold;
+      font-size: 14px;
+      text-overflow: ellipsis;
+      line-height: 21px;
+    
+      overflow: hidden;
+    }
   }
 
   .user {
@@ -39,12 +55,38 @@
     border-bottom: 1px solid black;
     text-align: center;
     line-height: 41px;
+
+    .panel {
+      line-height: normal;
+
+      h1 {
+        margin: .2em 0 0 0;
+        font-size: 1.5em;
+      }
+      
+      form {
+        padding: .2em .7em;
+        text-align: left;
+        .row {
+          margin-bottom: .5em;
+          label {
+            font-size: .9em;
+          }
+        }
+      }
+      .switch-auth {
+        padding: .3em;
+        font-size: .8em;
+      }
+    }
   }
 
   .drop-down {
     height: auto;
     border: 1px solid black;
     border-top: none;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
     background-color: white;
   }
 

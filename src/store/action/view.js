@@ -23,7 +23,7 @@ export const clearViewDelete = () => { return { type: actionTypes.CLEAR_VIEW_DEL
 // <-----COMPLEX CALLS----->
 export const createView = (campaignId, activeViewId, viewCreateCnt) => {
   const viewId = "view" + viewCreateCnt;
-  const viewData = { title: "untitled", color: "gray" };
+  const viewData = { title: viewId, color: "gray" };
   return dispatch => {
     dispatch(addView(viewId, viewData));
     dispatch(insertViewToViewOrder(campaignId, viewId, activeViewId));

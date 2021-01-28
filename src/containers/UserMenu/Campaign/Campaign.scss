@@ -1,0 +1,52 @@
+@import '../../../shared/styles/globalVariables.scss';
+
+.campaign {
+  width: 100%;
+
+  display: flex;
+  flex-flow: row nowrap;
+  
+  .campaign-title {
+    // height: 40px;
+    margin: 0;  padding: 5px;
+    border: 0;
+  
+    flex: auto;
+  
+    text-align: left;
+    font-weight: bold;
+    font-size: 14px;
+    text-overflow: ellipsis;
+  
+    overflow: hidden;
+  
+    &:read-only {
+      background-color: lightgray;
+      cursor: default;
+    }
+  }
+
+  .button {
+    @extend %button-24;
+    border-left: 1px solid black;
+    place-items: center;
+    line-height: normal;
+
+    &:hover .tooltip {
+      visibility: visible;
+    }
+
+    .tooltip {
+      @extend %tooltip;
+    
+      /* Position the tooltip */
+      position: absolute;
+      top: 50px;
+      z-index: 1;
+    }
+
+    .tooltip::after {
+      @extend %tooltip-top-arrow
+    }
+  }
+}

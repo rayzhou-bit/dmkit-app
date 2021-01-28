@@ -1,22 +1,23 @@
 import React, { useState, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Rnd } from 'react-rnd';
-import { useOutsideClick } from '../../shared/utilityFunctions';
+import { useOutsideClick } from '../../../shared/utilityFunctions';
 
 import './Card.scss';
-import * as actions from '../../store/actionIndex';
-import { GRID } from '../../shared/constants/grid';
-import { TEXT_COLOR_WHEN_BACKGROUND_IS, CARD_TITLEBAR_EDIT_COLORS, CARD_TITLEBAR_COLORS } from '../../shared/constants/colors';
+import * as actions from '../../../store/actionIndex';
+import { GRID } from '../../../shared/constants/grid';
+import { TEXT_COLOR_WHEN_BACKGROUND_IS, CARD_TITLEBAR_EDIT_COLORS, CARD_TITLEBAR_COLORS } from '../../../shared/constants/colors';
 
-import ShrinkImg from '../../media/icons/shrink-24.png';
-import DotDotDotImg from '../../media/icons/view-settings-24.png';
-import CloseImg from '../../media/icons/remove-24.png';
+import ShrinkImg from '../../../media/icons/shrink-24.png';
+import DotDotDotImg from '../../../media/icons/view-settings-24.png';
+import CloseImg from '../../../media/icons/remove-24.png';
 
 const Card = props => {
   const {cardId, cardData, activeViewId, cardAnimation, setCardAnimation, toolMenuRef} = props;
   const dispatch = useDispatch();
 
   // STATES
+  const [dragging, setDragging] = useState(false);
   const [isSelected, setIsSelected] = useState(false);
   const [editingTitle, setEditingTitle] = useState(false);
   const [editingText, setEditingText] = useState(false);
@@ -45,12 +46,15 @@ const Card = props => {
   const cardTitleRef = useRef(cardTitleId);
   const cardTextId = cardId+".textarea";
   const cardTextRef = useRef(cardTextId);
-  const viewSettingsId = cardId+"."+activeViewId+".viewSettings";
+  const viewSettingsId = cardId+"."+activeViewId+".view-settings";
   const viewSettingsRef = useRef(viewSettingsId);
   const viewSettingsBtnRef = useRef(viewSettingsId+".btn")
 
   // FUNCTIONS: CARD
-  const dragStopHandler = (event, data) => dispatch(actions.updCardPos(cardId, activeViewId, {x: data.x, y: data.y}));
+  const dragStopHandler = (event, data) => {
+    setDragging(false);
+    dispatch(actions.updCardPos(cardId, activeViewId, {x: data.x, y: data.y}));
+  };
 
   const resizeStopHandler = (event, direction, ref, delta, position) => {
     dispatch(actions.updCardSize(cardId, activeViewId, {width: ref.style.width, height: ref.style.height}));
@@ -169,7 +173,9 @@ const Card = props => {
   const changeTypeToBubble = () => dispatch(actions.updCardType(cardId, activeViewId, "bubble"));
 
   // STYLES: CARD
-  const toFrontStyle = {zIndex: cardId === activeCardId ? 10 : 0};
+  const toFrontStyle = {
+    zIndex: dragging ? 11 : cardId === activeCardId ? 10 : 0
+  };
   const cardStyle = {
     backgroundColor: cardColor,
     border: cardId === activeCardId ? '3px solid black' : '1px solid black',
@@ -241,6 +247,7 @@ const Card = props => {
       minHeight={GRID.size*5}
       resizeGrid={[GRID.size, GRID.size]}
       // functions
+      onDragStart={()=>setDragging(true)}
       onDragStop={dragStopHandler}
       onResizeStop={resizeStopHandler}
       onClick={cardClickHandler}
@@ -256,15 +263,15 @@ const Card = props => {
             onChange={updTitleEdit}
             onKeyUp={e => keyPressTitleHandler(e)}
           />
-          <div className="button" onClick={changeTypeToBubble}>
+          <div className="shrink button-24" onClick={changeTypeToBubble}>
             <img src={ShrinkImg} alt="Shrink" draggable="false" />
             <span className="tooltip">Shrink card</span>
           </div>
-          <div ref={viewSettingsBtnRef} className="button" onClick={() => setShowViewSettings(!showViewSettings)}>
+          <div ref={viewSettingsBtnRef} className="view-setting button-24" onClick={() => setShowViewSettings(!showViewSettings)}>
             <img src={DotDotDotImg} alt="Settings" draggable="false" />
             <span className="tooltip">Show view settings</span>
           </div>
-          <div className="button" onClick={removeCardFromThisView}>
+          <div className="remove-card button-24" onClick={removeCardFromThisView}>
             <img src={CloseImg} alt="Close" draggable="false" />
             <span className="tooltip">Remove card from this view</span>
           </div>

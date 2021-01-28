@@ -6,7 +6,7 @@ export {
   receiveSignInData,
 
   loadInitCampaign, unloadCampaign,
-  switchCampaign, createCampaign,
+  createCampaign, destroyCampaign, switchCampaign, 
 
   sendCampaignData, receiveCampaignData,
 } from './action/serverCalls';
@@ -21,7 +21,7 @@ export {
 export {
   initCampaignColl, loadCampaignColl, unloadCampaignColl,
 
-  addCampaign,
+  addCampaign, removeCampaign,
 
   updCampaignTitle,
 
@@ -52,6 +52,8 @@ export {
 
   addView, removeView,
   createView, destroyView, copyView,
+
+  updViewColor,
 
   updViewTitle,
 

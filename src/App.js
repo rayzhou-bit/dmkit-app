@@ -15,7 +15,13 @@ const App = props => {
   
   // IDS & REFS
   const toolMenuRef = useRef("toolMenu");
+
+  // Disable scrolling
+  document.body.scroll = "no";
+  document.body.style.overflow = 'hidden';
+  document.height = window.innerHeight;
   
+  // Auth observer
   auth.onAuthStateChanged(resp => {
     // IMPLEMENT: loading start
     if (resp && resp.uid) {
@@ -34,11 +40,11 @@ const App = props => {
 
   return (
     <div id="layout">
-      <UserMenu id="userMenu" />
-      <ToolMenu id="toolMenu" toolMenuRef={toolMenuRef} />
+      <UserMenu id="user-menu" />
+      <ToolMenu id="tool-menu" toolMenuRef={toolMenuRef} />
       <Library id="library" />
-      <ViewSelect id="viewSelect" />
-      <ViewScreen id="viewScreen" toolMenuRef={toolMenuRef} />
+      <ViewSelect id="view-select" />
+      <ViewScreen id="view-screen" toolMenuRef={toolMenuRef} />
     </div>
   );
 };

@@ -1,6 +1,6 @@
 @import '../../shared/styles/globalVariables';
 
-#toolMenu {
+#tool-menu {
   display:flex;
   flex-flow: column nowrap;
 
@@ -11,6 +11,8 @@
 
     border: 1px solid black;
     border-left: 0px;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
 
     &:hover .tooltip {
       visibility: visible;

@@ -11,9 +11,10 @@ const initialState = {
   cardDelete: [],   // array of cards scheduled for deletion on server
   viewDelete: [],   // array of views scheduled for deletion on server
 
-  campaignDataEdited: false,
   cardsEdited: [],  // IMPLEMENT: autosave
   viewsEdited: [],
+
+  campaignDataEdited: false,
 };
 
 const reducer = (state = {}, action) => {
@@ -31,15 +32,29 @@ const reducer = (state = {}, action) => {
     case actionTypes.UPD_ACTIVE_CARD_ID: return updateObject(state, {activeCardId: action.cardId});
 
     // cardDelete
-    case actionTypes.ENQUEUE_CARD_DELETE: return updateObject(state, {cardDelete: [...state.cardDelete, action.cardId]});
+    case actionTypes.ENQUEUE_CARD_DELETE: return enqueueCardDelete(state, action.cardId);
     case actionTypes.CLEAR_CARD_DELETE: return updateObject(state, {cardDelete: []});
 
     // viewDelete
-    case actionTypes.ENQUEUE_VIEW_DELETE: return updateObject(state, {viewDelete: [...state.viewDelete, action.viewId]});
+    case actionTypes.ENQUEUE_VIEW_DELETE: return enqueueViewDelete(state, action.viewId);
     case actionTypes.CLEAR_VIEW_DELETE: return updateObject(state, {viewDelete: []});
 
     default: return state;
   }
+};
+
+const enqueueCardDelete = (state, cardId) => {
+  const updatedCardDelete = state.cardDelete
+    ? [...state.cardDelete, cardId]
+    : [cardId];
+  return updateObject(state, {cardDelete: updatedCardDelete});
+};
+
+const enqueueViewDelete = (state, viewId) => {
+  const updatedViewDelete = state.viewDelete
+    ? [...state.viewDelete, viewId]
+    : [viewId];
+  return updateObject(state, {viewDelete: updatedViewDelete});
 };
 
 export default reducer;

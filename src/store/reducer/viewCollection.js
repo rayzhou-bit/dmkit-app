@@ -8,6 +8,7 @@ const initialState = {
   // },
   view0: {
     title: "Welcome!",
+    color: "gray",
   },
 };
 

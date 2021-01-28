@@ -89,23 +89,30 @@ export const createCampaign = (currCampId, campaignColl, cardColl, viewColl, dat
   return dispatch => {
     // Create a new campaign on the server.
     // IMPLMENT: loading start
-    let campaignCreateCnt = null;
-    store.collection("users").doc(userId).get()
-      .then(userData => {
-        if (userData.exists) {
-          campaignCreateCnt = userData.data().campaignCreateCnt;
-          // IMPLEMENT: check if campaign exists
-          const campaignId = "campaign" + campaignCreateCnt;
-          store.collection("users").doc(userId).collection("campaigns").doc(campaignId).set(campaignData)
-            .then(resp => {
-              dispatch(actions.addCampaign(campaignId, campaignData));
-              store.collection("users").doc(userId).set({campaignCreateCnt: campaignCreateCnt+1}, {merge: true});
-              console.log("[createCampaign] added campaign", resp.id);
-              dispatch(switchCampaign(resp.id, currCampId, campaignColl, cardColl, viewColl, dataManager));
-              //IMPLEMENT: loading end
-            }).catch(err => console.log("[createCampaign] error adding campaign", err));
+    store.collection("users").doc(userId).collection("campaigns").add(campaignData)
+      .then(resp => {
+        const campaignId = resp.id;
+        if (campaignId) {
+          dispatch(actions.addCampaign(campaignId, campaignData));
+          console.log("[createCampaign] added campaign", campaignId);
+          dispatch(switchCampaign(campaignId, currCampId, campaignColl, cardColl, viewColl, dataManager));
+          dispatch(actions.createView(campaignId, null, 0));
+          dispatch(actions.createCard(campaignId, "view0", 0));
+          dispatch(actions.updActiveViewId(campaignId, "view0"));
+          // IMPLEMENT: loading end
         }
-      }).catch(err => console.log("[createCampaign] error fetching campaignCreateCnt:", err));
+      }).catch(err => console.log("[createCampaign] error adding campaign", err));
+  };
+};
+
+export const destroyCampaign = (campaignId) => {
+  const userId = getUserId();
+  return dispatch => {
+    store.collection("users").doc(userId).collection("campaigns").doc(campaignId).delete()
+      .then(resp => {
+        dispatch(actions.removeCampaign(campaignId));
+        console.log("[destroyCampaign] campaign", campaignId, "deleted:", resp);
+      }).catch(err => console.log("[destroyCampaign] batch delete error cards:", err));
   };
 };
 
@@ -162,50 +169,52 @@ export const sendCampaignData = (campaignId, campaignColl, cardColl, viewColl, d
   const cardCollRef = store.collection("users").doc(userId).collection("campaigns").doc(campaignId).collection("cards");
   const viewCollRef = store.collection("users").doc(userId).collection("campaigns").doc(campaignId).collection("views");
   return dispatch => {
-    let batch = store.batch();
+    if (campaignColl[campaignId]) {
+      const batch = store.batch();
 
-    // CAMPAIGN: batch set campaign data, viewOrder, activeViewId, cardCreateCnt, viewCreateCnt
-    batch.set(campaignRef, campaignColl[campaignId], {merge: true});
-    console.log("[sendCampaignData] batch set campaign:", campaignId);
+      // CAMPAIGN: batch set campaign data, viewOrder, activeViewId, cardCreateCnt, viewCreateCnt
+      batch.set(campaignRef, campaignColl[campaignId], {merge: true});
+      console.log("[sendCampaignData] batch set campaign:", campaignId);
 
-    // CARD: batch set card data
-    for (let cardId in cardColl) {
-      const cardRef = cardCollRef.doc(cardId);
-      batch.set(cardRef, cardColl[cardId], {merge: true});
-      console.log("[sendCampaignData] batch set card:", cardId);
-    }
-    // CARD: batch delete cards in the cardDelete queue
-    for (let cardId in dataManager.cardDelete) {
-      const cardRef = cardCollRef.doc(cardId);
-      batch.delete(cardRef);
-      console.log("[sendCampaignData] batch delete card:", cardId);
-    }
+      // CARD: batch set card data
+      for (let cardId in cardColl) {
+        const cardRef = cardCollRef.doc(cardId);
+        batch.set(cardRef, cardColl[cardId], {merge: true});
+        console.log("[sendCampaignData] batch set card:", cardId);
+      }
+      // CARD: batch delete cards in the cardDelete queue
+      for (let cardId in dataManager.cardDelete) {
+        const cardRef = cardCollRef.doc(cardId);
+        batch.delete(cardRef);
+        console.log("[sendCampaignData] batch delete card:", cardId);
+      }
 
-    // VIEW: batch set view data
-    for (let viewId in viewColl) {
-      const viewRef = viewCollRef.doc(viewId);
-      batch.set(viewRef, viewColl[viewId], {merge: true});
-      console.log("[sendCampaignData] batch set view:", viewId);
-    }
-    // VIEW: batch delete views in the viewDelete queue
-    for (let viewId in dataManager.viewDelete) {
-      const viewRef = viewCollRef.doc(viewId);
-      batch.delete(viewRef);
-      console.log("[sendCampaignData] batch delete view:", viewId);
-    }
+      // VIEW: batch set view data
+      for (let viewId in viewColl) {
+        const viewRef = viewCollRef.doc(viewId);
+        batch.set(viewRef, viewColl[viewId], {merge: true});
+        console.log("[sendCampaignData] batch set view:", viewId);
+      }
+      // VIEW: batch delete views in the viewDelete queue
+      for (let viewId in dataManager.viewDelete) {
+        const viewRef = viewCollRef.doc(viewId);
+        batch.delete(viewRef);
+        console.log("[sendCampaignData] batch delete view:", viewId);
+      }
 
-    // COMMIT BATCH
-    batch.commit()
-    .then(resp => {
-      console.log("[sendCampaignData] batch commit success:", resp);
-      // CLEANUP
-      dispatch(actions.clearCardDelete());
-      dispatch(actions.clearViewDelete());
-    })
-    .catch(err => {
-      console.log("[sendCampaignData] batch commit error:", err);
-      // NON-BATCH CLEANUP
-    });
+      // COMMIT BATCH
+      batch.commit()
+      .then(resp => {
+        console.log("[sendCampaignData] batch commit success:", resp);
+        // CLEANUP
+        dispatch(actions.clearCardDelete());
+        dispatch(actions.clearViewDelete());
+      })
+      .catch(err => {
+        console.log("[sendCampaignData] batch commit error:", err);
+        // NON-BATCH CLEANUP
+      });
+    }
   };
 };
 

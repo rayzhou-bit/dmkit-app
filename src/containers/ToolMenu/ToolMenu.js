@@ -4,9 +4,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import './ToolMenu.scss';
 import * as actions from '../../store/actionIndex';
 
-import AddImg from '../../media/icons/add.png';
-import CopyImg from '../../media/icons/copy.png';
-import SaveImg from '../../media/icons/save.png';
+import AddImg from '../../media/icons/add-32.png';
+import CopyImg from '../../media/icons/copy-32.png';
+import SaveImg from '../../media/icons/save-32.png';
 
 const ToolMenu = React.memo(props => {
   const {toolMenuRef} = props;
@@ -23,12 +23,12 @@ const ToolMenu = React.memo(props => {
   const cardCreateCnt = campaignColl[campaignId] ? campaignColl[campaignId].cardCreateCnt : null;
 
   // FUNCTIONS
-  const createCard = () => dispatch(actions.createCard(cardCreateCnt, activeViewId)); 
+  const createCard = () => dispatch(actions.createCard(campaignId, activeViewId, cardCreateCnt)); 
   // IMPLEMENT: set cursor to the card title after card creation
 
   const copyCard = () => {
     if (activeCardId) {
-      dispatch(actions.copyCard(cardColl[activeCardId], activeViewId, cardCreateCnt));
+      dispatch(actions.copyCard(campaignId, cardColl[activeCardId], activeViewId, cardCreateCnt));
     }
   };
 
@@ -42,7 +42,7 @@ const ToolMenu = React.memo(props => {
   const dividerHeight = 30 / 4;
 
   return (
-    <div id="toolMenu" ref={toolMenuRef}>
+    <div id="tool-menu" ref={toolMenuRef}>
       <div className="divider" />
       <div className="create-card button" onClick={createCard}>
         <img src={AddImg} alt="Add" draggable="false" />

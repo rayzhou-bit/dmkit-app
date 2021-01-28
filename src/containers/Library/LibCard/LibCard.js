@@ -30,12 +30,12 @@ const LibCard = props => {
   const cardText = cardContent ? cardContent.text : "";
 
   // IDS & REFS
-  const cardLibId = cardId + ".libCard";
+  const cardLibId = cardId + ".lib-card";
   const cardRef = useRef(cardLibId);
-  const cardTitleId = cardId+".libTitle";
+  const cardTitleId = cardId+".lib-title";
   const cardTitleRef = useRef(cardTitleId);
-  const cardDeleteBtnRef = useRef(cardId+".deleteButton");
-  const cardTextId = cardId+".libTextarea";
+  const cardRemoveBtnRef = useRef(cardId+".remove-button");
+  const cardTextId = cardId+".lib-textarea";
   const cardTextRef = useRef(cardTextId);
 
   // FUNCTIONS: CARD
@@ -67,7 +67,6 @@ const LibCard = props => {
   const endTitleEdit = () => {
     if (editingTitle) {setEditingTitle(false)}
   };
-
   useOutsideClick([cardTitleRef], editingTitle, endTitleEdit);
 
   const updTitleEdit = () => {
@@ -95,7 +94,7 @@ const LibCard = props => {
     }
   };
 
-  useOutsideClick([cardDeleteBtnRef], confirmDelete, setConfirmDelete, false);
+  useOutsideClick([cardRemoveBtnRef], confirmDelete, setConfirmDelete, false);
 
   // FUNCTIONS: TEXT BODY
   const startTextEdit = () => {
@@ -170,9 +169,9 @@ const LibCard = props => {
           value={cardTitle} readOnly={!editingTitle}
           onDoubleClick={(cardId === activeCardId) ? startTitleEdit : null}
           onChange={updTitleEdit}
-          onKeyDown={(e) => keyPressTitleHandler(e)}
+          onKeyDown={e => keyPressTitleHandler(e)}
         />
-        <div ref={cardDeleteBtnRef} className="button" style={deleteButtonStyle}
+        <div ref={cardRemoveBtnRef} className="button" style={deleteButtonStyle}
           onClick={removeCard}
         >
           <img src={DeleteImg} alt="Delete" draggable="false" />

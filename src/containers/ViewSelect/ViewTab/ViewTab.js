@@ -1,6 +1,6 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Rnd } from 'react-rnd';
+import { Rnd } from "react-rnd";
 
 import "./ViewTab.scss";
 import * as actions from "../../../store/actionIndex";
@@ -9,25 +9,38 @@ import { useOutsideClick } from "../../../shared/utilityFunctions";
 import CloseImg from "../../../media/icons/close.png";
 
 const ViewTab = React.memo(props => {
+  const {viewId, containerId, tabWidth} = props;
   const dispatch = useDispatch();
 
-  // VARIABLES
+  // STATES
+  const [dragging, setDragging] = useState(false);
   const [editingTitle, setEditingTitle] = useState(false);
+  const [showColorSetting, setShowColorSetting] = useState(false);
 
+  // STORE SELECTORS
+  const campaignColl = useSelector(state => state.campaignColl);
   const viewColl = useSelector(state => state.viewColl);
   const campaignId = useSelector(state => state.dataManager.activeCampaignId);
-  const activeViewId = useSelector(state => campaignId ? state.campaignColl[campaignId].activeViewId : null);
-  const viewPos = Number(props.position); // positions start at 0
+  const activeViewId = campaignColl[campaignId] ? campaignColl[campaignId].activeViewId : null;
+  const viewOrder = campaignColl[campaignId] ? campaignColl[campaignId].viewOrder : [];
 
-  const viewId = props.id;
+  // VARIABLES
+  const viewPos = viewOrder.indexOf(viewId);
   const viewData = viewColl[viewId];
   const viewTitle = viewData.title ? viewData.title : "";
+  const viewColor = viewData.color ? viewData.color : "gray";
+  const scrollPos = document.getElementById(containerId).scrollLeft;
+
+  // ID & REF
   const viewTitleId = viewId+".title";
   const viewTitleRef = useRef(viewTitleId);
-
-  const tabWidth = 250;
+  let rndRef = useRef(viewId+".rndref");
 
   // FUNCTIONS
+  useEffect(() => {
+    rndRef.updatePosition({x: viewPos*tabWidth, y: 0});
+  }, [viewOrder]);
+
   const beginEdit = () => {
     if (!editingTitle) {
       const title = document.getElementById(viewTitleId);
@@ -50,7 +63,7 @@ const ViewTab = React.memo(props => {
   };
 
   const dragStopHandler = (event, data) => {
-    // IMPLEMENT: viewPos needs updating... and posShift definition
+    setDragging(false);
     const posShift = Math.round((data.x - (viewPos*tabWidth)) / tabWidth);
     dispatch(actions.shiftViewInViewOrder(campaignId, viewId, posShift));
   };
@@ -72,32 +85,40 @@ const ViewTab = React.memo(props => {
   const destroyView = () => dispatch(actions.destroyView(campaignId, viewId));
 
   // STYLES
-  const toFrontStyle = {zIndex: viewId === activeViewId ? 10 : 0};
+  const toFrontStyle = {
+    zIndex: dragging ? 11 : viewId===activeViewId ? 10 : 1,
+    height: "100%"
+  };
 
   const activeViewStyle = {
     backgroundColor: viewId === activeViewId ? "white" : "lightgray",
-    borderRight: "1px solid black",
     borderTop: viewId === activeViewId ? "1px solid white" : "1px solid black",
   };
 
   const titleStyle = {
-    backgroundColor: editingTitle ? 'lightskyblue' : 'transparent',
-  }
+    backgroundColor: editingTitle ? "lightskyblue" : "transparent",
+  };
+
+  const colorButtonStyle = {
+    backgroundColor: viewColor ? viewColor : "gray",
+  };
 
   return (
-    <Rnd style={toFrontStyle}
+    <Rnd ref={c => rndRef = c}
+      style={toFrontStyle}
       // position and dragging properties
       bounds="parent" dragAxis="x"
-      position={{x: viewPos * tabWidth, y: 0}}
-      disableDragging={editingTitle || (viewId !== activeViewId)}
+      // position={{x: (viewPos*tabWidth-scrollPos), y: 0}}
+      disableDragging={editingTitle}
       dragHandleClassName="title"
       // size and resizing properties
       enableResizing={false}
       size={{width: tabWidth, height: 40}}
       // functions
+      onDragStart={()=>setDragging(true)}
       onDragStop={dragStopHandler}
     >
-      <div className="viewTab" style={activeViewStyle}>
+      <div className="view-tab" style={activeViewStyle}>
         <input id={viewTitleId} ref={viewTitleRef}
           className="title" style={titleStyle}
           type="text" required
@@ -109,10 +130,13 @@ const ViewTab = React.memo(props => {
           onKeyDown={(e) => keyPressHandler(e)}
         />
         <div className="divider" />
-        <div className="button" 
+        <div className="color button" style={colorButtonStyle}
+          onClick={}>
+        </div>
+        <div className="destroy-view button" 
           onClick={destroyView}>
           <img src={CloseImg} alt="Delete" draggable="false" />
-          <span className="tooltip">Delete view</span>
+          {/* <span className="tooltip">Delete view</span> */}
         </div>
       </div>
     </Rnd>

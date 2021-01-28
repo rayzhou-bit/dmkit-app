@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import './ViewScreen.scss';
 import * as actions from '../../store/actionIndex';
 import { GRID } from '../../shared/constants/grid';
-import Card from '../Card/Card';
+import Card from './Card/Card';
 
 // ViewScreen is the main portion the user is looking at. This is located in the center of the screen.
 
@@ -41,7 +41,7 @@ const ViewScreen = props => {
         let yCalculation = Math.round((event.clientY-GRID.size-GRID.size)/GRID.size)*GRID.size;
         if (yCalculation<0) {yCalculation = 0}
         const pos = {x: xCalculation, y: yCalculation};
-        const size = {width: GRID.size*10, height: GRID.size*10};
+        const size = {width: 8*GRID.size, height: 10*GRID.size};
         const color = "gray";
         dispatch(actions.connectCardToView(targetCardId, activeViewId, pos, size, color));
       } else {
@@ -79,7 +79,7 @@ const ViewScreen = props => {
   }
 
   return (
-    <div id="viewScreen" ref={viewScreenRef} 
+    <div id="view-screen" ref={viewScreenRef} 
       style={viewScreenStyle}
       onDrop={(e)=>drop(e)} onDragOver={(e)=>allowDrop(e)}
     >

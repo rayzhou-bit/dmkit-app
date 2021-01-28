@@ -4,6 +4,7 @@ import { useOutsideClick } from '../../shared/utilityFunctions';
 
 import './UserMenu.scss';
 import * as actions from '../../store/actionIndex';
+import Campaign from './Campaign/Campaign';
 
 const UserMenu = props => {
   const dispatch = useDispatch();
@@ -16,7 +17,7 @@ const UserMenu = props => {
   const [psw, setPsw] = useState("");
   const [editingTitle, setEditingTitle] = useState(false);
 
-  // VARIABLES
+  // STORE SELECTORS
   const userId = actions.getUserId();
   const userEmail = actions.getUserEmail();
   const dataManager = useSelector(state => state.dataManager);
@@ -53,11 +54,7 @@ const UserMenu = props => {
   };
 
   const keyPressTitleHandler = (event) => {
-    if (editingTitle) {
-      if (event.key === 'Enter') {
-        endTitleEdit();
-      }
-    }
+    if (editingTitle && event.key === 'Enter') {endTitleEdit()}
   };  
 
   // FUNCTIONS: SIGN IN
@@ -71,7 +68,6 @@ const UserMenu = props => {
   };
 
   // FUNCTIONS: CAMPAIGN MENU
-  const switchCampaign = (nextCampaignId) => dispatch(actions.switchCampaign(nextCampaignId, campaignId, campaignColl, cardColl, viewColl, dataManager));
   const newCampaign = () => dispatch(actions.createCampaign(campaignId, campaignColl, cardColl, viewColl, dataManager));
 
   // FUNCTIONS: OUTSIDECLICKS
@@ -90,17 +86,15 @@ const UserMenu = props => {
       for (let campaignId in campaignColl) {
         campaignList = [
           ...campaignList,
-          <div key={campaignId} onClick={() => switchCampaign(campaignId)}>
-            {campaignColl[campaignId].title ? campaignColl[campaignId].title : ""}
-          </div>
+          <Campaign key={campaignId}
+            campaignId={campaignId} campaignTitle={campaignTitle} activeCampaignId={campaignId} setShowCampaignDropDown={setShowCampaignDropDown}
+          />,
         ];
       };
     }
     campaignList = [
       ...campaignList,
-      <div key={"newCampaign"} onClick={newCampaign}>
-        New Campaign
-      </div>
+      <div key={"newCampaign"} className="new-campaign" onClick={newCampaign}>New Campaign</div>
     ];
   }
   
@@ -115,15 +109,19 @@ const UserMenu = props => {
         <div className="sign-up panel">
           <h1>Sign Up</h1>
           <form id="sign-up-form" onSubmit={e => emailSignUp(e)}>
-            <label htmlFor="email"><b>Email</b></label>
-            <input type="email" placeholder="Enter Email" name="email" required
-              value={email} onChange={e => setEmail(e.target.value)} />
-            <label htmlFor="psw"><b>Password</b></label>
-            <input type="password" placeholder="Enter Password" name="psw" required 
-              value={psw} onChange={e => setPsw(e.target.value)} />
+            <div className="email row">
+              <label htmlFor="email">Email</label>
+              <input type="email" placeholder="Enter Email" name="email" required
+                value={email} onChange={e => setEmail(e.target.value)} />
+            </div>
+            <div className="password row">
+              <label htmlFor="psw">Password</label>
+              <input type="password" placeholder="Enter Password" name="psw" required 
+                value={psw} onChange={e => setPsw(e.target.value)} />
+            </div>
             <button type="submit">Sign Up</button>
           </form>
-          <div onClick={() => setAuthForm('signin')}>Already have an account? Log in here</div>
+          <div className="switch-auth" onClick={() => setAuthForm('signin')}>Already have an account? <br/> Log in here</div>
         </div>
       );
     } else {
@@ -131,22 +129,26 @@ const UserMenu = props => {
         <div className="sign-in panel">
           <h1>Login</h1>
           <form id="sign-in-form" onSubmit={e => emailSignIn(e)}>
-            <label htmlFor="email"><b>Email</b></label>
-            <input type="email" placeholder="Enter Email" name="email" required 
-              value={email} onChange={e => setEmail(e.target.value)} />
-            <label htmlFor="psw"><b>Password</b></label>
-            <input type="password" placeholder="Enter Password" name="psw" required 
-              value={psw} onChange={e => setPsw(e.target.value)} />
+            <div className="email row">
+              <label htmlFor="email">Email</label>
+              <input type="email" placeholder="Enter Email" name="email" required 
+                value={email} onChange={e => setEmail(e.target.value)} />
+            </div>
+            <div className="password row">
+              <label htmlFor="psw">Password</label>
+              <input type="password" placeholder="Enter Password" name="psw" required 
+                value={psw} onChange={e => setPsw(e.target.value)} />
+            </div>
             <button type="submit">Log In</button>
           </form>
-          <div onClick={() => setAuthForm('signup')}>Don't have an account? Sign up now</div>
+          <div className="switch-auth" onClick={() => setAuthForm('signup')}>Don't have an account? <br/> Sign up now</div>
         </div>
       );
     }
   }
 
   return (
-    <div id="userMenu">
+    <div id="user-menu">
       <div className="dmkit-title">
         <input id={campaignTitleId} ref={campaignTitleRef}
           className="title-text" style={campaignTitleStyle}
@@ -167,7 +169,7 @@ const UserMenu = props => {
         className="user button" 
         onClick={() => setShowUserDropDown(!showUserDropDown)}
       >
-        {userEmail ? userEmail.split('@')[0] : "SIGN IN"}
+        {userEmail ? userEmail.split('@')[0] : "Sign In"}
       </div>
       <div ref={campaignDropDownRef} 
         className="campaign drop-down" style={{display: showCampaignDropDown ? "block" : "none"}}

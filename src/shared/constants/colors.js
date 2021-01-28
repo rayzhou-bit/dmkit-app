@@ -6,7 +6,7 @@ export const CARD_TITLEBAR_COLORS = {
   blue: 'blue',
   purple: 'purple',
   gray: 'gray',
-  black: 'black'
+  black: 'black',
 };
 
 export const CARD_TITLEBAR_EDIT_COLORS = {
@@ -17,7 +17,7 @@ export const CARD_TITLEBAR_EDIT_COLORS = {
   blue: 'lightblue',
   purple: 'violet',
   gray: 'lightgray',
-  black: 'darkgray'
+  black: 'darkgray',
 };
 
 export const VIEW_TITLEBAR_COLORS = {
@@ -28,7 +28,7 @@ export const VIEW_TITLEBAR_COLORS = {
   blue: 'blue',
   purple: 'purple',
   gray: 'gray',
-  black: 'black'
+  black: 'black',
 };
 
 export const TEXT_COLOR_WHEN_BACKGROUND_IS = {
@@ -39,5 +39,5 @@ export const TEXT_COLOR_WHEN_BACKGROUND_IS = {
   blue: 'white',
   purple: 'white',
   gray: 'black',
-  black: 'white'
+  black: 'white',
 }
