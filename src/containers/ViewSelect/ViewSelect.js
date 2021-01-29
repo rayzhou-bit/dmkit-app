@@ -22,7 +22,7 @@ const ViewSelect = React.memo(props => {
   const viewOrder = campaignColl[campaignId] ? campaignColl[campaignId].viewOrder : [];
   const viewCreateCnt = campaignColl[campaignId] ? campaignColl[campaignId].viewCreateCnt : [];
 
-  const tabWidth = 200;
+  const tabWidth = 250;
 
   // ID & REFS
   const viewTabContainerId = "view-tab-container";

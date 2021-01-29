@@ -1,10 +1,10 @@
 import React, { useState, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Rnd } from 'react-rnd';
-import { useOutsideClick } from '../../../shared/utilityFunctions';
 
 import './Card.scss';
 import * as actions from '../../../store/actionIndex';
+import { useOutsideClick } from '../../../shared/utilityFunctions';
 import { GRID } from '../../../shared/constants/grid';
 import { TEXT_COLOR_WHEN_BACKGROUND_IS, CARD_TITLEBAR_EDIT_COLORS, CARD_TITLEBAR_COLORS } from '../../../shared/constants/colors';
 

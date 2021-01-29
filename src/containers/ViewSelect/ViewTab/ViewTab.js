@@ -5,6 +5,7 @@ import { Rnd } from "react-rnd";
 import "./ViewTab.scss";
 import * as actions from "../../../store/actionIndex";
 import { useOutsideClick } from "../../../shared/utilityFunctions";
+import { VIEW_TITLEBAR_COLORS } from "../../../shared/constants/colors";
 
 import CloseImg from "../../../media/icons/close.png";
 
@@ -29,17 +30,36 @@ const ViewTab = React.memo(props => {
   const viewData = viewColl[viewId];
   const viewTitle = viewData.title ? viewData.title : "";
   const viewColor = viewData.color ? viewData.color : "gray";
-  const scrollPos = document.getElementById(containerId).scrollLeft;
+  // const scrollPos = document.getElementById(containerId).scrollLeft;
 
   // ID & REF
+  let rndRef = useRef(viewId+".rndref");
   const viewTitleId = viewId+".title";
   const viewTitleRef = useRef(viewTitleId);
-  let rndRef = useRef(viewId+".rndref");
+  const colorSettingId = viewId+".color-setting";
+  const colorSettingRef = useRef(colorSettingId);
+  const colorSettingBtnRef = useRef(colorSettingId+".btn");
 
   // FUNCTIONS
   useEffect(() => {
     rndRef.updatePosition({x: viewPos*tabWidth, y: 0});
   }, [viewOrder]);
+
+  const dragStopHandler = (event, data) => {
+    setDragging(false);
+    const posShift = Math.round((data.x - (viewPos*tabWidth)) / tabWidth);
+    dispatch(actions.shiftViewInViewOrder(campaignId, viewId, posShift));
+  };
+
+  const clickHandler = () => {
+    if (viewId !== activeViewId) {
+      dispatch(actions.updActiveViewId(campaignId, viewId));
+    }
+  };
+
+  const updViewColor = (color) => dispatch(actions.updViewColor(viewId, color));
+
+  const destroyView = () => dispatch(actions.destroyView(campaignId, viewId));
 
   const beginEdit = () => {
     if (!editingTitle) {
@@ -56,22 +76,9 @@ const ViewTab = React.memo(props => {
     }
   };
 
-  useOutsideClick([viewTitleRef], editingTitle, endEdit);
 
   const updEdit = () => {
     if (editingTitle) {dispatch(actions.updViewTitle(viewId, viewTitleRef.current.value))}
-  };
-
-  const dragStopHandler = (event, data) => {
-    setDragging(false);
-    const posShift = Math.round((data.x - (viewPos*tabWidth)) / tabWidth);
-    dispatch(actions.shiftViewInViewOrder(campaignId, viewId, posShift));
-  };
-
-  const clickHandler = () => {
-    if (viewId !== activeViewId) {
-      dispatch(actions.updActiveViewId(campaignId, viewId));
-    }
   };
 
   const keyPressHandler = (event) => {
@@ -82,8 +89,9 @@ const ViewTab = React.memo(props => {
     }
   };
 
-  const destroyView = () => dispatch(actions.destroyView(campaignId, viewId));
-
+  useOutsideClick([viewTitleRef], editingTitle, endEdit);
+  useOutsideClick([colorSettingRef, colorSettingBtnRef], showColorSetting, setShowColorSetting, false);
+  
   // STYLES
   const toFrontStyle = {
     zIndex: dragging ? 11 : viewId===activeViewId ? 10 : 1,
@@ -99,9 +107,18 @@ const ViewTab = React.memo(props => {
     backgroundColor: editingTitle ? "lightskyblue" : "transparent",
   };
 
-  const colorButtonStyle = {
-    backgroundColor: viewColor ? viewColor : "gray",
-  };
+  // DISPLAY ELEMENTS
+  let colorList = [];
+  for (let color in VIEW_TITLEBAR_COLORS) {
+    let colorStyle = {
+      backgroundColor: color,
+      border: viewColl[viewId].color === color ? "2px solid white" : "1px solid black",
+    };
+    colorList = [
+      ...colorList,
+      <div key={color} className="color-button" style={colorStyle} onClick={() => updViewColor(color)} />
+    ];
+  }
 
   return (
     <Rnd ref={c => rndRef = c}
@@ -129,14 +146,17 @@ const ViewTab = React.memo(props => {
           onChange={updEdit}
           onKeyDown={(e) => keyPressHandler(e)}
         />
-        <div className="divider" />
-        <div className="color button" style={colorButtonStyle}
-          onClick={}>
+        <div className="view-tab-divider" />
+        <div ref={colorSettingBtnRef} className="color button-32" onClick={() => setShowColorSetting(!showColorSetting)}>
+          <div className="color-display" style={{backgroundColor: viewColor}} />
         </div>
-        <div className="destroy-view button" 
-          onClick={destroyView}>
+        <div className="view-tab-divider" />
+        <div className="destroy-view button-32" onClick={destroyView}>
           <img src={CloseImg} alt="Delete" draggable="false" />
-          {/* <span className="tooltip">Delete view</span> */}
+          {/* <span className="tooltip">Delete</span> */}
+        </div>
+        <div ref={colorSettingRef} className="color-setting" style={{width: showColorSetting ? "160px" : 0}}>
+          {colorList}
         </div>
       </div>
     </Rnd>

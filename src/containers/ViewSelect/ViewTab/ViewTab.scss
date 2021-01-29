@@ -22,33 +22,59 @@
     font-size: 22px;
   }
 
-  .divider {
-    height: 32px; width: 1px;
-    margin: auto;
-    background-color: black;
+  .color {
+    .color-display {
+      height: 32px; width: 24px;
+      border-radius: 3px;
+    }
   }
 
-  .button {
-    @extend %button-32;
-    background-color: transparent;
-    place-items: center;
+  .color-setting {
+    position: absolute;
+    width: 100px;
+    right: 74px;
+    overflow: hidden;
+    background-color: white;
 
-    &:hover .tooltip {
-      visibility: visible;
-    }
+    -webkit-transition: .4s;
+    transition: .4s;
 
-    .tooltip {
-      @extend %tooltip;
-    
-      /* Position the tooltip */
-      position: absolute;
-      bottom: 120%;
-      right: -8%;
-      z-index: 1;
-    }
+    display: flex;
+    flex-flow: row nowrap;
 
-    .tooltip::after {
-      @extend %tooltip-bottom-arrow;
+    .color-button {
+      height: 40px; width: 30px;
     }
+  }
+}
+
+.view-tab-divider {
+  height: 32px; width: 1px;
+  margin: auto;
+  z-index: 5;
+  background-color: black;
+}
+
+.button-32 {
+  @extend %button-32;
+  background-color: transparent;
+  place-items: center;
+
+  &:hover .tooltip {
+    visibility: visible;
+  }
+
+  .tooltip {
+    @extend %tooltip;
+  
+    /* Position the tooltip */
+    position: absolute;
+    bottom: 15%;
+    right: 25%;
+    z-index: 10;
+  }
+
+  .tooltip::after {
+    @extend %tooltip-right-arrow;
   }
 }
