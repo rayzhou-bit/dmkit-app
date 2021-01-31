@@ -60,7 +60,7 @@ const ViewSelect = React.memo(props => {
     <div id="view-select">
       <div className="add-view button-32" onClick={createView}>
         <img src={AddImg} alt="Add" draggable="false" />
-        <span className="tooltip">Add a view</span>
+        {/* <span className="tooltip">Add a view</span> */}
       </div>
       <div id={viewTabContainerId}>
         <div className="view-tab-container-container" style={tabContStyle}>
@@ -71,11 +71,11 @@ const ViewSelect = React.memo(props => {
       <div className="view-scroll-container">
         <div className="view-scroll-left button-32" onClick={scrollLeft}>
           <img src={LeftArrowImg} alt="Scroll left" draggable="false" />
-          <span className="tooltip">Scroll left</span>
+          {/* <span className="tooltip">Scroll left</span> */}
         </div>
         <div className="view-scroll-right button-32" onClick={scrollRight}>
           <img src={RightArrowImg} alt="Scroll right" draggable="false" />
-          <span className="tooltip">Scroll right</span>
+          {/* <span className="tooltip">Scroll right</span> */}
         </div>
       </div>
     </div>
