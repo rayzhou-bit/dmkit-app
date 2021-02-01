@@ -5,8 +5,8 @@ import { useOutsideClick } from '../../../shared/utilityFunctions';
 import './Campaign.scss';
 import * as actions from '../../../store/actionIndex';
 
-import EditImg from '../../../media/icons/edit-24.png';
-import DeleteImg from '../../../media/icons/delete-24.png';
+import EditImg from '../../../assets/icons/edit-24.png';
+import DeleteImg from '../../../assets/icons/delete-24.png';
 
 const Campaign = props => {
   const {campaignId, setShowCampaignDropDown} = props;

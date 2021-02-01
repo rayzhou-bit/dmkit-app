@@ -14,7 +14,6 @@ export const loadInitCampaign = () => {
     dispatch(actions.initViewColl());
   };
 };
-
 export const unloadCampaign = () => {  
   return dispatch => {
     dispatch(actions.unloadCardColl());
@@ -39,7 +38,6 @@ export const emailSignUp = (email, psw) => {
     })
     .catch(err => console.log("[emailSignUp] error:", err));
 };
-
 export const emailSignIn = (email, psw) => {
     auth.signInWithEmailAndPassword(email, psw)
       .then(resp => {
@@ -47,7 +45,6 @@ export const emailSignIn = (email, psw) => {
       })
       .catch(err => console.log("[emailSignIn] error:", err));
 };
-
 export const emailSignOut = () => {
   auth.signOut()
     .then(resp => {
@@ -204,20 +201,81 @@ export const sendCampaignData = (campaignId, campaignColl, cardColl, viewColl, d
 
       // COMMIT BATCH
       batch.commit()
-      .then(resp => {
-        console.log("[sendCampaignData] batch commit success:", resp);
-        // CLEANUP
-        dispatch(actions.clearCardDelete());
-        dispatch(actions.clearViewDelete());
-      })
-      .catch(err => {
-        console.log("[sendCampaignData] batch commit error:", err);
-        // NON-BATCH CLEANUP
-      });
+        .then(resp => {
+          console.log("[sendCampaignData] batch commit success:", resp);
+          // CLEANUP
+          dispatch(actions.clearCardDelete());
+          dispatch(actions.clearViewDelete());
+          dispatch(actions.clearCardEdit());
+          dispatch(actions.clearViewEdit());
+          dispatch(actions.unsetCampaignEdit());
+        })
+        .catch(err => {
+          console.log("[sendCampaignData] batch commit error:", err);
+          // NON-BATCH CLEANUP
+        });
     }
   };
 };
 
-const autoSaveCampaignDataToServer = (campaignId, campaignColl, cardColl, viewColl, dataManager) => {
-  
+export const autoSaveCampaignData = (campaignId, campaignColl, cardColl, viewColl, dataManager) => {
+  const userId = getUserId();
+  // Saves everything from the campaign to the server
+  const campaignRef = store.collection("users").doc(userId).collection("campaigns").doc(campaignId);
+  const cardCollRef = store.collection("users").doc(userId).collection("campaigns").doc(campaignId).collection("cards");
+  const viewCollRef = store.collection("users").doc(userId).collection("campaigns").doc(campaignId).collection("views");
+  return dispatch => {
+    if(campaignColl[campaignId]) {
+      const batch = store.batch();
+
+      // CAMPAIGN: batch set campaign data, viewOrder, activeViewId, cardCreateCnt, viewCreateCnt
+      batch.set(campaignRef, campaignColl[campaignId], {merge: true});
+      console.log("[autoSaveCampaignData] batch set campaign:", campaignId);
+
+      // CARD: batch edit cards in the cardEdit queue
+      for (let cardId in dataManager.cardEdit) {
+        const cardRef = cardCollRef.doc(cardId);
+        // cardId is 0.... need TO LOOK INTO ID
+        // ALSO NEED TO NOT ADD MORE THAN ONE THING TO EDIT QUEUE
+        console.log(cardRef, cardColl[cardId], cardId, cardColl)
+        batch.set(cardRef, cardColl[cardId], {merge: true});
+        console.log("[autoSaveCampaignData] batch set card:", cardId);
+      }
+      // CARD: batch delete cards in the cardDelete queue
+      for (let cardId in dataManager.cardDelete) {
+        const cardRef = cardCollRef.doc(cardId);
+        batch.delete(cardRef);
+        console.log("[autoSaveCampaignData] batch delete card:", cardId);
+      }
+
+      // VIEW: batch edit views in the viewEdit queue
+      for (let viewId in dataManager.viewEdit) {
+        const viewRef = viewCollRef.doc(viewId);
+        batch.set(viewRef, viewColl[viewId], {merge: true});
+        console.log("[autoSaveCampaignData] batch set view:", viewId);
+      }
+      // VIEW: batch delete views in the viewDelete queue
+      for (let viewId in dataManager.viewDelete) {
+        const viewRef = viewCollRef.doc(viewId);
+        batch.delete(viewRef);
+        console.log("[autoSaveCampaignData] batch delete view:", viewId);
+      }
+
+      // COMMIT BATCH
+      batch.commit()
+        .then(resp => {
+          console.log("[autoSaveCampaignData] batch commit success:", resp);
+          // CLEANUP
+          dispatch(actions.clearCardDelete());
+          dispatch(actions.clearViewDelete());
+          dispatch(actions.clearCardEdit());
+          dispatch(actions.clearViewEdit());
+          dispatch(actions.unsetCampaignEdit());
+        })
+        .catch(err => {
+          console.log("[autoSaveCampaignData] batch commit error:", err);
+          // NON-BATCH CLEANUP
+        });
+    }
+  };
 };

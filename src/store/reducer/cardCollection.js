@@ -54,14 +54,13 @@ const reducer = (state = {}, action) => {
     // Add/Remove
     case actionTypes.ADD_CARD: return updateObject(state, {[action.cardId]: action.cardData});
     case actionTypes.REMOVE_CARD: return removeCard(state, action.cardId);
-    case actionTypes.CONNECT_CARD_TO_VIEW: return connectCardToView(state, action.cardId, action.viewId, action.pos, action.size, action.color);
-    case actionTypes.DISCONNECT_CARD_FROM_VIEW: return disconnectCardFromView(state, action.cardId, action.viewId);
+    case actionTypes.LINK_CARD_TO_VIEW: return linkCardToView(state, action.cardId, action.viewId, action.pos, action.size, action.color);
+    case actionTypes.UNLINK_CARD_FROM_VIEW: return unlinkCardFromView(state, action.cardId, action.viewId);
 
     // Update visuals
     case actionTypes.UPD_CARD_POS: return updCardPos(state, action.cardId, action.viewId, action.pos.x, action.pos.y);
     case actionTypes.UPD_CARD_SIZE: return updCardSize(state, action.cardId, action.viewId, action.size.width, action.size.height);
     case actionTypes.UPD_CARD_COLOR: return updCardColor(state, action.cardId, action.viewId, action.color);
-    case actionTypes.UPD_CARD_COLOR_FOR_ALL_VIEWS: return updCardColorForAllViews(state, action.cardId, action.color);
     case actionTypes.UPD_CARD_TYPE: return updCardType(state, action.cardId, action.viewId, action.cardType);
 
     // Update content
@@ -78,7 +77,7 @@ const removeCard = (state, cardId) => {
   return updatedCardColl;
 };
 
-const connectCardToView = (state, cardId, viewId, pos, size, color) => {
+const linkCardToView = (state, cardId, viewId, pos, size, color) => {
   let updatedCard = {...state[cardId]};
   updatedCard.views = updateObject(updatedCard.views, {
     [viewId]: {
@@ -90,7 +89,7 @@ const connectCardToView = (state, cardId, viewId, pos, size, color) => {
   return updateObject(state, {[cardId]: updatedCard});
 };
 
-const disconnectCardFromView = (state, cardId, viewId) => {
+const unlinkCardFromView = (state, cardId, viewId) => {
   let updatedCard = {...state[cardId]};
   delete updatedCard.views[viewId];
   return updateObject(state, {[cardId]: updatedCard});

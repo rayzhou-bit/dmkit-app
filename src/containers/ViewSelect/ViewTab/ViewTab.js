@@ -7,7 +7,7 @@ import * as actions from "../../../store/actionIndex";
 import { useOutsideClick } from "../../../shared/utilityFunctions";
 import { VIEW_TITLEBAR_COLORS } from "../../../shared/constants/colors";
 
-import CloseImg from "../../../media/icons/close.png";
+import CloseImg from "../../../assets/icons/close.png";
 
 const ViewTab = React.memo(props => {
   const {viewId, containerId, tabWidth} = props;
@@ -147,9 +147,10 @@ const ViewTab = React.memo(props => {
           onKeyDown={(e) => keyPressHandler(e)}
         />
         <div className="view-tab-divider" />
+        {/* IMPLEMENT (low tier): color tabs 
         <div ref={colorSettingBtnRef} className="color button-32" onClick={() => setShowColorSetting(!showColorSetting)}>
           <div className="color-display" style={{backgroundColor: viewColor}} />
-        </div>
+        </div> */}
         <div className="view-tab-divider" />
         <div className="destroy-view button-32" onClick={destroyView}>
           <img src={CloseImg} alt="Delete" draggable="false" />

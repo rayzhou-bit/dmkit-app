@@ -80,12 +80,10 @@ const extractViewFromViewOrder = (state, campaignId, extractedViewId) => {
 const shiftViewInViewOrder = (state, campaignId, shiftedViewId, posShift) => {
   let updatedCampaign = {...state[campaignId]};
   let updatedViewOrder = [...state[campaignId].viewOrder];
-  if (posShift !== 0) {
-    const newPos = updatedViewOrder.indexOf(shiftedViewId) + posShift;
-    updatedViewOrder = updatedViewOrder.filter(id => id !== shiftedViewId);
-    updatedViewOrder.splice(newPos, 0, shiftedViewId);
-    updatedCampaign.viewOrder = updatedViewOrder;
-  }
+  const newPos = updatedViewOrder.indexOf(shiftedViewId) + posShift;
+  updatedViewOrder = updatedViewOrder.filter(id => id !== shiftedViewId);
+  updatedViewOrder.splice(newPos, 0, shiftedViewId);
+  updatedCampaign.viewOrder = updatedViewOrder;
   return updateObject(state, {[campaignId]: updatedCampaign});
 };
 

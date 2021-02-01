@@ -4,21 +4,36 @@ import * as actionTypes from '../actionTypes';
 export const initViewColl = () => { return { type: actionTypes.INIT_VIEW_COLL }; };
 export const loadViewColl = (viewColl) => { return { type: actionTypes.LOAD_VIEW_COLL, viewColl: viewColl }; };
 export const unloadViewColl = () => { return { type: actionTypes.UNLOAD_VIEW_COLL }; };
-export const addView = (viewId, viewData) => { return { type: actionTypes.ADD_VIEW, viewId: viewId, viewData: viewData }; };
-export const removeView = (viewId) => { return { type: actionTypes.REMOVE_VIEW, viewId: viewId }; };
-export const updViewTitle = (viewId, title) => { return { type: actionTypes.UPD_VIEW_TITLE, viewId: viewId, title: title }; };
-export const updViewColor = (viewId, color) => { return { type: actionTypes.UPD_VIEW_COLOR, viewId: viewId, color: color }; };
+const addView = (viewId, viewData) => dispatch => {
+  dispatch({ type: actionTypes.ADD_VIEW, viewId: viewId, viewData: viewData });
+  dispatch(enqueueViewEdit(viewId)); dispatch(setCampaignEdit()); };
+const removeView = (viewId) => dispatch => {
+  dispatch({ type: actionTypes.REMOVE_VIEW, viewId: viewId });
+  dispatch(enqueueViewDelete(viewId)); dispatch(setCampaignEdit()); };
+export const updViewTitle = (viewId, title) => dispatch => {
+  dispatch({ type: actionTypes.UPD_VIEW_TITLE, viewId: viewId, title: title });
+  dispatch(enqueueViewEdit(viewId)); dispatch(setCampaignEdit()); };
+export const updViewColor = (viewId, color) => dispatch => {
+  dispatch({ type: actionTypes.UPD_VIEW_COLOR, viewId: viewId, color: color });
+  dispatch(enqueueViewEdit(viewId)); dispatch(setCampaignEdit()); };
 
 // <-----campaignCollection REDUCER CALLS----->
 const insertViewToViewOrder = (campaignId, insertedViewId, currViewId) => { return { type: actionTypes.INSERT_VIEW_TO_VIEW_ORDER, campaignId: campaignId, insertedViewId: insertedViewId, currViewId: currViewId }; };
 const extractViewFromViewOrder = (campaignId, extractedViewId) => { return { type: actionTypes.EXTRACT_VIEW_FROM_VIEW_ORDER, campaignId: campaignId, extractedViewId: extractedViewId }; };
-export const shiftViewInViewOrder = (campaignId, shiftedViewId, posShift) => { return { type: actionTypes.SHIFT_VIEW_IN_VIEW_ORDER, campaignId: campaignId, shiftedViewId: shiftedViewId, posShift: posShift }; };
-export const updActiveViewId = (campaignId, viewId) => { return { type: actionTypes.UPD_ACTIVE_VIEW_ID, campaignId: campaignId, viewId: viewId }; };
+export const shiftViewInViewOrder = (campaignId, shiftedViewId, posShift) => dispatch => { 
+  dispatch({ type: actionTypes.SHIFT_VIEW_IN_VIEW_ORDER, campaignId: campaignId, shiftedViewId: shiftedViewId, posShift: posShift });
+  dispatch(setCampaignEdit()); };
+export const updActiveViewId = (campaignId, viewId) => dispatch => { 
+  dispatch({ type: actionTypes.UPD_ACTIVE_VIEW_ID, campaignId: campaignId, viewId: viewId });
+  dispatch(setCampaignEdit()); };
 const incrementViewCreateCnt = (campaignId) => { return { type: actionTypes.INCREMENT_VIEW_CREATE_CNT, campaignId: campaignId }; };
 
 // <-----dataManager REDUCER CALLS----->
+const setCampaignEdit = () => { return { type: actionTypes.SET_CAMPAIGN_EDIT }; };
 const enqueueViewDelete = (viewId) => { return { type: actionTypes.ENQUEUE_VIEW_DELETE, viewId: viewId }; };
 export const clearViewDelete = () => { return { type: actionTypes.CLEAR_VIEW_DELETE }; };
+const enqueueViewEdit = (viewId) => { return { type: actionTypes.ENQUEUE_VIEW_EDIT, viewId: viewId }; };
+export const clearViewEdit = () => { return { type: actionTypes.CLEAR_VIEW_EDIT }; };
 
 // <-----COMPLEX CALLS----->
 export const createView = (campaignId, activeViewId, viewCreateCnt) => {
@@ -35,7 +50,6 @@ export const destroyView = (campaignId, viewId) => {
   return dispatch => {
     dispatch(removeView(viewId));
     dispatch(extractViewFromViewOrder(campaignId, viewId));
-    dispatch(enqueueViewDelete(viewId));
   };
 };
 

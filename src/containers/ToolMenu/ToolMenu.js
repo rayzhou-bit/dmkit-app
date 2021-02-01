@@ -4,9 +4,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import './ToolMenu.scss';
 import * as actions from '../../store/actionIndex';
 
-import AddImg from '../../media/icons/add-32.png';
-import CopyImg from '../../media/icons/copy-32.png';
-import SaveImg from '../../media/icons/save-32.png';
+import AddImg from '../../assets/icons/add-32.png';
+import CopyImg from '../../assets/icons/copy-32.png';
+import SaveImg from '../../assets/icons/save-32.png';
 
 const ToolMenu = React.memo(props => {
   const {toolMenuRef} = props;
@@ -35,11 +35,6 @@ const ToolMenu = React.memo(props => {
   const saveEditedData = () => {
     dispatch(actions.sendCampaignData(campaignId, campaignColl, cardColl, viewColl, dataManager));
   };
-
-  // STYLES
-  const topOffset = 50;
-  const buttonHeight = 30 + 11;
-  const dividerHeight = 30 / 4;
 
   return (
     <div id="tool-menu" ref={toolMenuRef}>

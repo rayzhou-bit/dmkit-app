@@ -6,7 +6,7 @@ import './LibCard.scss';
 import * as actions from '../../../store/actionIndex';
 import { TEXT_COLOR_WHEN_BACKGROUND_IS, CARD_TITLEBAR_EDIT_COLORS } from '../../../shared/constants/colors';
 
-import DeleteImg from '../../../media/icons/delete-24.png';
+import DeleteImg from '../../../assets/icons/delete-24.png';
 
 const LibCard = props => {
   const {cardId, cardData, activeViewId} = props;

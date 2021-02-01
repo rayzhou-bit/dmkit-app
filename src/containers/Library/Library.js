@@ -4,10 +4,10 @@ import { useSelector } from 'react-redux';
 import './Library.scss';
 import LibCard from './LibCard/LibCard';
 
-import LibBtnImg from '../../media/icons/library.png';
-import ExpandImg from '../../media/icons/left-arrow-32.png';
-import ShrinkImg from '../../media/icons/right-arrow-32.png';
-import SearchImg from '../../media/icons/search2.png';
+import LibBtnImg from '../../assets/icons/library.png';
+import ExpandImg from '../../assets/icons/left-arrow-32.png';
+import ShrinkImg from '../../assets/icons/right-arrow-32.png';
+import SearchImg from '../../assets/icons/search2.png';
 
 const Library = props => {
   // STATES

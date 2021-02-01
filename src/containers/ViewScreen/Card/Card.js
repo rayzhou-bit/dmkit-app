@@ -8,9 +8,9 @@ import { useOutsideClick } from '../../../shared/utilityFunctions';
 import { GRID } from '../../../shared/constants/grid';
 import { TEXT_COLOR_WHEN_BACKGROUND_IS, CARD_TITLEBAR_EDIT_COLORS, CARD_TITLEBAR_COLORS } from '../../../shared/constants/colors';
 
-import ShrinkImg from '../../../media/icons/shrink-24.png';
-import DotDotDotImg from '../../../media/icons/view-settings-24.png';
-import CloseImg from '../../../media/icons/remove-24.png';
+import ShrinkImg from '../../../assets/icons/shrink-24.png';
+import DotDotDotImg from '../../../assets/icons/view-settings-24.png';
+import CloseImg from '../../../assets/icons/remove-24.png';
 
 const Card = props => {
   const {cardId, cardData, activeViewId, cardAnimation, setCardAnimation, toolMenuRef} = props;
@@ -110,7 +110,7 @@ const Card = props => {
 
   const removeCardFromThisView = () => {
     if (!editingCard) {
-      dispatch(actions.disconnectCardFromView(cardId, activeViewId));
+      dispatch(actions.unlinkCardFromView(cardId, activeViewId));
       endTitleEdit();
     }
   };
@@ -144,7 +144,7 @@ const Card = props => {
 
   const updCardColor = (view, color) => {
     if (!cardViews[view]) {
-      dispatch(actions.connectCardToView(cardId, view, cardPos, cardSize, color));
+      dispatch(actions.linkCardToView(cardId, view, cardPos, cardSize, color));
     } else {
       dispatch(actions.updCardColor(cardId, view, color));
     }
@@ -152,9 +152,9 @@ const Card = props => {
 
   const addOrRemoveCard = (view) => {
     if (cardViews[view]) {
-      dispatch(actions.disconnectCardFromView(cardId, view));
+      dispatch(actions.unlinkCardFromView(cardId, view));
     } else {
-      dispatch(actions.connectCardToView(cardId, view, cardPos, cardSize, cardColor));
+      dispatch(actions.linkCardToView(cardId, view, cardPos, cardSize, cardColor));
     }
   };
 

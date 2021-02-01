@@ -9,6 +9,7 @@ export {
   createCampaign, destroyCampaign, switchCampaign, 
 
   sendCampaignData, receiveCampaignData,
+  autoSaveCampaignData,
 } from './action/serverCalls';
 
 // USER
@@ -26,38 +27,35 @@ export {
   updCampaignTitle,
 
   updActiveCampaignId,
+
+  unsetCampaignEdit,
 } from './action/campaign';
 
 // CARD
 export {
   initCardColl, loadCardColl, unloadCardColl,
 
-  addCard, removeCard,
-  connectCardToView, disconnectCardFromView,
+  linkCardToView, unlinkCardFromView,
   createCard, destroyCard, copyCard,
 
   updCardPos, updCardSize,
-  updCardColor, updCardColorForAllViews,
-  updCardType,
-
+  updCardColor, updCardType,
   updCardTitle, updCardText,
 
   updActiveCardId,
-  clearCardDelete,
+  clearCardDelete, clearCardEdit,
 } from './action/card';
 
 // VIEW
 export {
   initViewColl, loadViewColl, unloadViewColl,
 
-  addView, removeView,
   createView, destroyView, copyView,
 
   updViewColor,
-
   updViewTitle,
 
   shiftViewInViewOrder,
   updActiveViewId,
-  clearViewDelete,
+  clearViewDelete, clearViewEdit,
 } from './action/view'

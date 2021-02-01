@@ -1,10 +1,12 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useOutsideClick } from '../../shared/utilityFunctions';
 
 import './UserMenu.scss';
 import * as actions from '../../store/actionIndex';
 import Campaign from './Campaign/Campaign';
+
+import AlertImg from '../../assets/icons/alert-32.png';
 
 const UserMenu = props => {
   const dispatch = useDispatch();
@@ -26,6 +28,7 @@ const UserMenu = props => {
   const viewColl = useSelector(state => state.viewColl);
   const campaignId = useSelector(state => state.dataManager.activeCampaignId);
   const campaignTitle = campaignColl[campaignId] ? campaignColl[campaignId].title : "";
+  const campaignEdit = dataManager.campaignEdit ? dataManager.campaignEdit : null;
 
   // IDS & REFS
   const campaignButtonRef = useRef("campaignButton");
@@ -34,6 +37,16 @@ const UserMenu = props => {
   const userDropDownRef = useRef("userDropDown");
   const campaignTitleId = "campaignTitle"
   const campaignTitleRef = useRef(campaignTitleId);
+
+  // Autosave
+  useEffect(() => {
+    const autoSave = setInterval(() => {
+      if (userId && campaignId && campaignEdit) {
+        dispatch(actions.autoSaveCampaignData(campaignId, campaignColl, cardColl, viewColl, dataManager));
+      }
+    }, 5000);
+    return () => clearInterval(autoSave);
+  }, [dispatch, userId, campaignId, campaignEdit, campaignColl, cardColl, viewColl, dataManager]);
 
   // FUNCTIONS: CAMPAIGN TITLE
   const startTitleEdit = () => {
@@ -158,6 +171,11 @@ const UserMenu = props => {
           onChange={userId ? updTitleEdit : null}
           onKeyUp={userId ? (e => keyPressTitleHandler(e)) : null}
         />
+        {/*IMPLEMENT: WARNING SIGN FOR UNSAVED DATA*/}
+        <div className="save-warning" style={{visibility: campaignEdit ? 'visible' : 'hidden'}}>
+          <img src={AlertImg} alt="Save Warning" draggable="false" />
+          <span className="tooltip">You have unsaved work.</span>
+        </div>
       </div>
       <div ref={campaignButtonRef}
         className="campaign button" style={{display: userId ? "block" : "none"}}

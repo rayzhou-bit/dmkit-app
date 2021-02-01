@@ -43,7 +43,7 @@ const ViewScreen = props => {
         const pos = {x: xCalculation, y: yCalculation};
         const size = {width: 8*GRID.size, height: 10*GRID.size};
         const color = "gray";
-        dispatch(actions.connectCardToView(targetCardId, activeViewId, pos, size, color));
+        dispatch(actions.linkCardToView(targetCardId, activeViewId, pos, size, color));
       } else {
         setCardAnimation({
           ...cardAnimation,

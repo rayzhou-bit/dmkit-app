@@ -13,6 +13,9 @@
     border-bottom: 1px solid black;
     line-height: 41px;
 
+    display: flex;
+    flex-flow: row nowrap;
+
     .title-text {
       @extend %title-field;
 
@@ -24,6 +27,27 @@
       text-overflow: ellipsis;
     
       overflow: hidden;
+    }
+
+    .save-warning {
+      @extend %button-32;
+      
+      &:hover .tooltip {
+        visibility: visible;
+      }
+
+      .tooltip {
+        @extend %tooltip;
+      
+        /* Position the tooltip */
+        position: absolute;
+        top: 50px; right: 29%;
+        z-index: 1;
+      }
+    
+      .tooltip::after {
+        @extend %tooltip-top-arrow;
+      }
     }
   }
 

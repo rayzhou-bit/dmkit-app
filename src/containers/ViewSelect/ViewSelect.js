@@ -5,9 +5,9 @@ import './ViewSelect.scss';
 import * as actions from '../../store/actionIndex';
 import ViewTab from './ViewTab/ViewTab';
 
-import AddImg from '../../media/icons/add-32.png';
-import LeftArrowImg from '../../media/icons/left-arrow-32.png';
-import RightArrowImg from '../../media/icons/right-arrow-32.png';
+import AddImg from '../../assets/icons/add-32.png';
+import LeftArrowImg from '../../assets/icons/left-arrow-32.png';
+import RightArrowImg from '../../assets/icons/right-arrow-32.png';
 
 // ViewSelect is the container for all the ViewTab's. This is located at the bottom of the screen.
 
