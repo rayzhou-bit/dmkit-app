@@ -27,7 +27,7 @@ const ViewScreen = props => {
   // FUNCTIONS
   useEffect(() => {
     dispatch(actions.receiveCampaignData(campaignId));
-  }, [campaignId]);
+  }, [dispatch, campaignId]);
 
   const drop = (event) => {
     event.preventDefault();

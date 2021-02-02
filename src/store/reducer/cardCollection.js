@@ -39,7 +39,7 @@ const initialState = {
     },
     content: {
       title: "Greetings Traveler!",
-      text: "Welcome to DM Kit, a tool to help plan your next adventure."
+      text: "Welcome to DM Kit, a tool to help plan your next adventure.",
     },
   },
 };
@@ -118,14 +118,6 @@ const updCardSize = (state, cardId, viewId, width, height) => {
 const updCardColor = (state, cardId, viewId, color) => {
   let updatedCard = {...state[cardId]};
   updatedCard.views[viewId].color = color;
-  return updateObject(state, {[cardId]: updatedCard});
-};
-
-const updCardColorForAllViews = (state, cardId, color) => {
-  let updatedCard = {...state[cardId]};
-  for (let view in updatedCard.views) {
-    updatedCard.views[view].color = color;
-  }
   return updateObject(state, {[cardId]: updatedCard});
 };
 

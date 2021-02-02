@@ -8,10 +8,10 @@ const initialState = {
   activeCampaignId: "introCampaign",
   activeCardId: null,
 
-  cardDelete: [],   // array of cards scheduled for deletion on server
-  viewDelete: [],   // array of views scheduled for deletion on server
-  cardEdit: [],     // array of edited cards for autosave
-  viewEdit: [],     // array of edited views for autosave
+  cardDelete: [],   // list of cards scheduled for deletion on server
+  viewDelete: [],   // list of views scheduled for deletion on server
+  cardEdit: [],     // list of edited cards for autosave to server
+  viewEdit: [],     // list of edited views for autosave to server
   campaignEdit: false,  // flag for any unsaved changes
 };
 
@@ -28,49 +28,45 @@ const reducer = (state = {}, action) => {
     // activeCardId
     case actionTypes.UPD_ACTIVE_CARD_ID: return updateObject(state, {activeCardId: action.cardId});
 
-    // delete queues and booleans
+    // cardDelete, viewDelete, cardEdit, viewEdit queues
     case actionTypes.ENQUEUE_CARD_DELETE: return enqueueCardDelete(state, action.cardId);
     case actionTypes.CLEAR_CARD_DELETE: return updateObject(state, {cardDelete: []});
     case actionTypes.ENQUEUE_VIEW_DELETE: return enqueueViewDelete(state, action.viewId);
     case actionTypes.CLEAR_VIEW_DELETE: return updateObject(state, {viewDelete: []});
-
-    // edit queues and booleans
-    case actionTypes.SET_CAMPAIGN_EDIT: return updateObject(state, {campaignEdit: true});
-    case actionTypes.UNSET_CAMPAIGN_EDIT: return updateObject(state, {campaignEdit: false});
     case actionTypes.ENQUEUE_CARD_EDIT: return enqueueCardEdit(state, action.cardId);
     case actionTypes.CLEAR_CARD_EDIT: return updateObject(state, {cardEdit: []});
     case actionTypes.ENQUEUE_VIEW_EDIT: return enqueueViewEdit(state, action.viewId);
     case actionTypes.CLEAR_VIEW_EDIT: return updateObject(state, {viewEdit: []});
+    
+    // campaignEdit
+    case actionTypes.SET_CAMPAIGN_EDIT: return updateObject(state, {campaignEdit: true});
+    case actionTypes.UNSET_CAMPAIGN_EDIT: return updateObject(state, {campaignEdit: false});
 
     default: return state;
   }
 };
 
 const enqueueCardDelete = (state, cardId) => {
-  const updatedCardDelete = state.cardDelete
-    ? [...state.cardDelete, cardId]
-    : [cardId];
+  let updatedCardDelete = state.cardDelete ? [...state.cardDelete] : [];
+  if (!updatedCardDelete.includes(cardId)) { updatedCardDelete.push(cardId); }
   return updateObject(state, {cardDelete: updatedCardDelete});
 };
 
 const enqueueViewDelete = (state, viewId) => {
-  const updatedViewDelete = state.viewDelete
-    ? [...state.viewDelete, viewId]
-    : [viewId];
+  let updatedViewDelete = state.viewDelete ? [...state.viewDelete] : [];
+  if (!updatedViewDelete.includes(viewId)) { updatedViewDelete.push(viewId); }
   return updateObject(state, {viewDelete: updatedViewDelete});
 };
 
 const enqueueCardEdit = (state, cardId) => {
-  const updatedCardEdit = state.cardEdit
-    ? [...state.cardEdit, cardId]
-    : [cardId];
+  let updatedCardEdit = state.cardEdit ? [...state.cardEdit] : [];
+  if (!updatedCardEdit.includes(cardId)) { updatedCardEdit.push(cardId); }
   return updateObject(state, {cardEdit: updatedCardEdit});
 };
 
 const enqueueViewEdit = (state, viewId) => {
-  const updatedViewEdit = state.viewEdit
-    ? [...state.viewEdit, viewId]
-    : [viewId];
+  let updatedViewEdit = state.viewEdit ? [...state.viewEdit] : [];
+  if (!updatedViewEdit.includes(viewId)) { updatedViewEdit.push(viewId); }
   return updateObject(state, {viewEdit: updatedViewEdit});
 };
 

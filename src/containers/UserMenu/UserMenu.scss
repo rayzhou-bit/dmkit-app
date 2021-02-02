@@ -40,9 +40,10 @@
         @extend %tooltip;
       
         /* Position the tooltip */
-        position: absolute;
-        top: 50px; right: 29%;
+        position: relative;
+        top: 0; right: 65px;
         z-index: 1;
+        white-space: nowrap;
       }
     
       .tooltip::after {

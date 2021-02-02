@@ -23,8 +23,7 @@ const ToolMenu = React.memo(props => {
   const cardCreateCnt = campaignColl[campaignId] ? campaignColl[campaignId].cardCreateCnt : null;
 
   // FUNCTIONS
-  const createCard = () => dispatch(actions.createCard(campaignId, activeViewId, cardCreateCnt)); 
-  // IMPLEMENT: set cursor to the card title after card creation
+  const createCard = () => dispatch(actions.createCard(campaignId, activeViewId, cardCreateCnt));
 
   const copyCard = () => {
     if (activeCardId) {

@@ -28,7 +28,6 @@ export const emailSignUp = (email, psw) => {
   auth.createUserWithEmailAndPassword(email, psw)
     .then(resp => {
       console.log("[emailSignUp] sign up successful:", resp);
-      // IMPLEMENT: sign up procedures and first time setup
       if (resp.user.uid) {
         const dataPackage = {
           campaignCreateCnt: 0,
@@ -85,7 +84,6 @@ export const createCampaign = (currCampId, campaignColl, cardColl, viewColl, dat
   };
   return dispatch => {
     // Create a new campaign on the server.
-    // IMPLMENT: loading start
     store.collection("users").doc(userId).collection("campaigns").add(campaignData)
       .then(resp => {
         const campaignId = resp.id;
@@ -96,7 +94,6 @@ export const createCampaign = (currCampId, campaignColl, cardColl, viewColl, dat
           dispatch(actions.createView(campaignId, null, 0));
           dispatch(actions.createCard(campaignId, "view0", 0));
           dispatch(actions.updActiveViewId(campaignId, "view0"));
-          // IMPLEMENT: loading end
         }
       }).catch(err => console.log("[createCampaign] error adding campaign", err));
   };
@@ -180,7 +177,8 @@ export const sendCampaignData = (campaignId, campaignColl, cardColl, viewColl, d
         console.log("[sendCampaignData] batch set card:", cardId);
       }
       // CARD: batch delete cards in the cardDelete queue
-      for (let cardId in dataManager.cardDelete) {
+      for (let i in dataManager.cardDelete) {
+        const cardId = dataManager.cardDelete[i];
         const cardRef = cardCollRef.doc(cardId);
         batch.delete(cardRef);
         console.log("[sendCampaignData] batch delete card:", cardId);
@@ -193,7 +191,8 @@ export const sendCampaignData = (campaignId, campaignColl, cardColl, viewColl, d
         console.log("[sendCampaignData] batch set view:", viewId);
       }
       // VIEW: batch delete views in the viewDelete queue
-      for (let viewId in dataManager.viewDelete) {
+      for (let i in dataManager.viewDelete) {
+        const viewId = dataManager.viewDelete[i];
         const viewRef = viewCollRef.doc(viewId);
         batch.delete(viewRef);
         console.log("[sendCampaignData] batch delete view:", viewId);
@@ -233,29 +232,30 @@ export const autoSaveCampaignData = (campaignId, campaignColl, cardColl, viewCol
       console.log("[autoSaveCampaignData] batch set campaign:", campaignId);
 
       // CARD: batch edit cards in the cardEdit queue
-      for (let cardId in dataManager.cardEdit) {
+      for (let i in dataManager.cardEdit) {
+        const cardId = dataManager.cardEdit[i];
         const cardRef = cardCollRef.doc(cardId);
-        // cardId is 0.... need TO LOOK INTO ID
-        // ALSO NEED TO NOT ADD MORE THAN ONE THING TO EDIT QUEUE
-        console.log(cardRef, cardColl[cardId], cardId, cardColl)
         batch.set(cardRef, cardColl[cardId], {merge: true});
         console.log("[autoSaveCampaignData] batch set card:", cardId);
       }
       // CARD: batch delete cards in the cardDelete queue
-      for (let cardId in dataManager.cardDelete) {
+      for (let i in dataManager.cardDelete) {
+        const cardId = dataManager.cardDelete[i];
         const cardRef = cardCollRef.doc(cardId);
         batch.delete(cardRef);
         console.log("[autoSaveCampaignData] batch delete card:", cardId);
       }
 
       // VIEW: batch edit views in the viewEdit queue
-      for (let viewId in dataManager.viewEdit) {
+      for (let i in dataManager.viewEdit) {
+        const viewId = dataManager.viewEdit[i];
         const viewRef = viewCollRef.doc(viewId);
         batch.set(viewRef, viewColl[viewId], {merge: true});
         console.log("[autoSaveCampaignData] batch set view:", viewId);
       }
       // VIEW: batch delete views in the viewDelete queue
-      for (let viewId in dataManager.viewDelete) {
+      for (let i in dataManager.viewDelete) {
+        const viewId = dataManager.viewDelete[i];
         const viewRef = viewCollRef.doc(viewId);
         batch.delete(viewRef);
         console.log("[autoSaveCampaignData] batch delete view:", viewId);
