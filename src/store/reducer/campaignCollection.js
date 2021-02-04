@@ -11,10 +11,10 @@ const initialState = {
   // },
   introCampaign: {
     title: "DM Kit",
-    viewOrder: ["view0"],
+    viewOrder: ["view0", "view1"],
     activeViewId: "view0",
-    cardCreateCnt: 1,
-    viewCreateCnt: 1,
+    cardCreateCnt: 4,
+    viewCreateCnt: 2,
   },
 };
 

@@ -48,6 +48,31 @@ const UserMenu = props => {
     return () => clearInterval(autoSave);
   }, [dispatch, userId, campaignId, campaignEdit, campaignColl, cardColl, viewColl, dataManager]);
 
+  // Load activeCampaign
+  useEffect(() => {
+    if (campaignEdit && campaignColl["introCampaign"]) {
+      const save = window.confirm("Would you like to save this to your account as a new campaign?");
+      if (save) {
+        dispatch(actions.sendIntroCampaignData(campaignColl, cardColl, viewColl));
+      } else {
+        dispatch(actions.removeCampaign("introCampaign"));
+        dispatch(actions.receiveCampaignData(campaignId));
+      }
+    } else {
+      dispatch(actions.receiveCampaignData(campaignId));
+    }
+  }, [dispatch, campaignId]);
+
+  // FUNCTIONS: SIGN IN
+  const emailSignUp = (event) => { event.preventDefault(); actions.emailSignUp(email, psw); setShowUserDropDown(false); };
+  const emailSignIn = (event) => { event.preventDefault(); actions.emailSignIn(email, psw); setShowUserDropDown(false); };
+  const emailSignOut = (event) => { 
+    event.preventDefault(); 
+    dispatch(actions.sendCampaignData(campaignId, campaignColl, cardColl, viewColl, dataManager));
+    actions.emailSignOut(); 
+    setShowUserDropDown(false);
+  };
+
   // FUNCTIONS: CAMPAIGN TITLE
   const startTitleEdit = () => {
     if (!editingTitle) {
@@ -69,16 +94,6 @@ const UserMenu = props => {
   const keyPressTitleHandler = (event) => {
     if (editingTitle && event.key === 'Enter') {endTitleEdit()}
   };  
-
-  // FUNCTIONS: SIGN IN
-  const emailSignUp = (event) => {event.preventDefault(); actions.emailSignUp(email, psw); setShowUserDropDown(false)};
-  const emailSignIn = (event) => {event.preventDefault(); actions.emailSignIn(email, psw); setShowUserDropDown(false)};
-  const emailSignOut = (event) => {
-    event.preventDefault(); 
-    actions.emailSignOut(); 
-    setShowUserDropDown(false);
-    // IMPLEMENT: ask if save campaign
-  };
 
   // FUNCTIONS: CAMPAIGN MENU
   const newCampaign = () => dispatch(actions.createCampaign(campaignId, campaignColl, cardColl, viewColl, dataManager));
@@ -171,7 +186,6 @@ const UserMenu = props => {
           onChange={userId ? updTitleEdit : null}
           onKeyUp={userId ? (e => keyPressTitleHandler(e)) : null}
         />
-        {/*IMPLEMENT: WARNING SIGN FOR UNSAVED DATA*/}
         <div className="save-warning" style={{visibility: campaignEdit ? 'visible' : 'hidden'}}>
           <img src={AlertImg} alt="Save Warning" draggable="false" />
           <span className="tooltip">You have unsaved work.</span>

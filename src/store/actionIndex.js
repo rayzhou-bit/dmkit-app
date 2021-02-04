@@ -9,7 +9,7 @@ export {
   createCampaign, destroyCampaign, switchCampaign, 
 
   sendCampaignData, receiveCampaignData,
-  autoSaveCampaignData,
+  sendIntroCampaignData, autoSaveCampaignData,
 } from './action/serverCalls';
 
 // USER

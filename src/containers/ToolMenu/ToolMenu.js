@@ -13,6 +13,7 @@ const ToolMenu = React.memo(props => {
   const dispatch = useDispatch();
 
   // STORE VALUES
+  const userId = actions.getUserId();
   const dataManager = useSelector(state => state.dataManager);
   const campaignColl = useSelector(state => state.campaignColl);
   const cardColl = useSelector(state => state.cardColl);
@@ -32,7 +33,9 @@ const ToolMenu = React.memo(props => {
   };
 
   const saveEditedData = () => {
-    dispatch(actions.sendCampaignData(campaignId, campaignColl, cardColl, viewColl, dataManager));
+    if (userId) {
+      dispatch(actions.sendCampaignData(campaignId, campaignColl, cardColl, viewColl, dataManager));
+    }
   };
 
   return (

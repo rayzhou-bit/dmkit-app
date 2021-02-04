@@ -31,15 +31,57 @@ const initialState = {
   card0: {
     views: {
       view0: {
-        pos: {x: 60, y: 60},
-        size: {width: 600, height: 450},
+        pos: {x: 5*GRID.size, y: 7*GRID.size},
+        size: {width: 16*GRID.size, height: 10*GRID.size},
         color: "green",
         cardType: "card",
       },
     },
     content: {
       title: "Greetings Traveler!",
-      text: "Welcome to DM Kit, a tool to help plan your next adventure.",
+      text: "Welcome to DM Kit, a tool to help plan your next adventure. Please create an account to save your work!",
+    },
+  },
+  card1: {
+    views: {
+      view1: {
+        pos: {x: 0, y: 0},
+        size: {width: 8*GRID.size, height: 7*GRID.size},
+        color: "blue",
+        cardType: "card",
+      },
+    },
+    content: {
+      title: "Tools",
+      text: "Use the buttons to the left to add cards, copy cards and save your progress. You must have an account to save.",
+    },
+  },
+  card2: {
+    views: {
+      view1: {
+        pos: {x: 1*GRID.size, y: 20*GRID.size},
+        size: {width: 10*GRID.size, height: 5*GRID.size},
+        color: "blue",
+        cardType: "card",
+      },
+    },
+    content: {
+      title: "Views",
+      text: "Use the buttons below to add views and switch between them.",
+    },
+  },
+  card3: {
+    views: {
+      view1: {
+        pos: {x: 30*GRID.size, y: 3*GRID.size},
+        size: {width: 10*GRID.size, height: 6*GRID.size},
+        color: "blue",
+        cardType: "card",
+      },
+    },
+    content: {
+      title: "Library",
+      text: "All the cards you create are stored in the library, which you can access by clicking the book to the right.",
     },
   },
 };

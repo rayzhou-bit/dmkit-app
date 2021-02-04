@@ -38,11 +38,11 @@ export const emailSignUp = (email, psw) => {
     .catch(err => console.log("[emailSignUp] error:", err));
 };
 export const emailSignIn = (email, psw) => {
-    auth.signInWithEmailAndPassword(email, psw)
-      .then(resp => {
-        console.log("[emailSignIn] sign in successful:", resp);
-      })
-      .catch(err => console.log("[emailSignIn] error:", err));
+  auth.signInWithEmailAndPassword(email, psw)
+    .then(resp => {
+      console.log("[emailSignIn] sign in successful:", resp);
+    })
+    .catch(err => console.log("[emailSignIn] error:", err));
 };
 export const emailSignOut = () => {
   auth.signOut()
@@ -59,8 +59,7 @@ export const receiveSignInData = () => {
     dispatch(actions.loadUser(userId, getUserEmail()));
     store.collection("users").doc(userId).get()
       .then(userData => {
-        if (userData.exists) {
-          dispatch(actions.updActiveCampaignId(userData.data().activeCampaignId))}
+        if (userData.exists) {dispatch(actions.updActiveCampaignId(userData.data().activeCampaignId))}
       }).catch(err => console.log("[receiveSignInData] activeCampaignId error:", err));
     // Campaign Collection
     store.collection("users").doc(userId).collection("campaigns").get()
@@ -89,13 +88,13 @@ export const createCampaign = (currCampId, campaignColl, cardColl, viewColl, dat
         const campaignId = resp.id;
         if (campaignId) {
           dispatch(actions.addCampaign(campaignId, campaignData));
-          console.log("[createCampaign] added campaign", campaignId);
+          console.log("[createCampaign] added campaign:", campaignId);
           dispatch(switchCampaign(campaignId, currCampId, campaignColl, cardColl, viewColl, dataManager));
           dispatch(actions.createView(campaignId, null, 0));
           dispatch(actions.createCard(campaignId, "view0", 0));
           dispatch(actions.updActiveViewId(campaignId, "view0"));
         }
-      }).catch(err => console.log("[createCampaign] error adding campaign", err));
+      }).catch(err => console.log("[createCampaign] error adding campaign:", err));
   };
 };
 
@@ -114,7 +113,6 @@ export const switchCampaign = (nextCampId, currCampId, campaignColl, cardColl, v
   const userId = getUserId();
   return dispatch => {
     if (currCampId) {
-      // IMPLEMENT: prompt user if they want to save current campaign. give option to say no
       // Save current campaign.
       dispatch(sendCampaignData(currCampId, campaignColl, cardColl, viewColl, dataManager));
     }
@@ -124,7 +122,6 @@ export const switchCampaign = (nextCampId, currCampId, campaignColl, cardColl, v
         dispatch(updActiveCampaignId(nextCampId));
         console.log("[switchCampaign] set activeCampaignId from", currCampId, "to", nextCampId);
       }).catch(err => console.log("[switchCampaign] error setting activeCampaignId:", err));
-    // Next campaign is fetched in App.js
   };
 };
 
@@ -152,6 +149,7 @@ export const receiveCampaignData = (campaignId) => {
           dispatch(actions.loadViewColl(viewColl));
           console.log("[receiveCampaignData] loaded", viewSnapshot.size, "views");
         }).catch(err => console.log("[receiveCampaignData] view level error:", err));
+      dispatch(actions.removeCampaign("introCampaign"));
     }
   };
 };
@@ -214,6 +212,39 @@ export const sendCampaignData = (campaignId, campaignColl, cardColl, viewColl, d
           // NON-BATCH CLEANUP
         });
     }
+  };
+};
+
+export const sendIntroCampaignData = (campaignColl, cardColl, viewColl) => {
+  // Saves everything from the campaign to the server as a new campaign
+  const userId = getUserId();
+  const oldCampaignId = "introCampaign";
+  return dispatch => {
+    store.collection("users").doc(userId).collection("campaigns").add(campaignColl[oldCampaignId])
+      .then(resp => {
+        const newCampaignId = resp.id;
+        if (newCampaignId) {
+          const cardCollRef = store.collection("users").doc(userId).collection("campaigns").doc(newCampaignId).collection("cards");
+          const viewCollRef = store.collection("users").doc(userId).collection("campaigns").doc(newCampaignId).collection("views");
+          const batch = store.batch();
+          for (let cardId in cardColl) { batch.set(cardCollRef.doc(cardId), cardColl[cardId]); }
+          for (let viewId in viewColl) { batch.set(viewCollRef.doc(viewId), viewColl[viewId]); }
+          batch.commit()
+            .then(resp => {
+              console.log("[sendIntroCampaignData] batch commit new campaign success:", resp);
+              // CLEANUP
+              dispatch(actions.addCampaign(newCampaignId, campaignColl[oldCampaignId]));
+              dispatch(actions.removeCampaign(oldCampaignId));
+              dispatch(actions.unsetCampaignEdit());
+              // Update active campaign
+              store.collection("users").doc(userId).set({activeCampaignId: newCampaignId})
+              .then(resp => {
+                dispatch(updActiveCampaignId(newCampaignId));
+                console.log("[sendIntroCampaignData] set activeCampaignId to", newCampaignId);
+              }).catch(err => console.log("[sendIntroCampaignData] error setting activeCampaignId:", err));
+            }).catch(err => console.log("[sendIntroCampaignData] batch commit new campaign error:", err));
+        }
+      }).catch(err => console.log("[sendIntroCampaignData] error creating campaign to save to:", err));
   };
 };
 

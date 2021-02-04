@@ -83,7 +83,7 @@ export const copyCard = (campaignId, cardData, viewId, cardCreateCnt) => {
         pos: {x: cardData.views[viewId].pos.x + GRID.size, y: cardData.views[viewId].pos.y + GRID.size},
       },
     },
-    content: {...cardData.data},
+    content: {...cardData.content},
   };
   return dispatch => {
     dispatch(addCard(cardId, newCardData));

@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 
 import './App.scss';
@@ -12,7 +12,7 @@ import ViewScreen from './containers/ViewScreen/ViewScreen';
 
 const App = props => {
   const dispatch = useDispatch();
-  
+
   // IDS & REFS
   const toolMenuRef = useRef("toolMenu");
 
@@ -22,21 +22,23 @@ const App = props => {
   document.height = window.innerHeight;
   
   // Auth observer
-  auth.onAuthStateChanged(resp => {
-    // IMPLEMENT: loading start
-    if (resp && resp.uid) {
-      // Signed in
-      console.log("[authObserver] signed in user:", resp.uid);
-      dispatch(actions.receiveSignInData());
-      // IMPLEMENT: prompt if user would like to save the campaign. maybe add to unloadCampaign
-      // IMPLEMENT: loading end
-    } else {
-      // Signed out
-      console.log("[authObserver] signed out:", resp);
-      dispatch(actions.loadInitCampaign());
-      // IMPLEMENT: loading end
-    }
-  });
+  useEffect(() => {
+    const authListener = auth.onAuthStateChanged(resp => {
+      // IMPLEMENT: loading start
+      if (resp && resp.uid) {
+        // Signed in
+        console.log("[authObserver] signed in user:", resp.uid);
+        dispatch(actions.receiveSignInData());
+        // IMPLEMENT: loading end
+      } else {
+        // Signed out
+        console.log("[authObserver] signed out:", resp);
+        dispatch(actions.loadInitCampaign());
+        // IMPLEMENT: loading end
+      }
+    });
+    return authListener;
+  }, []);
 
   return (
     <div id="layout">

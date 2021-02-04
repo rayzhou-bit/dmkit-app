@@ -8,8 +8,12 @@ const initialState = {
   // },
   view0: {
     title: "Welcome!",
-    color: "gray",
+    color: "green",
   },
+  view1: {
+    title: "READ ME",
+    color: "red",
+  }
 };
 
 const reducer = (state = {}, action) => {

@@ -25,10 +25,6 @@ const ViewScreen = props => {
   const viewScreenRef = useRef("viewscreen");
 
   // FUNCTIONS
-  useEffect(() => {
-    dispatch(actions.receiveCampaignData(campaignId));
-  }, [dispatch, campaignId]);
-
   const drop = (event) => {
     event.preventDefault();
     const data = event.dataTransfer.getData("text");
@@ -57,8 +53,9 @@ const ViewScreen = props => {
 
   // STYLES
   let viewScreenStyle = {
-    // backgroundColor: activeViewId ? "white" : "lightgray",
     backgroundColor: 'transparent',
+    width: '10000px',
+    height: '10000px',
   };
 
   // CARD LIST
