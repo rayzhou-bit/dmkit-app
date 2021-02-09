@@ -25,17 +25,17 @@ export const unloadCampaign = () => {
 };
 
 export const emailSignUp = (email, psw) => {
+  let userId = null;
   auth.createUserWithEmailAndPassword(email, psw)
     .then(resp => {
       console.log("[emailSignUp] sign up successful:", resp);
       if (resp.user.uid) {
-        const dataPackage = {
-          campaignCreateCnt: 0,
-        };
-        store.collection("users").doc(resp.user.uid).set(dataPackage);
+        userId = resp.user.id;
+        // IMPLEMENT: sign up confirmation
       }
     })
     .catch(err => console.log("[emailSignUp] error:", err));
+  return userId;
 };
 export const emailSignIn = (email, psw) => {
   auth.signInWithEmailAndPassword(email, psw)

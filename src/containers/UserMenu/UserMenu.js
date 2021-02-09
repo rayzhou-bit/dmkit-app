@@ -56,7 +56,7 @@ const UserMenu = props => {
         dispatch(actions.sendIntroCampaignData(campaignColl, cardColl, viewColl));
       } else {
         dispatch(actions.removeCampaign("introCampaign"));
-        dispatch(actions.receiveCampaignData(campaignId));
+        if (campaignId) { dispatch(actions.receiveCampaignData(campaignId)); }
       }
     } else {
       dispatch(actions.receiveCampaignData(campaignId));
@@ -122,7 +122,7 @@ const UserMenu = props => {
     }
     campaignList = [
       ...campaignList,
-      <div key={"newCampaign"} className="new-campaign" onClick={newCampaign}>New Campaign</div>
+      <div key={"newCampaign"} className="new-campaign" onClick={newCampaign}>New Project</div>
     ];
   }
   
@@ -184,7 +184,7 @@ const UserMenu = props => {
           value={userId ? campaignTitle : "DM Kit"} readOnly={!editingTitle}
           onDoubleClick={userId ? startTitleEdit : null}
           onChange={userId ? updTitleEdit : null}
-          onKeyUp={userId ? (e => keyPressTitleHandler(e)) : null}
+          onKeyDown={userId ? (e => keyPressTitleHandler(e)) : null}
         />
         <div className="save-warning" style={{visibility: campaignEdit ? 'visible' : 'hidden'}}>
           <img src={AlertImg} alt="Save Warning" draggable="false" />
@@ -195,7 +195,7 @@ const UserMenu = props => {
         className="campaign button" style={{display: userId ? "block" : "none"}}
         onClick={Object.keys(campaignColl).length>0 ? ()=>setShowCampaignDropDown(!showCampaignDropDown) : ()=>newCampaign()}
       >
-        {Object.keys(campaignColl).length>0 ? "Campaigns" : "New Campaign"}
+        {Object.keys(campaignColl).length>0 ? "Projects" : "New Project"}
       </div>
       <div ref={userButtonRef}
         className="user button" 

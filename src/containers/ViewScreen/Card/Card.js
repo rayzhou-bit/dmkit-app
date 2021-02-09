@@ -261,7 +261,7 @@ const Card = props => {
             value={cardTitle} readOnly={!editingTitle}
             onDoubleClick={(cardId === activeCardId) ? startTitleEdit : null}
             onChange={updTitleEdit}
-            onKeyUp={e => keyPressTitleHandler(e)}
+            onKeyDown={e => keyPressTitleHandler(e)}
           />
           <div className="shrink button-24" onClick={changeTypeToBubble}>
             <img src={ShrinkImg} alt="Shrink" draggable="false" />
