@@ -53,13 +53,18 @@ const Card = props => {
   // FUNCTIONS: CARD
   const dragStopHandler = (event, data) => {
     setDragging(false);
-    dispatch(actions.updCardPos(cardId, activeViewId, {x: data.x, y: data.y}));
+    console.log(data)
+    if (data.deltaX !== 0 || data.deltaY !== 0) {
+      dispatch(actions.updCardPos(cardId, activeViewId, {x: data.x, y: data.y}));
+    }
   };
 
   const resizeStopHandler = (event, direction, ref, delta, position) => {
-    dispatch(actions.updCardSize(cardId, activeViewId, {width: ref.style.width, height: ref.style.height}));
-    if (["top", "left", "topRight", "bottomLeft", "topLeft"].indexOf(direction) !== -1) {
-      dispatch(actions.updCardPos(cardId, activeViewId, {x: position.x, y: position.y}));
+    if (delta.width !== 0 || delta.height !== 0) {
+      dispatch(actions.updCardSize(cardId, activeViewId, {width: ref.style.width, height: ref.style.height}));
+      if (["top", "left", "topRight", "bottomLeft", "topLeft"].indexOf(direction) !== -1) {
+          dispatch(actions.updCardPos(cardId, activeViewId, {x: position.x, y: position.y}));
+      }
     }
   };
 

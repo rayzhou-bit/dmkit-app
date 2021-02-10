@@ -129,6 +129,7 @@ export const receiveCampaignData = (campaignId) => {
   const userId = getUserId();
   return dispatch => {
     if (userId) {
+      dispatch(unloadCampaign());
       // CARD LEVEL: fetch cardCollection
       store.collection("users").doc(userId).collection("campaigns").doc(campaignId).collection("cards").get()
         .then(cardSnapshot => {

@@ -48,7 +48,7 @@ const UserMenu = props => {
     return () => clearInterval(autoSave);
   }, [dispatch, userId, campaignId, campaignEdit, campaignColl, cardColl, viewColl, dataManager]);
 
-  // Load activeCampaign
+  // Load data for activeCampaign
   useEffect(() => {
     if (campaignEdit && campaignColl["introCampaign"]) {
       const save = window.confirm("Would you like to save this to your account as a new campaign?");
