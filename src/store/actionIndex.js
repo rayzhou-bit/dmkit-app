@@ -10,7 +10,7 @@ export {
 
   sendCampaignData, receiveCampaignData,
   sendIntroCampaignData, autoSaveCampaignData,
-} from './action/serverCalls';
+} from './action/firebaseAPI';
 
 // USER
 export {

@@ -4,11 +4,11 @@ import { useDispatch } from 'react-redux';
 import './App.scss';
 import * as actions from './store/actionIndex';
 import { auth } from './shared/firebase';
-import UserMenu from './containers/UserMenu/UserMenu';
-import ToolMenu from './containers/ToolMenu/ToolMenu';
-import Library from './containers/Library/Library';
-import ViewSelect from './containers/ViewSelect/ViewSelect';
-import ViewScreen from './containers/ViewScreen/ViewScreen';
+import UserMenu from './components/UserMenu/UserMenu';
+import ToolMenu from './components/ToolMenu/ToolMenu';
+import Library from './components/Library/Library';
+import ViewSelect from './components/ViewSelect/ViewSelect';
+import ViewScreen from './components/ViewScreen/ViewScreen';
 
 const App = props => {
   const dispatch = useDispatch();
