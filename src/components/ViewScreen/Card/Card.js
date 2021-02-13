@@ -249,7 +249,7 @@ const Card = props => {
       // size and resizing properties
       size={cardSize}
       minWidth={GRID.size*5}
-      minHeight={GRID.size*5}
+      minHeight={GRID.size*4}
       resizeGrid={[GRID.size, GRID.size]}
       // functions
       onDragStart={()=>setDragging(true)}

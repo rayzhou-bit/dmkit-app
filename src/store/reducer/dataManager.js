@@ -2,7 +2,8 @@ import * as actionTypes from '../actionTypes';
 import { updateObject } from '../../shared/utilityFunctions';
 
 const initialState = {
-  user: null,
+  userId: null,
+  userName: null,
   email: null,
 
   activeCampaignId: "introCampaign",
@@ -20,8 +21,8 @@ const reducer = (state = {}, action) => {
     case actionTypes.INIT_DATA_MANAGER: return initialState;
 
     // Load/Unload
-    case actionTypes.LOAD_USER: return updateObject(state, {user: action.user, email: action.email});
-    case actionTypes.UNLOAD_USER: return updateObject(state, {user: null, email: null});
+    case actionTypes.LOAD_USER: return updateObject(state, {userId: action.userId, email: action.email});
+    case actionTypes.UNLOAD_USER: return updateObject(state, {userId: null, userName: null, email: null});
 
     // activeCampaignId
     case actionTypes.UPD_ACTIVE_CAMPAIGN_ID: return updateObject(state, {activeCampaignId: action.activeCampaignId});

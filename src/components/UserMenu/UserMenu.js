@@ -122,7 +122,7 @@ const UserMenu = props => {
     }
     campaignList = [
       ...campaignList,
-      <div key={"newCampaign"} className="new-campaign" onClick={newCampaign}>New Project</div>
+      <div key="newCampaign" className="new-campaign" onClick={newCampaign}>New Project</div>
     ];
   }
   
