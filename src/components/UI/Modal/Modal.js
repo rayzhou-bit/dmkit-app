@@ -1,18 +1,23 @@
 import React from 'react';
 
+import './Modal.scss';
+import Backdrop from '../Backdrop/Backdrop';
+
 const modal = props => {
-  const backdrop = props.show ? <div className="backdrop" onClick={props.clicked}/> : null;
+  const {showModal, onModalClick, children} = props;
+
+  const modalStyle = {
+    transform: showModal ? 'translateY(0)' : 'translateY(-100vh)',
+    opacity: showModal ? '1' : '0',
+  }
 
   return (
     <>
-      {backdrop}
+      <Backdrop show={showModal} clicked={onModalClick} />
       <div
         className="modal"
-        style={{
-          transform: props.show ? 'translateY(0)' : 'translateY(-100vh)',
-          opacity: props.show ? '1' : '0'
-        }}>
-        {props.children}
+        style={modalStyle}>
+        {children}
       </div>
     </>
   );

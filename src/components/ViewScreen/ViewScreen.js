@@ -76,12 +76,12 @@ const ViewScreen = props => {
   }
 
   return (
-    <div id="view-screen" ref={viewScreenRef} 
+    <main id="view-screen" ref={viewScreenRef} 
       style={viewScreenStyle}
       onDrop={(e)=>drop(e)} onDragOver={(e)=>allowDrop(e)}
     >
       {cardList}
-    </div>
+    </main>
   );
 };
 

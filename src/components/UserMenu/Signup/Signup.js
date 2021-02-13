@@ -1,6 +1,13 @@
 import React from 'react';
 
 const SignUp = (props) => {
+  // Step 1: choose sign up method
+  //  email/password
+  //  google
+  //  facebook
+  // Step 2: depends on the option choosen... connects with the account
+  // Step 3: setup account information (username for now)
+
   return (
     <div>
       <h1>Sign Up</h1>
@@ -19,6 +26,10 @@ const SignUp = (props) => {
       </form>
     </div>
   );
+};
+
+const Step1 = props => {
+  return ();
 };
 
 export default SignUp;
