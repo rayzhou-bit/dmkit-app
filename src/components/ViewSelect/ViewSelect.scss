@@ -1,7 +1,12 @@
 @import '../../shared/styles/globalVariables';
 
 #view-select {
-  width: 100%;
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  z-index: 90;
+
+  height: $menu-size;
+
   background-color: lightgray;
 
   display: grid;

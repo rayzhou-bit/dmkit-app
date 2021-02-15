@@ -2,7 +2,10 @@
 
 #library {
   position: fixed;
-  right: 0;
+  right: 0; top: $menu-size; bottom: $menu-size;
+  z-index: 80;
+
+  width: $menu-size;
   
   -webkit-transition: .4s;
   transition: .4s;

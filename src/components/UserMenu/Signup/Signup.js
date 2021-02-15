@@ -29,7 +29,11 @@ const SignUp = (props) => {
 };
 
 const Step1 = props => {
-  return ();
+  return (
+    <form>
+      
+    </form>
+  );
 };
 
 export default SignUp;

@@ -1,7 +1,13 @@
 @import '../../shared/styles/globalVariables';
 
 #tool-menu {
-  display:flex;
+  position: fixed;
+  left: 0; top: $menu-size; bottom: $menu-size;
+  z-index: 50;
+
+  width: $menu-size;
+
+  display: flex;
   flex-flow: column nowrap;
 
   .button {
