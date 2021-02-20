@@ -54,5 +54,5 @@ export const destroyView = (campaignId, viewId) => {
 };
 
 export const copyView = (cardColl, viewId, viewCreateCnt) => {
-  // IMPLEMENT: search through cardColl to create new base
+  // TODO: search through cardColl to create new base
 };

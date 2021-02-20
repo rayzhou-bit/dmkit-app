@@ -1,8 +1,16 @@
-// SERVERCALLS
+// USER AUTH API
+export {
+  emailSignIn, emailSignOut,
+
+  emailSignUp,
+  sendEmailVerification, verifyEmail,
+  emailActionHandler,
+} from './firebaseAPI/userAuth';
+
+// USER DATA API
 export {
   getUserId, getUserEmail,
 
-  emailSignIn, emailSignOut, emailSignUp,
   receiveSignInData,
 
   loadInitCampaign, unloadCampaign,
@@ -10,12 +18,15 @@ export {
 
   sendCampaignData, receiveCampaignData,
   sendIntroCampaignData, autoSaveCampaignData,
-} from './action/firebaseAPI';
+} from './firebaseAPI/userData';
 
 // USER
 export {
   initDataManager,
   loadUser, unloadUser,
+  
+  setErrorEmailSignIn, unsetErrorEmailSignIn,
+  setErrorEmailSignUp, unsetErrorEmailSignUp,
 } from './action/user';
 
 // CAMPAIGN

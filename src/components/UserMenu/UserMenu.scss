@@ -10,57 +10,14 @@
   border-bottom: 1px solid black;
   background-color: lightgray;
 
-  display: grid;
-  grid-template-rows: 1fr;
-  grid-template-columns: 1fr 200px 200px;
-
-  .dmkit-title {
-    grid-column: 1 / 2;
-    width: 100%;
-    // border-bottom: 1px solid black;
-    line-height: 41px;
-
-    display: flex;
-    flex-flow: row nowrap;
-
-    .title-text {
-      @extend %title-field;
-
-      width: 100%; height: 100%;
-    
-      flex: auto;
-    
-      font-size: 22px;
-      text-overflow: ellipsis;
-    
-      overflow: hidden;
-    }
-
-    .save-warning {
-      @extend %button-32;
-      
-      &:hover .tooltip {
-        visibility: visible;
-      }
-
-      .tooltip {
-        @extend %tooltip;
-      
-        /* Position the tooltip */
-        position: relative;
-        top: 0; right: 65px;
-        z-index: 1;
-        white-space: nowrap;
-      }
-    
-      .tooltip::after {
-        @extend %tooltip-top-arrow;
-      }
-    }
-  }
+  // display: grid;
+  // grid-template-rows: 1fr;
+  // grid-template-columns: 1fr 200px 200px;
+  display: flex;
+  flex-flow: row nowrap;
 
   .campaign {
-    grid-column: 2 / 3;
+    // grid-column: 2 / 3;
     border-bottom: 1px solid black;
     text-align: center;
     line-height: 41px;
@@ -82,47 +39,117 @@
     }
   }
 
-  .user {
-    grid-column: 3 / 4;
-    // border-bottom: 1px solid black;
-    text-align: center;
+  .dropdown {
+    display: inline-block;
+    position: relative;
+    width: 16rem;
     line-height: 41px;
+  }
 
-    .panel {
-      line-height: normal;
+  .dropdown-btn {
+    @extend %button-any;
+    text-align: center;
+  }
 
-      h1 {
-        margin: .2em 0 0 0;
-        font-size: 1.5em;
-      }
-      
-      form {
-        padding: .2em .7em;
-        text-align: left;
-        .row {
-          margin-bottom: .5em;
-          label {
-            font-size: .9em;
-          }
-        }
-      }
-      .switch-auth {
-        padding: .3em;
-        font-size: .8em;
-      }
+  .dropdown-content {
+    position: absolute;
+    width: 100%;
+    z-index: 110;
+
+    border: 1px solid black;
+
+    background-color: white;
+
+    box-shadow: -.2rem .2rem .1rem rgba(0,0,0,0.2);
+  }
+} 
+
+#dmkit-title {
+  grid-column: 1 / 2;
+  width: 100%;
+  line-height: 41px;
+
+  display: flex;
+  flex-flow: row nowrap;
+
+  .title-text {
+    @extend %title-field;
+
+    width: 100%; height: 100%;
+  
+    flex: auto;
+  
+    font-size: 22px;
+    text-overflow: ellipsis;
+  
+    overflow: hidden;
+  }
+
+  .save-warning {
+    @extend %button-32;
+    
+    &:hover .tooltip {
+      visibility: visible;
+    }
+
+    .tooltip {
+      @extend %tooltip;
+    
+      /* Position the tooltip */
+      position: relative;
+      top: 0; right: 65px;
+      z-index: 1;
+      white-space: nowrap;
+    }
+  
+    .tooltip::after {
+      @extend %tooltip-top-arrow;
+    }
+  }
+}
+
+#email-sign-in-form {
+  padding: .75rem;
+  line-height: normal;
+
+  h1 {
+    margin: 0 0 .5rem 0;
+    text-align: center;
+    font-size: 1.5em;
+  }
+
+  .form-row {
+    margin-bottom: .5rem;
+    display: flex;
+    flex-flow: column nowrap;
+
+    label {
+      margin-bottom: 0.05rem;
+    }
+
+    input {
+      width: 90%;
     }
   }
 
-  .drop-down {
-    height: auto;
-    border: 1px solid black;
-    border-top: none;
-    border-bottom-left-radius: 5px;
-    border-bottom-right-radius: 5px;
-    background-color: white;
+  button {
+    margin-bottom: .5rem;
   }
 
-  .button {
-    @extend %button-any;
+  .sign-in-error {
+    margin-bottom: .5rem;
+    color: red;
   }
-} 
+
+  .sign-up-button {
+    margin-bottom: .5rem;
+    font-size: .8em;
+    &:hover {
+      color: lightblue;
+    }
+  }
+}
+
+#sign-out {
+  text-align: center;
+}

@@ -68,6 +68,8 @@ const Campaign = props => {
     if (editingTitle && event.key === 'Enter') {endTitleEdit()}
   };
 
+  useOutsideClick([campaignDeleteBtnRef], confirmDelete, setConfirmDelete, false);
+
   // STYLES
   const campaignTitleStyle = {
     MozUserSelect: editingTitle ? "default" : "none",
@@ -87,15 +89,11 @@ const Campaign = props => {
         onChange={updTitleEdit}
         onKeyDown={e => keyPressTitleHandler(e)}
       />
-      <div ref={campaignEditBtnRef} className="button"
-        onClick={startTitleEdit}
-      >
+      <div ref={campaignEditBtnRef} className="button" onClick={startTitleEdit}>
         <img src={EditImg} alt="Edit" draggable="false" />
         {/* <span className="tooltip">Edit title</span> */}
       </div>
-      <div ref={campaignDeleteBtnRef} className="button" style={deleteButtonStyle}
-        onClick={removeCampaign}
-      >
+      <div ref={campaignDeleteBtnRef} className="button" style={deleteButtonStyle} onClick={removeCampaign}>
         <img src={DeleteImg} alt="Delete" draggable="false" />
         {/* <span className="tooltip">Delete campaign</span> */}
       </div>

@@ -53,7 +53,6 @@ const Card = props => {
   // FUNCTIONS: CARD
   const dragStopHandler = (event, data) => {
     setDragging(false);
-    console.log(data)
     if (data.deltaX !== 0 || data.deltaY !== 0) {
       dispatch(actions.updCardPos(cardId, activeViewId, {x: data.x, y: data.y}));
     }

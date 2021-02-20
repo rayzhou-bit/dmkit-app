@@ -147,7 +147,7 @@ const ViewTab = React.memo(props => {
           onKeyDown={(e) => keyPressHandler(e)}
         />
         <div className="view-tab-divider" />
-        {/* IMPLEMENT (low tier): color tabs 
+        {/* TODO (low tier): color tabs 
         <div ref={colorSettingBtnRef} className="color button-32" onClick={() => setShowColorSetting(!showColorSetting)}>
           <div className="color-display" style={{backgroundColor: viewColor}} />
         </div> */}

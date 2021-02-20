@@ -1,0 +1,185 @@
+import * as actions from '../actionIndex';
+import { auth } from './firebase';
+import { getParameterByName } from '../../shared/utilityFunctions';
+
+export const emailSignIn = (email, psw, dispatch) => {
+  auth.signInWithEmailAndPassword(email, psw)
+    .then(resp => {
+      console.log("[emailSignIn] sign in successful:", resp);
+    })
+    .catch(err => {
+      console.log("[emailSignIn] error:", err.message);
+      dispatch(actions.setErrorEmailSignIn(err.code));
+    });
+};
+
+export const emailSignOut = () => {
+  auth.signOut()
+    .then(resp => {
+      console.log("[emailSignout] sign out successful:", resp);
+    })
+    .catch(err => console.log("[emailSignOut] error:", err));
+};
+
+export const emailSignUp = (email, psw) => {
+  auth.createUserWithEmailAndPassword(email, psw)
+    .then(resp => {
+      console.log("[emailSignUp] sign up successful:", resp);
+    })
+    .catch(err => console.log("[emailSignUp] error:", err));
+};
+
+// export const sendEmailVerification = (email) => {
+//   const actionCodeSettings = {
+//     url: 'https://dmkit-e7e99.web.app/finishSignUp',
+//     handleCodeInApp: true,
+//   }
+//   auth.sendSignInLinkToEmail(email, actionCodeSettings)
+//     .then(() => {
+//       console.log("[sendEmailVerification] sent verification for email:", email);
+//       window.localStorage.setItem('emailForSignIn', email);
+//     })
+//     .catch(err => {
+//       console.log("[sendEmailVerification] error:", err);
+//     });
+// };
+
+// export const verifyEmail = () => {
+//   if (auth.isSignInWithEmailLink(window.location.href)) {
+//     const email = window.localStorage.getItem('emailForSignIn');
+//     if (!email) {
+//       email = window.prompt('Please provide your email for confirmation');
+//     }
+//     auth.signInWithEmailLink(email, window.location.href)
+//       .then(result => {
+//         console.log("[verifyEmail] verified email:", result);
+//         window.localStorage.removeItem('emailForSignIn');
+//       })
+//       .catch(err => {
+//         console.log("[verifyEmail] error:", err);
+//       });
+//   }
+// };
+
+export const sendEmailVerification = (email) => {
+  const actionCodeSettings = {
+    url: process.env.REACT_APP_CONFIRMATION_EMAIL_REDIRECT,
+  };
+  auth.currentUser.sendEmailVerification(actionCodeSettings)
+    .then()
+};
+
+
+export const emailActionHandler = () => {
+  document.addEventListener('DOMContentLoaded', () => {
+    // Sample action handle URL:
+    // https://example.com/usermgmt?mode=resetPassword&oobCode=ABC123&apiKey=AIzaSy...&lang=fr
+
+    const mode = getParameterByName('mode');
+    const actionCode = getParameterByName('oobCode');
+    const continueUrl = getParameterByName('continueUrl');
+  
+    // Handle the user management action.
+    switch (mode) {
+      case 'resetPassword':
+        // Display reset password handler and UI.
+        handleResetPassword(actionCode, continueUrl);
+        break;
+      case 'recoverEmail':
+        // Display email recovery handler and UI.
+        handleRecoverEmail(actionCode);
+        break;
+      case 'verifyEmail':
+        // Display email verification handler and UI.
+        handleVerifyEmail(actionCode, continueUrl);
+        break;
+      default:
+        // Error: invalid mode.
+    }
+  }, false);
+};
+
+const handleResetPassword = (actionCode, continueUrl) => {
+  auth.verifyPasswordResetCode(actionCode)
+    .then(email => {
+      let accountEmail = email;
+
+      // TODO: Show the reset screen with the user's email and ask the user for
+      // the new password.
+      let newPassword = "...";
+
+      // Save the new password.
+      auth.confirmPasswordReset(actionCode, newPassword)
+        .then(resp => {
+          // Password reset has been confirmed and new password updated.
+
+          // TODO: Display a link back to the app, or sign-in the user directly
+          // if the page belongs to the same domain as the app:
+          // auth.signInWithEmailAndPassword(accountEmail, newPassword);
+
+          // TODO: If a continue URL is available, display a button which on
+          // click redirects the user back to the app via continueUrl with
+          // additional state determined from that URL's parameters.
+        })
+        .catch(err => {
+          // Error occurred during confirmation. The code might have expired or the
+          // password is too weak.
+        });
+    })
+    .catch(err => {
+      // Invalid or expired action code. Ask user to try to reset the password
+      // again.
+  });
+};
+
+const handleRecoverEmail = (actionCode) => {
+  // Localize the UI to the selected language as determined by the lang
+  // parameter.
+  let restoredEmail = null;
+  // Confirm the action code is valid.
+  auth.checkActionCode(actionCode)
+    .then(info => {
+      // Get the restored email address.
+      restoredEmail = info['data']['email'];
+
+      // Revert to the old email.
+      return auth.applyActionCode(actionCode);
+    })
+    .then(() => {
+      // Account email reverted to restoredEmail
+
+      // TODO: Display a confirmation message to the user.
+
+      // You might also want to give the user the option to reset their password
+      // in case the account was compromised:
+      auth.sendPasswordResetEmail(restoredEmail)
+        .then(() => {
+          // Password reset confirmation sent. Ask user to check their email.
+        })
+        .catch(err => {
+          // Error encountered while sending password reset code.
+        });
+    })
+    .catch(err => {
+      // Invalid code.
+  });
+};
+
+const handleVerifyEmail = (actionCode, continueUrl) => {
+  // Try to apply the email verification code.
+  auth.applyActionCode(actionCode)
+    .then(resp => {
+      // Email address has been verified.
+
+      // TODO: Display a confirmation message to the user.
+      // You could also provide the user with a link back to the app.
+
+      // TODO: If a continue URL is available, display a button which on
+      // click redirects the user back to the app via continueUrl with
+      // additional state determined from that URL's parameters.
+    })
+    .catch(err => {
+      // Code is invalid or expired. Ask the user to verify their email address
+      // again.
+    });
+}

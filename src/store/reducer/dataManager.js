@@ -14,6 +14,9 @@ const initialState = {
   cardEdit: [],     // list of edited cards for autosave to server
   viewEdit: [],     // list of edited views for autosave to server
   campaignEdit: false,  // flag for any unsaved changes
+
+  errorEmailSignIn: "",
+  errorEmailSignUp: "",
 };
 
 const reducer = (state = {}, action) => {
@@ -43,6 +46,12 @@ const reducer = (state = {}, action) => {
     case actionTypes.SET_CAMPAIGN_EDIT: return updateObject(state, {campaignEdit: true});
     case actionTypes.UNSET_CAMPAIGN_EDIT: return updateObject(state, {campaignEdit: false});
 
+    // errors
+    case actionTypes.SET_ERROR_EMAIL_SIGN_IN: return setErrorEmailSignIn(state, action.errorCode);
+    case actionTypes.UNSET_ERROR_EMAIL_SIGN_IN: return updateObject(state, {errorEmailSignIn: ""});
+    case actionTypes.SET_ERROR_EMAIL_SIGN_UP: return setErrorEmailSignUp(state, action.errorCode);
+    case actionTypes.UNSET_ERROR_EMAIL_SIGN_UP: return updateObject(state, {errorEmailSignUp: ""});
+
     default: return state;
   }
 };
@@ -69,6 +78,40 @@ const enqueueViewEdit = (state, viewId) => {
   let updatedViewEdit = state.viewEdit ? [...state.viewEdit] : [];
   if (!updatedViewEdit.includes(viewId)) { updatedViewEdit.push(viewId); }
   return updateObject(state, {viewEdit: updatedViewEdit});
+};
+
+const setErrorEmailSignIn = (state, errorCode) => {
+  let error = null;
+  switch (errorCode) {
+    case ('auth/invalid-email'):
+      error = "invalid email"; break;
+    case ('auth/user-disabled'):
+      error = "user disabled"; break;
+    case ('auth/user-not-found'):
+      error = "user not found"; break;
+    case ('auth/wrong-password'):
+      error = "invalid password"; break;
+    default:
+      error = "sign in unsuccessful"; break;
+  }
+  return updateObject(state, {errorEmailSignIn: error});
+};
+
+const setErrorEmailSignUp = (state, errorCode) => {
+  let error = null;
+  switch (errorCode) {
+    case ('auth/email-already-in-use'):
+      error = "email already in use"; break;
+    case ('auth/invalid-email'):
+      error = "invalid email"; break;
+    case ('auth/operation-not-allowed'):
+      error = "email sign up currently not in service"; break;
+    case ('auth/weak-password'):
+      error = "passwork is too weak"; break;
+    default:
+      error = "sign up unsuccessful"; break;
+  }
+  return updateObject(state, {errorEmailSignUp: error});
 };
 
 export default reducer;

@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 
 import './App.scss';
 import * as actions from './store/actionIndex';
-import { auth } from './shared/firebase';
+import { auth } from './store/firebaseAPI/firebase';
 import UserMenu from './components/UserMenu/UserMenu';
 import ToolMenu from './components/ToolMenu/ToolMenu';
 import Library from './components/Library/Library';
@@ -24,21 +24,23 @@ const App = props => {
   // Auth observer
   useEffect(() => {
     const authListener = auth.onAuthStateChanged(resp => {
-      // IMPLEMENT: loading start
+      // TODO: loading start
       if (resp && resp.uid) {
         // Signed in
         console.log("[authObserver] signed in user:", resp.uid);
         dispatch(actions.receiveSignInData());
-        // IMPLEMENT: loading end
+        // TODO: loading end
       } else {
         // Signed out
         console.log("[authObserver] signed out:", resp);
         dispatch(actions.loadInitCampaign());
-        // IMPLEMENT: loading end
+        // TODO: loading end
       }
     });
     return authListener;
   }, []);
+
+  actions.emailActionHandler();
 
   return (
     <div id="layout">

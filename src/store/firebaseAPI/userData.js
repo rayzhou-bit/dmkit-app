@@ -1,7 +1,6 @@
 import * as actions from '../actionIndex';
-import { auth, store } from '../../shared/firebase';
+import { auth, store } from './firebase';
 import { updateObject } from '../../shared/utilityFunctions';
-import { updActiveCampaignId } from './campaign';
 
 export const getUserId = () => auth.currentUser ? auth.currentUser.uid : null;
 export const getUserEmail = () => auth.currentUser ? auth.currentUser.email : null;
@@ -22,34 +21,6 @@ export const unloadCampaign = () => {
     dispatch(actions.clearCardDelete());
     dispatch(actions.clearViewDelete());
   };
-};
-
-export const emailSignUp = (email, psw) => {
-  let userId = null;
-  auth.createUserWithEmailAndPassword(email, psw)
-    .then(resp => {
-      console.log("[emailSignUp] sign up successful:", resp);
-      if (resp.user.uid) {
-        userId = resp.user.id;
-        // IMPLEMENT: sign up confirmation
-      }
-    })
-    .catch(err => console.log("[emailSignUp] error:", err));
-  return userId;
-};
-export const emailSignIn = (email, psw) => {
-  auth.signInWithEmailAndPassword(email, psw)
-    .then(resp => {
-      console.log("[emailSignIn] sign in successful:", resp);
-    })
-    .catch(err => console.log("[emailSignIn] error:", err));
-};
-export const emailSignOut = () => {
-  auth.signOut()
-    .then(resp => {
-      console.log("[emailSignout] sign out successful:", resp);
-    })
-    .catch(err => console.log("[emailSignOut] error:", err));
 };
 
 export const receiveSignInData = () => {
@@ -119,7 +90,7 @@ export const switchCampaign = (nextCampId, currCampId, campaignColl, cardColl, v
     // Update active campaign.
     store.collection("users").doc(userId).set({activeCampaignId: nextCampId})
       .then(resp => {
-        dispatch(updActiveCampaignId(nextCampId));
+        dispatch(actions.updActiveCampaignId(nextCampId));
         console.log("[switchCampaign] set activeCampaignId from", currCampId, "to", nextCampId);
       }).catch(err => console.log("[switchCampaign] error setting activeCampaignId:", err));
   };
@@ -240,7 +211,7 @@ export const sendIntroCampaignData = (campaignColl, cardColl, viewColl) => {
               // Update active campaign
               store.collection("users").doc(userId).set({activeCampaignId: newCampaignId})
               .then(resp => {
-                dispatch(updActiveCampaignId(newCampaignId));
+                dispatch(actions.updActiveCampaignId(newCampaignId));
                 console.log("[sendIntroCampaignData] set activeCampaignId to", newCampaignId);
               }).catch(err => console.log("[sendIntroCampaignData] error setting activeCampaignId:", err));
             }).catch(err => console.log("[sendIntroCampaignData] batch commit new campaign error:", err));

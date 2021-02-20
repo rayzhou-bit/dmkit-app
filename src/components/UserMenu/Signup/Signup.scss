@@ -1,0 +1,54 @@
+#sign-up-popup {
+  position: absolute;
+  top: 50%; 
+  left: 50%;
+  z-index: 550;
+  // transform: translate(-50%, -50%);
+
+  box-sizing: border-box;
+  width: auto;
+  height: auto;
+
+  margin: auto;
+  padding: 2rem;
+  border-radius: .6rem;
+
+  background-color: white;
+
+  transition: transform 0.4s ease;
+
+  h1 {
+    font-size: x-large;
+    text-align: center;
+  }
+}
+
+.open {
+  transform: translate(-50%, -50%);
+}
+
+.close {
+  transform: translate(-50%, -350%);
+}
+
+#email-sign-up-form {
+  padding-bottom: .5rem;
+
+  .form-row {
+    padding-bottom: .5rem;
+    display: flex;
+    flex-flow: column nowrap;
+
+    label {
+      padding-bottom: .1rem;
+    }
+
+    input {
+      width: 80%;
+    }
+  }
+
+  button {
+
+  }
+}

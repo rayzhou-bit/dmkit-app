@@ -35,3 +35,14 @@ export const useOutsideClick = (refArray, cond, func, args) => {
     // these re-renders keep other useOutsideClicks from completing their run
   }, [cond, args]);
 };
+
+export const getParameterByName = (name) => {
+  // Sample action handle URL:
+  // https://example.com/usermgmt?mode=resetPassword&oobCode=ABC123&apiKey=AIzaSy...&lang=fr
+
+  let value = window.location.href;
+  value = value.split(name+"=")[1];
+  value = value.split('&')[0];
+
+  return value;
+};
