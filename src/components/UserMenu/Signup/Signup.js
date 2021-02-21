@@ -16,7 +16,8 @@ const Signup = (props) => {
 
   const emailSignUp = (event) => {
     event.preventDefault();
-    actions.sendEmailVerification(email, psw);
+    actions.emailSignUp(email, psw);
+    // next screen? verify screen? somehow
   };
 
   return (
@@ -38,7 +39,7 @@ const Signup = (props) => {
           <button type="submit">Sign Up</button>
           {/* <div className="sign-up-error" style={{display: emailSignInError!=="" ? "block" : "none"}}>{emailSignInError}</div> */}
         </form>
-        {/* <button>Sign up with Google</button> */}
+        <button>Sign up with Google</button>
         {/* <button>Sign up with Facebook</button> */}
       </div>
     </>

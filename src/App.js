@@ -21,18 +21,25 @@ const App = props => {
   document.body.style.overflow = 'hidden';
   document.height = window.innerHeight;
   
-  // Auth observer
+  // Auth listener
   useEffect(() => {
     const authListener = auth.onAuthStateChanged(resp => {
+      console.log(resp)
       // TODO: loading start
       if (resp && resp.uid) {
         // Signed in
-        console.log("[authObserver] signed in user:", resp.uid);
+        console.log("[authListener] signed in user:", resp.uid);
+        // const emailVerificationRequired = resp.providerData.map(provider => provider.providerId).includes('password');
+        // if (emailVerificationRequired && resp.emailVerified) {
+        //   dispatch(actions.receiveSignInData());
+        // } else {
+        //   //ask to verify... send email again?
+        // }
         dispatch(actions.receiveSignInData());
         // TODO: loading end
       } else {
         // Signed out
-        console.log("[authObserver] signed out:", resp);
+        console.log("[authListener] signed out:", resp);
         dispatch(actions.loadInitCampaign());
         // TODO: loading end
       }
@@ -40,7 +47,7 @@ const App = props => {
     return authListener;
   }, []);
 
-  actions.emailActionHandler();
+  // actions.emailActionHandler();
 
   return (
     <div id="layout">

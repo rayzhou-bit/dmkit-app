@@ -41,8 +41,12 @@ export const getParameterByName = (name) => {
   // https://example.com/usermgmt?mode=resetPassword&oobCode=ABC123&apiKey=AIzaSy...&lang=fr
 
   let value = window.location.href;
-  value = value.split(name+"=")[1];
-  value = value.split('&')[0];
+  if (value) {
+    value = value.split(name+"=")[1];
+  }
+  if (value) {
+    value = value.split('&')[0];
+  }
 
   return value;
 };

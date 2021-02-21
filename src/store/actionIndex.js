@@ -2,8 +2,7 @@
 export {
   emailSignIn, emailSignOut,
 
-  emailSignUp,
-  sendEmailVerification, verifyEmail,
+  emailSignUp, sendEmailVerification,
   emailActionHandler,
 } from './firebaseAPI/userAuth';
 

@@ -3,8 +3,9 @@ import { updateObject } from '../../shared/utilityFunctions';
 
 const initialState = {
   userId: null,
-  userName: null,
+  displayName: null,
   email: null,
+  emailVerified: null,
 
   activeCampaignId: "introCampaign",
   activeCardId: null,
@@ -25,7 +26,7 @@ const reducer = (state = {}, action) => {
 
     // Load/Unload
     case actionTypes.LOAD_USER: return updateObject(state, {userId: action.userId, email: action.email});
-    case actionTypes.UNLOAD_USER: return updateObject(state, {userId: null, userName: null, email: null});
+    case actionTypes.UNLOAD_USER: return updateObject(state, {userId: null, displayName: null, email: null, emailVerified: null});
 
     // activeCampaignId
     case actionTypes.UPD_ACTIVE_CAMPAIGN_ID: return updateObject(state, {activeCampaignId: action.activeCampaignId});

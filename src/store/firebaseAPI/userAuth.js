@@ -25,48 +25,18 @@ export const emailSignUp = (email, psw) => {
   auth.createUserWithEmailAndPassword(email, psw)
     .then(resp => {
       console.log("[emailSignUp] sign up successful:", resp);
+      sendEmailVerification();
     })
     .catch(err => console.log("[emailSignUp] error:", err));
 };
 
-// export const sendEmailVerification = (email) => {
-//   const actionCodeSettings = {
-//     url: 'https://dmkit-e7e99.web.app/finishSignUp',
-//     handleCodeInApp: true,
-//   }
-//   auth.sendSignInLinkToEmail(email, actionCodeSettings)
-//     .then(() => {
-//       console.log("[sendEmailVerification] sent verification for email:", email);
-//       window.localStorage.setItem('emailForSignIn', email);
-//     })
-//     .catch(err => {
-//       console.log("[sendEmailVerification] error:", err);
-//     });
-// };
-
-// export const verifyEmail = () => {
-//   if (auth.isSignInWithEmailLink(window.location.href)) {
-//     const email = window.localStorage.getItem('emailForSignIn');
-//     if (!email) {
-//       email = window.prompt('Please provide your email for confirmation');
-//     }
-//     auth.signInWithEmailLink(email, window.location.href)
-//       .then(result => {
-//         console.log("[verifyEmail] verified email:", result);
-//         window.localStorage.removeItem('emailForSignIn');
-//       })
-//       .catch(err => {
-//         console.log("[verifyEmail] error:", err);
-//       });
-//   }
-// };
-
-export const sendEmailVerification = (email) => {
+export const sendEmailVerification = () => {
   const actionCodeSettings = {
     url: process.env.REACT_APP_CONFIRMATION_EMAIL_REDIRECT,
   };
   auth.currentUser.sendEmailVerification(actionCodeSettings)
     .then()
+    .catch(err => console.log("[sendEmailVerification] error:", err));
 };
 
 
@@ -74,7 +44,7 @@ export const emailActionHandler = () => {
   document.addEventListener('DOMContentLoaded', () => {
     // Sample action handle URL:
     // https://example.com/usermgmt?mode=resetPassword&oobCode=ABC123&apiKey=AIzaSy...&lang=fr
-
+    
     const mode = getParameterByName('mode');
     const actionCode = getParameterByName('oobCode');
     const continueUrl = getParameterByName('continueUrl');
