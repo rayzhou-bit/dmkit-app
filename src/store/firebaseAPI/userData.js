@@ -28,8 +28,12 @@ export const receiveSignInData = () => {
       dispatch(actions.loadUser(user));
       store.collection("users").doc(userId).get()
         .then(userData => {
-          if (userData.exists) {dispatch(actions.updActiveCampaignId(userData.data().activeCampaignId))}
-          console.log("[recieveSignInData] userData loaded", userData);
+          if (userData.exists) {
+            dispatch(actions.updActiveCampaignId(userData.data().activeCampaignId));
+          } else {
+            dispatch(actions.updActiveCampaignId(null));
+          }
+          console.log("[recieveSignInData] data for user", userData.id, "loaded");
         }).catch(err => console.log("[receiveSignInData] activeCampaignId error:", err));
       // Campaign Collection
       store.collection("users").doc(userId).collection("campaigns").get()
@@ -53,7 +57,7 @@ export const loadInitCampaign = () => {
     dispatch(actions.initViewColl());
   };
 };
-export const unloadCampaign = () => {  
+export const unloadCampaign = () => {
   return dispatch => {
     dispatch(actions.unloadCardColl());
     dispatch(actions.unloadViewColl());
@@ -126,9 +130,9 @@ export const switchCampaign = (nextCampId, currCampId, campaignColl, cardColl, v
 export const receiveCampaignData = (campaignId) => {
   const user = getUser();
   return dispatch => {
+    dispatch(unloadCampaign());
     if (user && campaignId) {
       const userId = user.uid;
-      dispatch(unloadCampaign());
       // CARD LEVEL: fetch cardCollection
       store.collection("users").doc(userId).collection("campaigns").doc(campaignId).collection("cards").get()
         .then(cardSnapshot => {

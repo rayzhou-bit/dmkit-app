@@ -25,7 +25,6 @@ const App = props => {
   // Auth listener
   useEffect(() => {
     const authListener = auth.onAuthStateChanged(resp => {
-      console.log(resp)
       // TODO: loading start
       if (resp && resp.uid) {
         // Signed in
@@ -34,7 +33,7 @@ const App = props => {
         // TODO: loading end
       } else {
         // Signed out
-        console.log("[authListener] signed out:", resp);
+        console.log("[authListener] signed out");
         dispatch(actions.unloadUser());
         dispatch(actions.loadInitCampaign());
         // TODO: loading end

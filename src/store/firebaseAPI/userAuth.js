@@ -4,9 +4,7 @@ import { getParameterByName } from '../../shared/utilityFunctions';
 
 export const emailSignIn = (email, psw, dispatch) => {
   auth.signInWithEmailAndPassword(email, psw)
-    .then(resp => {
-      console.log("[emailSignIn] sign in successful:", resp);
-    })
+    .then(console.log("[emailSignIn] sign in successful"))
     .catch(err => {
       console.log("[emailSignIn] error:", err.message);
       dispatch(actions.setErrorEmailSignIn(err.code));
@@ -15,9 +13,7 @@ export const emailSignIn = (email, psw, dispatch) => {
 
 export const emailSignOut = () => {
   auth.signOut()
-    .then(resp => {
-      console.log("[emailSignout] sign out successful:", resp);
-    })
+    .then(console.log("[emailSignout] sign out successful"))
     .catch(err => console.log("[emailSignOut] error:", err));
 };
 
