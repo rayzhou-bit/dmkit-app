@@ -8,7 +8,7 @@ export {
 
 // USER DATA API
 export {
-  getUserId, getUserEmail,
+  updateDisplayName,
 
   receiveSignInData,
 
@@ -21,9 +21,10 @@ export {
 
 // USER
 export {
-  initDataManager,
   loadUser, unloadUser,
+  updUserDisplayname,
   
+  initDataManager,
   setErrorEmailSignIn, unsetErrorEmailSignIn,
   setErrorEmailSignUp, unsetErrorEmailSignUp,
 } from './action/user';

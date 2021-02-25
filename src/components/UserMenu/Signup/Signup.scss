@@ -1,4 +1,4 @@
-#sign-up-popup {
+#auth-popup {
   position: absolute;
   top: 50%; 
   left: 50%;
@@ -16,16 +16,12 @@
   background-color: white;
 
   transition: transform 0.4s ease;
-
+  
   h1 {
     margin: 0 1rem 1rem 1rem;
     white-space: nowrap;
     text-align: center;
     font-size: 3rem;
-  }
-
-  button {
-    font-size: 1.5rem;
   }
 }
 
@@ -34,28 +30,57 @@
 }
 
 .close {
-  transform: translate(-50%, -350%);
+  transform: translate(-50%, -450%);
 }
 
-#email-sign-up-form {
-  margin-bottom: 1rem;
+#email-sign-up-screen {
+  h1 {
+    margin: 0 1rem 1rem 1rem;
+    white-space: nowrap;
+    text-align: center;
+    font-size: 3rem;
+  }
+  form {
+    .sign-up-error {
+      margin-bottom: 1rem;
+      color: red;
+    }
+  }
+  button {
+    font-size: 1.5rem;
+  }
+}
 
+#email-verify-screen {
+  text-align: center;
+  p {
+    margin-bottom: 1rem;
+    text-align: center;
+    font-size: 1.5rem;
+  }
+  button {
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+  }
+}
+
+#account-setup-screen {}
+
+.sign-up-form {
+  margin-bottom: 1rem;
   .form-row {
     margin-bottom: 1rem;
     font-size: 2rem;
     display: flex;
     flex-flow: column nowrap;
-
     label {
       margin-bottom: .3rem;
     }
-
     input {
       width: 80%;
       font-size: 2rem;
     }
   }
-
   button {
     margin-bottom: 1rem;
     font-size: 1.5rem;

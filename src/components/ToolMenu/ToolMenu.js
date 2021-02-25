@@ -13,11 +13,11 @@ const ToolMenu = React.memo(props => {
   const dispatch = useDispatch();
 
   // STORE VALUES
-  const userId = actions.getUserId();
   const dataManager = useSelector(state => state.dataManager);
   const campaignColl = useSelector(state => state.campaignColl);
   const cardColl = useSelector(state => state.cardColl);
   const viewColl = useSelector(state => state.viewColl);
+  const userId = useSelector(state => state.user.userId);
   const campaignId = useSelector(state => state.dataManager.activeCampaignId);
   const activeCardId = useSelector(state => state.dataManager.activeCardId);
   const activeViewId = campaignColl[campaignId] ? campaignColl[campaignId].activeViewId : null;

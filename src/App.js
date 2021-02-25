@@ -1,5 +1,5 @@
 import React, { useRef, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import './App.scss';
 import * as actions from './store/actionIndex';
@@ -9,6 +9,7 @@ import ToolMenu from './components/ToolMenu/ToolMenu';
 import Library from './components/Library/Library';
 import ViewSelect from './components/ViewSelect/ViewSelect';
 import ViewScreen from './components/ViewScreen/ViewScreen';
+import Backdrop from './components/UI/Backdrop/Backdrop';
 
 const App = props => {
   const dispatch = useDispatch();
@@ -29,17 +30,12 @@ const App = props => {
       if (resp && resp.uid) {
         // Signed in
         console.log("[authListener] signed in user:", resp.uid);
-        // const emailVerificationRequired = resp.providerData.map(provider => provider.providerId).includes('password');
-        // if (emailVerificationRequired && resp.emailVerified) {
-        //   dispatch(actions.receiveSignInData());
-        // } else {
-        //   //ask to verify... send email again?
-        // }
         dispatch(actions.receiveSignInData());
         // TODO: loading end
       } else {
         // Signed out
         console.log("[authListener] signed out:", resp);
+        dispatch(actions.unloadUser());
         dispatch(actions.loadInitCampaign());
         // TODO: loading end
       }
@@ -56,6 +52,9 @@ const App = props => {
       <Library id="library" />
       <ViewSelect id="view-select" />
       <ViewScreen id="view-screen" toolMenuRef={toolMenuRef} />
+
+      {/* <Backdrop show={!emailVerified} />
+      <div></div> */}
     </div>
   );
 };

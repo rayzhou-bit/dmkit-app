@@ -21,13 +21,16 @@ export const emailSignOut = () => {
     .catch(err => console.log("[emailSignOut] error:", err));
 };
 
-export const emailSignUp = (email, psw) => {
+export const emailSignUp = (email, psw, dispatch) => {
   auth.createUserWithEmailAndPassword(email, psw)
     .then(resp => {
       console.log("[emailSignUp] sign up successful:", resp);
       sendEmailVerification();
     })
-    .catch(err => console.log("[emailSignUp] error:", err));
+    .catch(err => {
+      console.log("[emailSignUp] error:", err);
+      dispatch(actions.setErrorEmailSignUp(err.code));
+    });
 };
 
 export const sendEmailVerification = () => {
@@ -35,7 +38,7 @@ export const sendEmailVerification = () => {
     url: process.env.REACT_APP_CONFIRMATION_EMAIL_REDIRECT,
   };
   auth.currentUser.sendEmailVerification(actionCodeSettings)
-    .then()
+    .then(resp => console.log("[sendEmailVerification] sent email verification:", resp))
     .catch(err => console.log("[sendEmailVerification] error:", err));
 };
 
@@ -44,27 +47,14 @@ export const emailActionHandler = () => {
   document.addEventListener('DOMContentLoaded', () => {
     // Sample action handle URL:
     // https://example.com/usermgmt?mode=resetPassword&oobCode=ABC123&apiKey=AIzaSy...&lang=fr
-    
     const mode = getParameterByName('mode');
     const actionCode = getParameterByName('oobCode');
     const continueUrl = getParameterByName('continueUrl');
-  
-    // Handle the user management action.
     switch (mode) {
-      case 'resetPassword':
-        // Display reset password handler and UI.
-        handleResetPassword(actionCode, continueUrl);
-        break;
-      case 'recoverEmail':
-        // Display email recovery handler and UI.
-        handleRecoverEmail(actionCode);
-        break;
-      case 'verifyEmail':
-        // Display email verification handler and UI.
-        handleVerifyEmail(actionCode, continueUrl);
-        break;
-      default:
-        // Error: invalid mode.
+      case 'resetPassword': return handleResetPassword(actionCode, continueUrl);
+      case 'recoverEmail': return handleRecoverEmail(actionCode);
+      case 'verifyEmail': return handleVerifyEmail(actionCode, continueUrl);
+      default: return console.log("[emailActionHandler] invalid mode:", mode);
     }
   }, false);
 };
@@ -139,6 +129,7 @@ const handleVerifyEmail = (actionCode, continueUrl) => {
   // Try to apply the email verification code.
   auth.applyActionCode(actionCode)
     .then(resp => {
+      console.log("[handleVerifyEmail] email verified:", resp);
       // Email address has been verified.
 
       // TODO: Display a confirmation message to the user.
@@ -148,8 +139,9 @@ const handleVerifyEmail = (actionCode, continueUrl) => {
       // click redirects the user back to the app via continueUrl with
       // additional state determined from that URL's parameters.
     })
-    .catch(err => {
-      // Code is invalid or expired. Ask the user to verify their email address
-      // again.
-    });
-}
+    .catch(err => console.log("[handleVerifyEmail] error verifying email:", err));
+};
+
+export const googleSignUp = () => {
+
+};

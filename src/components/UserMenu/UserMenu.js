@@ -5,7 +5,7 @@ import { useOutsideClick } from '../../shared/utilityFunctions';
 import './UserMenu.scss';
 import * as actions from '../../store/actionIndex';
 import Campaign from './Campaign/Campaign';
-import Signup from './Signup/Signup';
+import SignUp from './SignUp/SignUp';
 
 import AlertImg from '../../assets/icons/alert-32.png';
 
@@ -15,18 +15,19 @@ const UserMenu = props => {
   // STATES
   const [showCampaignDropDown, setShowCampaignDropDown] = useState(false);
   const [showUserDropDown, setShowUserDropDown] = useState(false);
-  const [showSignup, setShowSignup] = useState(false);
+  const [showSignUp, setShowSignUp] = useState(false);
   const [email, setEmail] = useState("");
   const [psw, setPsw] = useState("");
   const [editingTitle, setEditingTitle] = useState(false);
 
   // STORE SELECTORS
-  const userId = actions.getUserId();
-  const userEmail = actions.getUserEmail();
   const dataManager = useSelector(state => state.dataManager);
   const campaignColl = useSelector(state => state.campaignColl);
   const cardColl = useSelector(state => state.cardColl);
   const viewColl = useSelector(state => state.viewColl);
+  const userId = useSelector(state => state.user.userId);
+  const displayName = useSelector(state => state.user.displayName);
+  const userEmail = useSelector(state => state.user.email);
   const campaignId = useSelector(state => state.dataManager.activeCampaignId);
   const campaignTitle = campaignColl[campaignId] ? campaignColl[campaignId].title : "";
   const campaignEdit = dataManager.campaignEdit ? dataManager.campaignEdit : null;
@@ -62,7 +63,7 @@ const UserMenu = props => {
   // Load data for activeCampaign
   useEffect(() => {
     if (campaignEdit && campaignColl["introCampaign"]) {
-      const save = window.confirm("Would you like to save this to your account as a new campaign?");
+      const save = window.confirm("You have unsaved changes. Would you like to save this to your account as a new project?");
       if (save) {
         dispatch(actions.sendIntroCampaignData(campaignColl, cardColl, viewColl));
       } else {
@@ -157,7 +158,7 @@ const UserMenu = props => {
         </div>
         <button type="submit">Log In</button>
         <div className="sign-in-error" style={{display: emailSignInError!=="" ? "block" : "none"}}>{emailSignInError}</div>
-        <div className="sign-up-button" onClick={()=>{setShowSignup(true);setShowUserDropDown(false);}}>Don't have an account? <br/> Sign up now</div>
+        <div className="sign-up-button" onClick={()=>{setShowSignUp(true);setShowUserDropDown(false);}}>Don't have an account? <br/> Sign up now</div>
       </form>
     );
   }
@@ -195,7 +196,7 @@ const UserMenu = props => {
         {/* user profile */}
         <div className="user dropdown">
           <div ref={userDropDownBtnRef} className="dropdown-btn" onClick={()=>setShowUserDropDown(!showUserDropDown)}>
-            {userEmail ? userEmail.split('@')[0] : "Sign In / Sign Up"}
+            {displayName ? displayName : userEmail ? userEmail : "Sign In / Sign Up"}
           </div>
           <div ref={userDropDownContentRef} className="dropdown-content" style={{display: showUserDropDown ? "block" : "none"}}>
             {userDropDownContent}
@@ -204,7 +205,7 @@ const UserMenu = props => {
       </div>
 
       {/* sign up pop up */}
-      <Signup show={showSignup} onBackdropClick={()=>setShowSignup(false)} />
+      <SignUp showSignUp={showSignUp} onBackdropClick={()=>setShowSignUp(false)} />
     </>
   );
 };

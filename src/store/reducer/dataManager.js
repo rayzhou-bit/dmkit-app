@@ -2,11 +2,6 @@ import * as actionTypes from '../actionTypes';
 import { updateObject } from '../../shared/utilityFunctions';
 
 const initialState = {
-  userId: null,
-  displayName: null,
-  email: null,
-  emailVerified: null,
-
   activeCampaignId: "introCampaign",
   activeCardId: null,
 
@@ -23,10 +18,6 @@ const initialState = {
 const reducer = (state = {}, action) => {
   switch(action.type) {
     case actionTypes.INIT_DATA_MANAGER: return initialState;
-
-    // Load/Unload
-    case actionTypes.LOAD_USER: return updateObject(state, {userId: action.userId, email: action.email});
-    case actionTypes.UNLOAD_USER: return updateObject(state, {userId: null, displayName: null, email: null, emailVerified: null});
 
     // activeCampaignId
     case actionTypes.UPD_ACTIVE_CAMPAIGN_ID: return updateObject(state, {activeCampaignId: action.activeCampaignId});
@@ -82,37 +73,25 @@ const enqueueViewEdit = (state, viewId) => {
 };
 
 const setErrorEmailSignIn = (state, errorCode) => {
-  let error = null;
+  // error codes for firebase method Auth.signInWithEmailAndPassword
   switch (errorCode) {
-    case ('auth/invalid-email'):
-      error = "invalid email"; break;
-    case ('auth/user-disabled'):
-      error = "user disabled"; break;
-    case ('auth/user-not-found'):
-      error = "user not found"; break;
-    case ('auth/wrong-password'):
-      error = "invalid password"; break;
-    default:
-      error = "sign in unsuccessful"; break;
+    case ('auth/invalid-email'): return updateObject(state, {errorEmailSignIn: "invalid email"});
+    case ('auth/user-disabled'): return updateObject(state, {errorEmailSignIn: "user disabled"});
+    case ('auth/user-not-found'): return updateObject(state, {errorEmailSignIn: "user not found"});
+    case ('auth/wrong-password'): return updateObject(state, {errorEmailSignIn: "invalid password"});
+    default: return updateObject(state, {errorEmailSignIn: "sign in unsuccessful"});
   }
-  return updateObject(state, {errorEmailSignIn: error});
 };
 
 const setErrorEmailSignUp = (state, errorCode) => {
-  let error = null;
+  // error codes for firebase method Auth.createUserWithEmailAndPassword
   switch (errorCode) {
-    case ('auth/email-already-in-use'):
-      error = "email already in use"; break;
-    case ('auth/invalid-email'):
-      error = "invalid email"; break;
-    case ('auth/operation-not-allowed'):
-      error = "email sign up currently not in service"; break;
-    case ('auth/weak-password'):
-      error = "passwork is too weak"; break;
-    default:
-      error = "sign up unsuccessful"; break;
+    case ('auth/email-already-in-use'): return updateObject(state, {errorEmailSignUp: "email already in use"});
+    case ('auth/invalid-email'): return updateObject(state, {errorEmailSignUp: "invalid email"});
+    case ('auth/operation-not-allowed'): return updateObject(state, {errorEmailSignUp: "email sign up currently not in service"});
+    case ('auth/weak-password'): return updateObject(state, {errorEmailSignUp: "passwork is too weak"});
+    default: return updateObject(state, {errorEmailSignUp: "sign up unsuccessful"});
   }
-  return updateObject(state, {errorEmailSignUp: error});
 };
 
 export default reducer;
