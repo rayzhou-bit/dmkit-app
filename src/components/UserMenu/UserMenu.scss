@@ -43,12 +43,12 @@
     display: inline-block;
     position: relative;
     width: 16rem;
-    line-height: 41px;
   }
 
   .dropdown-btn {
     @extend %button-any;
     text-align: center;
+    line-height: 41px;
   }
 
   .dropdown-content {
@@ -56,7 +56,7 @@
     width: 100%;
     z-index: 110;
 
-    border: 1px solid black;
+    border: .01rem solid black;
 
     background-color: white;
 
@@ -108,45 +108,61 @@
   }
 }
 
-#email-sign-in-form {
-  padding: .75rem;
-  line-height: normal;
+#sign-in-dropdown {
+  padding: 1rem;
 
-  h1 {
-    margin: 0 0 .5rem 0;
-    text-align: center;
-    font-size: 1.5em;
-  }
+  #email-sign-in-form {
+    line-height: normal;
 
-  .form-row {
-    margin-bottom: .5rem;
-    display: flex;
-    flex-flow: column nowrap;
+    h1 {
+      margin: 0 0 .5rem 0;
+      text-align: center;
+      font-size: 1.5em;
+    }
+    .form-row {
+      margin-bottom: .5rem;
+      display: flex;
+      flex-flow: column nowrap;
 
-    label {
-      margin-bottom: 0.05rem;
+      label {
+        margin-bottom: 0.05rem;
+      }
+
+      input {
+        width: 90%;
+      }
+    }
+    button {
+      margin-bottom: .5rem;
+    }
+    .sign-in-error {
+      margin-bottom: .5rem;
+      color: red;
     }
 
-    input {
-      width: 90%;
+    .sign-up-button {
+      margin-bottom: .5rem;
+      font-size: .8em;
+      &:hover {
+        color: lightblue;
+      }
     }
   }
 
-  button {
-    margin-bottom: .5rem;
-  }
-
-  .sign-in-error {
-    margin-bottom: .5rem;
-    color: red;
-  }
-
-  .sign-up-button {
-    margin-bottom: .5rem;
-    font-size: .8em;
-    &:hover {
-      color: lightblue;
+  #other-provider-sign-in {
+    button {
+      margin-top: .5rem;
     }
+    .sign-in-error {
+      margin-bottom: .5rem;
+      color: red;
+    }
+  }
+
+  .divider {
+    width: 90%; height: 0.01rem;
+    border-top: 0.01rem solid black;
+    margin-bottom: .5rem;
   }
 }
 

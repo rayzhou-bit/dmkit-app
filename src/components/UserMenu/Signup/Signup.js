@@ -31,6 +31,8 @@ const SignUp = (props) => {
     }
   };
 
+  // TODO: check verification periodically
+
   const emailSignUpHandler = (event) => {
     event.preventDefault();
     dispatch(actions.emailSignUp(email, psw, dispatch));
@@ -57,20 +59,18 @@ const SignUp = (props) => {
         <button type="submit">Sign Up</button>
         <div className="sign-up-error" style={{display: emailSignUpError!=="" ? "block" : "none"}}>{emailSignUpError}</div>
       </form>
-      <button>Sign up with Google</button>
-      {/* <button>Sign up with Facebook</button> */}
     </div>
   );
 
   const emailVerifyScreen = (
-    <div id="email-verify-screen" >
+    <div id="email-verify-screen">
       <p>Please verify your email by clicking the link in your verification email.</p>
       <button onClick={() => actions.sendEmailVerification()}>Resend Email</button>
     </div>
   );
 
   const accountSetupScreen = (
-    <div id="account-setup-screen" >
+    <div id="account-setup-screen">
       <form id="account-setup-form" className="sign-up-form" onSubmit={e => accountSetupHandler(e)}>
         <div className="form-row">
           <label htmlFor="displayName">Display Name</label>

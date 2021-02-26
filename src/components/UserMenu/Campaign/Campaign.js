@@ -9,7 +9,7 @@ import EditImg from '../../../assets/icons/edit-24.png';
 import DeleteImg from '../../../assets/icons/delete-24.png';
 
 const Campaign = props => {
-  const {campaignId, setShowCampaignDropDown} = props;
+  const {campaignId, setShowCampaignDropdown} = props;
   const dispatch = useDispatch();
 
   // STATES
@@ -34,7 +34,7 @@ const Campaign = props => {
   const switchCampaign = (event) => {
     event.preventDefault();
     dispatch(actions.switchCampaign(campaignId, activeCampaignId, campaignColl, cardColl, viewColl, dataManager));
-    setShowCampaignDropDown(false);
+    setShowCampaignDropdown(false);
   };
 
   const removeCampaign = () => {

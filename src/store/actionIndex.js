@@ -1,9 +1,9 @@
 // USER AUTH API
 export {
   emailSignIn, emailSignOut,
+  googleSignIn, facebookSignIn,
 
   emailSignUp, sendEmailVerification,
-  emailActionHandler,
 } from './firebaseAPI/userAuth';
 
 // USER DATA API
@@ -12,7 +12,7 @@ export {
 
   receiveSignInData,
 
-  loadInitCampaign, unloadCampaign,
+  loadIntroCampaign, unloadCampaign,
   createCampaign, destroyCampaign, switchCampaign, 
 
   sendCampaignData, receiveCampaignData,
@@ -27,6 +27,8 @@ export {
   initDataManager,
   setErrorEmailSignIn, unsetErrorEmailSignIn,
   setErrorEmailSignUp, unsetErrorEmailSignUp,
+  setErrorGoogleSignUp, unsetErrorGoogleSignUp,
+  setErrorFacebookSignUp, unsetErrorFacebookSignUp,
 } from './action/user';
 
 // CAMPAIGN

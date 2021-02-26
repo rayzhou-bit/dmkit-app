@@ -13,8 +13,8 @@ const UserMenu = props => {
   const dispatch = useDispatch();
 
   // STATES
-  const [showCampaignDropDown, setShowCampaignDropDown] = useState(false);
-  const [showUserDropDown, setShowUserDropDown] = useState(false);
+  const [showCampaignDropdown, setShowCampaignDropdown] = useState(false);
+  const [showUserDropdown, setShowUserDropdown] = useState(false);
   const [showSignUp, setShowSignUp] = useState(false);
   const [email, setEmail] = useState("");
   const [psw, setPsw] = useState("");
@@ -32,14 +32,16 @@ const UserMenu = props => {
   const campaignTitle = campaignColl[campaignId] ? campaignColl[campaignId].title : "";
   const campaignEdit = dataManager.campaignEdit ? dataManager.campaignEdit : null;
   const emailSignInError = useSelector(state => state.dataManager.errorEmailSignIn);
+  const googleSignInError = useSelector(state => state.dataManager.errorGoogleSignIn);
+  const facebookSignInError = useSelector(state => state.dataManager.errorFacebookSignIn);
 
   // IDS & REFS
   const campaignTitleId = "campaignTitle";
   const campaignTitleRef = useRef(campaignTitleId);
-  const campaignDropDownBtnRef = useRef("campaignDropDownBtn");
-  const campaignDropDownContentRef = useRef("campaignDropDownContent");
-  const userDropDownBtnRef = useRef("userDropDownBtn");
-  const userDropDownContentRef = useRef("userDropDownContent");
+  const campaignDropdownBtnRef = useRef("campaignDropdownBtn");
+  const campaignDropdownContentRef = useRef("campaignDropdownContent");
+  const userDropdownBtnRef = useRef("userDropdownBtn");
+  const userDropdownContentRef = useRef("userDropdownContent");
 
   // Autosave
   useEffect(() => {
@@ -56,32 +58,40 @@ const UserMenu = props => {
     if (userId) {
       setEmail("");
       setPsw("");
-      setShowUserDropDown(false);
+      setShowUserDropdown(false);
     }
   }, [userId]);
 
-  // Load data for activeCampaign
+  // Load data for active campaign
   useEffect(() => {
-    if (campaignEdit && campaignColl["introCampaign"]) {
-      const save = window.confirm("You have unsaved changes. Would you like to save this to your account as a new project?");
+    let save = null;
+    if (userId) {
+      if (campaignColl["introCampaign"] && campaignEdit) {
+        save = window.confirm("You have unsaved changes. Would you like to save this to your account as a new project?");
+      }
       if (save) {
         dispatch(actions.sendIntroCampaignData(campaignColl, cardColl, viewColl));
       } else {
         dispatch(actions.removeCampaign("introCampaign"));
-        if (campaignId) { dispatch(actions.receiveCampaignData(campaignId)); }
+        dispatch(actions.unloadCampaign());
+        dispatch(actions.receiveCampaignData(campaignId));
       }
     } else {
-      dispatch(actions.receiveCampaignData(campaignId));
+      if (campaignId === "introCampaign") {
+        dispatch(actions.loadIntroCampaign());
+      }
     }
   }, [dispatch, campaignId]);
 
   // FUNCTIONS: SIGN IN
   const emailSignIn = (event) => { event.preventDefault(); actions.emailSignIn(email, psw, dispatch); };
+  const googleSignIn = (event) => { event.preventDefault(); actions.googleSignIn(dispatch); };
+  const facebookSignIn = (event) => { event.preventDefault(); actions.facebookSignIn(dispatch); };
   const emailSignOut = (event) => { 
     event.preventDefault(); 
     dispatch(actions.sendCampaignData(campaignId, campaignColl, cardColl, viewColl, dataManager));
     actions.emailSignOut(); 
-    setShowUserDropDown(false);
+    setShowUserDropdown(false);
   };
 
   // FUNCTIONS: CAMPAIGN TITLE
@@ -111,8 +121,8 @@ const UserMenu = props => {
 
   // FUNCTIONS: OUTSIDECLICKS
   useOutsideClick([campaignTitleRef], editingTitle, endTitleEdit);
-  useOutsideClick([campaignDropDownBtnRef, campaignDropDownContentRef], showCampaignDropDown, setShowCampaignDropDown, false);
-  useOutsideClick([userDropDownBtnRef, userDropDownContentRef], showUserDropDown, setShowUserDropDown, false);
+  useOutsideClick([campaignDropdownBtnRef, campaignDropdownContentRef], showCampaignDropdown, setShowCampaignDropdown, false);
+  useOutsideClick([userDropdownBtnRef, userDropdownContentRef], showUserDropdown, setShowUserDropdown, false);
   
   // STYLES: CAMPAIGN TITLE
   const campaignTitleStyle = {
@@ -126,7 +136,7 @@ const UserMenu = props => {
         campaignList = [
           ...campaignList,
           <Campaign key={campaignId}
-            campaignId={campaignId} campaignTitle={campaignTitle} activeCampaignId={campaignId} setShowCampaignDropDown={setShowCampaignDropDown}
+            campaignId={campaignId} campaignTitle={campaignTitle} activeCampaignId={campaignId} setShowCampaignDropdown={setShowCampaignDropdown}
           />,
         ];
       };
@@ -137,29 +147,38 @@ const UserMenu = props => {
     ];
   }
   
-  let userDropDownContent = null;
+  let userDropdownContent = null;
   if (userId) {
-    userDropDownContent = (
+    userDropdownContent = (
       <div id="sign-out" onClick={e => emailSignOut(e)}>Sign Out</div>
     );
   } else {
-    userDropDownContent = (
-      <form id="email-sign-in-form" onSubmit={e => emailSignIn(e)}>
-        <h1>Login</h1>
-        <div className="form-row">
-          <label htmlFor="email">Email</label>
-          <input type="email" placeholder="Enter Email" name="email" required 
-            value={email} onChange={e => setEmail(e.target.value)} />
+    userDropdownContent = (
+      <div id="sign-in-dropdown">
+        <form id="email-sign-in-form" onSubmit={e => emailSignIn(e)}>
+          <h1>Login</h1>
+          <div className="form-row">
+            <label htmlFor="email">Email</label>
+            <input type="email" placeholder="Enter Email" name="email" required 
+              value={email} onChange={e => setEmail(e.target.value)} />
+          </div>
+          <div className="form-row">
+            <label htmlFor="psw">Password</label>
+            <input type="password" placeholder="Enter Password" name="psw" required 
+              value={psw} onChange={e => setPsw(e.target.value)} />
+          </div>
+          <button type="submit">Log In</button>
+          <div className="sign-in-error" style={{display: emailSignInError!=="" ? "block" : "none"}}>{emailSignInError}</div>
+          <div className="sign-up-button" onClick={()=>{setShowSignUp(true);setShowUserDropdown(false);}}>Don't have an account? <br/> Sign up now</div>
+        </form>
+        <div className="divider" />
+        <div id="other-provider-sign-in">
+          <button onClick={e => googleSignIn(e)}>Sign In with Google</button>
+          <div className="sign-in-error" style={{display: googleSignInError!=="" ? "block" : "none"}}>{googleSignInError}</div>
+          {/* <button onClick={e => facebookSignIn(e)}>Sign In with Facebook</button>
+          <div className="sign-in-error" style={{display: facebookSignInError!=="" ? "block" : "none"}}>{facebookSignInError}</div> */}
         </div>
-        <div className="form-row">
-          <label htmlFor="psw">Password</label>
-          <input type="password" placeholder="Enter Password" name="psw" required 
-            value={psw} onChange={e => setPsw(e.target.value)} />
-        </div>
-        <button type="submit">Log In</button>
-        <div className="sign-in-error" style={{display: emailSignInError!=="" ? "block" : "none"}}>{emailSignInError}</div>
-        <div className="sign-up-button" onClick={()=>{setShowSignUp(true);setShowUserDropDown(false);}}>Don't have an account? <br/> Sign up now</div>
-      </form>
+      </div>
     );
   }
 
@@ -185,21 +204,21 @@ const UserMenu = props => {
 
         {/* campaign select */}
         <div className="campaign dropdown" style={{display: userId ? "block" : "none"}}>
-          <div ref={campaignDropDownBtnRef} className="dropdown-btn" onClick={Object.keys(campaignColl).length>0 ? ()=>setShowCampaignDropDown(!showCampaignDropDown) : ()=>newCampaign()}>
+          <div ref={campaignDropdownBtnRef} className="dropdown-btn" onClick={Object.keys(campaignColl).length>0 ? ()=>setShowCampaignDropdown(!showCampaignDropdown) : ()=>newCampaign()}>
             {Object.keys(campaignColl).length>0 ? "Projects" : "New Project"}
           </div>
-          <div ref={campaignDropDownContentRef} className="dropdown-content" style={{display: showCampaignDropDown ? "block" : "none"}}>
+          <div ref={campaignDropdownContentRef} className="dropdown-content" style={{display: showCampaignDropdown ? "block" : "none"}}>
             {campaignList}
           </div>
         </div>
 
         {/* user profile */}
         <div className="user dropdown">
-          <div ref={userDropDownBtnRef} className="dropdown-btn" onClick={()=>setShowUserDropDown(!showUserDropDown)}>
+          <div ref={userDropdownBtnRef} className="dropdown-btn" onClick={()=>setShowUserDropdown(!showUserDropdown)}>
             {displayName ? displayName : userEmail ? userEmail : "Sign In / Sign Up"}
           </div>
-          <div ref={userDropDownContentRef} className="dropdown-content" style={{display: showUserDropDown ? "block" : "none"}}>
-            {userDropDownContent}
+          <div ref={userDropdownContentRef} className="dropdown-content" style={{display: showUserDropdown ? "block" : "none"}}>
+            {userDropdownContent}
           </div>
         </div>
       </div>

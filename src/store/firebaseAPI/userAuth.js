@@ -1,10 +1,13 @@
 import * as actions from '../actionIndex';
-import { auth } from './firebase';
+import { auth, googleProvider, facebookProvider } from './firebase';
 import { getParameterByName } from '../../shared/utilityFunctions';
 
 export const emailSignIn = (email, psw, dispatch) => {
   auth.signInWithEmailAndPassword(email, psw)
-    .then(console.log("[emailSignIn] sign in successful"))
+    .then(resp => {
+      console.log("[emailSignIn] sign in successful");
+      dispatch(actions.unsetErrorEmailSignIn());
+    })
     .catch(err => {
       console.log("[emailSignIn] error:", err.message);
       dispatch(actions.setErrorEmailSignIn(err.code));
@@ -17,10 +20,35 @@ export const emailSignOut = () => {
     .catch(err => console.log("[emailSignOut] error:", err));
 };
 
+export const googleSignIn = (dispatch) => {
+  auth.signInWithPopup(googleProvider)
+    .then(resp => {
+      console.log("[googleSignIn] sign in successful");
+      dispatch(actions.unsetErrorGoogleSignUp());
+    })
+    .catch(err => {
+      console.log("[googleSignIn] error signing up with google:", err);
+      dispatch(actions.setErrorGoogleSignUp(err.code));
+    });
+};
+
+export const facebookSignIn = (dispatch) => {
+  auth.signInWithPopup(facebookProvider)
+    .then(resp => {
+      console.log("[facebookSignIn] sign in successful");
+      dispatch(actions.unsetErrorFacebookSignUp());
+    })
+    .catch(err => {
+      console.log("[facebookSignIn] error signing up with google:", err);
+      dispatch(actions.setErrorFacebookSignUp(err.code));
+    });
+};
+
 export const emailSignUp = (email, psw, dispatch) => {
   auth.createUserWithEmailAndPassword(email, psw)
     .then(resp => {
       console.log("[emailSignUp] sign up successful:", resp);
+      dispatch(actions.unsetErrorEmailSignUp());
       sendEmailVerification();
     })
     .catch(err => {
@@ -38,8 +66,8 @@ export const sendEmailVerification = () => {
     .catch(err => console.log("[sendEmailVerification] error:", err));
 };
 
-
 export const emailActionHandler = () => {
+  // TODO: does this need to be implemented?
   document.addEventListener('DOMContentLoaded', () => {
     // Sample action handle URL:
     // https://example.com/usermgmt?mode=resetPassword&oobCode=ABC123&apiKey=AIzaSy...&lang=fr
@@ -136,8 +164,4 @@ const handleVerifyEmail = (actionCode, continueUrl) => {
       // additional state determined from that URL's parameters.
     })
     .catch(err => console.log("[handleVerifyEmail] error verifying email:", err));
-};
-
-export const googleSignUp = () => {
-
 };

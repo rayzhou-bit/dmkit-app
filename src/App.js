@@ -1,5 +1,5 @@
 import React, { useRef, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
 import './App.scss';
 import * as actions from './store/actionIndex';
@@ -9,7 +9,6 @@ import ToolMenu from './components/ToolMenu/ToolMenu';
 import Library from './components/Library/Library';
 import ViewSelect from './components/ViewSelect/ViewSelect';
 import ViewScreen from './components/ViewScreen/ViewScreen';
-import Backdrop from './components/UI/Backdrop/Backdrop';
 
 const App = props => {
   const dispatch = useDispatch();
@@ -35,14 +34,12 @@ const App = props => {
         // Signed out
         console.log("[authListener] signed out");
         dispatch(actions.unloadUser());
-        dispatch(actions.loadInitCampaign());
+        dispatch(actions.updActiveCampaignId("introCampaign"));
         // TODO: loading end
       }
     });
     return authListener;
   }, []);
-
-  // actions.emailActionHandler();
 
   return (
     <div id="layout">

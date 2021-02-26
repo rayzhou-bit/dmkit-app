@@ -30,10 +30,11 @@ export const receiveSignInData = () => {
         .then(userData => {
           if (userData.exists) {
             dispatch(actions.updActiveCampaignId(userData.data().activeCampaignId));
+            console.log("[recieveSignInData] set activeCampaignId to", userData.data().activeCampaignId);
           } else {
             dispatch(actions.updActiveCampaignId(null));
+            console.log("[recieveSignInData] set activeCampaignId to null");
           }
-          console.log("[recieveSignInData] data for user", userData.id, "loaded");
         }).catch(err => console.log("[receiveSignInData] activeCampaignId error:", err));
       // Campaign Collection
       store.collection("users").doc(userId).collection("campaigns").get()
@@ -44,12 +45,12 @@ export const receiveSignInData = () => {
           });
           dispatch(actions.loadCampaignColl(campaignColl));
           console.log("[recieveSignInData] loaded", campaignSnapshot.size, "campaigns");
-        }).catch(err => console.log("[reciveSignInData] campaign collection error:", err));
+        }).catch(err => console.log("[recieveSignInData] campaign collection error:", err));
     }
   };
 };
 
-export const loadInitCampaign = () => {
+export const loadIntroCampaign = () => {
   return dispatch => {
     dispatch(actions.initDataManager());
     dispatch(actions.initCampaignColl());
@@ -57,6 +58,7 @@ export const loadInitCampaign = () => {
     dispatch(actions.initViewColl());
   };
 };
+
 export const unloadCampaign = () => {
   return dispatch => {
     dispatch(actions.unloadCardColl());
@@ -130,7 +132,6 @@ export const switchCampaign = (nextCampId, currCampId, campaignColl, cardColl, v
 export const receiveCampaignData = (campaignId) => {
   const user = getUser();
   return dispatch => {
-    dispatch(unloadCampaign());
     if (user && campaignId) {
       const userId = user.uid;
       // CARD LEVEL: fetch cardCollection
