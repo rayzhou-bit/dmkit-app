@@ -117,7 +117,7 @@ export const switchCampaign = (nextCampId, currCampId, campaignColl, cardColl, v
       const userId = user.uid;
       if (currCampId) {
         // Save current campaign.
-        dispatch(sendCampaignData(currCampId, campaignColl, cardColl, viewColl, dataManager));
+        dispatch(saveCampaignData(currCampId, campaignColl, cardColl, viewColl, dataManager));
       }
       // Update active campaign.
       store.collection("users").doc(userId).set({activeCampaignId: nextCampId})
@@ -129,7 +129,7 @@ export const switchCampaign = (nextCampId, currCampId, campaignColl, cardColl, v
   };
 };
 
-export const receiveCampaignData = (campaignId) => {
+export const loadCampaignData = (campaignId) => {
   const user = getUser();
   return dispatch => {
     if (user && campaignId) {
@@ -142,8 +142,8 @@ export const receiveCampaignData = (campaignId) => {
             cardColl = updateObject(cardColl, {[card.id]: card.data()});
           });
           dispatch(actions.loadCardColl(cardColl));
-          console.log("[receiveCampaignData] loaded", cardSnapshot.size, "cards");
-        }).catch(err => console.log("[receiveCampaignData] card level error:", err));
+          console.log("[loadCampaignData] loaded", cardSnapshot.size, "cards");
+        }).catch(err => console.log("[loadCampaignData] card level error:", err));
       // VIEW LEVEL: fetch viewCollection
       store.collection("users").doc(userId).collection("campaigns").doc(campaignId).collection("views").get()
         .then(viewSnapshot => {
@@ -152,14 +152,14 @@ export const receiveCampaignData = (campaignId) => {
             viewColl = updateObject(viewColl, {[view.id]: view.data()})
           });
           dispatch(actions.loadViewColl(viewColl));
-          console.log("[receiveCampaignData] loaded", viewSnapshot.size, "views");
-        }).catch(err => console.log("[receiveCampaignData] view level error:", err));
+          console.log("[loadCampaignData] loaded", viewSnapshot.size, "views");
+        }).catch(err => console.log("[loadCampaignData] view level error:", err));
       dispatch(actions.removeCampaign("introCampaign"));
     }
   };
 };
 
-export const sendCampaignData = (campaignId, campaignColl, cardColl, viewColl, dataManager) => {
+export const saveCampaignData = (campaignId, campaignColl, cardColl, viewColl, dataManager) => {
   const user = getUser();
   return dispatch => {
     if (user && campaignId) {
@@ -171,37 +171,27 @@ export const sendCampaignData = (campaignId, campaignColl, cardColl, viewColl, d
         const batch = store.batch();
         // CAMPAIGN: batch set campaign data, viewOrder, activeViewId, cardCreateCnt, viewCreateCnt
         batch.set(campaignRef, campaignColl[campaignId], {merge: true});
-        console.log("[sendCampaignData] batch set campaign:", campaignId);
+        console.log("[saveCampaignData] batch set campaign:", campaignId);
         // CARD: batch set card data
+        let count = 0;
         for (let cardId in cardColl) {
           const cardRef = cardCollRef.doc(cardId);
-          batch.set(cardRef, cardColl[cardId], {merge: true});
-          console.log("[sendCampaignData] batch set card:", cardId);
+          batch.set(cardRef, cardColl[cardId]);
+          count++;
         }
-        // CARD: batch delete cards in the cardDelete queue
-        for (let i in dataManager.cardDelete) {
-          const cardId = dataManager.cardDelete[i];
-          const cardRef = cardCollRef.doc(cardId);
-          batch.delete(cardRef);
-          console.log("[sendCampaignData] batch delete card:", cardId);
-        }
+        console.log("[saveCampaignData] batch set", count, "cards");
         // VIEW: batch set view data
+        count = 0;
         for (let viewId in viewColl) {
           const viewRef = viewCollRef.doc(viewId);
-          batch.set(viewRef, viewColl[viewId], {merge: true});
-          console.log("[sendCampaignData] batch set view:", viewId);
+          batch.set(viewRef, viewColl[viewId]);
+          count++;
         }
-        // VIEW: batch delete views in the viewDelete queue
-        for (let i in dataManager.viewDelete) {
-          const viewId = dataManager.viewDelete[i];
-          const viewRef = viewCollRef.doc(viewId);
-          batch.delete(viewRef);
-          console.log("[sendCampaignData] batch delete view:", viewId);
-        }
+        console.log("[saveCampaignData] batch set", count, "views");
         // COMMIT BATCH
         batch.commit()
           .then(resp => {
-            console.log("[sendCampaignData] batch commit success:", resp);
+            console.log("[saveCampaignData] batch commit success:", resp);
             // CLEANUP
             dispatch(actions.clearCardDelete());
             dispatch(actions.clearViewDelete());
@@ -210,7 +200,7 @@ export const sendCampaignData = (campaignId, campaignColl, cardColl, viewColl, d
             dispatch(actions.unsetCampaignEdit());
           })
           .catch(err => {
-            console.log("[sendCampaignData] batch commit error:", err);
+            console.log("[saveCampaignData] batch commit error:", err);
             // NON-BATCH CLEANUP
           });
       }
@@ -218,7 +208,7 @@ export const sendCampaignData = (campaignId, campaignColl, cardColl, viewColl, d
   };
 };
 
-export const sendIntroCampaignData = (campaignColl, cardColl, viewColl) => {
+export const saveIntroCampaignData = (campaignColl, cardColl, viewColl) => {
   // Saves everything from the campaign edited before sign in to the server as a new campaign
   const user = getUser();
   return dispatch => {
@@ -236,7 +226,7 @@ export const sendIntroCampaignData = (campaignColl, cardColl, viewColl) => {
             for (let viewId in viewColl) { batch.set(viewCollRef.doc(viewId), viewColl[viewId]); }
             batch.commit()
               .then(resp => {
-                console.log("[sendIntroCampaignData] batch commit new campaign success:", resp);
+                console.log("[saveIntroCampaignData] batch commit new campaign success:", resp);
                 // CLEANUP
                 dispatch(actions.addCampaign(newCampaignId, campaignColl[oldCampaignId]));
                 dispatch(actions.removeCampaign(oldCampaignId));
@@ -245,11 +235,11 @@ export const sendIntroCampaignData = (campaignColl, cardColl, viewColl) => {
                 store.collection("users").doc(userId).set({activeCampaignId: newCampaignId})
                 .then(resp => {
                   dispatch(actions.updActiveCampaignId(newCampaignId));
-                  console.log("[sendIntroCampaignData] set activeCampaignId to", newCampaignId);
-                }).catch(err => console.log("[sendIntroCampaignData] error setting activeCampaignId:", err));
-              }).catch(err => console.log("[sendIntroCampaignData] batch commit new campaign error:", err));
+                  console.log("[saveIntroCampaignData] set activeCampaignId to", newCampaignId);
+                }).catch(err => console.log("[saveIntroCampaignData] error setting activeCampaignId:", err));
+              }).catch(err => console.log("[saveIntroCampaignData] batch commit new campaign error:", err));
           }
-        }).catch(err => console.log("[sendIntroCampaignData] error creating campaign to save to:", err));
+        }).catch(err => console.log("[saveIntroCampaignData] error creating campaign to save to:", err));
     }
   };
 };
@@ -271,7 +261,7 @@ export const autoSaveCampaignData = (campaignId, campaignColl, cardColl, viewCol
         for (let i in dataManager.cardEdit) {
           const cardId = dataManager.cardEdit[i];
           const cardRef = cardCollRef.doc(cardId);
-          batch.set(cardRef, cardColl[cardId], {merge: true});
+          batch.set(cardRef, cardColl[cardId]);
           console.log("[autoSaveCampaignData] batch set card:", cardId);
         }
         // CARD: batch delete cards in the cardDelete queue
@@ -285,7 +275,7 @@ export const autoSaveCampaignData = (campaignId, campaignColl, cardColl, viewCol
         for (let i in dataManager.viewEdit) {
           const viewId = dataManager.viewEdit[i];
           const viewRef = viewCollRef.doc(viewId);
-          batch.set(viewRef, viewColl[viewId], {merge: true});
+          batch.set(viewRef, viewColl[viewId]);
           console.log("[autoSaveCampaignData] batch set view:", viewId);
         }
         // VIEW: batch delete views in the viewDelete queue

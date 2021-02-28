@@ -15,8 +15,8 @@ export {
   loadIntroCampaign, unloadCampaign,
   createCampaign, destroyCampaign, switchCampaign, 
 
-  sendCampaignData, receiveCampaignData,
-  sendIntroCampaignData, autoSaveCampaignData,
+  saveCampaignData, loadCampaignData,
+  saveIntroCampaignData, autoSaveCampaignData,
 } from './firebaseAPI/userData';
 
 // USER

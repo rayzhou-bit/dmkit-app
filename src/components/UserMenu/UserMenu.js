@@ -70,11 +70,11 @@ const UserMenu = props => {
         save = window.confirm("You have unsaved changes. Would you like to save this to your account as a new project?");
       }
       if (save) {
-        dispatch(actions.sendIntroCampaignData(campaignColl, cardColl, viewColl));
+        dispatch(actions.saveIntroCampaignData(campaignColl, cardColl, viewColl));
       } else {
         dispatch(actions.removeCampaign("introCampaign"));
         dispatch(actions.unloadCampaign());
-        dispatch(actions.receiveCampaignData(campaignId));
+        dispatch(actions.loadCampaignData(campaignId));
       }
     } else {
       if (campaignId === "introCampaign") {
@@ -89,7 +89,7 @@ const UserMenu = props => {
   const facebookSignIn = (event) => { event.preventDefault(); actions.facebookSignIn(dispatch); };
   const emailSignOut = (event) => { 
     event.preventDefault(); 
-    dispatch(actions.sendCampaignData(campaignId, campaignColl, cardColl, viewColl, dataManager));
+    dispatch(actions.saveCampaignData(campaignId, campaignColl, cardColl, viewColl, dataManager));
     actions.emailSignOut(); 
     setShowUserDropdown(false);
   };

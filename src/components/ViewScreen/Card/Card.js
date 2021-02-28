@@ -112,7 +112,7 @@ const Card = props => {
     }
   };
 
-  const removeCardFromThisView = () => {
+  const unlinkCardFromView = () => {
     if (!editingCard) {
       dispatch(actions.unlinkCardFromView(cardId, activeViewId));
       endTitleEdit();
@@ -275,9 +275,9 @@ const Card = props => {
             <img src={DotDotDotImg} alt="Settings" draggable="false" />
             <span className="tooltip">Show view settings</span>
           </div>
-          <div className="remove-card button-24" onClick={removeCardFromThisView}>
+          <div className="remove-card button-24" onClick={unlinkCardFromView}>
             <img src={CloseImg} alt="Close" draggable="false" />
-            <span className="tooltip">Remove card from this view</span>
+            <span className="tooltip">Unlink card from this view</span>
           </div>
         </div>
         <div className="text-body">
