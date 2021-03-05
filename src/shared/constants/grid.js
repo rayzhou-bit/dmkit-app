@@ -1,3 +1,4 @@
 export const GRID = {
-  size: 30,
+  // in px
+  size: 30, //TODO: change this to rem
 };

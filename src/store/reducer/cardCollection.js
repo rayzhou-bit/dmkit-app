@@ -18,8 +18,9 @@ const initialState = {
   //       cardType: "bubble" || "card",
   //     },
   //   },
+  //   title: "card title",
+  //   color: "color",
   //   content: {
-  //     title: "card title",
   //     text: "text field,
   //     statblock: {
   //       active: boolean,
@@ -33,12 +34,12 @@ const initialState = {
       view0: {
         pos: {x: 5*GRID.size, y: 7*GRID.size},
         size: {width: 16*GRID.size, height: 10*GRID.size},
-        color: "green",
         cardType: "card",
       },
     },
+    title: "Greetings Traveler!",
+    color: "green",
     content: {
-      title: "Greetings Traveler!",
       text: "Welcome to DM Kit, a tool to help plan your next adventure. Please create an account to save your work!",
     },
   },
@@ -47,12 +48,12 @@ const initialState = {
       view1: {
         pos: {x: 0, y: 0},
         size: {width: 8*GRID.size, height: 7*GRID.size},
-        color: "blue",
         cardType: "card",
       },
     },
+    title: "Tools",
+    color: "blue",
     content: {
-      title: "Tools",
       text: "Use the buttons to the left to add cards, copy cards and save your progress. You must have an account to save.",
     },
   },
@@ -61,12 +62,12 @@ const initialState = {
       view1: {
         pos: {x: 1*GRID.size, y: 20*GRID.size},
         size: {width: 10*GRID.size, height: 5*GRID.size},
-        color: "blue",
         cardType: "card",
       },
     },
+    title: "Views",
+    color: "blue",
     content: {
-      title: "Views",
       text: "Use the buttons below to add views and switch between them.",
     },
   },
@@ -75,12 +76,12 @@ const initialState = {
       view1: {
         pos: {x: 30*GRID.size, y: 3*GRID.size},
         size: {width: 10*GRID.size, height: 6*GRID.size},
-        color: "blue",
         cardType: "card",
       },
     },
+    title: "Library",
+    color: "blue",
     content: {
-      title: "Library",
       text: "All the cards you create are stored in the library, which you can access by clicking the book to the right.",
     },
   },
@@ -102,7 +103,8 @@ const reducer = (state = {}, action) => {
     // Update visuals
     case actionTypes.UPD_CARD_POS: return updCardPos(state, action.cardId, action.viewId, action.pos.x, action.pos.y);
     case actionTypes.UPD_CARD_SIZE: return updCardSize(state, action.cardId, action.viewId, action.size.width, action.size.height);
-    case actionTypes.UPD_CARD_COLOR: return updCardColor(state, action.cardId, action.viewId, action.color);
+    case actionTypes.UPD_CARD_COLOR: return updCardColor(state, action.cardId, action.color);
+    case actionTypes.UPD_CARD_COLOR_FOR_VIEW: return updCardColorForView(state, action.cardId, action.viewId, action.color);
     case actionTypes.UPD_CARD_TYPE: return updCardType(state, action.cardId, action.viewId, action.cardType);
 
     // Update content
@@ -157,7 +159,13 @@ const updCardSize = (state, cardId, viewId, width, height) => {
   return updateObject(state, {[cardId]: updatedCard});
 };
 
-const updCardColor = (state, cardId, viewId, color) => {
+const updCardColor = (state, cardId, color) => {
+  let updatedCard = {...state[cardId]};
+  updatedCard.color = color;
+  return updateObject(state, {[cardId]: updatedCard});
+};
+
+const updCardColorForView = (state, cardId, viewId, color) => {
   let updatedCard = {...state[cardId]};
   updatedCard.views[viewId].color = color;
   return updateObject(state, {[cardId]: updatedCard});

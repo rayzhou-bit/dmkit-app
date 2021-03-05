@@ -24,7 +24,7 @@ const SignUp = (props) => {
   // FUNCTIONS
   const backdropClickHandler = () => {
     switch (screen) {
-      case emailSignUpScreen: return onBackdropClick;
+      case emailSignUpScreen: return onBackdropClick();
       case emailVerifyScreen: break;
       case accountSetupScreen: break;
       default: return onBackdropClick;
@@ -107,7 +107,7 @@ const SignUp = (props) => {
   return (
     <>
       <Backdrop show={show} clicked={() => backdropClickHandler()} />
-      <div id="auth-popup" className={show ? "open": "close"}>
+      <div id="auth-popup" className={show ? "show-sign-up-screen": "hide-sign-up-screen"}>
         <h1>DM Kit Sign Up</h1>
         {screen}
       </div>

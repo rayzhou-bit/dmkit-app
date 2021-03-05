@@ -35,9 +35,9 @@ const Card = props => {
   const cardContent = cardData.content;
   const cardPos = cardViews[activeViewId].pos;
   const cardSize = cardViews[activeViewId].size;
-  const cardColor = cardViews[activeViewId].color;
+  const cardColor = cardViews[activeViewId].color ? cardViews[activeViewId].color : cardData.color;
   const cardType = cardViews[activeViewId].cardType;
-  const cardTitle = cardContent ? cardContent.title : "";
+  const cardTitle = cardData.title;
   const cardText = cardContent ? cardContent.text : "";
 
   // IDS & REFS
@@ -146,11 +146,11 @@ const Card = props => {
     }
   };
 
-  const updCardColor = (view, color) => {
+  const updCardColorForView = (view, color) => {
     if (!cardViews[view]) {
       dispatch(actions.linkCardToView(cardId, view, cardPos, cardSize, color));
     } else {
-      dispatch(actions.updCardColor(cardId, view, color));
+      dispatch(actions.updCardColorForView(cardId, view, color));
     }
   };
 
@@ -218,7 +218,7 @@ const Card = props => {
         };
         colorList = [
           ...colorList,
-          <button key={color} style={colorStyle} onClick={() => updCardColor(view, color)}/>
+          <button key={color} style={colorStyle} onClick={() => updCardColorForView(view, color)}/>
         ];
       }
       viewSettings = [
@@ -280,6 +280,10 @@ const Card = props => {
             <span className="tooltip">Unlink card from this view</span>
           </div>
         </div>
+        <div ref={viewSettingsRef} 
+          className="view-settings" style={{display: showViewSettings ? "block" : "none"}}>
+          {viewSettings}
+        </div>
         <div className="text-body">
           <textarea id={cardTextId} ref={cardTextRef}
             className="text-textarea" style={textBodyStyle} 
@@ -291,10 +295,6 @@ const Card = props => {
             onChange={updTextEdit}
             onKeyDown={(e) => keyPressTextHandler(e)}
           />
-        </div>
-        <div ref={viewSettingsRef} 
-          className="view-settings" style={{display: showViewSettings ? "block" : "none"}}>
-          {viewSettings}
         </div>
       </div>
     </Rnd>

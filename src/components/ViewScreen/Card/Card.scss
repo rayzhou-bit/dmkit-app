@@ -1,7 +1,7 @@
 @import '../../../shared/styles/globalVariables.scss';
 @import '../../../shared/styles/cardStyles.scss';
 
-$view-setting-row-height: $grid-size;
+$view-setting-row-height: 2rem;
 $view-setting-width: 400px;
 
 .card {
@@ -61,7 +61,7 @@ $view-setting-width: 400px;
 
   .view-settings {
     position: absolute;
-    top: $grid-size + 1; right: 0;
+    top: 2rem + 1; right: 0;
     width: $view-setting-width;
     
     border: 1px solid black;

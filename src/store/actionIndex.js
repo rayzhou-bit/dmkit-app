@@ -52,7 +52,8 @@ export {
   createCard, destroyCard, copyCard,
 
   updCardPos, updCardSize,
-  updCardColor, updCardType,
+  updCardColor, updCardColorForView,
+  updCardType,
   updCardTitle, updCardText,
 
   updActiveCardId,

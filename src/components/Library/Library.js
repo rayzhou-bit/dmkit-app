@@ -1,100 +1,34 @@
-import React, { useState, useRef } from 'react';
-import { useSelector } from 'react-redux';
+import React, { useState } from 'react';
 
 import './Library.scss';
-import LibCard from './LibCard/LibCard';
+import LibrarySearch from './LibrarySearch/LibrarySearch';
 
 import LibBtnImg from '../../assets/icons/library.png';
 import ExpandImg from '../../assets/icons/left-arrow-32.png';
 import ShrinkImg from '../../assets/icons/right-arrow-32.png';
-import SearchImg from '../../assets/icons/search2.png';
 
 const Library = props => {
   // STATES
   const [showLibrary, setShowLibrary] = useState(false);
-  const [librarySize, setLibrarySize] = useState(1); // 1 is small, 2 is big
-  const [enteredSearch, setEnteredSearch] = useState('');
-  // const [displayedItems, setDisplayedItems] = useState('cards');
+  const [expandedView, setExpandedView] = useState(false);
 
-  // STORE SELECTORS
-  const campaignColl = useSelector(state => state.campaignColl);
-  const cardColl = useSelector(state => state.cardColl);
-  const campaignId = useSelector(state => state.dataManager.activeCampaignId);
-  const activeViewId = campaignColl[campaignId] ? campaignColl[campaignId].activeViewId : null;
-
-  // IDS & REFS
-  const searchId = "lib-search-bar";
-  const searchRef = useRef(searchId);
-
-  // STYLES
-  // const topOffset = 46;
-  // const buttonHeight = 30 + 10 + 2;
-  // const dividerHeight = 30 / 4;
-
-  // const viewScreenWidth = document.getElementById('viewScreen') ? document.getElementById('viewScreen').clientWidth : 0;
-  const libPanelStyle = {
-    // width: showLibrary ? viewScreenWidth*(0.4*librarySize)+'px' : '0px',
-    width: showLibrary ? 40*librarySize+'vw' : '0',
-    padding: showLibrary ? '0 10px 0 5px' : '0',
-    borderLeft: showLibrary ? '1px solid black' : '0',
-    overflowY: showLibrary ? 'scroll' : 'hidden',
+  const libraryStyle = {
+    right: showLibrary ? 0 : expandedView ? "-80vw" : "-40vw",
   };
 
-  // CARD LIST
-  let cardList = [<div key={'first.lib-divider'} className="lib-divider" />];
-  if (cardColl) {
-    for (let cardId in cardColl) {
-      if (cardColl[cardId].content) {
-        const cardTitle = cardColl[cardId].content.title ? cardColl[cardId].content.title : "";
-        const cardText = cardColl[cardId].content.text ? cardColl[cardId].content.text : "";
-        if (cardTitle.toLowerCase().includes(enteredSearch.toLowerCase()) ||
-          cardText.toLowerCase().includes(enteredSearch.toLocaleLowerCase())) {
-          cardList = [
-            ...cardList,
-            <LibCard key={cardId} 
-              cardId={cardId} cardData={cardColl[cardId]} activeViewId={activeViewId}
-            />,
-            <div key={cardId+'.lib-divider'} className="lib-divider" />
-          ];
-        }
-      }
-    };
-  }
-
   return (
-    <div id="library">
-      <div id="lib-btn-grid">
-        <div className="divider" />
-        <div className="button" onClick={() => setShowLibrary(!showLibrary)}>
-          <img src={LibBtnImg} alt="Library" />
-          <span className="tooltip" style={{right: (showLibrary) ? ((librarySize===1) ? '102%' : '101%') : '120%'}}>
-            Show library
-          </span>
-        </div>
-        <div className="divider" />
-        <div className="button" style={{display: showLibrary ? 'block' : 'none'}}
-          onClick={(librarySize===1) ? ()=>setLibrarySize(2) : ()=>setLibrarySize(1)}>
-          <img src={(librarySize===1) ? ExpandImg : ShrinkImg} alt="Expand/Shrink" />
-          <span className="tooltip" style={{right: (librarySize===1) ? '102%' : '101%'}}>
-            {(librarySize===1) ? "Expand" : "Shrink"}
-          </span>
-        </div>
-        <div className="divider" />
+    <div id="library" style={libraryStyle}>
+      <div id="library-search-container" style={{width: expandedView ? "80vw" : "40vw"}}>
+        <LibrarySearch />
       </div>
-      <div id="lib-panel-grid" style={libPanelStyle}>
-        <div id={searchId}>
-          <img src={SearchImg} alt="Search" />
-          <input ref={searchRef}
-            type="search" placeholder="Search..."
-            value={enteredSearch}
-            onChange={event => setEnteredSearch(event.target.value)}
-          />
-          {/* <div id="cardTab">Cards</div>
-          <div id="viewTab">Views</div> */}
-        </div>
-        <div id="lib-search-results">
-          {cardList}
-        </div>
+      <div id="show-library-btn" className="library-menu-btn" onClick={() => setShowLibrary(!showLibrary)}>
+        <img src={LibBtnImg} alt="Library" />
+        <span className="tooltip">Show library</span>
+      </div>
+      <div id="expand-shrink-btn" className="library-menu-btn" style={{display: showLibrary ? 'block' : 'none'}}
+        onClick={() => setExpandedView(!expandedView)}>
+        <img src={expandedView ? ShrinkImg : ExpandImg} alt="Expand/Shrink" />
+        <span className="tooltip">{expandedView ? "Shrink" : "Expand"}</span>
       </div>
     </div>
   );

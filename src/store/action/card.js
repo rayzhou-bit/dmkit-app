@@ -1,40 +1,24 @@
 import * as actionTypes from '../actionTypes';
 import { GRID } from '../../shared/constants/grid';
 
+const updEditSaveFlag = (cardId) => dispatch => { dispatch(enqueueCardEdit(cardId)); dispatch(setCampaignEdit()); };
+const updDeleteSaveflag = (cardId) => dispatch => { dispatch(enqueueCardDelete(cardId)); dispatch(setCampaignEdit()); };
+
 // <-----cardCollection REDUCER CALLS----->
 export const initCardColl = () => { return { type: actionTypes.INIT_CARD_COLL }; };
 export const loadCardColl = (cardColl) => { return { type: actionTypes.LOAD_CARD_COLL, cardColl: cardColl }; };
 export const unloadCardColl = () => { return { type: actionTypes.UNLOAD_CARD_COLL }; };
-const addCard = (cardId, cardData) => dispatch => { 
-  dispatch({ type: actionTypes.ADD_CARD, cardId: cardId, cardData: cardData }); 
-  dispatch(enqueueCardEdit(cardId)); dispatch(setCampaignEdit()); };
-const removeCard = (cardId) => dispatch => { 
-  dispatch({ type: actionTypes.REMOVE_CARD, cardId: cardId }); 
-  dispatch(enqueueCardDelete(cardId)); dispatch(setCampaignEdit()); };
-export const linkCardToView = (cardId, viewId, pos, size, color) => dispatch => { 
-  dispatch({ type: actionTypes.LINK_CARD_TO_VIEW, cardId: cardId, viewId: viewId, pos: pos, size: size, color: color });
-  dispatch(enqueueCardEdit(cardId)); dispatch(setCampaignEdit()); };
-export const unlinkCardFromView = (cardId, viewId) => dispatch => {
-  dispatch({ type: actionTypes.UNLINK_CARD_FROM_VIEW, cardId: cardId, viewId: viewId });
-  dispatch(enqueueCardEdit(cardId)); dispatch(setCampaignEdit()); };
-export const updCardPos = (cardId, viewId, pos) => dispatch => {
-  dispatch({ type: actionTypes.UPD_CARD_POS, cardId: cardId, viewId: viewId, pos: pos });
-  dispatch(enqueueCardEdit(cardId)); dispatch(setCampaignEdit()); };
-export const updCardSize = (cardId, viewId, size) => dispatch => {
-  dispatch({ type: actionTypes.UPD_CARD_SIZE, cardId: cardId, viewId: viewId, size: size });
-  dispatch(enqueueCardEdit(cardId)); dispatch(setCampaignEdit()); };
-export const updCardColor = (cardId, viewId, color) => dispatch => {
-  dispatch({ type: actionTypes.UPD_CARD_COLOR, cardId: cardId, viewId: viewId, color: color });
-  dispatch(enqueueCardEdit(cardId)); dispatch(setCampaignEdit()); };
-export const updCardType = (cardId, viewId, cardType) => dispatch => {
-  dispatch({ type: actionTypes.UPD_CARD_TYPE, cardId: cardId, viewId: viewId, cardType: cardType });
-  dispatch(enqueueCardEdit(cardId)); dispatch(setCampaignEdit()); };
-export const updCardTitle = (cardId, title) => dispatch => {
-  dispatch({ type: actionTypes.UPD_CARD_TITLE, cardId: cardId, title: title });
-  dispatch(enqueueCardEdit(cardId)); dispatch(setCampaignEdit()); };
-export const updCardText = (cardId, text) => dispatch => {
-  dispatch({ type: actionTypes.UPD_CARD_TEXT, cardId: cardId, text: text });
-  dispatch(enqueueCardEdit(cardId)); dispatch(setCampaignEdit()); };
+const addCard = (cardId, cardData) => dispatch => { dispatch({ type: actionTypes.ADD_CARD, cardId: cardId, cardData: cardData }); dispatch(updEditSaveFlag(cardId)); };
+const removeCard = (cardId) => dispatch => { dispatch({ type: actionTypes.REMOVE_CARD, cardId: cardId }); dispatch(updDeleteSaveflag(cardId)); };
+export const linkCardToView = (cardId, viewId, pos, size, color) => dispatch => { dispatch({ type: actionTypes.LINK_CARD_TO_VIEW, cardId: cardId, viewId: viewId, pos: pos, size: size, color: color }); dispatch(updEditSaveFlag(cardId)); };
+export const unlinkCardFromView = (cardId, viewId) => dispatch => { dispatch({ type: actionTypes.UNLINK_CARD_FROM_VIEW, cardId: cardId, viewId: viewId }); dispatch(updEditSaveFlag(cardId)); };
+export const updCardPos = (cardId, viewId, pos) => dispatch => { dispatch({ type: actionTypes.UPD_CARD_POS, cardId: cardId, viewId: viewId, pos: pos }); dispatch(updEditSaveFlag(cardId)); };
+export const updCardSize = (cardId, viewId, size) => dispatch => { dispatch({ type: actionTypes.UPD_CARD_SIZE, cardId: cardId, viewId: viewId, size: size }); dispatch(updEditSaveFlag(cardId)); };
+export const updCardColor = (cardId, color) => dispatch => { dispatch({ type: actionTypes.UPD_CARD_COLOR, cardId: cardId, color: color }); dispatch(updEditSaveFlag(cardId)); };
+export const updCardColorForView = (cardId, viewId, color) => dispatch => { dispatch({ type: actionTypes.UPD_CARD_COLOR_FOR_VIEW, cardId: cardId, viewId: viewId, color: color }); dispatch(updEditSaveFlag(cardId)); };
+export const updCardType = (cardId, viewId, cardType) => dispatch => { dispatch({ type: actionTypes.UPD_CARD_TYPE, cardId: cardId, viewId: viewId, cardType: cardType }); dispatch(updEditSaveFlag(cardId)); };
+export const updCardTitle = (cardId, title) => dispatch => { dispatch({ type: actionTypes.UPD_CARD_TITLE, cardId: cardId, title: title }); dispatch(updEditSaveFlag(cardId)); };
+export const updCardText = (cardId, text) => dispatch => { dispatch({ type: actionTypes.UPD_CARD_TEXT, cardId: cardId, text: text }); dispatch(updEditSaveFlag(cardId)); };
 
 // <-----campaignCollection REDUCER CALLS----->
 const incrementCardCreateCnt = (campaignId) => { return { type: actionTypes.INCREMENT_CARD_CREATE_CNT, campaignId: campaignId }; };
@@ -55,11 +39,12 @@ export const createCard = (campaignId, viewId, cardCreateCnt) => {
       [viewId]: {
         pos: {x: 3*GRID.size, y: 3*GRID.size},
         size: {width: 8*GRID.size, height: 10*GRID.size},
-        color: "gray",
         cardType: "card",
       },
     },
-    content: {title: cardId, text: ""},
+    title: cardId,
+    color: "gray",
+    content: {text: ""},
   };
   return dispatch => {
     dispatch(addCard(cardId, cardData));
