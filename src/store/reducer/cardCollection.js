@@ -179,7 +179,7 @@ const updCardType = (state, cardId, viewId, cardType) => {
 
 const updCardTitle = (state, cardId, title) => {
   let updatedCard = {...state[cardId]};
-  updatedCard.content.title = title;
+  updatedCard.title = title;
   return updateObject(state, {[cardId]: updatedCard});
 };
 
