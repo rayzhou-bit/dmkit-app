@@ -86,7 +86,7 @@ export const emailActionHandler = () => {
 const handleResetPassword = (actionCode, continueUrl) => {
   auth.verifyPasswordResetCode(actionCode)
     .then(email => {
-      let accountEmail = email;
+      // let accountEmail = email;
 
       // TODO: Show the reset screen with the user's email and ask the user for
       // the new password.

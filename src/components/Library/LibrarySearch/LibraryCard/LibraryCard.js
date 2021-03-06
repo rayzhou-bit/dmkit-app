@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useOutsideClick } from '../../../../shared/utilityFunctions';
 
@@ -11,7 +11,7 @@ import EditImg from '../../../../assets/icons/edit-24.png';
 import DeleteImg from '../../../../assets/icons/delete-24.png';
 
 const LibCard = props => {
-  const {cardId, cardData, activeViewId} = props;
+  const {cardId, cardData} = props;
   const dispatch = useDispatch();
 
   // STATES
@@ -26,7 +26,6 @@ const LibCard = props => {
   const activeCardId = useSelector(state => state.dataManager.activeCardId);
 
   // VARIABLES
-  const cardViews = cardData.views;
   const cardContent = cardData.content;
   const cardColor = cardData.color ? cardData.color : "white";
   const cardTitle = cardData.title;
@@ -40,6 +39,7 @@ const LibCard = props => {
   const colorSelectRef = useRef(cardId+".library-color-select");
   const colorBtnRef = useRef(cardId+".library-color-btn");
   const deleteBtnRef = useRef(cardId+".library-remove-btn");
+  const contentContainerId = cardId+".library-content-container";
   const textId = cardId+".library-text";
   const textRef = useRef(textId);
 
@@ -135,13 +135,13 @@ const LibCard = props => {
   // STYLES: CARD
   const cardStyle = {
     border: cardId === activeCardId ? '3px solid black' : '1px solid black',
-    margin: cardId === activeCardId ? '0px' : '2px',
+    margin: cardId === activeCardId ? '0px 0px 8px 0px' : '2px 2px 10px 2px',
     zIndex: cardId === activeCardId ? '100' : '0',
   };
 
   // STYLES: TITLEBAR
   const titleBarStyle = {
-    fontSize: CARD_FONT_SIZE.title+'rem',
+    fontSize: CARD_FONT_SIZE.title+'px',
     color: TEXT_COLOR_WHEN_BACKGROUND_IS[cardColor], 
     backgroundColor: editingTitle ? CARD_TITLEBAR_EDIT_COLORS[cardColor] : cardColor, 
     cursor: editingTitle ? "text" : "move",
@@ -153,20 +153,24 @@ const LibCard = props => {
   const colorButtonStyle = {
     backgroundColor: cardData.color ? cardData.color : "white",
   };
-
   const deleteButtonStyle = {
     backgroundColor: confirmDelete ? "red" : null,
     opacity: confirmDelete ? 1 : null,
   };
 
   // STYLES: CONTENT
-  const completeTextHeight = document.getElementById(textId) ? document.getElementById(textId).scrollHeight : 0;
-  const abridgedTextHeight = CARD_FONT_SIZE.text*3.2+'rem';
-  const contentContainerStyle = {
-    height: isSelected ? completeTextHeight : abridgedTextHeight,
-  };
+  const contentContainerStyle = { height: CARD_FONT_SIZE.text*5.5+'px' };
+  useEffect(() => {
+    const completeTextHeight = document.getElementById(textId) ? document.getElementById(textId).scrollHeight : 1000;
+    const abridgedTextHeight = CARD_FONT_SIZE.text*5.5;
+    document.getElementById(contentContainerId).style.height = isSelected 
+      ? completeTextHeight+'px'
+      : Math.min(abridgedTextHeight, completeTextHeight)+'px'
+    ;
+  }, [textId, contentContainerId, isSelected, cardText]);
+  
   const textStyle = {
-    fontSize: CARD_FONT_SIZE.text+'rem',
+    fontSize: CARD_FONT_SIZE.text+'px',
     backgroundColor: editingText ? "white" : "lightgray",
   };
 
@@ -212,7 +216,7 @@ const LibCard = props => {
       <div ref={colorSelectRef} className="color-select" style={{display: openColorSelect ? "grid" : "none"}}>
         {colorList}
       </div>
-      <div className="library-card-content-container" style={contentContainerStyle}>
+      <div id={contentContainerId} className="library-card-content-container" style={contentContainerStyle}>
         <textarea id={textId} ref={textRef}
           className="library-card-text" style={textStyle} 
           type="text"

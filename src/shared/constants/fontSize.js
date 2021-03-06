@@ -1,10 +1,10 @@
 export const CARD_FONT_SIZE = {
-  // in rem
-  title: 1.2,
-  text: 1.4,
+  // in px
+  title: 20,
+  text: 20,
 };
 
 export const VIEW_FONT_SIZE = {
-  // in rem
-  title: 1.4,
+  // in px
+  title: 20,
 };

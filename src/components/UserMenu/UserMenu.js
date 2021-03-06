@@ -33,7 +33,8 @@ const UserMenu = props => {
   const campaignEdit = dataManager.campaignEdit ? dataManager.campaignEdit : null;
   const emailSignInError = useSelector(state => state.dataManager.errorEmailSignIn);
   const googleSignInError = useSelector(state => state.dataManager.errorGoogleSignIn);
-  const facebookSignInError = useSelector(state => state.dataManager.errorFacebookSignIn);
+  // TODO: implement facebook sign in
+  // const facebookSignInError = useSelector(state => state.dataManager.errorFacebookSignIn);
 
   // IDS & REFS
   const campaignTitleId = "campaignTitle";
@@ -86,7 +87,7 @@ const UserMenu = props => {
   // FUNCTIONS: SIGN IN
   const emailSignIn = (event) => { event.preventDefault(); actions.emailSignIn(email, psw, dispatch); };
   const googleSignIn = (event) => { event.preventDefault(); actions.googleSignIn(dispatch); };
-  const facebookSignIn = (event) => { event.preventDefault(); actions.facebookSignIn(dispatch); };
+  // const facebookSignIn = (event) => { event.preventDefault(); actions.facebookSignIn(dispatch); };
   const emailSignOut = (event) => { 
     event.preventDefault(); 
     dispatch(actions.saveCampaignData(campaignId, campaignColl, cardColl, viewColl, dataManager));

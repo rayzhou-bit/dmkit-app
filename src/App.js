@@ -39,7 +39,7 @@ const App = props => {
       }
     });
     return authListener;
-  }, []);
+  }, [dispatch]);
 
   return (
     <div id="layout">

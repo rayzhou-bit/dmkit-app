@@ -24,7 +24,7 @@ const LibrarySearch = props => {
   const addToCardList = (cardList, cardId) => {
     return cardList = [
       ...cardList,
-      <LibraryCard key={cardId} cardId={cardId} cardData={cardColl[cardId]} activeViewId={activeViewId} />,
+      <LibraryCard key={cardId} cardId={cardId} cardData={cardColl[cardId]} />,
     ];
   };
 
@@ -52,7 +52,6 @@ const LibrarySearch = props => {
           break;
         case 'current':
           if (cardContainsSearchString && cardIsInActiveView) {
-            console.log(searchFilter)
             cardList = addToCardList(cardList, cardId);
           }
           break;
@@ -61,6 +60,7 @@ const LibrarySearch = props => {
             cardList = addToCardList(cardList, cardId);
           }
           break;
+        default: break;
       }
     };
   }

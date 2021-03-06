@@ -1,9 +1,10 @@
 $title-bar-height: 2rem;
 
 .library-card {
+  box-sizing: content-box;
   position: relative;
-  width: 100%;
-  margin-bottom: 0.3rem;
+  width: 98%;
+  margin-bottom: 0.5rem;
 
   &:hover .title-btn {
     opacity: 1;
@@ -80,6 +81,7 @@ $title-bar-height: 2rem;
 .library-card-content-container {
   width: 100%;
   text-align: center;
+  overflow-y: scroll;
   
   -webkit-transition: .4s;
   transition: .4s;
@@ -96,10 +98,9 @@ $title-bar-height: 2rem;
     border: 0;
 
     background-color: #ddd;
-    text-overflow: ellipsis;
 
+    overflow: hidden;
     resize: none;
-    overflow-y: scroll;
     
     -webkit-transition: .4s;
     transition: .4s;
