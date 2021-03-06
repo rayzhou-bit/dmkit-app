@@ -31,11 +31,11 @@ const ViewSelect = React.memo(props => {
   const createView = () => dispatch(actions.createView(campaignId, activeViewId, viewCreateCnt));
 
   const scrollLeft = () => {
-    document.getElementById(viewTabContainerId).scrollBy({left: -200, behavior: 'smooth'});
+    document.getElementById(viewTabContainerId).scrollBy({left: -400, behavior: 'smooth'});
   };
 
   const scrollRight = () => {
-    document.getElementById(viewTabContainerId).scrollBy({left: 200, behavior: 'smooth'});
+    document.getElementById(viewTabContainerId).scrollBy({left: 400, behavior: 'smooth'});
   };
 
   let viewTabs = [];

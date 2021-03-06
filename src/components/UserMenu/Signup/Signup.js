@@ -35,7 +35,7 @@ const SignUp = (props) => {
 
   const emailSignUpHandler = (event) => {
     event.preventDefault();
-    dispatch(actions.emailSignUp(email, psw, dispatch));
+    actions.emailSignUp(email, psw, dispatch);
   };
 
   const accountSetupHandler = (event) => {

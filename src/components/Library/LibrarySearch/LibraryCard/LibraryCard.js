@@ -27,7 +27,7 @@ const LibCard = props => {
   // VARIABLES
   const cardViews = cardData.views;
   const cardContent = cardData.content;
-  const cardColor = (cardViews && cardViews[activeViewId] && cardViews[activeViewId].color) ? cardViews[activeViewId].color : cardData.color;
+  const cardColor = cardData.color ? cardData.color : "white";
   const cardTitle = cardData.title;
   const cardText = cardContent ? cardContent.text : "";
 
@@ -135,6 +135,7 @@ const LibCard = props => {
   const cardStyle = {
     border: cardId === activeCardId ? '3px solid black' : '1px solid black',
     margin: cardId === activeCardId ? '0px' : '2px',
+    zIndex: cardId === activeCardId ? '100' : '0',
   };
 
   // STYLES: TITLEBAR
