@@ -21,15 +21,15 @@ const Library = props => {
       <div id="library-search-container" style={{width: expandedView ? "80vw" : "40vw"}}>
         <LibrarySearch />
       </div>
-      <div id="show-library-btn" className="library-menu-btn" onClick={() => setShowLibrary(!showLibrary)}>
+      <button id="show-library-btn" className="library-menu-btn" onClick={() => setShowLibrary(!showLibrary)}>
         <img src={LibBtnImg} alt="Library" />
         <span className="tooltip">Show library</span>
-      </div>
-      <div id="expand-shrink-btn" className="library-menu-btn" style={{display: showLibrary ? 'block' : 'none'}}
+      </button>
+      <button id="expand-shrink-btn" className="library-menu-btn" style={{display: showLibrary ? 'block' : 'none'}}
         onClick={() => setExpandedView(!expandedView)}>
         <img src={expandedView ? ShrinkImg : ExpandImg} alt="Expand/Shrink" />
         <span className="tooltip">{expandedView ? "Shrink" : "Expand"}</span>
-      </div>
+      </button>
     </div>
   );
 };

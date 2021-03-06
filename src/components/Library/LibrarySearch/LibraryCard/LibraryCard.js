@@ -140,7 +140,7 @@ const LibCard = props => {
   };
 
   // STYLES: TITLEBAR
-  const titleBarStyle = {
+  const titleStyle = {
     fontSize: CARD_FONT_SIZE.title+'px',
     color: TEXT_COLOR_WHEN_BACKGROUND_IS[cardColor], 
     backgroundColor: editingTitle ? CARD_TITLEBAR_EDIT_COLORS[cardColor] : cardColor, 
@@ -168,7 +168,7 @@ const LibCard = props => {
       : Math.min(abridgedTextHeight, completeTextHeight)+'px'
     ;
   }, [textId, contentContainerId, isSelected, cardText]);
-  
+
   const textStyle = {
     fontSize: CARD_FONT_SIZE.text+'px',
     backgroundColor: editingText ? "white" : "lightgray",
@@ -191,7 +191,7 @@ const LibCard = props => {
     >
       <div className="library-card-title-container">
         <input id={titleId} ref={titleRef}
-          className="title-input" style={titleBarStyle} type="text" required
+          className="title" style={titleStyle} type="text" required
           value={cardTitle} readOnly={!editingTitle}
           onDoubleClick={(cardId === activeCardId) ? startTitleEdit : null}
           onChange={updTitleEdit}
