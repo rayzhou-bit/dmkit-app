@@ -7,6 +7,7 @@ import * as actions from '../../../../store/actionIndex';
 import { CARD_FONT_SIZE } from '../../../../shared/constants/fontSize';
 import { TEXT_COLOR_WHEN_BACKGROUND_IS, CARD_TITLEBAR_EDIT_COLORS, CARD_TITLEBAR_COLORS } from '../../../../shared/constants/colors';
 
+import EditImg from '../../../../assets/icons/edit-24.png';
 import DeleteImg from '../../../../assets/icons/delete-24.png';
 
 const LibCard = props => {
@@ -192,15 +193,20 @@ const LibCard = props => {
           onChange={updTitleEdit}
           onKeyDown={e => keyPressTitleHandler(e)}
         />
+        <button className="edit-title title-btn button-24"
+          onClick={() => startTitleEdit()}>
+          <img src={EditImg} alt="Edit" draggable="false" />
+          <span className="tooltip">Edit title</span>
+        </button>
         <button ref={colorBtnRef} className="change-color title-btn button-24"
           onClick={() => setOpenColorSelect(!openColorSelect)}>
           <div style={colorButtonStyle} />
-          {/* <span className="tooltip">Change color</span> */}
+          <span className="tooltip">Change color</span>
         </button>
         <button ref={deleteBtnRef} className="remove-card title-btn button-24" style={deleteButtonStyle}
           onClick={deleteCard}>
           <img src={DeleteImg} alt="Delete" draggable="false" />
-          {/* <span className="tooltip">Delete card</span> */}
+          <span className="tooltip">Delete card</span>
         </button>
       </div>
       <div ref={colorSelectRef} className="color-select" style={{display: openColorSelect ? "grid" : "none"}}>

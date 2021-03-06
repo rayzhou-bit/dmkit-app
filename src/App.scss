@@ -59,6 +59,7 @@ input:focus, textarea:focus, select:focus, button:focus {
 
   .tooltip::after {
     // top, bottom, left, right need to be set for the arrow position
+    // border-color needs to be changed to be black for the direction of the arrow
     content: " ";
     position: absolute;
     // top: 50%;
@@ -66,6 +67,6 @@ input:focus, textarea:focus, select:focus, button:focus {
     margin-top: -5px;
     border-width: 5px;
     border-style: solid;
-    border-color: transparent black transparent transparent;
+    border-color: transparent transparent transparent transparent;
   }
 }
