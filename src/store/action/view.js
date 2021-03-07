@@ -1,8 +1,5 @@
 import * as actionTypes from '../actionTypes';
 
-const updEditSaveFlag = (viewId) => dispatch => { dispatch(enqueueViewEdit(viewId)); dispatch(setCampaignEdit()); };
-const updDeleteSaveflag = (viewId) => dispatch => { dispatch(enqueueViewDelete(viewId)); dispatch(setCampaignEdit()); };
-
 // <-----viewCollection REDUCER CALLS----->
 export const initViewColl = () => { return { type: actionTypes.INIT_VIEW_COLL }; };
 export const loadViewColl = (viewColl) => { return { type: actionTypes.LOAD_VIEW_COLL, viewColl: viewColl }; };
@@ -20,6 +17,8 @@ export const updActiveViewId = (campaignId, viewId) => dispatch => { dispatch({ 
 const incrementViewCreateCnt = (campaignId) => { return { type: actionTypes.INCREMENT_VIEW_CREATE_CNT, campaignId: campaignId }; };
 
 // <-----dataManager REDUCER CALLS----->
+const updEditSaveFlag = (viewId) => dispatch => { dispatch(enqueueViewEdit(viewId)); dispatch(setCampaignEdit()); };
+const updDeleteSaveflag = (viewId) => dispatch => { dispatch(enqueueViewDelete(viewId)); dispatch(setCampaignEdit()); };
 const setCampaignEdit = () => { return { type: actionTypes.SET_CAMPAIGN_EDIT }; };
 const enqueueViewDelete = (viewId) => { return { type: actionTypes.ENQUEUE_VIEW_DELETE, viewId: viewId }; };
 export const clearViewDelete = () => { return { type: actionTypes.CLEAR_VIEW_DELETE }; };

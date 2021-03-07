@@ -1,9 +1,6 @@
 import * as actionTypes from '../actionTypes';
 import { GRID } from '../../shared/constants/grid';
 
-const updEditSaveFlag = (cardId) => dispatch => { dispatch(enqueueCardEdit(cardId)); dispatch(setCampaignEdit()); };
-const updDeleteSaveflag = (cardId) => dispatch => { dispatch(enqueueCardDelete(cardId)); dispatch(setCampaignEdit()); };
-
 // <-----cardCollection REDUCER CALLS----->
 export const initCardColl = () => { return { type: actionTypes.INIT_CARD_COLL }; };
 export const loadCardColl = (cardColl) => { return { type: actionTypes.LOAD_CARD_COLL, cardColl: cardColl }; };
@@ -24,6 +21,8 @@ export const updCardText = (cardId, text) => dispatch => { dispatch({ type: acti
 const incrementCardCreateCnt = (campaignId) => { return { type: actionTypes.INCREMENT_CARD_CREATE_CNT, campaignId: campaignId }; };
 
 // <-----dataManager REDUCER CALLS----->
+const updEditSaveFlag = (cardId) => dispatch => { dispatch(enqueueCardEdit(cardId)); dispatch(setCampaignEdit()); };
+const updDeleteSaveflag = (cardId) => dispatch => { dispatch(enqueueCardDelete(cardId)); dispatch(setCampaignEdit()); };
 const setCampaignEdit = () => { return { type: actionTypes.SET_CAMPAIGN_EDIT }; };
 export const updActiveCardId = (cardId) => { return { type: actionTypes.UPD_ACTIVE_CARD_ID, cardId: cardId }; };
 const enqueueCardDelete = (cardId) => { return { type: actionTypes.ENQUEUE_CARD_DELETE, cardId: cardId }; };

@@ -41,7 +41,7 @@ const Campaign = props => {
     if (!confirmDelete) {
       setConfirmDelete(true);
     } else {
-      dispatch(actions.destroyCampaign(campaignId));
+      dispatch(actions.destroyCampaign(campaignId, activeCampaignId));
     }
   };
 

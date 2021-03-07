@@ -12,11 +12,10 @@ export {
 
   receiveSignInData,
 
-  loadIntroCampaign, unloadCampaign,
   createCampaign, destroyCampaign, switchCampaign, 
 
-  saveCampaignData, loadCampaignData,
-  saveIntroCampaignData, autoSaveCampaignData,
+  loadCampaignData, unloadCampaignData, saveCampaignData, autoSaveCampaignData,
+  loadIntroCampaign, unloadIntroCampaign, saveIntroCampaignData, 
 } from './firebaseAPI/userData';
 
 // USER

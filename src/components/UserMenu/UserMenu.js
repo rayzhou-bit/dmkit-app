@@ -65,26 +65,32 @@ const UserMenu = props => {
 
   // Load data for active campaign
   useEffect(() => {
-    let save = null;
+    //TODO unload campaign before set new campaign IMPLEMENT promise
     if (userId) {
-      if (campaignColl["introCampaign"] && campaignEdit) {
-        save = window.confirm("You have unsaved changes. Would you like to save this to your account as a new project?");
-      }
-      if (save) {
-        dispatch(actions.saveIntroCampaignData(campaignColl, cardColl, viewColl));
+      if (campaignColl["introCampaign"]) {
+        let save = null;
+        if (campaignEdit) {
+          save = window.confirm("You have unsaved changes. Would you like to save this to your account as a new project?");
+        }
+        if (save) {
+          dispatch(actions.saveIntroCampaignData(campaignColl, cardColl, viewColl));
+        } else {
+          dispatch(actions.unloadIntroCampaign(campaignId));
+          dispatch(actions.loadCampaignData(campaignId));
+        }
       } else {
-        dispatch(actions.removeCampaign("introCampaign"));
-        dispatch(actions.unloadCampaign());
+        dispatch(actions.unloadCampaignData());
         dispatch(actions.loadCampaignData(campaignId));
       }
     } else {
       if (campaignId === "introCampaign") {
+        dispatch(actions.unloadCampaignData());
         dispatch(actions.loadIntroCampaign());
       }
     }
   }, [dispatch, campaignId]);
 
-  // FUNCTIONS: SIGN IN
+  // FUNCTIONS: USER AUTH
   const emailSignIn = (event) => { event.preventDefault(); actions.emailSignIn(email, psw, dispatch); };
   const googleSignIn = (event) => { event.preventDefault(); actions.googleSignIn(dispatch); };
   // const facebookSignIn = (event) => { event.preventDefault(); actions.facebookSignIn(dispatch); };
@@ -206,7 +212,7 @@ const UserMenu = props => {
         {/* campaign select */}
         <div className="campaign dropdown" style={{display: userId ? "block" : "none"}}>
           <div ref={campaignDropdownBtnRef} className="dropdown-btn" onClick={Object.keys(campaignColl).length>0 ? ()=>setShowCampaignDropdown(!showCampaignDropdown) : ()=>newCampaign()}>
-            {Object.keys(campaignColl).length>0 ? "Projects" : "New Project"}
+            {Object.keys(campaignColl).length>0 ? "Campaigns" : "New Campaign"}
           </div>
           <div ref={campaignDropdownContentRef} className="dropdown-content" style={{display: showCampaignDropdown ? "block" : "none"}}>
             {campaignList}
