@@ -1,3 +1,5 @@
+import React from 'react';
+import { useSelector } from 'react-redux';
 import * as actions from '../actionIndex';
 import { auth, store } from './firebase';
 import { updateObject } from '../../shared/utilityFunctions';
@@ -132,9 +134,20 @@ export const switchCampaign = (nextCampId, currCampId, campaignColl, cardColl, v
       store.collection("users").doc(userId).set({activeCampaignId: nextCampId})
         .then(resp => {
           dispatch(actions.updActiveCampaignId(nextCampId));
+          //unload here?
           console.log("[switchCampaign] set activeCampaignId from", currCampId, "to", nextCampId);
         }).catch(err => console.log("[switchCampaign] error setting activeCampaignId:", err));
     }
+  };
+};
+
+const cleanUpDataManager = () => {
+  return dispatch => {
+    dispatch(actions.clearCardDelete());
+    dispatch(actions.clearViewDelete());
+    dispatch(actions.clearCardEdit());
+    dispatch(actions.clearViewEdit());
+    dispatch(actions.unsetCampaignEdit());
   };
 };
 
@@ -212,11 +225,7 @@ export const saveCampaignData = (campaignId, campaignColl, cardColl, viewColl, d
           .then(resp => {
             console.log("[saveCampaignData] batch commit success:", resp);
             // CLEANUP
-            dispatch(actions.clearCardDelete());
-            dispatch(actions.clearViewDelete());
-            dispatch(actions.clearCardEdit());
-            dispatch(actions.clearViewEdit());
-            dispatch(actions.unsetCampaignEdit());
+            cleanUpDataManager();
           })
           .catch(err => {
             console.log("[saveCampaignData] batch commit error:", err);
@@ -226,6 +235,55 @@ export const saveCampaignData = (campaignId, campaignColl, cardColl, viewColl, d
     }
   };
 };
+
+// export const saveCampaignData = (postSaveFunc, postSaveArgs) => {
+//   const user = getUser();
+//   const activeCampaignId = useSelector(state => state.dataManager.activeCampaignId);
+//   const campaignColl = useSelector(state => state.campaignColl);
+//   const cardColl = useSelector(state => state.cardColl);
+//   const viewColl = useSelector(state => state.viewColl);
+//   return dispatch => {
+//     if (user && activeCampaignId && campaignColl[activeCampaignId]) {
+//       const userId = user.uid;
+//       const campaignRef = store.collection("users").doc(userId).collection("campaigns").doc(activeCampaignId);
+//       const cardCollRef = store.collection("users").doc(userId).collection("campaigns").doc(activeCampaignId).collection("cards");
+//       const viewCollRef = store.collection("users").doc(userId).collection("campaigns").doc(activeCampaignId).collection("views");
+//       const batch = store.batch();
+//       // CAMPAIGN: batch set campaign data, viewOrder, activeViewId, cardCreateCnt, viewCreateCnt
+//       batch.set(campaignRef, campaignColl[activeCampaignId], {merge: true});
+//       console.log("[saveCampaignData] batch set campaign:", activeCampaignId);
+//       // CARD: batch set card data
+//       let count = 0;
+//       for (let cardId in cardColl) {
+//         const cardRef = cardCollRef.doc(cardId);
+//         batch.set(cardRef, cardColl[cardId]);
+//         count++;
+//       }
+//       console.log("[saveCampaignData] batch set", count, "cards");
+//       // VIEW: batch set view data
+//       count = 0;
+//       for (let viewId in viewColl) {
+//         const viewRef = viewCollRef.doc(viewId);
+//         batch.set(viewRef, viewColl[viewId]);
+//         count++;
+//       }
+//       console.log("[saveCampaignData] batch set", count, "views");
+//       // COMMIT BATCH
+//         batch.commit()
+//           .then(resp => {
+//             console.log("[saveCampaignData] batch commit success:", resp);
+//             // CLEANUP
+//             cleanUpDataManager();
+//             // FOLLOW UP FUNCTION
+//             if (postSaveFunc) { postSaveFunc(postSaveArgs); }
+//           })
+//           .catch(err => {
+//             console.log("[saveCampaignData] batch commit error:", err);
+//             // NON-BATCH CLEANUP
+//           });
+//     }
+//   }
+// }
 
 export const autoSaveCampaignData = (campaignId, campaignColl, cardColl, viewColl, dataManager) => {
   const user = getUser();
@@ -273,11 +331,7 @@ export const autoSaveCampaignData = (campaignId, campaignColl, cardColl, viewCol
           .then(resp => {
             console.log("[autoSaveCampaignData] batch commit success:", resp);
             // CLEANUP
-            dispatch(actions.clearCardDelete());
-            dispatch(actions.clearViewDelete());
-            dispatch(actions.clearCardEdit());
-            dispatch(actions.clearViewEdit());
-            dispatch(actions.unsetCampaignEdit());
+            cleanUpDataManager();
           })
           .catch(err => {
             console.log("[autoSaveCampaignData] batch commit error:", err);
@@ -288,7 +342,7 @@ export const autoSaveCampaignData = (campaignId, campaignColl, cardColl, viewCol
   };
 };
 
-export const loadIntroCampaign = () => {
+export const initializeIntroCampaign = () => {
   return dispatch => {
     dispatch(actions.initDataManager());
     dispatch(actions.initCampaignColl());
@@ -297,7 +351,7 @@ export const loadIntroCampaign = () => {
   };
 };
 
-export const unloadIntroCampaign = (activeCampaignId) => {
+export const removeIntroCampaign = (activeCampaignId) => {
   return dispatch => {
     dispatch(actions.removeCampaign("introCampaign"));
     if (activeCampaignId === "introCampaign") {
@@ -312,8 +366,7 @@ export const saveIntroCampaignData = (campaignColl, cardColl, viewColl) => {
   return dispatch => {
     if (user) {
       const userId = user.uid;
-      const oldCampaignId = "introCampaign";
-      store.collection("users").doc(userId).collection("campaigns").add(campaignColl[oldCampaignId])
+      store.collection("users").doc(userId).collection("campaigns").add(campaignColl["introCampaign"])
         .then(resp => {
           const newCampaignId = resp.id;
           if (newCampaignId) {
@@ -326,15 +379,14 @@ export const saveIntroCampaignData = (campaignColl, cardColl, viewColl) => {
               .then(resp => {
                 console.log("[saveIntroCampaignData] batch commit new campaign success:", resp);
                 // CLEANUP
-                dispatch(actions.addCampaign(newCampaignId, campaignColl[oldCampaignId]));
-                dispatch(actions.removeCampaign(oldCampaignId));
-                dispatch(actions.unsetCampaignEdit());
+                dispatch(actions.removeCampaign("introCampaign"));
+                cleanUpDataManager();
                 // Update active campaign
                 store.collection("users").doc(userId).set({activeCampaignId: newCampaignId})
-                .then(resp => {
-                  dispatch(actions.updActiveCampaignId(newCampaignId));
-                  console.log("[saveIntroCampaignData] set activeCampaignId to", newCampaignId);
-                }).catch(err => console.log("[saveIntroCampaignData] error setting activeCampaignId:", err));
+                  .then(resp => {
+                    dispatch(actions.updActiveCampaignId(newCampaignId));
+                    console.log("[saveIntroCampaignData] set activeCampaignId to", newCampaignId);
+                  }).catch(err => console.log("[saveIntroCampaignData] error setting activeCampaignId:", err));
               }).catch(err => console.log("[saveIntroCampaignData] batch commit new campaign error:", err));
           }
         }).catch(err => console.log("[saveIntroCampaignData] error creating campaign to save to:", err));

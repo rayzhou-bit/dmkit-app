@@ -49,7 +49,7 @@ const App = props => {
       <ViewSelect id="view-select" />
       <ViewScreen id="view-screen" toolMenuRef={toolMenuRef} />
 
-      {/* <Backdrop show={!emailVerified} />
+      {/* <Backdrop show={loading} />
       <div></div> */}
     </div>
   );

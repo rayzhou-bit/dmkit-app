@@ -28,9 +28,10 @@ const UserMenu = props => {
   const userId = useSelector(state => state.user.userId);
   const displayName = useSelector(state => state.user.displayName);
   const userEmail = useSelector(state => state.user.email);
-  const campaignId = useSelector(state => state.dataManager.activeCampaignId);
-  const campaignTitle = campaignColl[campaignId] ? campaignColl[campaignId].title : "";
-  const campaignEdit = dataManager.campaignEdit ? dataManager.campaignEdit : null;
+  const activeCampaignId = useSelector(state => state.dataManager.activeCampaignId);
+  const campaignTitle = campaignColl[activeCampaignId] ? campaignColl[activeCampaignId].title : "";
+  const campaignEdit = useSelector(state => state.dataManager.campaignEdit);
+  const loadedCampaign = useSelector(state => state.dataManager.loadedCampaign);
   const emailSignInError = useSelector(state => state.dataManager.errorEmailSignIn);
   const googleSignInError = useSelector(state => state.dataManager.errorGoogleSignIn);
   // TODO: implement facebook sign in
@@ -45,14 +46,14 @@ const UserMenu = props => {
   const userDropdownContentRef = useRef("userDropdownContent");
 
   // Autosave
-  useEffect(() => {
-    const autoSave = setInterval(() => {
-      if (userId && campaignId && campaignEdit) {
-        dispatch(actions.autoSaveCampaignData(campaignId, campaignColl, cardColl, viewColl, dataManager));
-      }
-    }, 5000);
-    return () => clearInterval(autoSave);
-  }, [dispatch, userId, campaignId, campaignEdit, campaignColl, cardColl, viewColl, dataManager]);
+  // useEffect(() => {
+  //   const autoSave = setInterval(() => {
+  //     if (userId && activeCampaignId && campaignEdit) {
+  //       dispatch(actions.autoSaveCampaignData(activeCampaignId, campaignColl, cardColl, viewColl, dataManager));
+  //     }
+  //   }, 5000);
+  //   return () => clearInterval(autoSave);
+  // }, [dispatch, userId, activeCampaignId, campaignEdit, campaignColl, cardColl, viewColl, dataManager]);
 
   // On sign in
   useEffect(() => {
@@ -75,20 +76,27 @@ const UserMenu = props => {
         if (save) {
           dispatch(actions.saveIntroCampaignData(campaignColl, cardColl, viewColl));
         } else {
-          dispatch(actions.unloadIntroCampaign(campaignId));
-          dispatch(actions.loadCampaignData(campaignId));
+          dispatch(actions.removeIntroCampaign(activeCampaignId));
         }
       } else {
         dispatch(actions.unloadCampaignData());
-        dispatch(actions.loadCampaignData(campaignId));
       }
     } else {
-      if (campaignId === "introCampaign") {
+      if (activeCampaignId === "introCampaign") {
         dispatch(actions.unloadCampaignData());
-        dispatch(actions.loadIntroCampaign());
       }
     }
-  }, [dispatch, campaignId]);
+  }, [dispatch, activeCampaignId]);
+  useEffect(() => {
+    if (!loadedCampaign) {
+      if (userId && activeCampaignId) {
+        dispatch(actions.loadCampaignData(activeCampaignId));
+      } else {
+        dispatch(actions.initializeIntroCampaign());
+      }
+      dispatch(actions.unsetReadyToLoadCampaign());
+    }
+  }, [loadedCampaign, activeCampaignId]);
 
   // FUNCTIONS: USER AUTH
   const emailSignIn = (event) => { event.preventDefault(); actions.emailSignIn(email, psw, dispatch); };
@@ -96,8 +104,9 @@ const UserMenu = props => {
   // const facebookSignIn = (event) => { event.preventDefault(); actions.facebookSignIn(dispatch); };
   const emailSignOut = (event) => { 
     event.preventDefault(); 
-    dispatch(actions.saveCampaignData(campaignId, campaignColl, cardColl, viewColl, dataManager));
-    actions.emailSignOut(); 
+    // dispatch(actions.saveCampaignData(activeCampaignId, campaignColl, cardColl, viewColl, dataManager));
+    // actions.emailSignOut(); 
+    dispatch(actions.saveCampaignData(actions.emailSignOut));
     setShowUserDropdown(false);
   };
 
@@ -116,7 +125,7 @@ const UserMenu = props => {
   };
 
   const updTitleEdit = () => {
-    if (editingTitle) {dispatch(actions.updCampaignTitle(campaignId, campaignTitleRef.current.value))}
+    if (editingTitle) {dispatch(actions.updCampaignTitle(activeCampaignId, campaignTitleRef.current.value))}
   };
 
   const keyPressTitleHandler = (event) => {
@@ -124,7 +133,7 @@ const UserMenu = props => {
   };  
 
   // FUNCTIONS: CAMPAIGN MENU
-  const newCampaign = () => dispatch(actions.createCampaign(campaignId, campaignColl, cardColl, viewColl, dataManager));
+  const newCampaign = () => dispatch(actions.createCampaign(activeCampaignId, campaignColl, cardColl, viewColl, dataManager));
 
   // FUNCTIONS: OUTSIDECLICKS
   useOutsideClick([campaignTitleRef], editingTitle, endTitleEdit);

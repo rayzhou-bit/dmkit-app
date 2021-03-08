@@ -34,7 +34,8 @@ const ToolMenu = React.memo(props => {
 
   const saveEditedData = () => {
     if (userId) {
-      dispatch(actions.saveCampaignData(campaignId, campaignColl, cardColl, viewColl, dataManager));
+      // dispatch(actions.saveCampaignData(campaignId, campaignColl, cardColl, viewColl, dataManager));
+      dispatch(actions.saveCampaignData());
     }
   };
 

@@ -2,6 +2,9 @@ import * as actionTypes from '../actionTypes';
 import { updateObject } from '../../shared/utilityFunctions';
 
 const initialState = {
+  loading: false,
+  loadedCampaign: true,
+
   activeCampaignId: "introCampaign",
   activeCardId: null,
 
@@ -20,6 +23,9 @@ const initialState = {
 const reducer = (state = {}, action) => {
   switch(action.type) {
     case actionTypes.INIT_DATA_MANAGER: return initialState;
+
+    case actionTypes.SET_LOADED_CAMPAIGN: return updateObject(state, {loadedCampaign: true});
+    case actionTypes.UNSET_LOADED_CAMPAIGN: return updateObject(state, {loadedCampaign: false});
 
     // activeCampaignId
     case actionTypes.UPD_ACTIVE_CAMPAIGN_ID: return updateObject(state, {activeCampaignId: action.activeCampaignId});

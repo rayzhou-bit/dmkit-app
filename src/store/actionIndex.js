@@ -15,7 +15,7 @@ export {
   createCampaign, destroyCampaign, switchCampaign, 
 
   loadCampaignData, unloadCampaignData, saveCampaignData, autoSaveCampaignData,
-  loadIntroCampaign, unloadIntroCampaign, saveIntroCampaignData, 
+  initializeIntroCampaign, removeIntroCampaign, saveIntroCampaignData, 
 } from './firebaseAPI/userData';
 
 // USER
@@ -24,6 +24,8 @@ export {
   updUserDisplayname,
   
   initDataManager,
+  setReadyToLoadCampaign, unsetReadyToLoadCampaign,
+
   setErrorEmailSignIn, unsetErrorEmailSignIn,
   setErrorEmailSignUp, unsetErrorEmailSignUp,
   setErrorGoogleSignUp, unsetErrorGoogleSignUp,

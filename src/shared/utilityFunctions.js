@@ -20,7 +20,7 @@ export const useOutsideClick = (refArray, cond, func, args) => {
       }
       
       if (runFunc && refArray.length > 0) {
-        func(args)
+        func(args);
       }
     };
 

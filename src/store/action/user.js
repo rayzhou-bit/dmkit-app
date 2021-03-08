@@ -7,6 +7,9 @@ export const updUserDisplayname = (displayName) => { return { type: actionTypes.
 
 // <-----dataManager REDUCER CALLS----->
 export const initDataManager = () => { return { type: actionTypes.INIT_DATA_MANAGER }; };
+export const setReadyToLoadCampaign = () => { return { type: actionTypes.SET_LOADED_CAMPAIGN }; };
+export const unsetReadyToLoadCampaign = () => { return { type: actionTypes.UNSET_LOADED_CAMPAIGN }; };
+
 export const setErrorEmailSignIn = (errorCode) => { return { type: actionTypes.SET_ERROR_EMAIL_SIGN_IN, errorCode: errorCode }; };
 export const unsetErrorEmailSignIn = () => { return { type: actionTypes.UNSET_ERROR_EMAIL_SIGN_IN }; };
 export const setErrorEmailSignUp = (errorCode) => { return { type: actionTypes.SET_ERROR_EMAIL_SIGN_UP, errorCode: errorCode }; };
