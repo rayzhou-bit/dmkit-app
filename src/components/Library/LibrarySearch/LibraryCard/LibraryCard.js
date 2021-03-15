@@ -10,8 +10,8 @@ import { TEXT_COLOR_WHEN_BACKGROUND_IS, CARD_TITLEBAR_EDIT_COLORS, CARD_TITLEBAR
 import EditImg from '../../../../assets/icons/edit-24.png';
 import DeleteImg from '../../../../assets/icons/delete-24.png';
 
-const LibCard = props => {
-  const {cardId, cardData} = props;
+const LibraryCard = props => {
+  const {cardId} = props;
   const dispatch = useDispatch();
 
   // STATES
@@ -23,28 +23,22 @@ const LibCard = props => {
   const editingCard = (editingTitle || editingText) ? true : false;
 
   // STORE SELECTORS
-  const activeCardId = useSelector(state => state.dataManager.activeCardId);
-
-  // VARIABLES
-  const cardContent = cardData.content;
-  const cardColor = cardData.color ? cardData.color : "white";
-  const cardTitle = cardData.title;
-  const cardText = cardContent ? cardContent.text : "";
+  const activeCardId = useSelector(state => state.campaignData.activeCardId);
+  const cardColor = useSelector(state => state.campaignData.cards[cardId].color);
+  const cardTitle = useSelector(state => state.campaignData.cards[cardId].title);
+  const cardText = useSelector(state => state.campaignData.cards[cardId].content.text);
 
   // IDS & REFS
-  const libraryCardId = cardId + ".library-card";
-  const cardRef = useRef(libraryCardId);
-  const titleId = cardId+".library-card-title";
-  const titleRef = useRef(titleId);
-  const colorSelectRef = useRef(cardId+".library-color-select");
-  const colorBtnRef = useRef(cardId+".library-color-btn");
-  const deleteBtnRef = useRef(cardId+".library-remove-btn");
-  const contentContainerId = cardId+".library-content-container";
-  const textId = cardId+".library-text";
-  const textRef = useRef(textId);
-
+  const libraryCardRef = useRef(cardId+".library-card");
+  const titleInputRef = useRef(cardId+".library-card-title");
+  const colorSelectRef = useRef(cardId+".library-card-color-select");
+  const colorBtnRef = useRef(cardId+".library-card-color-btn");
+  const deleteBtnRef = useRef(cardId+".library-card-remove-btn");
+  const contentContainerRef = useRef(cardId+".library-card-content-container");
+  const textRef = useRef(cardId+".library-card-text");
+  
   // FUNCTIONS: CARD
-  const drag = (event) => {event.dataTransfer.setData("text", event.target.id)};
+  const cardDragHandler = (event) => {event.dataTransfer.setData("text", event.target.id)};
 
   const cardClickHandler = () => {
     if (!isSelected) {
@@ -53,18 +47,16 @@ const LibCard = props => {
     }
   };
 
-  const outsideClickCardHandler = () => {
+  useOutsideClick([libraryCardRef], isSelected, () => {
     if (cardId === activeCardId) {dispatch(actions.updActiveCardId(null))}
     setIsSelected(false);
-  };
-  useOutsideClick([cardRef], isSelected, outsideClickCardHandler);
+  });
 
   // FUNCTIONS: TITLEBAR
-  const startTitleEdit = () => {
+  const beginTitleEdit = () => {
     if (!editingTitle) {
-      const title = document.getElementById(titleId);
-      title.focus();
-      title.setSelectionRange(title.value.length, title.value.length);
+      titleInputRef.current.focus();
+      titleInputRef.current.setSelectionRange(titleInputRef.current.value.length, titleInputRef.current.value.length);
       setEditingTitle(true);
     }
   };
@@ -72,10 +64,10 @@ const LibCard = props => {
   const endTitleEdit = () => {
     if (editingTitle) {setEditingTitle(false)}
   };
-  useOutsideClick([titleRef], editingTitle, endTitleEdit);
+  useOutsideClick([titleInputRef], editingTitle, endTitleEdit);
 
   const updTitleEdit = () => {
-    if (editingTitle) {dispatch(actions.updCardTitle(cardId, titleRef.current.value))}
+    if (editingTitle) {dispatch(actions.updCardTitle(cardId, titleInputRef.current.value))}
   };
 
   const keyPressTitleHandler = (event) => {
@@ -86,12 +78,12 @@ const LibCard = props => {
       if (event.key === 'Tab') {
         event.preventDefault();
         endTitleEdit();
-        startTextEdit();
+        beginTextEdit();
       }
     }
   };
 
-  useOutsideClick([colorSelectRef, colorBtnRef], openColorSelect, setOpenColorSelect, false);
+  useOutsideClick([colorSelectRef, colorBtnRef], openColorSelect, () => setOpenColorSelect(false));
 
   const deleteCard = () => {
     if (!confirmDelete) {
@@ -101,14 +93,13 @@ const LibCard = props => {
     }
   };
 
-  useOutsideClick([deleteBtnRef], confirmDelete, setConfirmDelete, false);
+  useOutsideClick([deleteBtnRef], confirmDelete, () => setConfirmDelete(false));
 
   // FUNCTIONS: TEXT BODY
-  const startTextEdit = () => {
+  const beginTextEdit = () => {
     if (!editingText) {
-      const text = document.getElementById(textId);
-      text.focus();
-      text.setSelectionRange(text.value.length, text.value.length);
+      textRef.current.focus();
+      textRef.current.setSelectionRange(textRef.current.value.length, textRef.current.value.length);
       setEditingText(true);
     }
   };
@@ -151,7 +142,7 @@ const LibCard = props => {
   };
 
   const colorButtonStyle = {
-    backgroundColor: cardData.color ? cardData.color : "white",
+    backgroundColor: cardColor ? cardColor : "white",
   };
   const deleteButtonStyle = {
     backgroundColor: confirmDelete ? "red" : null,
@@ -161,13 +152,19 @@ const LibCard = props => {
   // STYLES: CONTENT
   const contentContainerStyle = { height: CARD_FONT_SIZE.text*5.5+'px' };
   useEffect(() => {
-    const completeTextHeight = document.getElementById(textId) ? document.getElementById(textId).scrollHeight : 1000;
+    const completeTextHeight = textRef.current ? textRef.current.scrollHeight : 1000;
     const abridgedTextHeight = CARD_FONT_SIZE.text*5.5;
-    document.getElementById(contentContainerId).style.height = isSelected 
+    document.getElementById(contentContainerRef).style.height = isSelected 
       ? completeTextHeight+'px'
       : Math.min(abridgedTextHeight, completeTextHeight)+'px'
     ;
-  }, [textId, contentContainerId, isSelected, cardText]);
+    // window.getComputedStyle(contentContainerRef, null).setProperty("height", 
+    //   isSelected
+    //     ? completeTextHeight = 'px'
+    //     : Math.min(abridgedTextHeight, completeTextHeight) + 'px'
+    // );
+    console.log(contentContainerRef.current)
+  }, [textRef, contentContainerRef, isSelected, cardText]);
 
   const textStyle = {
     fontSize: CARD_FONT_SIZE.text+'px',
@@ -184,21 +181,19 @@ const LibCard = props => {
   }
 
   return (
-    <div id={libraryCardId} ref={cardRef}
+    <div ref={libraryCardRef}
       className="library-card" style={cardStyle} 
-      draggable={!editingCard} onDragStart={e => drag(e)}
-      onClick={cardClickHandler}
-    >
+      draggable={!editingCard} onDragStart={e => cardDragHandler(e)}
+      onClick={cardClickHandler}>
       <div className="library-card-title-container">
-        <input id={titleId} ref={titleRef}
-          className="title" style={titleStyle} type="text" required
+        <input ref={titleInputRef}
+          className="title-input" style={titleStyle} type="text" required
           value={cardTitle} readOnly={!editingTitle}
-          onDoubleClick={(cardId === activeCardId) ? startTitleEdit : null}
+          onDoubleClick={(cardId === activeCardId) ? beginTitleEdit : null}
           onChange={updTitleEdit}
-          onKeyDown={e => keyPressTitleHandler(e)}
-        />
+          onKeyDown={e => keyPressTitleHandler(e)} />
         <button className="edit-title title-btn button-24"
-          onClick={() => startTitleEdit()}>
+          onClick={() => beginTitleEdit()}>
           <img src={EditImg} alt="Edit" draggable="false" />
           <span className="tooltip">Edit title</span>
         </button>
@@ -216,19 +211,19 @@ const LibCard = props => {
       <div ref={colorSelectRef} className="color-select" style={{display: openColorSelect ? "grid" : "none"}}>
         {colorList}
       </div>
-      <div id={contentContainerId} className="library-card-content-container" style={contentContainerStyle}>
-        <textarea id={textId} ref={textRef}
+      <div id={contentContainerRef} 
+        className="library-card-content-container" style={contentContainerStyle}>
+        <textarea ref={textRef}
           className="library-card-text" style={textStyle} 
           type="text"
           value={cardText} readOnly={!editingText}
-          onClick={(cardId === activeCardId) ? startTextEdit : null}
-          onDoubleClick={(cardId !== activeCardId) ? startTextEdit : null}
+          onClick={(cardId === activeCardId) ? beginTextEdit : null}
+          onDoubleClick={(cardId !== activeCardId) ? beginTextEdit : null}
           onChange={updTextEdit}
-          onKeyDown={e => keyPressTextHandler(e)}
-        />
+          onKeyDown={e => keyPressTextHandler(e)} />
       </div>
     </div>
   );
 };
 
-export default LibCard;
+export default LibraryCard;

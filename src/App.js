@@ -1,9 +1,10 @@
 import React, { useRef, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import './App.scss';
 import * as actions from './store/actionIndex';
-import { auth } from './store/firebaseAPI/firebase';
+import * as fireactions from './store/firestoreIndex';
+import { auth } from './store/firestoreAPI/firebase';
 import UserMenu from './components/UserMenu/UserMenu';
 import ToolMenu from './components/ToolMenu/ToolMenu';
 import Library from './components/Library/Library';
@@ -12,6 +13,10 @@ import ViewScreen from './components/ViewScreen/ViewScreen';
 
 const App = props => {
   const dispatch = useDispatch();
+
+  // STATES
+  const campaignEdit = useSelector(state => state.sessionManager.campaignEdit);
+  const campaignData = useSelector(state => state.campaignData);
 
   // IDS & REFS
   const toolMenuRef = useRef("toolMenu");
@@ -23,22 +28,42 @@ const App = props => {
   
   // Auth listener
   useEffect(() => {
-    const authListener = auth.onAuthStateChanged(resp => {
+    const authListener = auth.onAuthStateChanged(user => {
       // TODO: loading start
-      if (resp && resp.uid) {
+      if (user && user.uid) {
         // Signed in
-        console.log("[authListener] signed in user:", resp.uid);
-        dispatch(actions.receiveSignInData());
+        console.log("[authListener] signed in user:", user.uid);
+        // prompt user to save intro campaign
+        if (campaignEdit) {
+          let save = null;
+          save = window.confirm("Would you like to save your work as a new campaign?");
+          if (save) {
+            dispatch(fireactions.saveIntroCampaignData(campaignData,
+              () => {
+                // where is unload?
+                dispatch(fireactions.fetchActiveCampaignId());
+                dispatch(fireactions.fetchCampaignList());
+              }
+            ));
+          } else {
+            dispatch(fireactions.fetchActiveCampaignId());
+            dispatch(fireactions.fetchCampaignList());
+          }
+        } else {
+          dispatch(fireactions.fetchActiveCampaignId());
+          dispatch(fireactions.fetchCampaignList());
+        }
         // TODO: loading end
       } else {
         // Signed out
         console.log("[authListener] signed out");
         dispatch(actions.unloadUser());
-        dispatch(actions.updActiveCampaignId("introCampaign"));
+        dispatch(actions.resetSessionManager());
+        dispatch(actions.loadIntroCampaign());
         // TODO: loading end
       }
     });
-    return authListener;
+    return () => authListener();
   }, [dispatch]);
 
   return (

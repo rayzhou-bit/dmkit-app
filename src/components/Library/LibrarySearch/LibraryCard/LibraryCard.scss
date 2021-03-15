@@ -26,6 +26,7 @@ $title-bar-height: 2rem;
     right: -1px; top: 32px;
     border-top: 1px solid black;
     border-right: 1px solid black;
+    z-index: 10;
 
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -50,11 +51,14 @@ $title-bar-height: 2rem;
   display: flex;
   flex-flow: row nowrap;
 
-  .title {
+  .title-input {
     position: relative;
     height: 100%; width: 100%;
     padding-left: 5px;
     border: 0;
+
+    -webkit-transition: .4s;
+    transition: .4s;
   }
 
   .edit-title {

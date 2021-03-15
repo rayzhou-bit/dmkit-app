@@ -1,76 +1,47 @@
-// USER AUTH API
-export {
-  emailSignIn, emailSignOut,
-  googleSignIn, facebookSignIn,
-
-  emailSignUp, sendEmailVerification,
-} from './firebaseAPI/userAuth';
-
-// USER DATA API
-export {
-  updateDisplayName,
-
-  receiveSignInData,
-
-  createCampaign, destroyCampaign, switchCampaign, 
-
-  loadCampaignData, unloadCampaignData, saveCampaignData, autoSaveCampaignData,
-  initializeIntroCampaign, removeIntroCampaign, saveIntroCampaignData, 
-} from './firebaseAPI/userData';
-
 // USER
 export {
   loadUser, unloadUser,
   updUserDisplayname,
-  
-  initDataManager,
-  setReadyToLoadCampaign, unsetReadyToLoadCampaign,
+} from './action/user';
+
+// CAMPAIGN
+export {
+  resetSessionManager,
+  loadCampaignList, addCampaignToList, removeCampaignFromList,
+  updActiveCampaignId,
+  setCampaignEdit,
+  setStatus,
+
+  loadCampaignData, unloadCampaignData, loadIntroCampaign,
+  updCampaignTitle,
 
   setErrorEmailSignIn, unsetErrorEmailSignIn,
   setErrorEmailSignUp, unsetErrorEmailSignUp,
   setErrorGoogleSignUp, unsetErrorGoogleSignUp,
   setErrorFacebookSignUp, unsetErrorFacebookSignUp,
-} from './action/user';
-
-// CAMPAIGN
-export {
-  initCampaignColl, loadCampaignColl, unloadCampaignColl,
-
-  addCampaign, removeCampaign,
-
-  updCampaignTitle,
-
-  updActiveCampaignId,
-
-  unsetCampaignEdit,
 } from './action/campaign';
 
 // CARD
 export {
-  initCardColl, loadCardColl, unloadCardColl,
+  updActiveCardId,
 
+  createCard, copyCard, destroyCard,
   linkCardToView, unlinkCardFromView,
-  createCard, destroyCard, copyCard,
 
   updCardPos, updCardSize,
   updCardColor, updCardColorForView,
-  updCardType,
+  updCardForm,
+  
   updCardTitle, updCardText,
-
-  updActiveCardId,
-  clearCardDelete, clearCardEdit,
 } from './action/card';
 
 // VIEW
 export {
-  initViewColl, loadViewColl, unloadViewColl,
+  updActiveViewId,
+  shiftViewInViewOrder,
 
-  createView, destroyView, copyView,
+  createView, destroyView,
 
   updViewColor,
   updViewTitle,
-
-  shiftViewInViewOrder,
-  updActiveViewId,
-  clearViewDelete, clearViewEdit,
 } from './action/view'

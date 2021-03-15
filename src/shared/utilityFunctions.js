@@ -7,20 +7,20 @@ export const updateObject = (oldObject, updatedProperties) => {
   };
 };
 
-export const useOutsideClick = (refArray, cond, func, args) => {
+export const useOutsideClick = (refArray, cond, handler) => {
   // refArray contains an array of references that the user can click without triggering func
   useEffect(() => {
     const handleClickOutside = (event) => {
-      let runFunc = true;
-      for (let i = 0; i < refArray.length && runFunc; i++) {
+      let runHandler = true;
+      for (let i = 0; i < refArray.length && runHandler; i++) {
         const ref = refArray[i];
         if (ref.current && ref.current.contains(event.target)){
-          runFunc = false;
+          runHandler = false;
         }
       }
       
-      if (runFunc && refArray.length > 0) {
-        func(args);
+      if (runHandler && refArray.length > 0) {
+        handler();
       }
     };
 
@@ -33,7 +33,7 @@ export const useOutsideClick = (refArray, cond, func, args) => {
 
     // adding refArray and func as dependencies below causes an issue with re-renders
     // these re-renders keep other useOutsideClicks from completing their run
-  }, [cond, args]);
+  }, [cond, handler]);
 };
 
 export const getParameterByName = (name) => {

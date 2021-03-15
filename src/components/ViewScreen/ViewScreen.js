@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import './ViewScreen.scss';
@@ -16,21 +16,19 @@ const ViewScreen = props => {
   const [cardAnimation, setCardAnimation] = useState({});
 
   // STORE SELECTORS
-  const campaignColl = useSelector(state => state.campaignColl);
-  const cardColl = useSelector(state => state.cardColl);
-  const campaignId = useSelector(state => state.dataManager.activeCampaignId);
-  const activeViewId = campaignColl[campaignId] ? campaignColl[campaignId].activeViewId : null;
+  const activeViewId = useSelector(state => state.campaignData.activeViewId);
+  const cardCollection = useSelector(state => state.campaignData.cards);
   
   // VARIABLES
   const viewScreenRef = useRef("viewscreen");
 
   // FUNCTIONS
-  const drop = (event) => {
+  const onCardDrop = (event) => {
     event.preventDefault();
     const data = event.dataTransfer.getData("text");
     const targetCardId = data.split(".")[0];
-    if (cardColl[targetCardId]) {
-      if (!cardColl[targetCardId].views[activeViewId]) {
+    if (cardCollection[targetCardId]) {
+      if (!cardCollection[targetCardId].views[activeViewId]) {
         // future update: more precise pos calculation
         let xCalculation = Math.round((event.clientX-GRID.size-GRID.size)/GRID.size)*GRID.size;
         if (xCalculation<0) {xCalculation = 0}
@@ -49,8 +47,6 @@ const ViewScreen = props => {
     }
   };
 
-  const allowDrop = (event) => {event.preventDefault()};
-
   // STYLES
   let viewScreenStyle = {
     backgroundColor: 'transparent',
@@ -60,15 +56,14 @@ const ViewScreen = props => {
 
   // CARD LIST
   let cardList = [];
-  if (cardColl) {
-    for (let cardId in cardColl) {
-      if (cardColl[cardId].views && cardColl[cardId].views[activeViewId]) {
+  if (cardCollection) {
+    for (let cardId in cardCollection) {
+      if (cardCollection[cardId].views && cardCollection[cardId].views[activeViewId]) {
         cardList = [
           ...cardList,
-          <Card key={cardId} toolMenuRef={toolMenuRef}
-            cardId={cardId} cardData={cardColl[cardId]} activeViewId={activeViewId}
-            cardAnimation={cardAnimation}
-            setCardAnimation={setCardAnimation}
+          <Card key={cardId} 
+            cardId={cardId} toolMenuRef={toolMenuRef}
+            cardAnimation={cardAnimation} setCardAnimation={setCardAnimation}
           />,
         ];
       }
@@ -78,8 +73,7 @@ const ViewScreen = props => {
   return (
     <main id="view-screen" ref={viewScreenRef} 
       style={viewScreenStyle}
-      onDrop={(e)=>drop(e)} onDragOver={(e)=>allowDrop(e)}
-    >
+      onDrop={e => onCardDrop(e)} onDragOver={e => e.preventDefault()}>
       {cardList}
     </main>
   );

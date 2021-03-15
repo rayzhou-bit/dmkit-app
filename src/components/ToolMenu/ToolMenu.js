@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import './ToolMenu.scss';
 import * as actions from '../../store/actionIndex';
+import * as fireactions from '../../store/firestoreIndex';
 
 import AddImg from '../../assets/icons/add-32.png';
 import CopyImg from '../../assets/icons/copy-32.png';
@@ -13,29 +14,23 @@ const ToolMenu = React.memo(props => {
   const dispatch = useDispatch();
 
   // STORE VALUES
-  const dataManager = useSelector(state => state.dataManager);
-  const campaignColl = useSelector(state => state.campaignColl);
-  const cardColl = useSelector(state => state.cardColl);
-  const viewColl = useSelector(state => state.viewColl);
-  const userId = useSelector(state => state.user.userId);
-  const campaignId = useSelector(state => state.dataManager.activeCampaignId);
-  const activeCardId = useSelector(state => state.dataManager.activeCardId);
-  const activeViewId = campaignColl[campaignId] ? campaignColl[campaignId].activeViewId : null;
-  const cardCreateCnt = campaignColl[campaignId] ? campaignColl[campaignId].cardCreateCnt : null;
+  const userId = useSelector(state => state.userData.userId);
+  const campaignId = useSelector(state => state.sessionManager.activeCampaignId);
+  const campaignData = useSelector(state => state.campaignData)
+  const activeCardId = useSelector(state => state.campaignData.activeCardId);
 
   // FUNCTIONS
-  const createCard = () => dispatch(actions.createCard(campaignId, activeViewId, cardCreateCnt));
+  const createCard = () => dispatch(actions.createCard(campaignId));
 
   const copyCard = () => {
     if (activeCardId) {
-      dispatch(actions.copyCard(campaignId, cardColl[activeCardId], activeViewId, cardCreateCnt));
+      dispatch(actions.copyCard(activeCardId));
     }
   };
 
   const saveEditedData = () => {
     if (userId) {
-      // dispatch(actions.saveCampaignData(campaignId, campaignColl, cardColl, viewColl, dataManager));
-      dispatch(actions.saveCampaignData());
+      dispatch(fireactions.saveCampaignData(campaignId, campaignData));
     }
   };
 

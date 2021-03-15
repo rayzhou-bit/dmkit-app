@@ -54,7 +54,7 @@ input:focus, textarea:focus, select:focus, button:focus {
     text-align: center;
     font-size: medium;
     visibility: hidden;
-    z-index: 100;
+    z-index: 1000;
   }
 
   .tooltip::after {

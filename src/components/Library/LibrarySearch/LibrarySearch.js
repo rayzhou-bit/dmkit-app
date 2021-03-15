@@ -12,37 +12,35 @@ const LibrarySearch = props => {
   const [searchFilter, setSearchFilter] = useState('current'); // all, current, unused
 
   // STORE SELECTORS
-  const campaignColl = useSelector(state => state.campaignColl);
-  const cardColl = useSelector(state => state.cardColl);
-  const campaignId = useSelector(state => state.dataManager.activeCampaignId);
-  const activeViewId = campaignColl[campaignId] ? campaignColl[campaignId].activeViewId : null;
+  const activeViewId = useSelector(state => state.campaignData.activeViewId);
+  const cardCollection = useSelector(state => state.campaignData.cards);
 
   // IDS & REFS
-  const searchId = "library-search-input";
-  const searchRef = useRef(searchId);
+  const searchRef = useRef("library-search-input");
 
+  // FUNCTIONS
   const addToCardList = (cardList, cardId) => {
     return cardList = [
       ...cardList,
-      <LibraryCard key={cardId} cardId={cardId} cardData={cardColl[cardId]} />,
+      <LibraryCard key={cardId} cardId={cardId} />,
     ];
   };
 
-  // CARD LIST
+  // DISPLAY ELEMENTS
   let cardList = [];
-  if (cardColl) {
-    for (let cardId in cardColl) {
+  if (cardCollection) {
+    for (let cardId in cardCollection) {
       let cardContainsSearchString = false;
-      if (cardColl[cardId].content) {
-        const cardTitle = cardColl[cardId].title ? cardColl[cardId].title : "";
-        const cardText = cardColl[cardId].content.text ? cardColl[cardId].content.text : "";
+      if (cardCollection[cardId].content) {
+        const cardTitle = cardCollection[cardId].title ? cardCollection[cardId].title : "";
+        const cardText = cardCollection[cardId].content.text ? cardCollection[cardId].content.text : "";
         if (cardTitle.toLowerCase().includes(enteredSearch.toLowerCase()) ||
           cardText.toLowerCase().includes(enteredSearch.toLocaleLowerCase())) {
           cardContainsSearchString = true;
         }
       }
-      let cardIsInActiveView = cardColl[cardId].views && cardColl[cardId].views[activeViewId];
-      let cardIsUnused = Object.keys(cardColl[cardId].views).length === 0;
+      let cardIsInActiveView = cardCollection[cardId].views && cardCollection[cardId].views[activeViewId];
+      let cardIsUnused = Object.keys(cardCollection[cardId].views).length === 0;
 
       switch (searchFilter) {
         case 'all':
@@ -69,7 +67,7 @@ const LibrarySearch = props => {
     <>
       <div id="library-search-bar-container">
         <img src={SearchImg} alt="Search" />
-        <input id={searchId} ref={searchRef}
+        <input id="library-search-input" ref={searchRef}
           type="search" placeholder="Search..."
           value={enteredSearch} onChange={e => setEnteredSearch(e.target.value)}
         />

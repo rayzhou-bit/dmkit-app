@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import './SignUp.scss'
-import * as actions from '../../../store/actionIndex';
+import * as fireactions from '../../../store/firestoreIndex';
 import Backdrop from '../../UI/Backdrop/Backdrop';
 
 const SignUp = (props) => {
@@ -12,14 +12,11 @@ const SignUp = (props) => {
   // STATES
   const [email, setEmail] = useState("");
   const [psw, setPsw] = useState("");
-  const [displayName, setDisplayName] = useState("");
+  const [inputDisplayName, setInputDisplayName] = useState("");
 
   // STORE SELECTORS
-  const userId = useSelector(state => state.user.userId);
-  const emailVerified = useSelector(state => state.user.emailVerified);
-  const emailVerificationRequired = useSelector(state => state.user.emailVerificationRequired);
-  const userDisplayName = useSelector(state => state.user.displayName);
-  const emailSignUpError = useSelector(state => state.dataManager.errorEmailSignUp);
+  const {userId, displayName, emailVerified, emailVerificationRequired} = useSelector(state => state.userData);
+  const emailSignUpError = useSelector(state => state.sessionManager.errorEmailSignUp);
 
   // FUNCTIONS
   const backdropClickHandler = () => {
@@ -31,16 +28,16 @@ const SignUp = (props) => {
     }
   };
 
-  // TODO: check verification periodically
+  // TODO: check verification periodically?
 
   const emailSignUpHandler = (event) => {
     event.preventDefault();
-    actions.emailSignUp(email, psw, dispatch);
+    fireactions.emailSignUp(email, psw, dispatch);
   };
 
   const accountSetupHandler = (event) => {
     event.preventDefault();
-    dispatch(actions.updateDisplayName(displayName));
+    dispatch(fireactions.updateDisplayName(inputDisplayName));
   };
 
   const emailSignUpScreen = (
@@ -65,7 +62,7 @@ const SignUp = (props) => {
   const emailVerifyScreen = (
     <div id="email-verify-screen">
       <p>Please verify your email by clicking the link in your verification email.</p>
-      <button onClick={() => actions.sendEmailVerification()}>Resend Email</button>
+      <button onClick={() => fireactions.sendEmailVerification()}>Resend Email</button>
     </div>
   );
 
@@ -75,7 +72,7 @@ const SignUp = (props) => {
         <div className="form-row">
           <label htmlFor="displayName">Display Name</label>
           <input type="text" placeholder="Enter Display Name" name="displayName" required
-            value={displayName} onChange={e => setDisplayName(e.target.value)} />
+            value={inputDisplayName} onChange={e => setInputDisplayName(e.target.value)} />
         </div>
         <button type="submit">Finish Sign Up</button>
       </form>
@@ -96,7 +93,7 @@ const SignUp = (props) => {
       show = true;
       screen = emailVerifyScreen;
     } else {
-      if (!userDisplayName) {
+      if (!displayName) {
         // Step 3
         show = true;
         screen = accountSetupScreen;

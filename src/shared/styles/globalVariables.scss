@@ -11,10 +11,6 @@ $button-gap-height: 8px;
   font-weight: bold;
   text-align: center;
 
-  @extend %read-only-effect;
-}
-
-%read-only-effect {
   &:read-only {
     background-color: lightgray;
     cursor: default;

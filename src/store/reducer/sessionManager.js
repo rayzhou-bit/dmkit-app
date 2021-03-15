@@ -2,51 +2,36 @@ import * as actionTypes from '../actionTypes';
 import { updateObject } from '../../shared/utilityFunctions';
 
 const initialState = {
-  loading: false,
-  loadedCampaign: true,
+  campaignList: {
+    // campaignId: campaignTitle,   // TODO design this based on campaignList in UserMenu
+  },
+  activeCampaignId: null,
 
-  activeCampaignId: "introCampaign",
-  activeCardId: null,
-
-  cardDelete: [],   // list of cards scheduled for deletion on server
-  viewDelete: [],   // list of views scheduled for deletion on server
-  cardEdit: [],     // list of edited cards for autosave to server
-  viewEdit: [],     // list of edited views for autosave to server
   campaignEdit: false,  // flag for any unsaved changes
+  status: null,  // idle, loading or saving
+  usingIntroCampaign: false,
 
-  errorEmailSignIn: "",
+  errorEmailSignIn: "", // TODO move errors to useState
   errorEmailSignUp: "",
   errorGoogleSignIn: "",
   errorFacebookSignIn: "",
 };
 
-const reducer = (state = {}, action) => {
-  switch(action.type) {
-    case actionTypes.INIT_DATA_MANAGER: return initialState;
+// TODO: switch campaignEdit to run on useEffect
 
-    case actionTypes.SET_LOADED_CAMPAIGN: return updateObject(state, {loadedCampaign: true});
-    case actionTypes.UNSET_LOADED_CAMPAIGN: return updateObject(state, {loadedCampaign: false});
+const reducer = (state = initialState, action) => {
+  switch (action.type) {
+    case actionTypes.RESET_SESSION_MANAGER: return initialState;
 
-    // activeCampaignId
+    // CAMPAIGN RELATED
+    case actionTypes.LOAD_CAMPAIGN_LIST: return updateObject(state, {campaignList: action.campaignList});
+    case actionTypes.ADD_CAMPAIGN_TO_LIST: return addCampaignToList(state, action.campaignId, action.campaignTitle);
+    case actionTypes.REMOVE_CAMPAIGN_FROM_LIST: return removeCampaignFromList(state, action.campaignId);
     case actionTypes.UPD_ACTIVE_CAMPAIGN_ID: return updateObject(state, {activeCampaignId: action.activeCampaignId});
-    // activeCardId
-    case actionTypes.UPD_ACTIVE_CARD_ID: return updateObject(state, {activeCardId: action.cardId});
+    case actionTypes.SET_CAMPAIGN_EDIT: return updateObject(state, {campaignEdit: action.edit});
+    case actionTypes.SET_STATUS: return updateObject(state, {status: action.status});
 
-    // cardDelete, viewDelete, cardEdit, viewEdit queues
-    case actionTypes.ENQUEUE_CARD_DELETE: return enqueueCardDelete(state, action.cardId);
-    case actionTypes.CLEAR_CARD_DELETE: return updateObject(state, {cardDelete: []});
-    case actionTypes.ENQUEUE_VIEW_DELETE: return enqueueViewDelete(state, action.viewId);
-    case actionTypes.CLEAR_VIEW_DELETE: return updateObject(state, {viewDelete: []});
-    case actionTypes.ENQUEUE_CARD_EDIT: return enqueueCardEdit(state, action.cardId);
-    case actionTypes.CLEAR_CARD_EDIT: return updateObject(state, {cardEdit: []});
-    case actionTypes.ENQUEUE_VIEW_EDIT: return enqueueViewEdit(state, action.viewId);
-    case actionTypes.CLEAR_VIEW_EDIT: return updateObject(state, {viewEdit: []});
-    
-    // campaignEdit
-    case actionTypes.SET_CAMPAIGN_EDIT: return updateObject(state, {campaignEdit: true});
-    case actionTypes.UNSET_CAMPAIGN_EDIT: return updateObject(state, {campaignEdit: false});
-
-    // errors
+    // ERRORS
     case actionTypes.SET_ERROR_EMAIL_SIGN_IN: return setErrorEmailSignIn(state, action.errorCode);
     case actionTypes.UNSET_ERROR_EMAIL_SIGN_IN: return updateObject(state, {errorEmailSignIn: ""});
     case actionTypes.SET_ERROR_EMAIL_SIGN_UP: return setErrorEmailSignUp(state, action.errorCode);
@@ -60,30 +45,27 @@ const reducer = (state = {}, action) => {
   }
 };
 
-const enqueueCardDelete = (state, cardId) => {
-  let updatedCardDelete = state.cardDelete ? [...state.cardDelete] : [];
-  if (!updatedCardDelete.includes(cardId)) { updatedCardDelete.push(cardId); }
-  return updateObject(state, {cardDelete: updatedCardDelete});
+const addCampaignToList = (state, campaignId, campaignTitle) => {
+  let updatedCampaignList = {...state.campaignList};
+  updatedCampaignList = updateObject(updatedCampaignList, {[campaignId]: campaignTitle});
+  const updatedState = {
+    campaignList: updatedCampaignList,
+    activeCampaignId: campaignId,
+  }
+  return updateObject(state, updatedState);
 };
 
-const enqueueViewDelete = (state, viewId) => {
-  let updatedViewDelete = state.viewDelete ? [...state.viewDelete] : [];
-  if (!updatedViewDelete.includes(viewId)) { updatedViewDelete.push(viewId); }
-  return updateObject(state, {viewDelete: updatedViewDelete});
+const removeCampaignFromList = (state, campaignId) => {
+  let updatedCampaignList = {...state.campaignList};
+  delete updatedCampaignList[campaignId];
+  const updatedState = {
+    campaignList: updatedCampaignList,
+    activeCampaignId: campaignId === state.activeCampaignId ? null : state.activeCampaignId,
+  }
+  return updateObject(state, updatedState);
 };
 
-const enqueueCardEdit = (state, cardId) => {
-  let updatedCardEdit = state.cardEdit ? [...state.cardEdit] : [];
-  if (!updatedCardEdit.includes(cardId)) { updatedCardEdit.push(cardId); }
-  return updateObject(state, {cardEdit: updatedCardEdit});
-};
-
-const enqueueViewEdit = (state, viewId) => {
-  let updatedViewEdit = state.viewEdit ? [...state.viewEdit] : [];
-  if (!updatedViewEdit.includes(viewId)) { updatedViewEdit.push(viewId); }
-  return updateObject(state, {viewEdit: updatedViewEdit});
-};
-
+//ERRORS
 const setErrorEmailSignIn = (state, errorCode) => {
   // error codes for firebase method Auth.signInWithEmailAndPassword
   switch (errorCode) {

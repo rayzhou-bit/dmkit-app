@@ -2,6 +2,22 @@ import * as actions from '../actionIndex';
 import { auth, googleProvider, facebookProvider } from './firebase';
 import { getParameterByName } from '../../shared/utilityFunctions';
 
+const getUser = () => auth.currentUser ? auth.currentUser : null;
+
+export const updateDisplayName = (displayName) => {
+  const user = getUser();
+  return dispatch => {
+    if (user) {
+      user.updateProfile({displayName: displayName})
+        .then(resp => {
+          console.log("[updateDisplayName] updated displayName:", resp);
+          dispatch(actions.updUserDisplayname(displayName));
+        })
+        .catch(err => console.log("[updateDisplayName] error updating displayName:", err));
+    }
+  };
+};
+
 export const emailSignIn = (email, psw, dispatch) => {
   auth.signInWithEmailAndPassword(email, psw)
     .then(resp => {

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import './ViewSelect.scss';
@@ -15,37 +15,34 @@ const ViewSelect = React.memo(props => {
   const dispatch = useDispatch();
 
   // STORE VALUES
-  const campaignColl = useSelector(state => state.campaignColl);
-  const viewColl = useSelector(state => state.viewColl);
-  const campaignId = useSelector(state => state.dataManager.activeCampaignId);
-  const activeViewId = campaignColl[campaignId] ? campaignColl[campaignId].activeViewId : null;
-  const viewOrder = campaignColl[campaignId] ? campaignColl[campaignId].viewOrder : [];
-  const viewCreateCnt = campaignColl[campaignId] ? campaignColl[campaignId].viewCreateCnt : [];
+  const viewCollection = useSelector(state => state.campaignData.views);
+  const viewOrder = useSelector(state => state.campaignData.viewOrder);
 
   const tabWidth = 250;
 
   // ID & REFS
-  const viewTabContainerId = "view-tab-container";
+  const viewTabContainerRef = useRef("view-tab-container");
 
   // FUNCTIONS
-  const createView = () => dispatch(actions.createView(campaignId, activeViewId, viewCreateCnt));
+  const createView = () => dispatch(actions.createView());
 
   const scrollLeft = () => {
-    document.getElementById(viewTabContainerId).scrollBy({left: -400, behavior: 'smooth'});
+    viewTabContainerRef.current.scrollBy({left: -400, behavior: 'smooth'});
   };
 
   const scrollRight = () => {
-    document.getElementById(viewTabContainerId).scrollBy({left: 400, behavior: 'smooth'});
+    viewTabContainerRef.current.scrollBy({left: 400, behavior: 'smooth'});
   };
 
   let viewTabs = [];
-  if (viewColl) {
+  if (viewCollection) {
     for (let x in viewOrder) {
       let viewId = viewOrder[x];
-      if (viewColl[viewId]) {
+      if (viewCollection[viewId]) {
         viewTabs = [
           ...viewTabs,
-          <ViewTab key={viewId} viewId={viewId} containerId={viewTabContainerId} tabWidth={tabWidth} />
+          <ViewTab key={viewId} 
+            viewId={viewId} viewTabContainerRef={viewTabContainerRef} tabWidth={tabWidth} />
         ];
       }
     }
@@ -53,7 +50,7 @@ const ViewSelect = React.memo(props => {
 
   // STYLES
   const tabContStyle = {
-    width: (viewOrder.length+0.5) * tabWidth
+    width: ((viewOrder ? viewOrder.length : 0)+0.5) * tabWidth
   };
 
   return (
@@ -62,7 +59,7 @@ const ViewSelect = React.memo(props => {
         <img src={AddImg} alt="Add" draggable="false" />
         {/* <span className="tooltip">Add a view</span> */}
       </div>
-      <div id={viewTabContainerId}>
+      <div ref={viewTabContainerRef}>
         <div className="view-tab-container-container" style={tabContStyle}>
           {viewTabs}
         <div className="border-line" />
