@@ -34,11 +34,10 @@ const LibraryCard = props => {
   const colorSelectRef = useRef(cardId+".library-card-color-select");
   const colorBtnRef = useRef(cardId+".library-card-color-btn");
   const deleteBtnRef = useRef(cardId+".library-card-remove-btn");
-  const contentContainerRef = useRef(cardId+".library-card-content-container");
   const textRef = useRef(cardId+".library-card-text");
   
   // FUNCTIONS: CARD
-  const cardDragHandler = (event) => {event.dataTransfer.setData("text", event.target.id)};
+  const cardDragHandler = (event) => event.dataTransfer.setData("text", cardId);
 
   const cardClickHandler = () => {
     if (!isSelected) {
@@ -67,7 +66,7 @@ const LibraryCard = props => {
   useOutsideClick([titleInputRef], editingTitle, endTitleEdit);
 
   const updTitleEdit = () => {
-    if (editingTitle) {dispatch(actions.updCardTitle(cardId, titleInputRef.current.value))}
+    if (editingTitle) dispatch(actions.updCardTitle(cardId, titleInputRef.current.value));
   };
 
   const keyPressTitleHandler = (event) => {
@@ -151,20 +150,15 @@ const LibraryCard = props => {
 
   // STYLES: CONTENT
   const contentContainerStyle = { height: CARD_FONT_SIZE.text*5.5+'px' };
-  useEffect(() => {
+  const contentContainerRef = (node) => {
+    if (!node) return;
+    if (!textRef.current) return;
     const completeTextHeight = textRef.current ? textRef.current.scrollHeight : 1000;
     const abridgedTextHeight = CARD_FONT_SIZE.text*5.5;
-    document.getElementById(contentContainerRef).style.height = isSelected 
-      ? completeTextHeight+'px'
-      : Math.min(abridgedTextHeight, completeTextHeight)+'px'
-    ;
-    // window.getComputedStyle(contentContainerRef, null).setProperty("height", 
-    //   isSelected
-    //     ? completeTextHeight = 'px'
-    //     : Math.min(abridgedTextHeight, completeTextHeight) + 'px'
-    // );
-    console.log(contentContainerRef.current)
-  }, [textRef, contentContainerRef, isSelected, cardText]);
+    node.style.height = isSelected
+      ? completeTextHeight + 'px'
+      : Math.min(abridgedTextHeight, completeTextHeight) + 'px';
+  };
 
   const textStyle = {
     fontSize: CARD_FONT_SIZE.text+'px',
@@ -181,7 +175,7 @@ const LibraryCard = props => {
   }
 
   return (
-    <div ref={libraryCardRef}
+    <div key={cardId} ref={libraryCardRef}
       className="library-card" style={cardStyle} 
       draggable={!editingCard} onDragStart={e => cardDragHandler(e)}
       onClick={cardClickHandler}>
@@ -211,7 +205,7 @@ const LibraryCard = props => {
       <div ref={colorSelectRef} className="color-select" style={{display: openColorSelect ? "grid" : "none"}}>
         {colorList}
       </div>
-      <div id={contentContainerRef} 
+      <div ref={contentContainerRef}
         className="library-card-content-container" style={contentContainerStyle}>
         <textarea ref={textRef}
           className="library-card-text" style={textStyle} 

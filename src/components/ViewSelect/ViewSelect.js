@@ -54,12 +54,12 @@ const ViewSelect = React.memo(props => {
   };
 
   return (
-    <div id="view-select">
+    <div className="view-select">
       <div className="add-view button-32" onClick={createView}>
         <img src={AddImg} alt="Add" draggable="false" />
         {/* <span className="tooltip">Add a view</span> */}
       </div>
-      <div ref={viewTabContainerRef}>
+      <div ref={viewTabContainerRef} className="view-tab-container">
         <div className="view-tab-container-container" style={tabContStyle}>
           {viewTabs}
         <div className="border-line" />

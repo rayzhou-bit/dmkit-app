@@ -1,6 +1,6 @@
 @import '../../shared/styles/globalVariables';
 
-#view-select {
+.view-select {
   position: fixed;
   bottom: 0; left: 0; right: 0;
   z-index: 90;
@@ -42,7 +42,7 @@
     }
   }
 
-  #view-tab-container {
+  .view-tab-container {
     grid-column: 2 / 3;
     
     position: relative;

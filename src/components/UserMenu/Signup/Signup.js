@@ -41,8 +41,8 @@ const SignUp = (props) => {
   };
 
   const emailSignUpScreen = (
-    <div id="email-sign-up-screen">
-      <form id="email-sign-up-form" className="sign-up-form" onSubmit={e => emailSignUpHandler(e)}>
+    <div className="email-sign-up-screen">
+      <form className="sign-up-form" onSubmit={e => emailSignUpHandler(e)}>
         <div className="form-row">
           <label htmlFor="email">Email</label>
           <input type="email" placeholder="Enter Email" name="email" required
@@ -60,15 +60,15 @@ const SignUp = (props) => {
   );
 
   const emailVerifyScreen = (
-    <div id="email-verify-screen">
+    <div className="email-verify-screen">
       <p>Please verify your email by clicking the link in your verification email.</p>
       <button onClick={() => fireactions.sendEmailVerification()}>Resend Email</button>
     </div>
   );
 
   const accountSetupScreen = (
-    <div id="account-setup-screen">
-      <form id="account-setup-form" className="sign-up-form" onSubmit={e => accountSetupHandler(e)}>
+    <div className="account-setup-screen">
+      <form className="sign-up-form" onSubmit={e => accountSetupHandler(e)}>
         <div className="form-row">
           <label htmlFor="displayName">Display Name</label>
           <input type="text" placeholder="Enter Display Name" name="displayName" required
@@ -104,7 +104,7 @@ const SignUp = (props) => {
   return (
     <>
       <Backdrop show={show} clicked={() => backdropClickHandler()} />
-      <div id="auth-popup" className={show ? "show-sign-up-screen": "hide-sign-up-screen"}>
+      <div className={show ? "auth-popup show-popup" : "auth-popup hide-popup"}>
         <h1>DM Kit Sign Up</h1>
         {screen}
       </div>

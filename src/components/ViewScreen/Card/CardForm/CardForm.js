@@ -62,9 +62,8 @@ const CardForm = props => {
 
   const beginTextEdit = () => {
     if (!editingText) {
-      const text = document.getElementById(textInputRef);
-      text.focus();
-      text.setSelectionRange(text.value.length, text.value.length);
+      textInputRef.current.focus();
+      textInputRef.current.setSelectionRange(textInputRef.current.value.length, textInputRef.current.value.length);
       setEditingText(true);
     }
   };

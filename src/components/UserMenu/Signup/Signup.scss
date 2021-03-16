@@ -1,4 +1,4 @@
-#auth-popup {
+.auth-popup {
   position: absolute;
   top: 50%; 
   left: 50%;
@@ -25,15 +25,15 @@
   }
 }
 
-.show-sign-up-screen {
+.show-popup {
   transform: translate(-50%, -50%);
 }
 
-.hide-sign-up-screen {
+.hide-popup {
   transform: translate(-50%, -100vh);
 }
 
-#email-sign-up-screen {
+.email-sign-up-screen {
   h1 {
     margin: 0 1rem 1rem 1rem;
     white-space: nowrap;
@@ -48,7 +48,7 @@
   }
 }
 
-#email-verify-screen {
+.email-verify-screen {
   text-align: center;
   p {
     margin-bottom: 1rem;
@@ -61,7 +61,8 @@
   }
 }
 
-#account-setup-screen {}
+.account-setup-screen {}
+
 
 .sign-up-form {
   margin-bottom: 1rem;

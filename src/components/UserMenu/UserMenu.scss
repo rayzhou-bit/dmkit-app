@@ -1,6 +1,6 @@
 @import '../../shared/styles/globalVariables';
 
-#user-menu {
+.user-menu {
   position: fixed;
   top: 0; left: 0; right: 0;
   z-index: 100;
@@ -44,7 +44,7 @@
   }
 } 
 
-#dmkit-title {
+.dmkit-title {
   grid-column: 1 / 2;
   width: 100%;
   line-height: 41px;

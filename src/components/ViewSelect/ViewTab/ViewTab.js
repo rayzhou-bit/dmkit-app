@@ -22,7 +22,6 @@ const ViewTab = React.memo(props => {
   const viewOrder = useSelector(state => state.campaignData.viewOrder);
   const viewPos = viewOrder.indexOf(viewId);
   const viewTitle = useSelector(state => state.campaignData.views[viewId].title);
-  // const scrollPos = document.getElementById(viewTabContainerRef).scrollLeft;
 
   // ID & REF
   let rndRef = useRef(viewId+".rndref");
@@ -122,7 +121,7 @@ const ViewTab = React.memo(props => {
           <img src={EditImg} alt="Edit" draggable="false" />
           <span className="tooltip">Edit title</span>
         </button>
-        <button className="destroy-view title-btn button-32" 
+        <button className="destroy-view title-btn button-32" style={{backgroundColor: viewId === activeViewId ? "white" : null}}
           onClick={destroyView}>
           <img src={CloseImg} alt="Delete" draggable="false" />
           <span className="tooltip">Delete</span>

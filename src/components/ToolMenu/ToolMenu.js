@@ -35,7 +35,7 @@ const ToolMenu = React.memo(props => {
   };
 
   return (
-    <div id="tool-menu" ref={toolMenuRef}>
+    <div className="tool-menu" ref={toolMenuRef}>
       <div className="divider" />
       <div className="create-card button" onClick={createCard}>
         <img src={AddImg} alt="Add" draggable="false" />

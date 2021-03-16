@@ -89,9 +89,9 @@ const UserMenu = props => {
 
   return (
     <>
-      <div id="user-menu">
+      <div className="user-menu">
         {/* title */}
-        <div id="dmkit-title">
+        <div className="dmkit-title">
           <input ref={campaignTitleRef}
             className="title-text" style={campaignTitleStyle}
             type="text" required draggable="false"

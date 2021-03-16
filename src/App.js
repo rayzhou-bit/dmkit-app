@@ -67,12 +67,12 @@ const App = props => {
   }, [dispatch]);
 
   return (
-    <div id="layout">
-      <UserMenu id="user-menu" />
-      <ToolMenu id="tool-menu" toolMenuRef={toolMenuRef} />
-      <Library id="library" />
-      <ViewSelect id="view-select" />
-      <ViewScreen id="view-screen" toolMenuRef={toolMenuRef} />
+    <div className="layout">
+      <UserMenu />
+      <ToolMenu toolMenuRef={toolMenuRef} />
+      <Library />
+      <ViewSelect />
+      <ViewScreen toolMenuRef={toolMenuRef} />
 
       {/* <Backdrop show={loading} />
       <div></div> */}

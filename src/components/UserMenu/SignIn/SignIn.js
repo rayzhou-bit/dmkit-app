@@ -48,9 +48,9 @@ const SignIn = props => {
     }
   }, [userId, setEmail, setPsw, setShowUserDropdown]);
 
-  const signedInContainer = (
-    <div id="sign-in-dropdown">
-      <form id="email-sign-in-form" onSubmit={e => emailSignIn(e)}>
+  const signInContainer = (
+    <div className="sign-in-dropdown">
+      <form className="email-sign-in-form" onSubmit={e => emailSignIn(e)}>
         <h1>Login</h1>
         <div className="form-row">
           <label htmlFor="email">Email</label>
@@ -67,18 +67,18 @@ const SignIn = props => {
         <div className="sign-up-button" onClick={()=>{setShowSignUp(true); setShowUserDropdown(false);}}>Don't have an account? <br/> Sign up now</div>
       </form>
       <div className="divider" />
-      <div id="other-provider-sign-in">
+      <div className="other-provider-sign-in">
         <button onClick={e => googleSignIn(e)}>Sign In with Google</button>
         <div className="sign-in-error" style={{display: googleSignInError!=="" ? "block" : "none"}}>{googleSignInError}</div>
       </div>
     </div>
   );
 
-  const signedOutContainer = (
-    <div id="sign-out" onClick={e => emailSignOut(e)}>Sign Out</div>
+  const signOutContainer = (
+    <div className="sign-out" onClick={e => emailSignOut(e)}>Sign Out</div>
   );
 
-  return (userId ? signedInContainer : signedOutContainer);
+  return (userId ? signOutContainer : signInContainer);
 };
 
 export default SignIn;

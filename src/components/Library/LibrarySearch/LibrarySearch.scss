@@ -1,6 +1,6 @@
 $horizontal-divide: 0.4rem;
 
-#library-search-container {
+.library-search-container {
   padding: 0.5rem;
 
   overflow: hidden;
@@ -9,7 +9,7 @@ $horizontal-divide: 0.4rem;
   flex-flow: column nowrap;
 }
 
-#library-search-bar-container {
+.library-search-bar-container {
   height: 2.75rem;
   padding: 0.2rem 0.2rem 0.4rem 0.2rem;
   margin-bottom: $horizontal-divide;
@@ -21,14 +21,14 @@ $horizontal-divide: 0.4rem;
     margin-right: $horizontal-divide;
   }
 
-  #library-search-input {
+  .library-search-input {
     width: 80%;
     margin-right: $horizontal-divide;
     font-size: large;
   }
 }
 
-#library-search-types {
+.library-search-types {
   display: flex;
   flex-flow: row nowrap;
   justify-content: space-evenly;
@@ -39,7 +39,7 @@ $horizontal-divide: 0.4rem;
   }
 }
 
-#library-search-results-container {
+.library-search-results-container {
   flex: 1 1 auto;
   padding: 0.2rem 0.6rem 0.2rem 0.2rem;
 

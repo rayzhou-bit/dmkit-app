@@ -2,34 +2,34 @@
 
 $btn-divider-height: 8px;
 
-#library {
+.library {
   position: fixed;
   top: $menu-size; bottom: $menu-size;
   z-index: 80;
   
   -webkit-transition: .4s;
   transition: .4s;
-}
 
-#library-search-container {
-  height: 100%;
-  border-left: 1px solid black;
-  background-color: white;
-  
-  -webkit-transition: .4s;
-  transition: .4s;
-}
-
-#show-library-btn {
-  top: $btn-divider-height;
-  height: 64px;
-  .tooltip {
-    top: 20px;
+  .library-search-container {
+    height: 100%;
+    border-left: 1px solid black;
+    background-color: white;
+    
+    -webkit-transition: .4s;
+    transition: .4s;
   }
-}
-
-#expand-shrink-btn {
-  top: 3 * $btn-divider-height + 64px;
+  
+  .show-library {
+    top: $btn-divider-height;
+    height: 64px;
+    .tooltip {
+      top: 20px;
+    }
+  }
+  
+  .expand-shrink {
+    top: 3 * $btn-divider-height + 64px;
+  }
 }
 
 .library-menu-btn {

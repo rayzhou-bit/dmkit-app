@@ -1,15 +1,17 @@
-#new-campaign {
-  height: 31px;
-  margin: 0;  padding: 5px;
-  border: 0;
+.campaign-select {
+  .new-campaign {
+    height: 31px;
+    margin: 0;  padding: 5px;
+    border: 0;
 
-  flex: auto;
+    flex: auto;
 
-  text-align: center;
-  font-weight: bold;
-  font-size: 14px;
-  text-overflow: ellipsis;
-  line-height: 21px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 14px;
+    text-overflow: ellipsis;
+    line-height: 21px;
 
-  overflow: hidden;
+    overflow: hidden;
+  }
 }

@@ -1,9 +1,9 @@
 
 
-#sign-in-dropdown {
+.sign-in-dropdown {
   padding: 1rem;
 
-  #email-sign-in-form {
+  .email-sign-in-form {
     line-height: normal;
 
     h1 {
@@ -41,7 +41,7 @@
     }
   }
 
-  #other-provider-sign-in {
+  .other-provider-sign-in {
     button {
       margin-top: .5rem;
     }
@@ -58,6 +58,6 @@
   }
 }
 
-#sign-out {
+.sign-out {
   text-align: center;
 }

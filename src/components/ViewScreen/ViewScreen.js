@@ -18,15 +18,11 @@ const ViewScreen = props => {
   // STORE SELECTORS
   const activeViewId = useSelector(state => state.campaignData.activeViewId);
   const cardCollection = useSelector(state => state.campaignData.cards);
-  
-  // VARIABLES
-  const viewScreenRef = useRef("viewscreen");
 
   // FUNCTIONS
   const onCardDrop = (event) => {
     event.preventDefault();
-    const data = event.dataTransfer.getData("text");
-    const targetCardId = data.split(".")[0];
+    const targetCardId = event.dataTransfer.getData("text");
     if (cardCollection[targetCardId]) {
       if (!cardCollection[targetCardId].views[activeViewId]) {
         // future update: more precise pos calculation
@@ -35,9 +31,7 @@ const ViewScreen = props => {
         let yCalculation = Math.round((event.clientY-GRID.size-GRID.size)/GRID.size)*GRID.size;
         if (yCalculation<0) {yCalculation = 0}
         const pos = {x: xCalculation, y: yCalculation};
-        const size = {width: 8*GRID.size, height: 10*GRID.size};
-        const color = "gray";
-        dispatch(actions.linkCardToView(targetCardId, activeViewId, pos, size, color));
+        dispatch(actions.linkCardToView(targetCardId, pos));
       } else {
         setCardAnimation({
           ...cardAnimation,
@@ -71,7 +65,7 @@ const ViewScreen = props => {
   }
 
   return (
-    <main id="view-screen" ref={viewScreenRef} 
+    <main className="view-screen"
       style={viewScreenStyle}
       onDrop={e => onCardDrop(e)} onDragOver={e => e.preventDefault()}>
       {cardList}
