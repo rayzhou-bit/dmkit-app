@@ -22,24 +22,8 @@
     border-right: 1px solid black;
     border-bottom-left-radius: 8px;
     border-bottom-right-radius: 8px;
-
-    &:hover .tooltip {
-      visibility: visible;
-    }
-
-    .tooltip {
-      @extend %tooltip;
-      white-space: nowrap;
-    
-      /* Position the tooltip */
-      position: absolute;
-      left: 120%;
-      z-index: 1;
-    }
-
-    .tooltip::after {
-      @extend %tooltip-left-arrow
-    }
+    .tooltip { bottom: 120%; left: 15%; white-space: nowrap; }
+    .tooltip::after { top: 115%; left: 15%; border-top-color: black; }
   }
 
   .view-tab-container {
@@ -50,6 +34,7 @@
     z-index: 0;
     white-space: nowrap;
     overflow-x: hidden;
+    overflow-y: visible;
 
     //implement flexbox here later
     // display: flex;
@@ -60,7 +45,7 @@
 
       .border-line {
         top: 0; right: 0;
-        width: 100%;
+        width: 100vw;
         z-index: 0;
         border-top: 1px solid black;
       }
@@ -78,14 +63,16 @@
     flex: row nowrap;
 
     .view-scroll-left {
+      position: relative;
       border-radius: 8px;
+      .tooltip { bottom: 120%; right: -40%; white-space: nowrap; }
+      .tooltip::after { top: 115%; right: 40%; border-top-color: black; }
     }
     .view-scroll-right {
+      position: relative;
       border-radius: 8px;
+      .tooltip { bottom: 120%; right: 15%; white-space: nowrap; }
+      .tooltip::after { top: 115%; right: 15%; border-top-color: black; }
     }
   }
-}
-
-.btn-32 {
-  @extend %btn-32;
 }

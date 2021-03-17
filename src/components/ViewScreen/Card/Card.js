@@ -48,12 +48,12 @@ const Card = props => {
 
   // STYLES
   const toFrontStyle = {
-    zIndex: dragging ? 200000 : cardId === activeCardId ? 100000 : cardPos.y
+    zIndex: dragging ? 20000000 : (cardId === activeCardId) ? 10000000 : (100*cardPos.y + cardPos.x),
   };
 
   const cardStyle = {
-    border: cardId === activeCardId ? '3px solid black' : '1px solid black',
-    margin: cardId === activeCardId ? '0px' : '2px',
+    border: (cardId === activeCardId) ? '3px solid black' : '1px solid black',
+    margin: (cardId === activeCardId) ? '0px' : '2px',
     animation: cardAnimation ? cardAnimation[cardId] : null,
   };
 

@@ -140,11 +140,10 @@ const LibraryCard = props => {
     WebkitUserSelect: editingTitle ? "default" : "none",
     msUserSelect: editingTitle ? "default" : "none",
   };
-
-  const colorButtonStyle = {
-    backgroundColor: cardColor ? cardColor : "white",
-  };
-  const deleteButtonStyle = {
+  const editBtnStyle = { backgroundColor: cardColor ? cardColor : "white" };
+  const editBtnImgStyle = { WebkitFilter: (TEXT_COLOR_WHEN_BACKGROUND_IS[cardColor] === "white") ? 'invert(100%)' : null };
+  const colorBtnStyle = { backgroundColor: cardColor ? cardColor : "white" };
+  const deleteBtnStyle = {
     backgroundColor: confirmDelete ? "red" : null,
     opacity: confirmDelete ? 1 : null,
   };
@@ -185,17 +184,17 @@ const LibraryCard = props => {
           onDoubleClick={(cardId === activeCardId) ? beginTitleEdit : null}
           onChange={updTitleEdit}
           onKeyDown={e => keyPressTitleHandler(e)} />
-        <button className="edit-title title-btn btn-24"
+        <button className="edit-title title-btn btn-24" style={editBtnStyle}
           onClick={() => beginTitleEdit()}>
-          <img src={EditImg} alt="Edit" draggable="false" />
+          <img src={EditImg} alt="Edit" draggable="false" style={editBtnImgStyle} />
           <span className="tooltip">Edit title</span>
         </button>
         <button ref={colorBtnRef} className="change-color title-btn btn-24"
           onClick={() => setOpenColorSelect(!openColorSelect)}>
-          <div style={colorButtonStyle} />
+          <div style={colorBtnStyle} />
           <span className="tooltip">Change color</span>
         </button>
-        <button ref={deleteBtnRef} className="remove-card title-btn btn-24" style={deleteButtonStyle}
+        <button ref={deleteBtnRef} className="remove-card title-btn btn-24" style={deleteBtnStyle}
           onClick={deleteCard}>
           <img src={DeleteImg} alt="Delete" draggable="false" />
           <span className="tooltip">Delete card</span>

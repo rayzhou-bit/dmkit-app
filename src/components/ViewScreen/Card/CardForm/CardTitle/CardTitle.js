@@ -69,9 +69,9 @@ const CardTitle = props => {
     WebkitUserSelect: editingTitle ? "default" : "none",
     msUserSelect: editingTitle ? "default" : "none",
   };
-  const colorButtonStyle = {
-    backgroundColor: cardColorToDisplay ? cardColorToDisplay : "white",
-  };
+  const editBtnStyle = { backgroundColor: cardColorToDisplay ? cardColorToDisplay : "white" };
+  const editBtnImgStyle = { WebkitFilter: (TEXT_COLOR_WHEN_BACKGROUND_IS[cardColorToDisplay] === "white") ? 'invert(100%)' : null };
+  const colorBtnStyle = { backgroundColor: cardColorToDisplay ? cardColorToDisplay : "white" };
 
   // DISPLAY ELEMENTS
   let colorList = [];
@@ -91,14 +91,14 @@ const CardTitle = props => {
           onDoubleClick={(cardId === activeCardId) ? beginTitleEdit : null}
           onChange={updTitleEdit}
           onKeyDown={e => keyPressTitleHandler(e)} />
-        <button className="edit-title title-btn btn-24"
+        <button className="edit-title title-btn btn-24" style={editBtnStyle}
           onClick={() => beginTitleEdit()}>
-          <img src={EditImg} alt="Edit" draggable="false" />
+          <img src={EditImg} alt="Edit" draggable="false" style={editBtnImgStyle} />
           <span className="tooltip">Edit title</span>
         </button>
         <button ref={colorBtnRef} className="change-color title-btn btn-24"
           onClick={() => setOpenColorSelect(!openColorSelect)}>
-          <div style={colorButtonStyle} />
+          <div style={colorBtnStyle} />
           <span className="tooltip">Change color for view</span>
         </button>
         <button className="remove-card title-btn btn-24"

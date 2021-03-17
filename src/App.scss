@@ -49,6 +49,7 @@ input:focus, textarea:focus, select:focus, button:focus {
     position: absolute;
     // top: 50%; right: 125%;       <-- tooltip is to the left
     // top: 40%; right: 120%;       <-- tooltip is to the bottom
+    // bottom: 150%; left: 25%;     <-- tooltip is to the top
     padding: 5px;
     border-radius: 1px;
     color: #fff;

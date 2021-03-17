@@ -1,6 +1,6 @@
 .view-tab {
   float: left;
-  height: 100%;
+  height: 100%; width: 100%;
   padding: 0;  margin: 0;
   border-left: 1px solid black;
   border-right: 1px solid black;
@@ -17,20 +17,27 @@
     transition: opacity 0.2s linear;
   }
 
+  .title-btn {
+    position: absolute;
+
+    opacity: 0;
+    transition: visibility 0s 0.6s, opacity 0.6s linear;
+  }
+
   .title-input {
     position: relative;
     height: 100%; width: 100%;
-    padding-left: 5px;
+    padding-left: 10%; padding-right: 10%;
     border: 0;
 
     color: black;
 
     font-size: 1.5rem;
     font-weight: bold;
-    text-align: center;
+    text-align: left;
     text-overflow: ellipsis;
 
-    overflow: hidden;
+    // overflow: hidden;
 
     &:read-only {
       background-color: lightgray;
@@ -41,16 +48,24 @@
   .edit-title {
     right: 42px;
     border: 0;
-    background-color: transparent;
     .tooltip { bottom: 90%; right: 100%; white-space: nowrap;}
     .tooltip::after { top: 100%; right: 40%; border-bottom-color: black; }
   }
 
-  .destroy-view{
-    right: 0;
+  .destroy-view {
+    right: 1px;
+    border-bottom-right-radius: 5px;
     .tooltip { bottom: 40%; right: 120%; }
     .tooltip::after { top: 100%; right: 25%; border-bottom-color: black; }
   }
+}
+
+.active-view {
+  background-color: white;
+}
+
+.inactive-view {
+  background-color: lightgray;
 }
 
 // .view-tab-divider {

@@ -85,9 +85,7 @@ const ViewTab = React.memo(props => {
     borderTop: viewId === activeViewId ? "1px solid white" : "1px solid black",
   };
 
-  const titleStyle = {
-    backgroundColor: editingTitle ? "lightskyblue" : "transparent",
-  };
+  const titleStyle = { backgroundColor: editingTitle ? "lightskyblue" : "transparent" };
 
   return (
     <Rnd ref={c => rndRef = c}
@@ -97,7 +95,7 @@ const ViewTab = React.memo(props => {
       // position={{x: (viewPos*tabWidth-scrollPos), y: 0}}
       // drag
       disableDragging={editingTitle}
-      dragHandleClassName="title" dragAxis="x"
+      dragHandleClassName="title-input" dragAxis="x"
       onDragStart={()=>setDragging(true)}
       onDragStop={dragStopHandler}
       // size
@@ -115,16 +113,15 @@ const ViewTab = React.memo(props => {
           onChange={updEdit}
           onKeyDown={(e) => keyPressHandler(e)}
         />
-        {/* <div className="view-tab-divider" /> */}
-        <button className="edit-title title-btn btn-32"
+        <button className={(viewId === activeViewId) ? "edit-title title-btn btn-32 active-view" : "edit-title title-btn btn-32 inactive-view"}
           onClick={() => beginEdit()}>
           <img src={EditImg} alt="Edit" draggable="false" />
-          <span className="tooltip">Edit title</span>
+          {/* <span className="tooltip">Edit title</span> */}
         </button>
-        <button className="destroy-view title-btn btn-32" style={{backgroundColor: viewId === activeViewId ? "white" : null}}
+        <button className={(viewId === activeViewId) ? "destroy-view title-btn btn-32 active-view" : "destroy-view title-btn btn-32 inactive-view"}
           onClick={destroyView}>
           <img src={CloseImg} alt="Delete" draggable="false" />
-          <span className="tooltip">Delete</span>
+          {/* <span className="tooltip">Delete view</span> */}
         </button>
       </div>
     </Rnd>

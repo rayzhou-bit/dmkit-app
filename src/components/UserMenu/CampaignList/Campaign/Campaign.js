@@ -19,7 +19,7 @@ const Campaign = props => {
   const campaignData = useSelector(state => state.campaignData);
 
   // REFS
-  const campaignDeleteBtnRef = useRef(campaignId+".deleteButton");
+  const campaignDeleteBtnRef = useRef(campaignId+".deleteBtn");
 
   // FUNCTIONS: campaign management
   const switchCampaign = () => {
@@ -47,7 +47,7 @@ const Campaign = props => {
   const campaignTitleStyle = {
     backgroundColor: campaignId === activeCampaignId ? "orange" : null,
   };
-  const deleteButtonStyle = {
+  const deleteBtnStyle = {
     backgroundColor: confirmDelete ? "red" : "lightgray",
   };
 
@@ -56,7 +56,7 @@ const Campaign = props => {
       <div className="campaign-title" style={campaignTitleStyle} onClick={switchCampaign}>
         {campaignTitle}
       </div>
-      <button ref={campaignDeleteBtnRef} className="button" style={deleteButtonStyle} onClick={destroyCampaign}>
+      <button ref={campaignDeleteBtnRef} className="button" style={deleteBtnStyle} onClick={destroyCampaign}>
         <img src={DeleteImg} alt="Delete" draggable="false" />
         {/* <span className="tooltip">Delete campaign</span> */}
       </button>
