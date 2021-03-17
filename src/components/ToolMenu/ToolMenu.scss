@@ -13,7 +13,7 @@ $btn-divider-height: 8px;
   flex-flow: column nowrap;
 
   .button {
-    @extend %button-32;
+    @extend %btn-32;
     
     place-items: center;
 

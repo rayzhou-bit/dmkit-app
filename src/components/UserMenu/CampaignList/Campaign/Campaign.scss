@@ -30,7 +30,7 @@
   }
 
   .button {
-    @extend %button-24;
+    @extend %btn-24;
     border-left: 1px solid black;
     place-items: center;
     line-height: normal;

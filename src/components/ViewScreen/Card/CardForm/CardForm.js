@@ -29,7 +29,7 @@ const CardForm = props => {
   const cardPos = useSelector(state => state.campaignData.cards[cardId].views[activeViewId].pos);
   const cardSize = useSelector(state => state.campaignData.cards[cardId].views[activeViewId].size);
 
-  // IDS & REFS
+  // REFS
   const titleInputRef = useRef(cardId+".card-title");
   const textInputRef = useRef(cardId+".card-text");
   

@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useOutsideClick } from '../../../../shared/utilityFunctions';
 
@@ -28,12 +28,13 @@ const LibraryCard = props => {
   const cardTitle = useSelector(state => state.campaignData.cards[cardId].title);
   const cardText = useSelector(state => state.campaignData.cards[cardId].content.text);
 
-  // IDS & REFS
+  // REFS
   const libraryCardRef = useRef(cardId+".library-card");
   const titleInputRef = useRef(cardId+".library-card-title");
   const colorSelectRef = useRef(cardId+".library-card-color-select");
   const colorBtnRef = useRef(cardId+".library-card-color-btn");
   const deleteBtnRef = useRef(cardId+".library-card-remove-btn");
+  let contentContainerRef = useRef();
   const textRef = useRef(cardId+".library-card-text");
   
   // FUNCTIONS: CARD
@@ -149,8 +150,7 @@ const LibraryCard = props => {
   };
 
   // STYLES: CONTENT
-  const contentContainerStyle = { height: CARD_FONT_SIZE.text*5.5+'px' };
-  const contentContainerRef = (node) => {
+  contentContainerRef = (node) => {
     if (!node) return;
     if (!textRef.current) return;
     const completeTextHeight = textRef.current ? textRef.current.scrollHeight : 1000;
@@ -175,8 +175,7 @@ const LibraryCard = props => {
   }
 
   return (
-    <div key={cardId} ref={libraryCardRef}
-      className="library-card" style={cardStyle} 
+    <div ref={libraryCardRef} className="library-card" style={cardStyle} 
       draggable={!editingCard} onDragStart={e => cardDragHandler(e)}
       onClick={cardClickHandler}>
       <div className="library-card-title-container">
@@ -186,17 +185,17 @@ const LibraryCard = props => {
           onDoubleClick={(cardId === activeCardId) ? beginTitleEdit : null}
           onChange={updTitleEdit}
           onKeyDown={e => keyPressTitleHandler(e)} />
-        <button className="edit-title title-btn button-24"
+        <button className="edit-title title-btn btn-24"
           onClick={() => beginTitleEdit()}>
           <img src={EditImg} alt="Edit" draggable="false" />
           <span className="tooltip">Edit title</span>
         </button>
-        <button ref={colorBtnRef} className="change-color title-btn button-24"
+        <button ref={colorBtnRef} className="change-color title-btn btn-24"
           onClick={() => setOpenColorSelect(!openColorSelect)}>
           <div style={colorButtonStyle} />
           <span className="tooltip">Change color</span>
         </button>
-        <button ref={deleteBtnRef} className="remove-card title-btn button-24" style={deleteButtonStyle}
+        <button ref={deleteBtnRef} className="remove-card title-btn btn-24" style={deleteButtonStyle}
           onClick={deleteCard}>
           <img src={DeleteImg} alt="Delete" draggable="false" />
           <span className="tooltip">Delete card</span>
@@ -205,8 +204,7 @@ const LibraryCard = props => {
       <div ref={colorSelectRef} className="color-select" style={{display: openColorSelect ? "grid" : "none"}}>
         {colorList}
       </div>
-      <div ref={contentContainerRef}
-        className="library-card-content-container" style={contentContainerStyle}>
+      <div ref={contentContainerRef} className="library-card-content-container">
         <textarea ref={textRef}
           className="library-card-text" style={textStyle} 
           type="text"

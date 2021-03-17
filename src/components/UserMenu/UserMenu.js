@@ -27,7 +27,7 @@ const UserMenu = props => {
   const campaignData = useSelector(state => state.campaignData);
   const campaignTitle = useSelector(state => state.campaignData.title);
 
-  // IDS & REFS
+  // REFS
   const campaignTitleRef = useRef("campaignTitle");
   const campaignDropdownBtnRef = useRef("campaignDropdownBtn");
   const campaignDropdownContentRef = useRef("campaignDropdownContent");

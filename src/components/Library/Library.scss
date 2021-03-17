@@ -22,53 +22,27 @@ $btn-divider-height: 8px;
   .show-library {
     top: $btn-divider-height;
     height: 64px;
-    .tooltip {
-      top: 20px;
-    }
+    .tooltip { top: 20%; right: 130%; }
+    .tooltip::after { top: 50%; left: 100%; border-left-color: black; }
   }
   
   .expand-shrink {
     top: 3 * $btn-divider-height + 64px;
+    .tooltip { top: 18%; right: 130%; }
+    .tooltip::after { top: 50%; left: 100%; border-left-color: black; }
   }
 }
 
 .library-menu-btn {
   position: absolute;
   left: -41px;
-  box-sizing: content-box;
   height: 32px; width: 32px;
-  margin: 0;  
   padding: 4px;
 
   background-color: lightgray;
-    
-  place-items: center;
 
   border: 1px solid black;
   border-right: 0px;
   border-top-left-radius: 5px;
   border-bottom-left-radius: 5px;
-
-  &:hover {
-    background-color: lightskyblue;
-  }
-
-  &:hover .tooltip {
-    visibility: visible;
-  }
-
-  .tooltip {
-    @extend %tooltip;
-    white-space: nowrap;
-  
-    /* Position the tooltip */
-    position: absolute;
-    right: 120%;
-    top: 4px;
-    z-index: 100;
-  }
-
-  .tooltip::after {
-    @extend %tooltip-right-arrow;
-  }
 }

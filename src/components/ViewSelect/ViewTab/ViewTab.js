@@ -116,12 +116,12 @@ const ViewTab = React.memo(props => {
           onKeyDown={(e) => keyPressHandler(e)}
         />
         {/* <div className="view-tab-divider" /> */}
-        <button className="edit-title title-btn button-32"
+        <button className="edit-title title-btn btn-32"
           onClick={() => beginEdit()}>
           <img src={EditImg} alt="Edit" draggable="false" />
           <span className="tooltip">Edit title</span>
         </button>
-        <button className="destroy-view title-btn button-32" style={{backgroundColor: viewId === activeViewId ? "white" : null}}
+        <button className="destroy-view title-btn btn-32" style={{backgroundColor: viewId === activeViewId ? "white" : null}}
           onClick={destroyView}>
           <img src={CloseImg} alt="Delete" draggable="false" />
           <span className="tooltip">Delete</span>

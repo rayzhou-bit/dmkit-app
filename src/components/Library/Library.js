@@ -22,11 +22,11 @@ const Library = props => {
       <div className="library-search-container" style={{width: expandedView ? "80vw" : "40vw"}}>
         <LibrarySearch />
       </div>
-      <button className="show-library library-menu-btn" onClick={() => setShowLibrary(!showLibrary)}>
+      <button className="show-library library-menu-btn btn-any" onClick={() => setShowLibrary(!showLibrary)}>
         <img src={LibBtnImg} alt="Library" />
         <span className="tooltip">Show library</span>
       </button>
-      <button className="expand-shrink library-menu-btn" style={{display: showLibrary ? 'block' : 'none'}}
+      <button className="expand-shrink library-menu-btn btn-any" style={{display: showLibrary ? 'block' : 'none'}}
         onClick={() => setExpandedView(!expandedView)}>
         <img src={expandedView ? ShrinkImg : ExpandImg} alt="Expand/Shrink" />
         <span className="tooltip">{expandedView ? "Shrink" : "Expand"}</span>

@@ -29,7 +29,7 @@ const CardTitle = props => {
   const cardColorToDisplay = cardColorForView ? cardColorForView : cardColor ? cardColor : "gray";
   const cardTitle = useSelector(state => state.campaignData.cards[cardId].title);
 
-  // IDS & REFS
+  // REFS
   const colorSelectRef = useRef(cardId+".card-color-select");
   const colorBtnRef = useRef(cardId+".card-color-btn");
 
@@ -91,22 +91,22 @@ const CardTitle = props => {
           onDoubleClick={(cardId === activeCardId) ? beginTitleEdit : null}
           onChange={updTitleEdit}
           onKeyDown={e => keyPressTitleHandler(e)} />
-        <button className="edit-title title-btn button-24"
+        <button className="edit-title title-btn btn-24"
           onClick={() => beginTitleEdit()}>
           <img src={EditImg} alt="Edit" draggable="false" />
           <span className="tooltip">Edit title</span>
         </button>
-        <button ref={colorBtnRef} className="change-color title-btn button-24"
+        <button ref={colorBtnRef} className="change-color title-btn btn-24"
           onClick={() => setOpenColorSelect(!openColorSelect)}>
           <div style={colorButtonStyle} />
           <span className="tooltip">Change color for view</span>
         </button>
-        <button className="remove-card title-btn button-24"
+        <button className="remove-card title-btn btn-24"
           onClick={unlinkCardFromView}>
           <img src={CloseImg} alt="Close" draggable="false" />
-          <span className="tooltip">Remove card from view</span>
+          <span className="tooltip">Remove from view</span>
         </button>
-        <button className="shrink title-btn button-24" 
+        <button className="shrink title-btn btn-24" 
           onClick={changeTypeToBubble}>
           <img src={ShrinkImg} alt="Shrink" draggable="false" />
           <span className="tooltip">Shrink card</span>

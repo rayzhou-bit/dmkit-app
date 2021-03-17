@@ -21,7 +21,7 @@ const Card = props => {
   const cardPos = useSelector(state => state.campaignData.cards[cardId].views[activeViewId].pos);
   const cardForm = useSelector(state => state.campaignData.cards[cardId].views[activeViewId].cardForm);
 
-  // IDS & REFS
+  // REFS
   const cardRef = useRef(cardId+".card");
 
   // FUNCTIONS: CARD

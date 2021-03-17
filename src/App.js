@@ -18,7 +18,7 @@ const App = props => {
   const campaignEdit = useSelector(state => state.sessionManager.campaignEdit);
   const campaignData = useSelector(state => state.campaignData);
 
-  // IDS & REFS
+  // REFS
   const toolMenuRef = useRef("toolMenu");
 
   // Disable scrolling

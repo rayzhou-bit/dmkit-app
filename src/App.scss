@@ -19,19 +19,21 @@ input:focus, textarea:focus, select:focus, button:focus {
   outline: none;
 }
 
-.button-24 { // button for an img of 24px x 24px
+.btn-24 { // button for an img of 24px x 24px
   height: 24px; width: 24px;
   padding: 3px;
 }
 
-.button-32 { // button for an img of 32px x 32px
+.btn-32 { // button for an img of 32px x 32px
   height: 32px; width: 32px;
   padding: 4px;
 }
 
-.button-24, .button-32 { 
+.btn-24, .btn-32, .btn-any { 
   box-sizing: content-box;
   margin: 0; border: 0;
+  
+  place-items: center;
 
   &:hover {
     background-color: lightskyblue;
@@ -44,9 +46,9 @@ input:focus, textarea:focus, select:focus, button:focus {
   .tooltip {
     // top, bottom, left, right need to be set for tooltip position
     display: inline-block;
-    position: relative;
-    // top: 50%;
-    // left: -70%;
+    position: absolute;
+    // top: 50%; right: 125%;       <-- tooltip is to the left
+    // top: 40%; right: 120%;       <-- tooltip is to the bottom
     padding: 5px;
     border-radius: 1px;
     color: #fff;
@@ -54,7 +56,7 @@ input:focus, textarea:focus, select:focus, button:focus {
     text-align: center;
     font-size: medium;
     visibility: hidden;
-    z-index: 1000;
+    z-index: 10000;
   }
 
   .tooltip::after {
@@ -62,11 +64,13 @@ input:focus, textarea:focus, select:focus, button:focus {
     // border-color needs to be changed to be black for the direction of the arrow
     content: " ";
     position: absolute;
-    // top: 50%;
-    // right: 100%; /* To the left of the tooltip */
+    // left: 100%; top: 50%;        <-- tooltip is to the left
+    // bottom: 100%; right: 50%;    <-- tooltip is to the bottom
     margin-top: -5px;
     border-width: 5px;
     border-style: solid;
     border-color: transparent transparent transparent transparent;
+    // border-left-color: black;    <-- tooltip is to the left
+    // border-bottom-color: black;  <-- tooltip is to the bottom
   }
 }
