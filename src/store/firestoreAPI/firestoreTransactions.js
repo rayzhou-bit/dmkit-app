@@ -74,7 +74,7 @@ export const fetchCampaignData = (campaignId, followUpHandler) => {
                     // LOAD DATA
                     dispatch(actions.loadCampaignData(campaignData));
                     dispatch(actions.setStatus("idle"));
-                    if(followUpHandler) {followUpHandler()};
+                    if (followUpHandler) followUpHandler();
                     console.log("[fetchCampaignData] success loading campaign");
                   })
                   .catch(err => console.log("[fetchCampaignData] error loading views:", err))
@@ -123,7 +123,7 @@ export const saveCampaignData = (campaignId, campaignData, followUpHandler) => {
         .then (resp => {
           dispatch(actions.setStatus("idle"));
           dispatch(actions.setCampaignEdit(false));
-          if(followUpHandler) {followUpHandler()};
+          if (followUpHandler) followUpHandler();
           console.log("[saveActiveCampaignData] success saving campaign");
         })
         .catch(err => {
@@ -167,7 +167,7 @@ export const saveIntroCampaignData = (campaignData, followUpHandler) => {
                   .then(resp => {
                     dispatch(actions.setCampaignEdit(false));
                     dispatch(actions.updActiveCampaignId(campaignId));
-                    if(followUpHandler) {followUpHandler()};
+                    if (followUpHandler) followUpHandler();
                     console.log("[saveIntroCampaignData] success saving intro campaign");
                   })
                   .catch(err => console.log("[saveIntroCampaignData] error saving intro campaign (setting activeCampaignId):", err));
@@ -189,7 +189,7 @@ export const switchCampaign = (campaignId, followUpHandler) => {
       store.collection("users").doc(userId).set({activeCampaignId: campaignId})
         .then(resp => {
           dispatch(actions.updActiveCampaignId(campaignId));
-          if(followUpHandler) {followUpHandler()};
+          if (followUpHandler) followUpHandler();
           console.log("[switchCampaign] success loading activeCampaignId", campaignId);
         })
         .catch(err => console.log("[switchCampaign] error loading activeCampaignId:", err))
@@ -234,7 +234,7 @@ export const createCampaign = (followUpHandler) => {
                 })
                   .then(resp => {
                     dispatch(actions.addCampaignToList({[campaignId]: "untitled campaign"}));
-                    if(followUpHandler) {followUpHandler()};
+                    if (followUpHandler) followUpHandler();
                     console.log("[createCampaign] added campaign:", campaignId);
                   })
                   .catch(err => console.log("[createCampaign] error creating view:", err));
@@ -256,7 +256,7 @@ export const destroyCampaign = (campaignId, followUpHandler) => {
       store.collection("users").doc(userId).collection("campaigns").doc(campaignId).delete()
         .then(resp => {
           dispatch(actions.removeCampaignFromList(campaignId));
-          if(followUpHandler) {followUpHandler()};
+          if (followUpHandler) followUpHandler();
           console.log("[destroyCampaign] success deleting campaign", campaignId);
         })
         .catch(err => console.log("[destroyCampaign] error deleting campaign:", err));

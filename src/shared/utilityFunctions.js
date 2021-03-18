@@ -51,3 +51,8 @@ export const getParameterByName = (name) => {
 
   return value;
 };
+
+export const statBlockParser = (text) => {
+  let statBlock;
+  return statBlock;
+};

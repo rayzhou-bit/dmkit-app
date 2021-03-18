@@ -15,7 +15,7 @@ const Campaign = props => {
   const [confirmDelete, setConfirmDelete] = useState(false);
 
   // STORE SELECTORS
-  const activeCampaignId = useSelector(state => state.sesionManager.activeCampaignId);
+  const activeCampaignId = useSelector(state => state.sessionManager.activeCampaignId);
   const campaignData = useSelector(state => state.campaignData);
 
   // REFS
@@ -48,7 +48,7 @@ const Campaign = props => {
     backgroundColor: campaignId === activeCampaignId ? "orange" : null,
   };
   const deleteBtnStyle = {
-    backgroundColor: confirmDelete ? "red" : "lightgray",
+    backgroundColor: confirmDelete ? "red" : null,
   };
 
   return (
@@ -56,9 +56,9 @@ const Campaign = props => {
       <div className="campaign-title" style={campaignTitleStyle} onClick={switchCampaign}>
         {campaignTitle}
       </div>
-      <button ref={campaignDeleteBtnRef} className="button" style={deleteBtnStyle} onClick={destroyCampaign}>
+      <button ref={campaignDeleteBtnRef} className="destroy-campaign btn-24" style={deleteBtnStyle} onClick={destroyCampaign}>
         <img src={DeleteImg} alt="Delete" draggable="false" />
-        {/* <span className="tooltip">Delete campaign</span> */}
+        <span className="tooltip">Delete campaign</span>
       </button>
     </div>
   );

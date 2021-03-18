@@ -4,7 +4,6 @@ import { useOutsideClick } from '../../shared/utilityFunctions';
 
 import './UserMenu.scss';
 import * as actions from '../../store/actionIndex';
-import * as fireactions from '../../store/firestoreIndex';
 import CampaignList from './CampaignList/CampaignList';
 import SignIn from './SignIn/SignIn';
 import SignUp from './SignUp/SignUp';
@@ -21,10 +20,11 @@ const UserMenu = props => {
   const [editingTitle, setEditingTitle] = useState(false);
 
   // STORE SELECTORS
-  const {userId, displayName, email} = useSelector(state => state.userData);
+  const userId = useSelector(state => state.userData.userId);
+  const displayName = useSelector(state => state.userData.displayName);
+  const email = useSelector(state => state.userData.email);
   const campaignId = useSelector(state => state.sessionManager.activeCampaignId);
   const campaignEdit = useSelector(state => state.sessionManager.campaignEdit);
-  const campaignData = useSelector(state => state.campaignData);
   const campaignTitle = useSelector(state => state.campaignData.title);
 
   // REFS
@@ -33,30 +33,6 @@ const UserMenu = props => {
   const campaignDropdownContentRef = useRef("campaignDropdownContent");
   const userDropdownBtnRef = useRef("userDropdownBtn");
   const userDropdownContentRef = useRef("userDropdownContent");
-
-  // Autosave every 5 minutes
-  useEffect(() => {
-    const autoSave = setInterval(() => {
-      if (userId && campaignId && campaignEdit) {
-        dispatch(fireactions.saveCampaignData(campaignId, campaignData));
-      }
-    }, 50000);
-    return () =>  clearInterval(autoSave);
-  }, [userId, campaignId, campaignEdit, campaignData, dispatch]);
-
-  // Load data for active campaign
-  useEffect(() => {
-    if (campaignId) {
-      dispatch(fireactions.fetchCampaignData(campaignId));
-    }
-  }, [dispatch, campaignId]);
-
-  // Set campaignEdit to true when campaignData changes.
-  useEffect(() => {
-    if (campaignData) {
-      dispatch(actions.setCampaignEdit(true));
-    }
-  }, [dispatch, campaignData]);
 
   // FUNCTIONS: CAMPAIGN TITLE
   const beginTitleEdit = () => {
@@ -68,34 +44,34 @@ const UserMenu = props => {
   };
 
   const endTitleEdit = () => {
-    if (editingTitle) {setEditingTitle(false)}
+    if (editingTitle) setEditingTitle(false);
   };
 
   const updTitleEdit = () => {
-    if (editingTitle) {dispatch(actions.updCampaignTitle(campaignId, campaignTitleRef.current.value))}
+    if (editingTitle) dispatch(actions.updCampaignTitle(campaignId, campaignTitleRef.current.value));
   };
 
   const keyPressTitleHandler = (event) => {
-    if (editingTitle && event.key === 'Enter') {endTitleEdit()}
+    if (editingTitle && event.key === 'Enter') endTitleEdit();
   };  
 
   // FUNCTIONS: OUTSIDECLICKS
   useOutsideClick([campaignTitleRef], editingTitle, endTitleEdit);
-  useOutsideClick([campaignDropdownBtnRef, campaignDropdownContentRef], showCampaignDropdown, () => setShowCampaignDropdown(false));
-  useOutsideClick([userDropdownBtnRef, userDropdownContentRef], showUserDropdown, () => setShowUserDropdown(false));
-  
-  // STYLES: CAMPAIGN TITLE
-  const campaignTitleStyle = {};
+  useOutsideClick([campaignDropdownBtnRef, campaignDropdownContentRef], showCampaignDropdown, 
+    () => setShowCampaignDropdown(false)
+  );
+  useOutsideClick([userDropdownBtnRef, userDropdownContentRef], showUserDropdown, 
+    () => setShowUserDropdown(false)
+  );
 
   return (
     <>
       <div className="user-menu">
         {/* title */}
         <div className="dmkit-title">
-          <input ref={campaignTitleRef}
-            className="title-text" style={campaignTitleStyle}
+          <input ref={campaignTitleRef} className="title-text"
             type="text" required draggable="false"
-            value={userId ? campaignTitle : "DM Kit"} readOnly={!editingTitle}
+            value={(userId && campaignTitle) ? campaignTitle : "DM Kit"} readOnly={!editingTitle}
             onDoubleClick={userId ? beginTitleEdit : null}
             onChange={userId ? updTitleEdit : null}
             onKeyDown={userId ? (e => keyPressTitleHandler(e)) : null}

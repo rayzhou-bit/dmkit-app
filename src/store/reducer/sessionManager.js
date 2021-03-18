@@ -8,7 +8,7 @@ const initialState = {
   activeCampaignId: null,
 
   campaignEdit: false,  // flag for any unsaved changes
-  status: null,  // idle, loading or saving
+  status: 'loading',  // idle, loading or saving
   usingIntroCampaign: false,
 
   errorEmailSignIn: "", // TODO move errors to useState

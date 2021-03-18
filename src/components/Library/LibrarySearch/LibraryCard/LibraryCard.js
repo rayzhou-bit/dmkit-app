@@ -194,7 +194,7 @@ const LibraryCard = props => {
           <div style={colorBtnStyle} />
           <span className="tooltip">Change color</span>
         </button>
-        <button ref={deleteBtnRef} className="remove-card title-btn btn-24" style={deleteBtnStyle}
+        <button ref={deleteBtnRef} className="delete-card title-btn btn-24" style={deleteBtnStyle}
           onClick={deleteCard}>
           <img src={DeleteImg} alt="Delete" draggable="false" />
           <span className="tooltip">Delete card</span>

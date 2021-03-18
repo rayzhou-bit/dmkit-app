@@ -92,7 +92,6 @@ const ViewTab = React.memo(props => {
       style={toFrontStyle}
       bounds="parent"
       // position
-      // position={{x: (viewPos*tabWidth-scrollPos), y: 0}}
       // drag
       disableDragging={editingTitle}
       dragHandleClassName="title-input" dragAxis="x"

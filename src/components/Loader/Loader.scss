@@ -1,0 +1,15 @@
+.loading-box {
+  position: fixed;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 30%;
+  padding: 2%;
+  
+  border-radius: 3rem;
+  background-color: white;
+
+  text-align: center;
+  font-size: large;
+
+  z-index: 550;
+}
