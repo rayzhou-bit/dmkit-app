@@ -48,7 +48,7 @@ const UserMenu = props => {
   };
 
   const updTitleEdit = () => {
-    if (editingTitle) dispatch(actions.updCampaignTitle(campaignId, campaignTitleRef.current.value));
+    if (editingTitle) dispatch(actions.updCampaignTitle(campaignTitleRef.current.value));
   };
 
   const keyPressTitleHandler = (event) => {

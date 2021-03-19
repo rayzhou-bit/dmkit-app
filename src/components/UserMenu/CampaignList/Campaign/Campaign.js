@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useOutsideClick } from '../../../../shared/utilityFunctions';
 
 import './Campaign.scss';
+import * as actions from '../../../../store/actionIndex';
 import * as fireactions from '../../../../store/firestoreIndex';
 
 import DeleteImg from '../../../../assets/icons/delete-24.png';
@@ -37,7 +38,14 @@ const Campaign = props => {
     if (!confirmDelete) {
       setConfirmDelete(true);
     } else {
-      dispatch(fireactions.destroyCampaign(campaignId));
+      dispatch(fireactions.destroyCampaign(campaignId, 
+        (campaignId === activeCampaignId) 
+          ? () => {
+              dispatch(fireactions.switchCampaign(null));
+              dispatch(actions.unloadCampaignData());
+            }
+          : null
+      ));
     }
   };
 

@@ -14,7 +14,7 @@ const Loader = props => {
   // STORE SELECTORS
   const userId = useSelector(state => state.userData.userId);
   const status = useSelector(state => state.sessionManager.status);
-  const campaignId = useSelector(state => state.sessionManager.activeCampaignId);
+  const activeCampaignId = useSelector(state => state.sessionManager.activeCampaignId);
   const campaignEdit = useSelector(state => state.sessionManager.campaignEdit);
   const campaignData = useSelector(state => state.campaignData);
   
@@ -29,17 +29,16 @@ const Loader = props => {
         // prompt user to save intro campaign
         if (campaignEdit) {
           let save = window.confirm("Would you like to save your work as a new campaign?");
-          if (save) {
+          if (!save) {
+            dispatch(fireactions.fetchActiveCampaignId());
+            dispatch(fireactions.fetchCampaignList());
+          } else {
             dispatch(fireactions.saveIntroCampaignData(campaignData,
               () => {
-                // where is unload?
                 dispatch(fireactions.fetchActiveCampaignId());
                 dispatch(fireactions.fetchCampaignList());
               }
             ));
-          } else {
-            dispatch(fireactions.fetchActiveCampaignId());
-            dispatch(fireactions.fetchCampaignList());
           }
         } else {
           dispatch(fireactions.fetchActiveCampaignId());
@@ -51,35 +50,45 @@ const Loader = props => {
         dispatch(actions.unloadUser());
         dispatch(actions.resetSessionManager());
         dispatch(actions.loadIntroCampaign());
-        dispatch(actions.setStatus("idle"));
+        dispatch(actions.setStatus('idle'));
       }
     });
     return () => authListener();
   }, [dispatch]);
 
-  // Autosave every 5 minutes
-  useEffect(() => {
-    const autoSave = setInterval(() => {
-      if (userId && campaignId && campaignEdit) {
-        dispatch(fireactions.saveCampaignData(campaignId, campaignData));
-      }
-    }, 5000);
-    return () =>  clearInterval(autoSave);
-  }, [dispatch, userId, campaignId, campaignEdit, campaignData]);
-
   // Load data for active campaign
   useEffect(() => {
-    if (campaignId) {
-      dispatch(fireactions.fetchCampaignData(campaignId));
+    dispatch(actions.setStatus('loading'));
+    if (activeCampaignId) {
+      dispatch(fireactions.fetchCampaignData(activeCampaignId));
+    } else {
+      dispatch(actions.setStatus('idle'));
     }
-  }, [dispatch, campaignId]);
+  }, [dispatch, activeCampaignId]);
 
   // Set campaignEdit to true when campaignData changes.
   useEffect(() => {
-    if (campaignData) {
-      dispatch(actions.setCampaignEdit(true));
+    if ((status === 'idle') && campaignData) {
+      // set edit flag when idle
+      if (Object.keys(campaignData).length !== 0) dispatch(actions.setCampaignEdit(true));
+    } else {
+      // set status flag after loading data
+      dispatch(actions.setStatus('idle'));
     }
   }, [dispatch, campaignData]);
+
+  // Autosave every minute
+  useEffect(() => {
+    const autoSave = setInterval(() => {
+      if ((status=== 'idle') && userId && activeCampaignId && campaignEdit) {
+        dispatch(actions.setStatus('saving'));
+        dispatch(fireactions.saveCampaignData(activeCampaignId, campaignData, 
+          () => dispatch(actions.setStatus('idle'))
+        ));
+      }
+    }, 10000);
+    return () =>  clearInterval(autoSave);
+  }, [dispatch, status, userId, activeCampaignId, campaignEdit, campaignData]);
 
   return (
     (status === 'loading')
@@ -90,8 +99,6 @@ const Loader = props => {
             Loading...
           </div>
         </>
-    : (status === 'saving')
-      ? null
       : null
   );
 };

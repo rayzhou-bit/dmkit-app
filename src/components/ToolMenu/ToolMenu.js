@@ -15,12 +15,13 @@ const ToolMenu = React.memo(props => {
 
   // STORE VALUES
   const userId = useSelector(state => state.userData.userId);
-  const campaignId = useSelector(state => state.sessionManager.activeCampaignId);
+  const status = useSelector(state => state.sessionManager.status);
+  const activeCampaignId = useSelector(state => state.sessionManager.activeCampaignId);
   const campaignData = useSelector(state => state.campaignData)
   const activeCardId = useSelector(state => state.campaignData.activeCardId);
 
   // FUNCTIONS
-  const createCard = () => dispatch(actions.createCard(campaignId));
+  const createCard = () => dispatch(actions.createCard(activeCampaignId));
 
   const copyCard = () => {
     if (activeCardId) {
@@ -29,8 +30,11 @@ const ToolMenu = React.memo(props => {
   };
 
   const saveEditedData = () => {
-    if (userId) {
-      dispatch(fireactions.saveCampaignData(campaignId, campaignData));
+    if ((status=== 'idle') && userId && activeCampaignId) {
+      dispatch(actions.setStatus('saving'));
+      dispatch(fireactions.saveCampaignData(activeCampaignId, campaignData,
+        () => dispatch(actions.setStatus('idle'))
+      ));
     }
   };
 

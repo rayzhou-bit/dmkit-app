@@ -16,6 +16,7 @@ export const fetchActiveCampaignId = () => {
         .then(resp => {
           if (resp.exists) {
             dispatch(actions.updActiveCampaignId(resp.data().activeCampaignId));
+            if (!resp.data().activeCampaignId) dispatch(actions.setStatus('idle'));
             console.log("[fetchActiveCampaignId] success loading activeCampaignId", resp.data().activeCampaignId);
           }
         })
@@ -47,7 +48,6 @@ export const fetchCampaignData = (campaignId, followUpHandler) => {
   const user = getUser();
   return dispatch => {
     if (user && campaignId) {
-      dispatch(actions.setStatus("loading"));
       const userId = user.uid;
       let campaignData = {};
       // CAMPAIGN data
@@ -73,7 +73,6 @@ export const fetchCampaignData = (campaignId, followUpHandler) => {
                     campaignData = updateObject(campaignData, {views: viewCollection});
                     // LOAD DATA
                     dispatch(actions.loadCampaignData(campaignData));
-                    dispatch(actions.setStatus("idle"));
                     if (followUpHandler) followUpHandler();
                     console.log("[fetchCampaignData] success loading campaign");
                   })
@@ -93,7 +92,7 @@ export const saveCampaignData = (campaignId, campaignData, followUpHandler) => {
   const user = getUser();
   return dispatch => {
     if (user && campaignId) {
-      dispatch(actions.setStatus("saving"));
+      dispatch(actions.setStatus('saving'));
       const userId = user.uid;
       const batch = store.batch();
       // CAMPAIGN data
@@ -121,7 +120,6 @@ export const saveCampaignData = (campaignId, campaignData, followUpHandler) => {
       // SAVE DATA (BATCH COMMIT)
       batch.commit()
         .then (resp => {
-          dispatch(actions.setStatus("idle"));
           dispatch(actions.setCampaignEdit(false));
           if (followUpHandler) followUpHandler();
           console.log("[saveActiveCampaignData] success saving campaign");
@@ -137,6 +135,7 @@ export const saveIntroCampaignData = (campaignData, followUpHandler) => {
   const user = getUser();
   return dispatch => {
     if (user) {
+      dispatch(actions.setStatus('saving'));
       const userId = user.uid;
       // CAMPAIGN data
       let campaignPackage = {...campaignData};
@@ -166,16 +165,21 @@ export const saveIntroCampaignData = (campaignData, followUpHandler) => {
                 store.collection("users").doc(userId).set({activeCampaignId: campaignId})
                   .then(resp => {
                     dispatch(actions.setCampaignEdit(false));
-                    dispatch(actions.updActiveCampaignId(campaignId));
                     if (followUpHandler) followUpHandler();
                     console.log("[saveIntroCampaignData] success saving intro campaign");
                   })
-                  .catch(err => console.log("[saveIntroCampaignData] error saving intro campaign (setting activeCampaignId):", err));
+                  .catch(err => {
+                    console.log("[saveIntroCampaignData] error saving intro campaign (setting activeCampaignId):", err)
+                  });
               })
-              .catch(err => console.log("[saveIntroCampaignData] error saving intro campaign (batching cards and views):", err));
+              .catch(err => {
+                console.log("[saveIntroCampaignData] error saving intro campaign (batching cards and views):", err)
+              });
           }
         })
-        .catch(err => console.log("[saveIntroCampaignData] error saving intro campaign (creating new campaign):", err));
+        .catch(err => {
+          console.log("[saveIntroCampaignData] error saving intro campaign (creating new campaign):", err)
+        });
     }
   };
 };
@@ -233,7 +237,7 @@ export const createCampaign = (followUpHandler) => {
                   color: "gray",
                 })
                   .then(resp => {
-                    dispatch(actions.addCampaignToList({[campaignId]: "untitled campaign"}));
+                    dispatch(actions.addCampaignToList(campaignId, "untitled campaign"));
                     if (followUpHandler) followUpHandler();
                     console.log("[createCampaign] added campaign:", campaignId);
                   })

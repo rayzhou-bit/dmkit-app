@@ -34,7 +34,7 @@ const Card = props => {
 
   const cardClickHandler = () => {
     if (!isSelected) {
-      if (cardId !== activeCardId) {dispatch(actions.updActiveCardId(cardId))}
+      if (cardId !== activeCardId) dispatch(actions.updActiveCardId(cardId));
       setIsSelected(true);
     }
   };

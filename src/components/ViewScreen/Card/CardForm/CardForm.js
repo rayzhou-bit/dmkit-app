@@ -70,7 +70,7 @@ const CardForm = props => {
 
   useOutsideClick([cardRef, toolMenuRef], isSelected, 
     () => {
-      if (cardId === activeCardId) {dispatch(actions.updActiveCardId(null))}
+      if (cardId === activeCardId) dispatch(actions.updActiveCardId(null));
       setIsSelected(false);
     }
   );

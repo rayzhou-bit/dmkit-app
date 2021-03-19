@@ -42,13 +42,13 @@ const LibraryCard = props => {
 
   const cardClickHandler = () => {
     if (!isSelected) {
-      if (cardId !== activeCardId) {dispatch(actions.updActiveCardId(cardId))}
+      if (cardId !== activeCardId) dispatch(actions.updActiveCardId(cardId));
       setIsSelected(true);
     }
   };
 
   useOutsideClick([libraryCardRef], isSelected, () => {
-    if (cardId === activeCardId) {dispatch(actions.updActiveCardId(null))}
+    if (cardId === activeCardId) dispatch(actions.updActiveCardId(null));
     setIsSelected(false);
   });
 
