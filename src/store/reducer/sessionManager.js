@@ -7,9 +7,8 @@ const initialState = {
   },
   activeCampaignId: null,
 
-  campaignEdit: false,  // flag for any unsaved changes
   status: 'loading',  // idle, loading or saving
-  usingIntroCampaign: false,
+  campaignEdit: false,  // flag for any unsaved changes
 
   errorEmailSignIn: "", // TODO move errors to useState
   errorEmailSignUp: "",
@@ -28,8 +27,10 @@ const reducer = (state = initialState, action) => {
     case actionTypes.ADD_CAMPAIGN_TO_LIST: return addCampaignToList(state, action.campaignId, action.campaignTitle);
     case actionTypes.REMOVE_CAMPAIGN_FROM_LIST: return removeCampaignFromList(state, action.campaignId);
     case actionTypes.UPD_ACTIVE_CAMPAIGN_ID: return updateObject(state, {activeCampaignId: action.activeCampaignId});
-    case actionTypes.SET_CAMPAIGN_EDIT: return updateObject(state, {campaignEdit: action.edit});
+
     case actionTypes.SET_STATUS: return updateObject(state, {status: action.status});
+    case actionTypes.SET_CAMPAIGN_EDIT: return updateObject(state, {campaignEdit: action.edit});
+    case actionTypes.SET_INTRO_CAMPAIGN_EDIT: return updateObject(state, {introCampaignEdit: action.edit});
 
     // ERRORS
     case actionTypes.SET_ERROR_EMAIL_SIGN_IN: return setErrorEmailSignIn(state, action.errorCode);

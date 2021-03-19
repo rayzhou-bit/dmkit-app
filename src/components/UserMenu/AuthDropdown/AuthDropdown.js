@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import './SignIn.scss';
+import './AuthDropdown.scss';
+import * as actions from '../../../store/actionIndex';
 import * as fireactions from '../../../store/firestoreIndex';
 
-const SignIn = props => {
+const AuthDropdown = props => {
   const {setShowSignUp, setShowUserDropdown} = props;
   const dispatch = useDispatch();
 
@@ -14,6 +15,7 @@ const SignIn = props => {
 
   // STORE SELECTORS
   const userId = useSelector(state => state.userData.userId);
+  const introCampaignEdit = useSelector(state => state.sessionManager.introCampaignEdit);
   const campaignData = useSelector (state => state.campaignData);
   const activeCampaignId = useSelector(state => state.sessionManager.activeCampaignId);
   const emailSignInError = useSelector(state => state.sessionManager.errorEmailSignIn);
@@ -25,7 +27,19 @@ const SignIn = props => {
   // FUNCTIONS
   const emailSignIn = (event) => { 
     event.preventDefault(); 
-    fireactions.emailSignIn(email, psw, dispatch);
+    if (introCampaignEdit) {
+      let save = window.confirm("Would you like to save your work as a new campaign?");
+      if (save) {
+        fireactions.emailSignIn(email, psw, dispatch, 
+          () => dispatch(fireactions.saveIntroCampaignData(campaignData))
+        );
+      } else {
+        fireactions.emailSignIn(email, psw, dispatch);
+      }
+      dispatch(actions.setIntroCampaignEdit(false));
+    } else {
+      fireactions.emailSignIn(email, psw, dispatch);
+    }
   };
   const googleSignIn = (event) => { 
     event.preventDefault(); 
@@ -33,9 +47,17 @@ const SignIn = props => {
   };
   const emailSignOut = (event) => { 
     event.preventDefault(); 
-    dispatch(fireactions.saveCampaignData(activeCampaignId, campaignData, 
-      fireactions.emailSignOut()
-    ));
+    if (activeCampaignId) {
+      dispatch(actions.setStatus('saving'));
+      dispatch(fireactions.saveCampaignData(activeCampaignId, campaignData, 
+        () => {
+          dispatch(actions.setStatus('idle'));
+          fireactions.emailSignOut();
+        }
+      ));
+    } else {
+      fireactions.emailSignOut();
+    }
     setShowUserDropdown(false);
   };
   
@@ -81,4 +103,4 @@ const SignIn = props => {
   return (userId ? signOutContainer : signInContainer);
 };
 
-export default SignIn;
+export default AuthDropdown;

@@ -18,11 +18,12 @@ export const updateDisplayName = (displayName) => {
   };
 };
 
-export const emailSignIn = (email, psw, dispatch) => {
+export const emailSignIn = (email, psw, dispatch, followUpHandler) => {
   auth.signInWithEmailAndPassword(email, psw)
     .then(resp => {
       console.log("[emailSignIn] sign in successful");
       dispatch(actions.unsetErrorEmailSignIn());
+      if (followUpHandler) followUpHandler();
     })
     .catch(err => {
       console.log("[emailSignIn] error:", err.message);

@@ -1,11 +1,11 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useOutsideClick } from '../../shared/utilityFunctions';
 
 import './UserMenu.scss';
 import * as actions from '../../store/actionIndex';
 import CampaignList from './CampaignList/CampaignList';
-import SignIn from './SignIn/SignIn';
+import AuthDropdown from './AuthDropdown/AuthDropdown';
 import SignUp from './SignUp/SignUp';
 
 import AlertImg from '../../assets/icons/alert-32.png';
@@ -23,7 +23,6 @@ const UserMenu = props => {
   const userId = useSelector(state => state.userData.userId);
   const displayName = useSelector(state => state.userData.displayName);
   const email = useSelector(state => state.userData.email);
-  const campaignId = useSelector(state => state.sessionManager.activeCampaignId);
   const campaignEdit = useSelector(state => state.sessionManager.campaignEdit);
   const campaignTitle = useSelector(state => state.campaignData.title);
 
@@ -96,7 +95,7 @@ const UserMenu = props => {
             {displayName ? displayName : email ? email : "Sign In / Sign Up"}
           </div>
           <div ref={userDropdownContentRef} className="dropdown-content" style={{display: showUserDropdown ? "block" : "none"}}>
-            <SignIn setShowSignUp={setShowSignUp} setShowUserDropdown={setShowUserDropdown} />
+            <AuthDropdown setShowSignUp={setShowSignUp} setShowUserDropdown={setShowUserDropdown} />
           </div>
         </div>
       </div>

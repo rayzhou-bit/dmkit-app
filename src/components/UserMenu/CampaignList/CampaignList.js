@@ -19,7 +19,7 @@ const CampaignList = props => {
   const newCampaign = () => {
     if (activeCampaignId) {
       dispatch(fireactions.saveCampaignData(activeCampaignId, campaignData,
-        dispatch(fireactions.createCampaign())
+        () => dispatch(fireactions.createCampaign())
       ));
     } else {
       dispatch(fireactions.createCampaign());

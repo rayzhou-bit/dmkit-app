@@ -9,8 +9,9 @@ export {
   resetSessionManager,
   loadCampaignList, addCampaignToList, removeCampaignFromList,
   updActiveCampaignId,
-  setCampaignEdit,
+
   setStatus,
+  setCampaignEdit, setIntroCampaignEdit,
 
   loadCampaignData, unloadCampaignData, loadIntroCampaign,
   updCampaignTitle,
