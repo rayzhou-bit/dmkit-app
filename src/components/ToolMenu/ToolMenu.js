@@ -8,6 +8,7 @@ import * as fireactions from '../../store/firestoreIndex';
 import AddImg from '../../assets/icons/add-32.png';
 import CopyImg from '../../assets/icons/copy-32.png';
 import SaveImg from '../../assets/icons/save-32.png';
+import AlertImg from '../../assets/icons/alert-32.png';
 
 const ToolMenu = React.memo(props => {
   const {toolMenuRef} = props;
@@ -16,8 +17,10 @@ const ToolMenu = React.memo(props => {
   // STORE VALUES
   const userId = useSelector(state => state.userData.userId);
   const status = useSelector(state => state.sessionManager.status);
+  const campaignEdit = useSelector(state => state.sessionManager.campaignEdit);
+  const introCampaignEdit = useSelector(state => state.sessionManager.introCampaignEdit);
   const activeCampaignId = useSelector(state => state.sessionManager.activeCampaignId);
-  const campaignData = useSelector(state => state.campaignData)
+  const campaignData = useSelector(state => state.campaignData);
   const activeCardId = useSelector(state => state.campaignData.activeCardId);
 
   // FUNCTIONS
@@ -30,31 +33,44 @@ const ToolMenu = React.memo(props => {
   };
 
   const saveEditedData = () => {
-    if ((status=== 'idle') && userId && activeCampaignId) {
-      dispatch(actions.setStatus('saving'));
-      dispatch(fireactions.saveCampaignData(activeCampaignId, campaignData,
-        () => dispatch(actions.setStatus('idle'))
-      ));
-    }
+    dispatch(actions.setStatus('saving'));
+    dispatch(fireactions.saveCampaignData(activeCampaignId, campaignData,
+      () => dispatch(actions.setStatus('idle'))
+    ));
   };
+
+  let disableSave = ((status === 'idle') && userId && activeCampaignId) 
+    ? false
+    : true;
+
+  const saveTooltip = disableSave
+    ? "Please create an account to save!"
+    : "Save campaign";
 
   return (
     <div className="tool-menu" ref={toolMenuRef}>
-      <div className="divider" />
-      <div className="create-card button" onClick={createCard}>
+      <button className="create-card toolmenu-item btn-32" onClick={createCard}>
         <img src={AddImg} alt="Add" draggable="false" />
-        <span className="tooltip">Add a card</span>
-      </div>
-      <div className="copy-card button" onClick={copyCard}>
+        <span className="tooltip">Add card</span>
+      </button>
+      <button className="copy-card toolmenu-item btn-32" onClick={copyCard}>
         <img src={CopyImg} alt="Copy" draggable="false" />
         <span className="tooltip">Copy selected card</span>
-      </div>
-      <div className="divider" />
-      <div className="save-campaign button" onClick={saveEditedData}>
+      </button>
+      {(campaignEdit || introCampaignEdit)
+        ? <div className="save-indicator toolmenu-item btn-32">
+            <img src={AlertImg} alt="Unsaved changes" draggable="false" />
+            <span className="tooltip">You have unsaved changes.</span>
+          </div>
+        : null
+      }
+      <button className="save toolmenu-item btn-32" 
+        disabled={disableSave}
+        onClick={saveEditedData}>
         <img src={SaveImg} alt="Save" draggable="false" />
-        <span className="tooltip">Save project</span>
-      </div>
-      <div className="divider" />
+        <span className="tooltip">{saveTooltip}</span>
+      </button>
+      <div className="back-strip" />
     </div>
   );
 });

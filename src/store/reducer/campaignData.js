@@ -84,7 +84,7 @@ const shiftViewInViewOrder = (state, shiftedViewId, posShift) => {
 
 // CARD
 const createCard = (state) => {
-  if (!state.activeViewId) {return state}
+  if (!state.activeViewId) return state;
   const newCardId = "card"+state.cardCreateCnt;
   const newCard = {
     views: {
@@ -109,10 +109,10 @@ const createCard = (state) => {
 
 const copyCard = (state, cardId) => {
   // this copies everything from the other card except it only appears in the activeView
-  if (!state.activeViewId) {return state}
+  if (!state.activeViewId) return state;
   const newCardId = "card"+state.cardCreateCnt;
   let newCard = {...state.cards[cardId]};
-  newCard.views = { [state.activeViewId]: state.cards[cardId].views[state.activeViewId] };
+  newCard.views = { [state.activeViewId]: {...state.cards[cardId].views[state.activeViewId]} };
   newCard.views[state.activeViewId].pos = {
     x: newCard.views[state.activeViewId].pos.x + GRID.size,
     y: newCard.views[state.activeViewId].pos.y + GRID.size,
@@ -137,7 +137,7 @@ const destroyCard = (state, cardId) => {
 };
 
 const linkCardToView = (state, cardId, pos) => {
-  if (!state.activeViewId) {return state}
+  if (!state.activeViewId) return state;
   let updatedCard = {...state.cards[cardId]};
   const viewSettings = {
     pos: pos,
@@ -154,7 +154,7 @@ const linkCardToView = (state, cardId, pos) => {
 };
 
 const unlinkCardFromView = (state, cardId) => {
-  if (!state.activeViewId) {return state}
+  if (!state.activeViewId) return state;
   let updatedCard = {...state.cards[cardId]};
   delete updatedCard.views[state.activeViewId];
   const updatedCards = updateObject(state.cards, {[cardId]: updatedCard});
@@ -166,7 +166,7 @@ const unlinkCardFromView = (state, cardId) => {
 };
 
 const updCardPos = (state, cardId, newPos) => {
-  if (!state.activeViewId) {return state}
+  if (!state.activeViewId) return state;
   let updatedCard = {...state.cards[cardId]};
   let roundedPos = {
     x: Math.round(newPos.x / GRID.size) * GRID.size,
@@ -178,7 +178,7 @@ const updCardPos = (state, cardId, newPos) => {
 };
 
 const updCardSize = (state, cardId, newSize) => {
-  if (!state.activeViewId) {return state}
+  if (!state.activeViewId) return state;
   let updatedCard = {...state.cards[cardId]};
   let roundedSize = {
     width: (Math.round(newSize.width.split("px").shift() / GRID.size) * GRID.size) + "px",
@@ -197,7 +197,7 @@ const updCardColor = (state, cardId, color) => {
 };
 
 const updCardColorForView = (state, cardId, color) => {
-  if (!state.activeViewId) {return state}
+  if (!state.activeViewId) return state;
   let updatedCard = {...state.cards[cardId]};
   updatedCard.views[state.activeViewId].color = color;
   const updatedCards = updateObject(state.cards, {[cardId]: updatedCard});
@@ -205,7 +205,7 @@ const updCardColorForView = (state, cardId, color) => {
 };
 
 const updCardForm = (state, cardId, cardForm) => {
-  if (!state.activeViewId) {return state}
+  if (!state.activeViewId) return state;
   let updatedCard = {...state.cards[cardId]};
   updatedCard.views[state.activeViewId].cardForm = cardForm;
   const updatedCards = updateObject(state.cards, {[cardId]: updatedCard});

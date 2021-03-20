@@ -18,18 +18,6 @@ $button-gap-height: 8px;
 }
 
 // BUTTONS
-%btn-24 {
-  box-sizing: content-box;
-  height: 24px; width: 24px;
-  margin: 0;  padding: 3px;
-
-  color: black;
-  background-color: lightgray;
-
-  &:hover {
-    background-color: lightskyblue;
-  }
-}
 
 %btn-32 {
   box-sizing: content-box;
