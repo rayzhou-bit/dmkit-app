@@ -74,10 +74,15 @@ const UserMenu = props => {
             onChange={userId ? updTitleEdit : null}
             onKeyDown={userId ? (e => keyPressTitleHandler(e)) : null}
           />
+          <button className="edit-title btn-32"
+            onClick={()=>beginTitleEdit()}>
+            <img src={EditImg} alt="Edit" draggable="false" />
+            <span className="tooltip">Edit title</span>
+          </button>
         </div>
         {/* campaign select */}
-        <div className="campaign dropdown" style={{display: userId ? "block" : "none"}}>
-          <div ref={campaignDropdownBtnRef} className="dropdown-btn" onClick={()=>setShowCampaignDropdown(!showCampaignDropdown)}>
+        <div className="dropdown" style={{display: userId ? "block" : "none"}}>
+          <div ref={campaignDropdownBtnRef} className="dropdown-btn .btn-any" onClick={()=>setShowCampaignDropdown(!showCampaignDropdown)}>
             Campaigns
           </div>
           <div ref={campaignDropdownContentRef} className="dropdown-content" style={{display: showCampaignDropdown ? "block" : "none"}}>
@@ -85,8 +90,8 @@ const UserMenu = props => {
           </div>
         </div>
         {/* user profile */}
-        <div className="user dropdown">
-          <div ref={userDropdownBtnRef} className="dropdown-btn" onClick={()=>setShowUserDropdown(!showUserDropdown)}>
+        <div className="dropdown">
+          <div ref={userDropdownBtnRef} className="dropdown-btn .btn-any" onClick={()=>setShowUserDropdown(!showUserDropdown)}>
             {displayName ? displayName : email ? email : "Sign In / Sign Up"}
           </div>
           <div ref={userDropdownContentRef} className="dropdown-content" style={{display: showUserDropdown ? "block" : "none"}}>

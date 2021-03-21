@@ -23,9 +23,9 @@ const CardTitle = props => {
 
   // STORE SELECTORS
   const activeCardId = useSelector(state => state.campaignData.activeCardId);
-  const activeViewId = useSelector(state => state.campaignData.activeViewId);
+  // const activeViewId = useSelector(state => state.campaignData.activeViewId);
   const cardColor = useSelector(state => state.campaignData.cards[cardId].color);
-  const cardColorForView = useSelector(state => state.campaignData.cards[cardId].views[activeViewId].color);
+  // const cardColorForView = useSelector(state => state.campaignData.cards[cardId].views[activeViewId].color);
   // const cardColorToDisplay = cardColorForView ? cardColorForView : cardColor ? cardColor : "gray";
   const cardColorToDisplay = cardColor;
   const cardTitle = useSelector(state => state.campaignData.cards[cardId].title);
@@ -79,7 +79,8 @@ const CardTitle = props => {
   for (let color in CARD_TITLEBAR_COLORS) {
     let colorStyle = { backgroundColor: color };
     colorList = [...colorList,
-      <button key={color} style={colorStyle} onClick={() => dispatch(actions.updCardColorForView(cardId, color))} />
+      // <button key={color} style={colorStyle} onClick={() => dispatch(actions.updCardColorForView(cardId, color))} />
+      <button key={color} style={colorStyle} onClick={() => dispatch(actions.updCardColor(cardId, color))} />
     ];
   }
 

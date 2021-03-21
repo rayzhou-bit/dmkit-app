@@ -28,8 +28,6 @@ const Loader = props => {
         console.log("[authListener] signed in user:", user.uid);
         dispatch(actions.loadUser(user));
         // prompt user to save intro campaign
-        console.log(introCampaignEdit)
-        console.log(campaignData)
         if (introCampaignEdit) {
           let save = window.confirm("Would you like to save your work as a new campaign?");
           if (!save) {

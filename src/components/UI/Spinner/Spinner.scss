@@ -5,10 +5,10 @@ $spinner-base-measurement: 10em;
   border-radius: 50%;
 }
 .spinner {
-  color: white;
+  color: #341751;
   font-size: 11px;
   text-indent: -99999em;
-  margin: auto;
+  margin: 55px auto;
   position: relative;
   width: $spinner-base-measurement;
   height: $spinner-base-measurement;
@@ -25,7 +25,7 @@ $spinner-base-measurement: 10em;
 .spinner:before {
   width: 0.52*$spinner-base-measurement;
   height: 1.02*$spinner-base-measurement;
-  background: green;
+  background: #fff;
   border-radius: 1.02*$spinner-base-measurement 0 0 1.02*$spinner-base-measurement;
   top: -0.01*$spinner-base-measurement;
   left: -0.01*$spinner-base-measurement;
@@ -37,7 +37,7 @@ $spinner-base-measurement: 10em;
 .spinner:after {
   width: 0.52*$spinner-base-measurement;
   height: 1.02*$spinner-base-measurement;
-  background: green;
+  background: #fff;
   border-radius: 0 1.02*$spinner-base-measurement 1.02*$spinner-base-measurement 0;
   top: -0.01*$spinner-base-measurement;
   left: 0.49*$spinner-base-measurement;
