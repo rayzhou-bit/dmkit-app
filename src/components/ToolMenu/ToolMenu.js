@@ -10,7 +10,7 @@ import CopyImg from '../../assets/icons/copy-32.png';
 import SaveImg from '../../assets/icons/save-32.png';
 import AlertImg from '../../assets/icons/alert-32.png';
 
-const ToolMenu = React.memo(props => {
+const ToolMenu = props => {
   const {toolMenuRef} = props;
   const dispatch = useDispatch();
 
@@ -43,9 +43,11 @@ const ToolMenu = React.memo(props => {
     ? false
     : true;
 
-  const saveTooltip = disableSave
-    ? "Please create an account to save!"
-    : "Save campaign";
+  const saveTooltip = userId
+    ? (status === 'saving')
+      ? "Saving..."
+      : "Save campaign"
+    : "Please create an account to save!";
 
   return (
     <div className="tool-menu" ref={toolMenuRef}>
@@ -67,12 +69,14 @@ const ToolMenu = React.memo(props => {
       <button className="save toolmenu-item btn-32" 
         disabled={disableSave}
         onClick={saveEditedData}>
-        <img src={SaveImg} alt="Save" draggable="false" />
+        {(status === 'saving')
+          ? <div className="spinner" />
+          : <img src={SaveImg} alt="Save" draggable="false" />}
         <span className="tooltip">{saveTooltip}</span>
       </button>
       <div className="back-strip" />
     </div>
   );
-});
+};
 
 export default ToolMenu;

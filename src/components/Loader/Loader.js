@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import './Loader.scss';
@@ -100,7 +100,7 @@ const Loader = props => {
           () => dispatch(actions.setStatus('idle'))
         ));
       }
-    }, 10000);
+    }, 60000);
     return () =>  clearInterval(autoSave);
   }, [dispatch, status, userId, activeCampaignId, campaignEdit, campaignData]);
 

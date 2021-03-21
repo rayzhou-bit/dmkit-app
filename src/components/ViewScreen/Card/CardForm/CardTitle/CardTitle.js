@@ -26,7 +26,8 @@ const CardTitle = props => {
   const activeViewId = useSelector(state => state.campaignData.activeViewId);
   const cardColor = useSelector(state => state.campaignData.cards[cardId].color);
   const cardColorForView = useSelector(state => state.campaignData.cards[cardId].views[activeViewId].color);
-  const cardColorToDisplay = cardColorForView ? cardColorForView : cardColor ? cardColor : "gray";
+  // const cardColorToDisplay = cardColorForView ? cardColorForView : cardColor ? cardColor : "gray";
+  const cardColorToDisplay = cardColor;
   const cardTitle = useSelector(state => state.campaignData.cards[cardId].title);
 
   // REFS

@@ -8,7 +8,7 @@ import CampaignList from './CampaignList/CampaignList';
 import AuthDropdown from './AuthDropdown/AuthDropdown';
 import SignUp from './SignUp/SignUp';
 
-import AlertImg from '../../assets/icons/alert-32.png';
+import EditImg from '../../assets/icons/edit-32.png'
 
 const UserMenu = props => {
   const dispatch = useDispatch();
@@ -23,7 +23,6 @@ const UserMenu = props => {
   const userId = useSelector(state => state.userData.userId);
   const displayName = useSelector(state => state.userData.displayName);
   const email = useSelector(state => state.userData.email);
-  const campaignEdit = useSelector(state => state.sessionManager.campaignEdit);
   const campaignTitle = useSelector(state => state.campaignData.title);
 
   // REFS
@@ -75,10 +74,6 @@ const UserMenu = props => {
             onChange={userId ? updTitleEdit : null}
             onKeyDown={userId ? (e => keyPressTitleHandler(e)) : null}
           />
-          <div className="save-warning" style={{visibility: campaignEdit ? 'visible' : 'hidden'}}>
-            <img src={AlertImg} alt="Save Warning" draggable="false" />
-            <span className="tooltip">You have unsaved work.</span>
-          </div>
         </div>
         {/* campaign select */}
         <div className="campaign dropdown" style={{display: userId ? "block" : "none"}}>
