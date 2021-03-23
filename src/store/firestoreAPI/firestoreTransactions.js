@@ -7,6 +7,19 @@ import { GRID } from '../../shared/constants/grid';
 // User contains uid, email, emailVerified (check firebase for more)
 const getUser = () => auth.currentUser ? auth.currentUser : null;
 
+const firstTimeSetup = (userId) => {
+  return dispatch => {
+    if (userId) {
+      store.collection("users").doc(userId).set({activeCampaignId: null})
+        .then(resp => {
+          console.log("[firstTimeSetup] success performing first time setup");
+          dispatch(actions.setStatus('idle'));
+        })
+        .catch(err => console.log("[firstTimeSetup] error performing first time setup:", err));
+    }
+  }
+};
+
 export const fetchActiveCampaignId = () => {
   const user = getUser();
   return dispatch => {
@@ -18,6 +31,8 @@ export const fetchActiveCampaignId = () => {
             dispatch(actions.updActiveCampaignId(resp.data().activeCampaignId));
             if (!resp.data().activeCampaignId) dispatch(actions.setStatus('idle'));
             console.log("[fetchActiveCampaignId] success loading activeCampaignId", resp.data().activeCampaignId);
+          } else {
+            dispatch(firstTimeSetup(userId));
           }
         })
         .catch(err => console.log("[fetchActiveCampaignId] error loading activeCampaignId:", err));

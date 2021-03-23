@@ -31,19 +31,19 @@ const Loader = props => {
         if (introCampaignEdit) {
           let save = window.confirm("Would you like to save your work as a new campaign?");
           if (!save) {
-            dispatch(fireactions.fetchActiveCampaignId());
             dispatch(fireactions.fetchCampaignList());
+            dispatch(fireactions.fetchActiveCampaignId());
           } else {
             dispatch(fireactions.saveIntroCampaignData(campaignData,
               () => {
-                dispatch(fireactions.fetchActiveCampaignId());
                 dispatch(fireactions.fetchCampaignList());
+                dispatch(fireactions.fetchActiveCampaignId());
               }
             ));
           }
         } else {
-          dispatch(fireactions.fetchActiveCampaignId());
           dispatch(fireactions.fetchCampaignList());
+          dispatch(fireactions.fetchActiveCampaignId());
         }
       } else {
         // Signed out
@@ -59,7 +59,7 @@ const Loader = props => {
   // Load data for active campaign
   useEffect(() => {
     if (userId) {
-      dispatch(actions.setStatus('loading'));
+      // dispatch(actions.setStatus('loading'));
       if (activeCampaignId) {
         dispatch(fireactions.fetchCampaignData(activeCampaignId));
       } else {

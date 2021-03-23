@@ -293,7 +293,7 @@ const introCampaign = {
       title: "Greetings Traveler!",
       color: "green",
       content: {
-        text: "Welcome to DM Kit, a tool to help plan your next adventure. Please create an account to save your work!",
+        text: "Welcome to DM Kit, a tool to help plan your next adventure. Take a look at the READ ME tab for more information on functions. If you would like to save your work, please create an account!",
       },
     },
     card1: {
@@ -313,7 +313,7 @@ const introCampaign = {
     card2: {
       views: {
         view1: {
-          pos: {x: 1*GRID.size, y: 20*GRID.size},
+          pos: {x: 4*GRID.size, y: 20*GRID.size},
           size: {width: 10*GRID.size, height: 5*GRID.size},
           cardForm: "card",
         },
@@ -327,7 +327,7 @@ const introCampaign = {
     card3: {
       views: {
         view1: {
-          pos: {x: 30*GRID.size, y: 3*GRID.size},
+          pos: {x: 25*GRID.size, y: 3*GRID.size},
           size: {width: 10*GRID.size, height: 6*GRID.size},
           cardForm: "card",
         },
@@ -335,7 +335,7 @@ const introCampaign = {
       title: "Library",
       color: "blue",
       content: {
-        text: "All the cards you create are stored in the library, which you can access by clicking the book to the right.",
+        text: "All the cards you create are stored in the library, which you can access by clicking the book to the right. The same card can be placed in multiple views and edited from multiple places.",
       },
     },
   },

@@ -23,6 +23,7 @@ const UserMenu = props => {
   const userId = useSelector(state => state.userData.userId);
   const displayName = useSelector(state => state.userData.displayName);
   const email = useSelector(state => state.userData.email);
+  const activeCampaignId = useSelector(state => state.sessionManager.activeCampaignId);
   const campaignTitle = useSelector(state => state.campaignData.title);
 
   // REFS
@@ -66,24 +67,27 @@ const UserMenu = props => {
     <>
       <div className="user-menu">
         {/* title */}
-        <div className="dmkit-title">
-          <input ref={campaignTitleRef} className="title-text"
-            type="text" required draggable="false"
-            value={(userId && campaignTitle) ? campaignTitle : "DM Kit"} readOnly={!editingTitle}
-            onDoubleClick={userId ? beginTitleEdit : null}
-            onChange={userId ? updTitleEdit : null}
-            onKeyDown={userId ? (e => keyPressTitleHandler(e)) : null}
-          />
-          <button className="edit-title btn-32"
-            onClick={()=>beginTitleEdit()}>
-            <img src={EditImg} alt="Edit" draggable="false" />
-            <span className="tooltip">Edit title</span>
-          </button>
-        </div>
+        {activeCampaignId 
+          ? <div className="dmkit-title">
+              <input ref={campaignTitleRef} className="title-text"
+                type="text" required draggable="false"
+                value={(userId && campaignTitle) ? campaignTitle : "DM Kit"} readOnly={!editingTitle}
+                onDoubleClick={userId ? beginTitleEdit : null}
+                onChange={userId ? updTitleEdit : null}
+                onKeyDown={userId ? (e => keyPressTitleHandler(e)) : null}
+              />
+              <button className="edit-title btn-32"
+                onClick={()=>beginTitleEdit()}>
+                <img src={EditImg} alt="Edit" draggable="false" />
+                <span className="tooltip">Edit title</span>
+              </button>
+            </div>
+          : <div className="dmkit-title"><div className="title-text">DM Kit</div></div>
+        }
         {/* campaign select */}
         <div className="dropdown" style={{display: userId ? "block" : "none"}}>
           <div ref={campaignDropdownBtnRef} className="dropdown-btn .btn-any" onClick={()=>setShowCampaignDropdown(!showCampaignDropdown)}>
-            Campaigns
+            Projects
           </div>
           <div ref={campaignDropdownContentRef} className="dropdown-content" style={{display: showCampaignDropdown ? "block" : "none"}}>
             <CampaignList setShowCampaignDropdown={setShowCampaignDropdown} />

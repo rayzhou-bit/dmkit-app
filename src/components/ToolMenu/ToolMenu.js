@@ -46,18 +46,18 @@ const ToolMenu = props => {
   const saveTooltip = userId
     ? (status === 'saving')
       ? "Saving..."
-      : "Save campaign"
+      : "Save"
     : "Please create an account to save!";
 
   return (
     <div className="tool-menu" ref={toolMenuRef}>
       <button className="create-card toolmenu-item btn-32" onClick={createCard}>
         <img src={AddImg} alt="Add" draggable="false" />
-        <span className="tooltip">Add card</span>
+        <span className="tooltip">{activeCampaignId ? "Add card" : "Please select a project first."}</span>
       </button>
       <button className="copy-card toolmenu-item btn-32" onClick={copyCard}>
         <img src={CopyImg} alt="Copy" draggable="false" />
-        <span className="tooltip">Copy selected card</span>
+        <span className="tooltip">{activeCampaignId ? "Copy selected card" : "Please select a project first."}</span>
       </button>
       {(campaignEdit || introCampaignEdit)
         ? <div className="save-indicator toolmenu-item btn-32">
