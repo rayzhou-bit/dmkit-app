@@ -53,11 +53,11 @@ const ToolMenu = props => {
     <div className="tool-menu" ref={toolMenuRef}>
       <button className="create-card toolmenu-item btn-32" onClick={createCard}>
         <img src={AddImg} alt="Add" draggable="false" />
-        <span className="tooltip">{activeCampaignId ? "Add card" : "Please select a project first."}</span>
+        <span className="tooltip">{(userId && !activeCampaignId) ? "Please select a project first." : "Add card"}</span>
       </button>
       <button className="copy-card toolmenu-item btn-32" onClick={copyCard}>
         <img src={CopyImg} alt="Copy" draggable="false" />
-        <span className="tooltip">{activeCampaignId ? "Copy selected card" : "Please select a project first."}</span>
+        <span className="tooltip">{(userId && !activeCampaignId) ? "Please select a project first." : "Add card"}</span>
       </button>
       {(campaignEdit || introCampaignEdit)
         ? <div className="save-indicator toolmenu-item btn-32">

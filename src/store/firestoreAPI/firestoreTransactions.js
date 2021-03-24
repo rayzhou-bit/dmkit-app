@@ -29,7 +29,10 @@ export const fetchActiveCampaignId = () => {
         .then(resp => {
           if (resp.exists) {
             dispatch(actions.updActiveCampaignId(resp.data().activeCampaignId));
-            if (!resp.data().activeCampaignId) dispatch(actions.setStatus('idle'));
+            if (!resp.data().activeCampaignId) {
+              dispatch(actions.unloadCampaignData());
+              dispatch(actions.setStatus('idle'));
+            };
             console.log("[fetchActiveCampaignId] success loading activeCampaignId", resp.data().activeCampaignId);
           } else {
             dispatch(firstTimeSetup(userId));

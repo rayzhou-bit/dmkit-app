@@ -1,5 +1,6 @@
 $menu-size: 42px;
 $btn-height: 42px;
+$border-radius: 5px;
 
 .tool-menu {
   position: fixed;
@@ -17,8 +18,8 @@ $btn-height: 42px;
 
     border: 1px solid black;
     border-left: 0px;
-    border-top-right-radius: 5px;
-    border-bottom-right-radius: 5px;
+    border-top-right-radius: $border-radius;
+    border-bottom-right-radius: $border-radius;
 
     .tooltip { left: 130%; top: 15%; white-space: nowrap; }
     .tooltip::after { right: 100%; top: 50%; border-right-color: black; }
@@ -33,13 +34,19 @@ $btn-height: 42px;
   }
 
   .save-indicator {
-    bottom: 1.5 *$btn-height;
+    bottom: 1.6 *$btn-height;
+    border: 1px solid black;
+    border-radius: 50%;
     background-color: yellow;
   }
 
   .save {
     bottom: 0.5 *$btn-height;
     background-color: green;
+
+    &:hover {
+      background-color: lightblue;
+    }
 
     &:disabled {
       // background-color: red;

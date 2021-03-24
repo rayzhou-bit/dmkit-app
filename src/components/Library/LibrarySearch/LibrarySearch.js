@@ -13,6 +13,7 @@ const LibrarySearch = props => {
 
   // STORE SELECTORS
   const activeViewId = useSelector(state => state.campaignData.activeViewId);
+  const viewOrder = useSelector(state => state.campaignData.viewOrder);
   const cardCollection = useSelector(state => state.campaignData.cards);
 
   // FUNCTIONS
@@ -31,7 +32,13 @@ const LibrarySearch = props => {
       const cardText = cardCollection[cardId].content ? (cardCollection[cardId].content.text ? cardCollection[cardId].content.text : "") : "";
       if (cardTitle.toLowerCase().includes(enteredSearch.toLowerCase()) || cardText.toLowerCase().includes(enteredSearch.toLocaleLowerCase())) {
         const cardIsInActiveView = cardCollection[cardId].views && cardCollection[cardId].views[activeViewId];
-        const cardIsUnused = Object.keys(cardCollection[cardId].views).length === 0;
+        let cardIsUnused = true;
+        for (let viewId in cardCollection[cardId].views) {
+          if (viewOrder.includes(viewId)) {
+            cardIsUnused = false;
+            break;
+          }
+        }
 
         switch (searchFilter) {
           case 'current':

@@ -20,9 +20,6 @@ const AuthDropdown = props => {
   const activeCampaignId = useSelector(state => state.sessionManager.activeCampaignId);
   const emailSignInError = useSelector(state => state.sessionManager.errorEmailSignIn);
   const googleSignInError = useSelector(state => state.sessionManager.errorGoogleSignIn);
-  // TODO: implement facebook sign in
-
-  // TODO change sign in errors to local useState by passing handler to sign in
 
   // FUNCTIONS
   const emailSignIn = (event) => { 

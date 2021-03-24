@@ -16,9 +16,13 @@ const ViewScreen = props => {
   const [cardAnimation, setCardAnimation] = useState({});
 
   // STORE SELECTORS
+  const userId = useSelector(state => state.userData.userId);
   const activeCampaignId = useSelector(state => state.sessionManager.activeCampaignId);
   const activeViewId = useSelector(state => state.campaignData.activeViewId);
   const cardCollection = useSelector(state => state.campaignData.cards);
+
+  const viewScreenWidth = 500 *GRID.size;
+  const viewScreenHeight = 250 *GRID.size;
 
   // FUNCTIONS
   const onCardDrop = (event) => {
@@ -45,8 +49,8 @@ const ViewScreen = props => {
   // STYLES
   let viewScreenStyle = {
     backgroundColor: 'transparent',
-    width: 500 *GRID.size + 'px',
-    height: 250 *GRID.size + 'px',
+    width: viewScreenWidth + 'px',
+    height: viewScreenHeight + 'px',
   };
 
   // CARD LIST
@@ -66,14 +70,14 @@ const ViewScreen = props => {
   }
 
   return (
-    activeCampaignId
-      ? <main className="view-screen"
+    userId && !activeCampaignId
+      ? <main className="empty-screen">
+          <div>No active project loaded. Please select your project or create a new one.</div>
+        </main>
+      : <main className="view-screen"
           style={viewScreenStyle}
           onDrop={e => onCardDrop(e)} onDragOver={e => e.preventDefault()}>
           {cardList}
-        </main>
-      : <main className="empty-screen">
-          <div>No active project loaded. Please select your project or create a new one.</div>
         </main>
   );
 };

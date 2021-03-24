@@ -3,20 +3,18 @@ import { updateObject } from '../../shared/utilityFunctions';
 
 const initialState = {
   campaignList: {
-    // campaignId: campaignTitle,   // TODO design this based on campaignList in UserMenu
+    // campaignId: campaignTitle,
   },
   activeCampaignId: null,
 
   status: 'loading',  // idle, loading or saving
   campaignEdit: false,  // flag for any unsaved changes
 
-  errorEmailSignIn: "", // TODO move errors to useState
+  errorEmailSignIn: "",
   errorEmailSignUp: "",
   errorGoogleSignIn: "",
   errorFacebookSignIn: "",
 };
-
-// TODO: switch campaignEdit to run on useEffect
 
 const reducer = (state = initialState, action) => {
   switch (action.type) {
@@ -26,6 +24,7 @@ const reducer = (state = initialState, action) => {
     case actionTypes.LOAD_CAMPAIGN_LIST: return updateObject(state, {campaignList: action.campaignList});
     case actionTypes.ADD_CAMPAIGN_TO_LIST: return addCampaignToList(state, action.campaignId, action.campaignTitle);
     case actionTypes.REMOVE_CAMPAIGN_FROM_LIST: return removeCampaignFromList(state, action.campaignId);
+    case actionTypes.UPD_CAMPAIGN_ON_LIST: return updCampaignOnList(state, action.title);
     case actionTypes.UPD_ACTIVE_CAMPAIGN_ID: return updateObject(state, {activeCampaignId: action.activeCampaignId});
 
     case actionTypes.SET_STATUS: return updateObject(state, {status: action.status});
@@ -52,7 +51,7 @@ const addCampaignToList = (state, campaignId, campaignTitle) => {
   const updatedState = {
     campaignList: updatedCampaignList,
     activeCampaignId: campaignId,
-  }
+  };
   return updateObject(state, updatedState);
 };
 
@@ -62,7 +61,16 @@ const removeCampaignFromList = (state, campaignId) => {
   const updatedState = {
     campaignList: updatedCampaignList,
     activeCampaignId: campaignId === state.activeCampaignId ? null : state.activeCampaignId,
-  }
+  };
+  return updateObject(state, updatedState);
+};
+
+const updCampaignOnList = (state, title) => {
+  let updatedCampaignList = {...state.campaignList};
+  updatedCampaignList[state.activeCampaignId] = title;
+  const updatedState = {
+    campaignList: updatedCampaignList,
+  };
   return updateObject(state, updatedState);
 };
 
@@ -84,7 +92,7 @@ const setErrorEmailSignUp = (state, errorCode) => {
     case ('auth/email-already-in-use'): return updateObject(state, {errorEmailSignUp: "email already in use"});
     case ('auth/invalid-email'): return updateObject(state, {errorEmailSignUp: "invalid email"});
     case ('auth/operation-not-allowed'): return updateObject(state, {errorEmailSignUp: "email sign up currently not in service"});
-    case ('auth/weak-password'): return updateObject(state, {errorEmailSignUp: "passwork is too weak"});
+    case ('auth/weak-password'): return updateObject(state, {errorEmailSignUp: "password must be at least 6 characters long"});
     default: return updateObject(state, {errorEmailSignUp: "email sign up unsuccessful"});
   }
 };

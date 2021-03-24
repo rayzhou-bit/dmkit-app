@@ -15,11 +15,14 @@ export const setIntroCampaignEdit = (edit) => { return { type: actionTypes.SET_I
 export const loadCampaignData = (campaignData) => { return { type: actionTypes.LOAD_CAMPAIGN_DATA, campaignData: campaignData }; };
 export const unloadCampaignData = () => { return { type: actionTypes.UNLOAD_CAMPAIGN_DATA }; };
 export const loadIntroCampaign = () => { return { type: actionTypes.LOAD_INTRO_CAMPAIGN }; };
-export const updCampaignTitle = (title) => { return { type: actionTypes.UPD_CAMPAIGN_TITLE, title: title }; };
+export const updCampaignTitle = (title) => { 
+  return dispatch => {
+    dispatch({ type: actionTypes.UPD_CAMPAIGN_TITLE, title: title });
+    dispatch({ type: actionTypes.UPD_CAMPAIGN_ON_LIST, title: title });
+  }; 
+};
 
-
-
-// TODO re evaluate following
+// actions for auth errors fround in sessionManager reducer
 export const setErrorEmailSignIn = (errorCode) => { return { type: actionTypes.SET_ERROR_EMAIL_SIGN_IN, errorCode: errorCode }; };
 export const unsetErrorEmailSignIn = () => { return { type: actionTypes.UNSET_ERROR_EMAIL_SIGN_IN }; };
 export const setErrorEmailSignUp = (errorCode) => { return { type: actionTypes.SET_ERROR_EMAIL_SIGN_UP, errorCode: errorCode }; };
@@ -28,4 +31,3 @@ export const setErrorGoogleSignUp = (errorCode) => { return { type: actionTypes.
 export const unsetErrorGoogleSignUp = () => { return { type: actionTypes.UNSET_ERROR_GOOGLE_SIGN_IN }; };
 export const setErrorFacebookSignUp = (errorCode) => { return { type: actionTypes.SET_ERROR_FACEBOOK_SIGN_IN, errorCode: errorCode }; };
 export const unsetErrorFacebookSignUp = () => { return { type: actionTypes.UNSET_ERROR_FACEBOOK_SIGN_IN }; };
-

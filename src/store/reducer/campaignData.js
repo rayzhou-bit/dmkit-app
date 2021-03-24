@@ -18,7 +18,6 @@ import { updateObject } from '../../shared/utilityFunctions';
 //         view0: {
 //           pos: {x: "card x-position", y: "card y-position"},
 //           size: {width: "card width", height: "card height"},
-//           color: "view color", // TODO future implementation?
 //           cardForm: "card or bubble",
 //         },
 //       },
@@ -112,11 +111,14 @@ const copyCard = (state, cardId) => {
   if (!state.activeViewId) return state;
   const newCardId = "card"+state.cardCreateCnt;
   let newCard = {...state.cards[cardId]};
+  // position updates
   newCard.views = { [state.activeViewId]: {...state.cards[cardId].views[state.activeViewId]} };
   newCard.views[state.activeViewId].pos = {
     x: newCard.views[state.activeViewId].pos.x + GRID.size,
     y: newCard.views[state.activeViewId].pos.y + GRID.size,
   };
+  // content updates
+  newCard.content = {...state.cards[cardId].content};
   const updatedCards = updateObject(state.cards, {[newCardId]: newCard});
   const updatedState = {
     activeCardId: newCardId,
