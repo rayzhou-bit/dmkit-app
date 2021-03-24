@@ -26,6 +26,11 @@
     }
   }
   
+  .copy-campaign {
+    border-left: 1px solid black;
+    .tooltip { top: 150%; right: -70%; }
+    .tooltip::after { bottom: 100%; right: 40%; border-bottom-color: black; }
+  }
   .destroy-campaign {
     border-left: 1px solid black;
     .tooltip { top: 150%; right: -70%; }

@@ -71,7 +71,7 @@ const UserMenu = props => {
           ? <div className="dmkit-title">
               <input ref={campaignTitleRef} className="title-text"
                 type="text" required draggable="false"
-                value={campaignTitle} readOnly={!editingTitle}
+                value={campaignTitle ? campaignTitle : ""} readOnly={!editingTitle}
                 onDoubleClick={userId ? beginTitleEdit : null}
                 onChange={userId ? updTitleEdit : null}
                 onKeyDown={userId ? (e => keyPressTitleHandler(e)) : null}
@@ -85,7 +85,7 @@ const UserMenu = props => {
           : <div className="dmkit-title"><div className="title-text">DM Kit</div></div>
         }
         {/* campaign select */}
-        <div className="dropdown" style={{display: userId ? "block" : "none"}}>
+        <div className="dropdown" style={{display: userId ? "block" : "none", width: "20rem"}}>
           <div ref={campaignDropdownBtnRef} className="dropdown-btn btn-any" onClick={()=>setShowCampaignDropdown(!showCampaignDropdown)}>
             Projects
           </div>
@@ -94,7 +94,7 @@ const UserMenu = props => {
           </div>
         </div>
         {/* user profile */}
-        <div className="dropdown">
+        <div className="dropdown" style={{width: "15rem"}}>
           <div ref={userDropdownBtnRef} className="dropdown-btn btn-any" onClick={()=>setShowUserDropdown(!showUserDropdown)}>
             {displayName ? displayName : email ? email : "Sign In / Sign Up"}
           </div>

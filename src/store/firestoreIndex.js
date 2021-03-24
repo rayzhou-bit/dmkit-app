@@ -12,5 +12,5 @@ export {
   fetchActiveCampaignId, fetchCampaignList,
   fetchCampaignData, saveCampaignData, saveIntroCampaignData,
   switchCampaign,
-  createCampaign, destroyCampaign,
+  createCampaign, copyCampaign, destroyCampaign,
 } from './firestoreAPI/firestoreTransactions';

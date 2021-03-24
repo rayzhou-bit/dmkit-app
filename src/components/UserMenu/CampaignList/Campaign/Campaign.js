@@ -6,6 +6,7 @@ import './Campaign.scss';
 import * as actions from '../../../../store/actionIndex';
 import * as fireactions from '../../../../store/firestoreIndex';
 
+import CopyImg from '../../../../assets/icons/copy-24.png';
 import DeleteImg from '../../../../assets/icons/delete-24.png';
 
 const Campaign = props => {
@@ -34,6 +35,16 @@ const Campaign = props => {
     setShowCampaignDropdown(false);
   };
 
+  const copyCampaign = () => {
+    if (campaignId === activeCampaignId) {
+      dispatch(fireactions.saveCampaignData(activeCampaignId, campaignData,
+        dispatch(fireactions.copyCampaign(campaignId))
+      ));
+    } else {
+      dispatch(fireactions.copyCampaign(campaignId));
+    }
+  };
+
   const destroyCampaign = () => {
     if (!confirmDelete) {
       setConfirmDelete(true);
@@ -51,20 +62,21 @@ const Campaign = props => {
 
   useOutsideClick([campaignDeleteBtnRef], confirmDelete, setConfirmDelete, false);
 
-  // STYLES
-  const campaignTitleStyle = {
-    backgroundColor: campaignId === activeCampaignId ? "orange" : null,
-  };
-  const deleteBtnStyle = {
-    backgroundColor: confirmDelete ? "red" : null,
-  };
-
   return (
     <div className="campaign">
-      <div className="campaign-title" style={campaignTitleStyle} onClick={switchCampaign}>
+      <div className="campaign-title" title={campaignTitle}
+        style={{backgroundColor: (campaignId === activeCampaignId) ? "orange" : null}} 
+        onClick={switchCampaign}>
         {campaignTitle}
       </div>
-      <button ref={campaignDeleteBtnRef} className="destroy-campaign btn-24" style={deleteBtnStyle} onClick={destroyCampaign}>
+      <button className="copy-campaign btn-24"
+        onClick={copyCampaign}>
+        <img src={CopyImg} alt="Copy" draggable="false" />
+        <span className="tooltip">Copy campaign</span>
+      </button>
+      <button ref={campaignDeleteBtnRef} className="destroy-campaign btn-24" 
+        style={{backgroundColor: confirmDelete ? "red" : null}} 
+        onClick={destroyCampaign}>
         <img src={DeleteImg} alt="Delete" draggable="false" />
         <span className="tooltip">Delete campaign</span>
       </button>

@@ -70,9 +70,9 @@ export const fetchCampaignData = (campaignId, followUpHandler) => {
       let campaignData = {};
       // CAMPAIGN data
       store.collection("users").doc(userId).collection("campaigns").doc(campaignId).get()
-        .then(doc => {
-          if (doc.exists) {
-            campaignData = updateObject(campaignData, doc.data());
+        .then(campaign => {
+          if (campaign.exists) {
+            campaignData = updateObject(campaignData, campaign.data());
             // CARD data
             store.collection("users").doc(userId).collection("campaigns").doc(campaignId).collection("cards").get()
               .then(cardSnapshot => {
@@ -94,7 +94,7 @@ export const fetchCampaignData = (campaignId, followUpHandler) => {
                     if (followUpHandler) followUpHandler();
                     console.log("[fetchCampaignData] success loading campaign");
                   })
-                  .catch(err => console.log("[fetchCampaignData] error loading views:", err))
+                  .catch(err => console.log("[fetchCampaignData] error loading views:", err));
               })
               .catch(err => console.log("[fetchCampaignData] error loading cards:", err));
           } else {
@@ -137,7 +137,7 @@ export const saveCampaignData = (campaignId, campaignData, followUpHandler) => {
       }
       // SAVE DATA (BATCH COMMIT)
       batch.commit()
-        .then (resp => {
+        .then(resp => {
           dispatch(actions.setCampaignEdit(false));
           if (followUpHandler) followUpHandler();
           console.log("[saveActiveCampaignData] success saving campaign");
@@ -266,6 +266,73 @@ export const createCampaign = (followUpHandler) => {
         })
         .catch(err => console.log("[createCampaign] error adding campaign:", err));
 
+    }
+  };
+};
+
+export const copyCampaign = (campaignId, followUpHandler) => {
+  // should save before copy
+  const user = getUser();
+  return dispatch => {
+    if (user) {
+      const userId = user.uid;
+      // fetch CAMPAIGN
+      store.collection("users").doc(userId).collection("campaigns").doc(campaignId).get()
+        .then(campaign => {
+          if (campaign.exists) {
+            let campaignData = campaign.data();
+            campaignData.title = campaignData.title + " (copy)";
+            // copy CAMPAIGN
+            store.collection("users").doc(userId).collection("campaigns").add(campaignData)
+              .then(resp => {
+                console.log("[copyCampaign] copied campaign level info");
+                const copiedCampaignId = resp.id;
+                if (copiedCampaignId) {
+                  // fetch CARDS
+                  store.collection("users").doc(userId).collection("campaigns").doc(campaignId).collection("cards").get()
+                    .then(cardSnapshot => {
+                      // copy CARDS
+                      const cardBatch = store.batch();
+                      cardSnapshot.forEach(card => {
+                        cardBatch.set(
+                          store.collection("users").doc(userId).collection("campaigns").doc(copiedCampaignId).collection("cards").doc(card.id),
+                          card.data()
+                        );
+                      });
+                      cardBatch.commit()
+                        .then(resp => {
+                          console.log("[copyCampaign] copied cards");
+                          // fetch VIEWS
+                          store.collection("users").doc(userId).collection("campaigns").doc(campaignId).collection("views").get()
+                            .then(viewSnapshot => {
+                              // copy VIEWS
+                              const viewBatch = store.batch();
+                              viewSnapshot.forEach(view => {
+                                viewBatch.set(
+                                  store.collection("users").doc(userId).collection("campaigns").doc(copiedCampaignId).collection("views").doc(view.id),
+                                  view.data()
+                                );
+                              })
+                              viewBatch.commit()
+                                .then(resp => {
+                                  console.log("[copyCampaign] copied views");
+                                  // CLEANUP
+                                  dispatch(fetchCampaignList());
+                                  if (followUpHandler) followUpHandler();
+                                })
+                                .catch(err => console.log("[copyCampaign] error copying view data"))
+                            })
+                            .catch(err => console.log("[copyCampaign] error fetching view data"));
+                        })
+                        .catch(err => console.log("[copyCampaign] error copying card data"))
+                    })
+                    .catch(err => console.log("[copyCampaign] error fetching card data"))
+                }
+              })
+              .catch(err => console.log("[copyCampaign] error copying campaign data"));
+          }
+        })
+        .catch(err => console.log("[copyCampaign] error fetching campaign data"));
     }
   };
 };
