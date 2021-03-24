@@ -4,6 +4,7 @@ import { useOutsideClick } from '../../shared/utilityFunctions';
 
 import './UserMenu.scss';
 import * as actions from '../../store/actionIndex';
+import * as fireactions from '../../store/firestoreIndex';
 import CampaignList from './CampaignList/CampaignList';
 import AuthDropdown from './AuthDropdown/AuthDropdown';
 import SignUp from './SignUp/SignUp';
@@ -30,8 +31,8 @@ const UserMenu = props => {
   const campaignTitleRef = useRef("campaignTitle");
   const campaignDropdownBtnRef = useRef("campaignDropdownBtn");
   const campaignDropdownContentRef = useRef("campaignDropdownContent");
-  const userDropdownBtnRef = useRef("userDropdownBtn");
-  const userDropdownContentRef = useRef("userDropdownContent");
+  const authDropdownBtnRef = useRef("userDropdownBtn");
+  const authDropdownContentRef = useRef("userDropdownContent");
 
   // FUNCTIONS: CAMPAIGN TITLE
   const beginTitleEdit = () => {
@@ -45,6 +46,7 @@ const UserMenu = props => {
   const endTitleEdit = () => {
     if (editingTitle) setEditingTitle(false);
   };
+  useOutsideClick([campaignTitleRef], editingTitle, endTitleEdit);
 
   const updTitleEdit = () => {
     if (editingTitle) dispatch(actions.updCampaignTitle(campaignTitleRef.current.value));
@@ -52,14 +54,18 @@ const UserMenu = props => {
 
   const keyPressTitleHandler = (event) => {
     if (editingTitle && event.key === 'Enter') endTitleEdit();
-  };  
+  };
 
-  // FUNCTIONS: OUTSIDECLICKS
-  useOutsideClick([campaignTitleRef], editingTitle, endTitleEdit);
+  const campaignDropdownHandler = () => {
+    dispatch(fireactions.fetchCampaignList());
+    setShowCampaignDropdown(!showCampaignDropdown);
+  };
+
   useOutsideClick([campaignDropdownBtnRef, campaignDropdownContentRef], showCampaignDropdown, 
     () => setShowCampaignDropdown(false)
   );
-  useOutsideClick([userDropdownBtnRef, userDropdownContentRef], showUserDropdown, 
+
+  useOutsideClick([authDropdownBtnRef, authDropdownContentRef], showUserDropdown, 
     () => setShowUserDropdown(false)
   );
 
@@ -85,20 +91,25 @@ const UserMenu = props => {
           : <div className="dmkit-title"><div className="title-text">DM Kit</div></div>
         }
         {/* campaign select */}
-        <div className="dropdown" style={{display: userId ? "block" : "none", width: "20rem"}}>
-          <div ref={campaignDropdownBtnRef} className="dropdown-btn btn-any" onClick={()=>setShowCampaignDropdown(!showCampaignDropdown)}>
+        <div className="campaign-dropdown" 
+          style={{display: userId ? "block" : "none", width: "20rem"}}>
+          <div ref={campaignDropdownBtnRef} className="dropdown-btn btn-any" 
+            onClick={campaignDropdownHandler}>
             Projects
           </div>
-          <div ref={campaignDropdownContentRef} className="dropdown-content" style={{display: showCampaignDropdown ? "block" : "none"}}>
+          <div ref={campaignDropdownContentRef} className="dropdown-content" 
+            style={{display: showCampaignDropdown ? "block" : "none"}}>
             <CampaignList setShowCampaignDropdown={setShowCampaignDropdown} />
           </div>
         </div>
         {/* user profile */}
-        <div className="dropdown" style={{width: "15rem"}}>
-          <div ref={userDropdownBtnRef} className="dropdown-btn btn-any" onClick={()=>setShowUserDropdown(!showUserDropdown)}>
+        <div className="auth-dropdown" style={{width: "15rem"}}>
+          <div ref={authDropdownBtnRef} className="dropdown-btn btn-any" 
+            onClick={()=>setShowUserDropdown(!showUserDropdown)}>
             {displayName ? displayName : email ? email : "Sign In / Sign Up"}
           </div>
-          <div ref={userDropdownContentRef} className="dropdown-content" style={{display: showUserDropdown ? "block" : "none"}}>
+          <div ref={authDropdownContentRef} className="dropdown-content" 
+            style={{display: showUserDropdown ? "block" : "none"}}>
             <AuthDropdown setShowSignUp={setShowSignUp} setShowUserDropdown={setShowUserDropdown} />
           </div>
         </div>
