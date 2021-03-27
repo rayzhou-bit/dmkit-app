@@ -13,19 +13,22 @@ $border-radius: 0.5rem;
 
   // dropdown styles
   .campaign-dropdown {
-    width: 30rem;
     display: inline-block;
     position: relative;
+    width: 25rem;
+    max-width: 30%;
   }
   .auth-dropdown {
     display: inline-block;
     position: relative;
-    width: 15rem;
+    width: 25rem;
+    max-width: 30%;
   }
 
   .dropdown-btn {
+    box-sizing: border-box;
     width: 100%;
-
+    padding: 0 0.5rem;
     border-left: 1px solid black;
     border-right: 1px solid black;
     border-bottom: 2px solid black;
@@ -35,8 +38,11 @@ $border-radius: 0.5rem;
     color: black;
     background-color: lightgray;
 
-    text-align: center;
     line-height: 41px;
+    text-align: center;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
 
     &:hover {
       background-color: lightblue;

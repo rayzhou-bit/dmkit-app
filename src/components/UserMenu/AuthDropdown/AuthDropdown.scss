@@ -1,68 +1,106 @@
-
+$border-radius: 0.5rem;
 
 .sign-in-dropdown {
-  padding: 1rem;
+  width: 100%;
+  text-align: center;
 
   .email-sign-in-form {
+    padding-bottom: 0;
+    border-bottom: 1px solid black;
+
     line-height: normal;
+    font-weight: bold;
 
-    h1 {
-      margin: 0 0 .5rem 0;
-      text-align: center;
-      font-size: 1.5em;
+    form {
+      margin-top: 0.5rem;
+      padding: 2% 10%;
+      background-color: white;
+
+      .form-row {
+        margin-bottom: .5rem;
+        display: flex;
+        flex-flow: column nowrap;
+  
+        input {
+          width: 100%;
+        }
+      }
     }
-    .form-row {
-      margin-bottom: .5rem;
+
+    .sign-in-error {
+      color: red;
+    }
+
+    .sign-in-btn-container {
       display: flex;
-      flex-flow: column nowrap;
+      flex-flow: row nowrap;
 
-      label {
-        margin-bottom: 0.05rem;
+      .sign-in {
+        margin: 0 1rem;
+        border: 1px solid black;
       }
 
-      input {
-        width: 90%;
-      }
-    }
-    button {
-      margin-bottom: .5rem;
-    }
-    .sign-in-error {
-      margin-bottom: .5rem;
-      color: red;
-    }
+      .forget-password {
+        padding-top: 0.2rem;
+        font-size: .8rem;
+        font-weight: normal;
 
-    .sign-up-button {
-      margin-bottom: .5rem;
-      font-size: .8em;
-      &:hover {
-        color: lightblue;
+        &:hover {
+          color: lightblue;
+        }
       }
+      .forget-password-msg {}
     }
   }
 
-  .other-provider-sign-in {
-    button {
-      margin-top: .5rem;
-    }
+  .google-sign-in {
+    border-bottom: 1px solid black;
+    font-weight: bold;
     .sign-in-error {
-      margin-bottom: .5rem;
       color: red;
     }
   }
 
-  .divider {
-    width: 90%; height: 0.01rem;
-    border-top: 0.01rem solid black;
-    margin-bottom: .5rem;
+  .sign-up {
+    border-bottom-left-radius: $border-radius;
+    border-bottom-right-radius: $border-radius;
   }
 }
 
-.sign-out {
-  padding: 1rem;
+.sign-out-dropdown {
+  width: 100%;
   text-align: center;
-  
-  &:hover {
-    background-color: lightblue;
+
+  .signed-in-with {
+    border-bottom: 1px solid black;
+    text-overflow: ellipsis;
+    overflow: hidden;
   }
+
+  .display-name {
+    border-bottom: 1px solid black;
+
+    .display-name-input {
+      width: 90%;
+      margin: 5%;
+    }
+  }
+
+  .sign-out {
+    border-bottom-left-radius: $border-radius;
+    border-bottom-right-radius: $border-radius;
+  }
+}
+
+.dropdown-item {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 0.5rem 0;
+  background-color: lightgray;
+}
+
+.auth-divider {
+  width: 90%; height: 0.01rem;
+  margin: 0.3rem 5%;
+  border-top: 0.01rem solid black;
 }

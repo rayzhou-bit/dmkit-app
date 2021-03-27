@@ -32,7 +32,7 @@ const SignUp = (props) => {
 
   const emailSignUpHandler = (event) => {
     event.preventDefault();
-    fireactions.emailSignUp(email, psw, dispatch);
+    dispatch(fireactions.emailSignUp(email, psw));
   };
 
   const accountSetupHandler = (event) => {
@@ -62,7 +62,7 @@ const SignUp = (props) => {
   const emailVerifyScreen = (
     <div className="email-verify-screen">
       <p>Please verify your email by clicking the link in your verification email.</p>
-      <button onClick={() => fireactions.sendEmailVerification()}>Resend Email</button>
+      <button onClick={() => dispatch(fireactions.sendEmailVerification())}>Resend Email</button>
     </div>
   );
 

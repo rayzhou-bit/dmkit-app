@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useOutsideClick } from '../../../shared/utilityFunctions';
 
 import './AuthDropdown.scss';
 import * as actions from '../../../store/actionIndex';
@@ -10,16 +11,21 @@ const AuthDropdown = props => {
   const dispatch = useDispatch();
 
   // STATES
-  const [email, setEmail] = useState("");
-  const [psw, setPsw] = useState("");
+  const [emailInput, setEmailInput] = useState("");
+  const [pswInput, setPswInput] = useState("");
+  const [showDisplayInput, setShowDisplayInput] = useState(false);
+  const [displayNameInput, setDisplayNameInput] = useState("");
 
   // STORE SELECTORS
   const userId = useSelector(state => state.userData.userId);
+  const email = useSelector(state => state.userData.email);
   const introCampaignEdit = useSelector(state => state.sessionManager.introCampaignEdit);
   const campaignData = useSelector (state => state.campaignData);
   const activeCampaignId = useSelector(state => state.sessionManager.activeCampaignId);
   const emailSignInError = useSelector(state => state.sessionManager.errorEmailSignIn);
   const googleSignInError = useSelector(state => state.sessionManager.errorGoogleSignIn);
+
+  const displayNameInputRef = useRef("displayNameInput");
 
   // FUNCTIONS
   const emailSignIn = (event) => { 
@@ -27,21 +33,23 @@ const AuthDropdown = props => {
     if (introCampaignEdit) {
       let save = window.confirm("Would you like to save your work as a new campaign?");
       if (save) {
-        fireactions.emailSignIn(email, psw, dispatch, 
+        dispatch(fireactions.emailSignIn(emailInput, pswInput, 
           () => dispatch(fireactions.saveIntroCampaignData(campaignData))
-        );
+        ));
       } else {
-        fireactions.emailSignIn(email, psw, dispatch);
+        dispatch(fireactions.emailSignIn(emailInput, pswInput));
       }
       dispatch(actions.setIntroCampaignEdit(false));
     } else {
-      fireactions.emailSignIn(email, psw, dispatch);
+      dispatch(fireactions.emailSignIn(emailInput, pswInput));
     }
   };
+
   const googleSignIn = (event) => { 
     event.preventDefault(); 
-    fireactions.googleSignIn(dispatch);
+    dispatch(fireactions.googleSignIn());
   };
+
   const emailSignOut = (event) => { 
     event.preventDefault(); 
     if (activeCampaignId) {
@@ -49,52 +57,94 @@ const AuthDropdown = props => {
       dispatch(fireactions.saveCampaignData(activeCampaignId, campaignData, 
         () => {
           dispatch(actions.setStatus('idle'));
-          fireactions.emailSignOut();
+          dispatch(fireactions.emailSignOut());
         }
       ));
     } else {
-      fireactions.emailSignOut();
+      dispatch(fireactions.emailSignOut());
     }
     setShowUserDropdown(false);
   };
+
+  const sendPasswordResetEmail = () => {
+    dispatch(fireactions.sendPasswordResetEmail(emailInput));
+  };
+  
+  const keyPressDisplayNameHandler = (event) => {
+    if (showDisplayInput && event.key === 'Enter') {
+      dispatch(fireactions.updateDisplayName(displayNameInput));
+      setShowDisplayInput(false);
+      setDisplayNameInput("");
+    }
+  };
+
+  useOutsideClick([displayNameInputRef], showDisplayInput, () => setShowDisplayInput(false));
   
   // On sign in or sign out
   useEffect(() => {
     if (userId) {
-      setEmail("");
-      setPsw("");
       setShowUserDropdown(false);
+      setEmailInput("");
+      setPswInput("");
+      setShowDisplayInput(false);
+      setDisplayNameInput("");
     }
-  }, [userId, setEmail, setPsw, setShowUserDropdown]);
+  }, [userId, setEmailInput, setPswInput, setShowUserDropdown]);
 
   const signInContainer = (
     <div className="sign-in-dropdown">
-      <form className="email-sign-in-form" onSubmit={e => emailSignIn(e)}>
-        <h1>Login</h1>
-        <div className="form-row">
-          <label htmlFor="email">Email</label>
-          <input type="email" placeholder="Enter Email" name="email" required 
-            value={email} onChange={e => setEmail(e.target.value)} />
-        </div>
-        <div className="form-row">
-          <label htmlFor="psw">Password</label>
-          <input type="password" placeholder="Enter Password" name="psw" required 
-            value={psw} onChange={e => setPsw(e.target.value)} />
-        </div>
-        <button type="submit">Log In</button>
-        <div className="sign-in-error" style={{display: emailSignInError!=="" ? "block" : "none"}}>{emailSignInError}</div>
-        <div className="sign-up-button" onClick={()=>{setShowSignUp(true); setShowUserDropdown(false);}}>Don't have an account? <br/> Sign up now</div>
-      </form>
-      <div className="divider" />
-      <div className="other-provider-sign-in">
-        <button onClick={e => googleSignIn(e)}>Sign In with Google</button>
-        <div className="sign-in-error" style={{display: googleSignInError!=="" ? "block" : "none"}}>{googleSignInError}</div>
+      {/* email sign in */}
+      <div className="email-sign-in-form dropdown-item">
+        Sign in with Email
+        <form onSubmit={e => emailSignIn(e)}>
+          <div className="form-row">
+            <input type="email" placeholder="Email..." name="email" required 
+              value={emailInput} 
+              onChange={e => setEmailInput(e.target.value)} />
+          </div>
+          <div className="form-row">
+            <input type="password" placeholder="Password..." name="psw" required 
+              value={pswInput} 
+              onChange={e => setPswInput(e.target.value)} />
+          </div>
+          <div className="sign-in-error" style={{display: emailSignInError!=="" ? "block" : "none"}}>{emailSignInError}</div>
+          <div className="sign-in-btn-container">
+            <button className="sign-in btn-any" type="submit">Sign In</button>
+            <div className="forget-password">Forget your password?</div>
+            <div className="forget-password-msg">hello</div>
+          </div>
+        </form>
       </div>
+      <button className="google-sign-in dropdown-item btn-any" 
+        onClick={e => googleSignIn(e)}>
+        Sign In with Google
+        <div className="sign-in-error" style={{display: (googleSignInError !== "") ? "block" : "none"}}>{googleSignInError}</div>
+      </button>
+      <button className="sign-up dropdown-item btn-any"
+        onClick={()=>{setShowSignUp(true); setShowUserDropdown(false);}}>
+        Sign Up with Email
+      </button>
     </div>
   );
 
   const signOutContainer = (
-    <div className="sign-out" onClick={e => emailSignOut(e)}>Sign Out</div>
+    <div className="sign-out-dropdown">
+      <div className="signed-in-with dropdown-item" title={"Signed in with "+email}>Signed in with {email}</div>
+      <button ref={displayNameInputRef} className="display-name dropdown-item btn-any"
+        onClick={() => setShowDisplayInput(true)}>
+        Change display name
+        {showDisplayInput 
+          ? <input className="display-name-input"
+              value={displayNameInput}
+              onChange={e => setDisplayNameInput(e.target.value)}
+              onKeyDown={e => keyPressDisplayNameHandler(e)} /> 
+          : null}
+      </button>
+      <button className="sign-out dropdown-item btn-any" 
+        onClick={e => emailSignOut(e)}>
+        Sign Out
+      </button>
+    </div>
   );
 
   return (userId ? signOutContainer : signInContainer);

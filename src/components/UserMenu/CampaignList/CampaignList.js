@@ -39,7 +39,7 @@ const CampaignList = props => {
     };
     campaignSelect = [
       ...campaignSelect,
-      <div key="newCampaign" className="new-campaign" onClick={newCampaign}>New Project</div>
+      <button key="newCampaign" className="new-campaign btn-any" onClick={newCampaign}>New Project</button>
     ];
   }
 

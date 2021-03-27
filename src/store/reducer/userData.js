@@ -27,6 +27,8 @@ const loadUser = (state, user) => {
     email: user.email,
     emailVerified: user.emailVerified,
     emailVerificationRequired: user.providerData.map(provider => provider.providerId).includes('password'),
+    providerId: user.providerId,
+    providerData: user.providerData,
   });
 };
 

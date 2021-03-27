@@ -18,8 +18,8 @@ export const updateDisplayName = (displayName) => {
   };
 };
 
-export const emailSignIn = (email, psw, dispatch, followUpHandler) => {
-  auth.signInWithEmailAndPassword(email, psw)
+export const emailSignIn = (email, psw, followUpHandler) => {
+  return dispatch => auth.signInWithEmailAndPassword(email, psw)
     .then(resp => {
       console.log("[emailSignIn] sign in successful");
       dispatch(actions.unsetErrorEmailSignIn());
@@ -32,13 +32,13 @@ export const emailSignIn = (email, psw, dispatch, followUpHandler) => {
 };
 
 export const emailSignOut = () => {
-  auth.signOut()
+  return dispatch => auth.signOut()
     .then(console.log("[emailSignout] sign out successful"))
     .catch(err => console.log("[emailSignOut] error:", err));
 };
 
-export const googleSignIn = (dispatch) => {
-  auth.signInWithPopup(googleProvider)
+export const googleSignIn = () => {
+  return dispatch => auth.signInWithPopup(googleProvider)
     .then(resp => {
       console.log("[googleSignIn] sign in successful");
       dispatch(actions.unsetErrorGoogleSignUp());
@@ -49,8 +49,8 @@ export const googleSignIn = (dispatch) => {
     });
 };
 
-export const facebookSignIn = (dispatch) => {
-  auth.signInWithPopup(facebookProvider)
+export const facebookSignIn = () => {
+  return dispatch => auth.signInWithPopup(facebookProvider)
     .then(resp => {
       console.log("[facebookSignIn] sign in successful");
       dispatch(actions.unsetErrorFacebookSignUp());
@@ -61,8 +61,8 @@ export const facebookSignIn = (dispatch) => {
     });
 };
 
-export const emailSignUp = (email, psw, dispatch) => {
-  auth.createUserWithEmailAndPassword(email, psw)
+export const emailSignUp = (email, psw) => {
+  return dispatch => auth.createUserWithEmailAndPassword(email, psw)
     .then(resp => {
       console.log("[emailSignUp] sign up successful:", resp);
       dispatch(actions.unsetErrorEmailSignUp());
@@ -78,9 +78,21 @@ export const sendEmailVerification = () => {
   const actionCodeSettings = {
     url: process.env.REACT_APP_CONFIRMATION_EMAIL_REDIRECT,
   };
-  auth.currentUser.sendEmailVerification(actionCodeSettings)
+  return dispatch => auth.currentUser.sendEmailVerification(actionCodeSettings)
     .then(resp => console.log("[sendEmailVerification] sent email verification:", resp))
     .catch(err => console.log("[sendEmailVerification] error:", err));
+};
+
+export const sendPasswordResetEmail = (email) => {
+  return dispatch => auth.sendPasswordResetEmail(email)
+    .then(resp => {
+      console.log("[sendPasswordResetEmail] sent password reset email to:", email);
+      dispatch(actions.unsetErrorPasswordReset());
+    })
+    .catch(err => {
+      console.log("[sendPasswordResetEmail] error:", err);
+      dispatch(actions.setErrorPasswordReset(err.code));
+    });
 };
 
 export const emailActionHandler = () => {

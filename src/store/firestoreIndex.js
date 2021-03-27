@@ -5,7 +5,7 @@ export {
   emailSignIn, emailSignOut,
   googleSignIn, facebookSignIn,
 
-  emailSignUp, sendEmailVerification,
+  emailSignUp, sendEmailVerification, sendPasswordResetEmail,
 } from './firestoreAPI/authTransactions';
 
 export {

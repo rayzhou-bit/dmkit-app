@@ -10,6 +10,7 @@ const initialState = {
   status: 'loading',  // idle, loading or saving
   campaignEdit: false,  // flag for any unsaved changes
 
+  errorPasswordReset: "",
   errorEmailSignIn: "",
   errorEmailSignUp: "",
   errorGoogleSignIn: "",
@@ -32,6 +33,8 @@ const reducer = (state = initialState, action) => {
     case actionTypes.SET_INTRO_CAMPAIGN_EDIT: return updateObject(state, {introCampaignEdit: action.edit});
 
     // ERRORS
+    case actionTypes.SET_ERROR_PASSWORD_RESET: return setErrorPasswordReset(state, action.errorCode);
+    case actionTypes.UNSET_ERROR_PASSWORD_RESET: return updateObject(state, {errorPasswordReset: ""});
     case actionTypes.SET_ERROR_EMAIL_SIGN_IN: return setErrorEmailSignIn(state, action.errorCode);
     case actionTypes.UNSET_ERROR_EMAIL_SIGN_IN: return updateObject(state, {errorEmailSignIn: ""});
     case actionTypes.SET_ERROR_EMAIL_SIGN_UP: return setErrorEmailSignUp(state, action.errorCode);
@@ -75,6 +78,16 @@ const updCampaignOnList = (state, title) => {
 };
 
 //ERRORS
+const setErrorPasswordReset = (state, errorCode) => {
+  // error codes for firebase method Auth.sendPasswordResetEmail
+  switch (errorCode) {
+    case ('auth/invalid-email'): return updateObject(state, {errorPasswordReset: "email address is not valid"});
+    case ('auth/user-not-found'): return updateObject(state, {errorPasswordReset: "user does not exist"});
+    // other cases: auth/missing-android-pkg-name, auth/missing-continue-uri, auth/missing-ios-bundle-id, auth/invalid-continue-uri, auth/unauthorized-continue-uri
+    default: return updateObject(state, {errorPasswordReset: "could not send password reset email"});
+  }
+};
+
 const setErrorEmailSignIn = (state, errorCode) => {
   // error codes for firebase method Auth.signInWithEmailAndPassword
   switch (errorCode) {

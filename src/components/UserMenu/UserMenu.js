@@ -92,7 +92,7 @@ const UserMenu = props => {
         }
         {/* campaign select */}
         <div className="campaign-dropdown" 
-          style={{display: userId ? "block" : "none", width: "20rem"}}>
+          style={{display: userId ? "block" : "none"}}>
           <div ref={campaignDropdownBtnRef} className="dropdown-btn btn-any" 
             onClick={campaignDropdownHandler}>
             Projects
@@ -103,7 +103,7 @@ const UserMenu = props => {
           </div>
         </div>
         {/* user profile */}
-        <div className="auth-dropdown" style={{width: "15rem"}}>
+        <div className="auth-dropdown">
           <div ref={authDropdownBtnRef} className="dropdown-btn btn-any" 
             onClick={()=>setShowUserDropdown(!showUserDropdown)}>
             {displayName ? displayName : email ? email : "Sign In / Sign Up"}

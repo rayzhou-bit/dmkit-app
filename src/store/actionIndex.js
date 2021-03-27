@@ -2,6 +2,12 @@
 export {
   loadUser, unloadUser,
   updUserDisplayname,
+
+  setErrorPasswordReset, unsetErrorPasswordReset,
+  setErrorEmailSignIn, unsetErrorEmailSignIn,
+  setErrorEmailSignUp, unsetErrorEmailSignUp,
+  setErrorGoogleSignUp, unsetErrorGoogleSignUp,
+  setErrorFacebookSignUp, unsetErrorFacebookSignUp,
 } from './action/user';
 
 // CAMPAIGN
@@ -15,11 +21,6 @@ export {
 
   loadCampaignData, unloadCampaignData, loadIntroCampaign,
   updCampaignTitle,
-
-  setErrorEmailSignIn, unsetErrorEmailSignIn,
-  setErrorEmailSignUp, unsetErrorEmailSignUp,
-  setErrorGoogleSignUp, unsetErrorGoogleSignUp,
-  setErrorFacebookSignUp, unsetErrorFacebookSignUp,
 } from './action/campaign';
 
 // CARD

@@ -1,8 +1,13 @@
+$border-radius: 0.5rem;
+
 .campaign-select {
   .new-campaign {
-    height: 31px;
-    margin: 0;  padding: 5px;
+    box-sizing: border-box;
+    height: 31px; width: 100%;
+    margin: 0;  padding: auto;
     border: 0;
+    border-bottom-left-radius: $border-radius;
+    border-bottom-right-radius: $border-radius;
 
     flex: auto;
 
@@ -10,7 +15,6 @@
     font-weight: bold;
     font-size: 14px;
     text-overflow: ellipsis;
-    line-height: 21px;
 
     overflow: hidden;
     

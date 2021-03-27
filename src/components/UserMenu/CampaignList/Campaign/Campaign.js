@@ -64,11 +64,11 @@ const Campaign = props => {
 
   return (
     <div className="campaign">
-      <div className="campaign-title" title={campaignTitle}
+      <button className="campaign-title btn-any" title={campaignTitle}
         style={{backgroundColor: (campaignId === activeCampaignId) ? "orange" : null}} 
         onClick={switchCampaign}>
         {campaignTitle}
-      </div>
+      </button>
       <button className="copy-campaign btn-24"
         onClick={copyCampaign}>
         <img src={CopyImg} alt="Copy" draggable="false" />
