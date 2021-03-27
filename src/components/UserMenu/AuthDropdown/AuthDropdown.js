@@ -13,6 +13,7 @@ const AuthDropdown = props => {
   // STATES
   const [emailInput, setEmailInput] = useState("");
   const [pswInput, setPswInput] = useState("");
+  const [showPasswordResetMsg, setShowPasswordResetMsg] = useState(false);
   const [showDisplayInput, setShowDisplayInput] = useState(false);
   const [displayNameInput, setDisplayNameInput] = useState("");
 
@@ -22,8 +23,15 @@ const AuthDropdown = props => {
   const introCampaignEdit = useSelector(state => state.sessionManager.introCampaignEdit);
   const campaignData = useSelector (state => state.campaignData);
   const activeCampaignId = useSelector(state => state.sessionManager.activeCampaignId);
+  const passwordResetError = useSelector(state => state.sessionManager.errorPasswordReset);
   const emailSignInError = useSelector(state => state.sessionManager.errorEmailSignIn);
   const googleSignInError = useSelector(state => state.sessionManager.errorGoogleSignIn);
+
+  const passwordResetMsg = showPasswordResetMsg 
+    ? emailInput 
+      ? passwordResetError 
+      : "enter email above"
+    : "";
 
   const displayNameInputRef = useRef("displayNameInput");
 
@@ -68,6 +76,7 @@ const AuthDropdown = props => {
 
   const sendPasswordResetEmail = () => {
     dispatch(fireactions.sendPasswordResetEmail(emailInput));
+    setShowPasswordResetMsg(true);
   };
   
   const keyPressDisplayNameHandler = (event) => {
@@ -86,6 +95,7 @@ const AuthDropdown = props => {
       setShowUserDropdown(false);
       setEmailInput("");
       setPswInput("");
+      setShowPasswordResetMsg(false);
       setShowDisplayInput(false);
       setDisplayNameInput("");
     }
@@ -107,11 +117,18 @@ const AuthDropdown = props => {
               value={pswInput} 
               onChange={e => setPswInput(e.target.value)} />
           </div>
-          <div className="sign-in-error" style={{display: emailSignInError!=="" ? "block" : "none"}}>{emailSignInError}</div>
-          <div className="sign-in-btn-container">
+          <div className="form-row" style={{display: (emailSignInError !== "") ? "block" : "none"}}>
+            <div className="err-msg">{emailSignInError}</div>
+          </div>
+          <div className="form-row">
             <button className="sign-in btn-any" type="submit">Sign In</button>
-            <div className="forget-password">Forget your password?</div>
-            <div className="forget-password-msg">hello</div>
+            <div className="forget-password"
+              onClick={sendPasswordResetEmail}>
+              Forget your password?
+            </div>
+          </div>
+          <div className="form-row" style={{display: (passwordResetMsg !== "") ? "block" : "none"}}>
+            <div className="err-msg">{passwordResetMsg}</div>
           </div>
         </form>
       </div>

@@ -3,6 +3,7 @@ $border-radius: 0.5rem;
 .sign-in-dropdown {
   width: 100%;
   text-align: center;
+  overflow: hidden;
 
   .email-sign-in-form {
     padding-bottom: 0;
@@ -19,37 +20,33 @@ $border-radius: 0.5rem;
       .form-row {
         margin-bottom: .5rem;
         display: flex;
-        flex-flow: column nowrap;
+        flex-flow: row nowrap;
   
         input {
           width: 100%;
         }
       }
-    }
-
-    .sign-in-error {
-      color: red;
-    }
-
-    .sign-in-btn-container {
-      display: flex;
-      flex-flow: row nowrap;
-
       .sign-in {
-        margin: 0 1rem;
+        margin: 0 0.5rem;
         border: 1px solid black;
+        white-space: nowrap;
       }
-
       .forget-password {
         padding-top: 0.2rem;
         font-size: .8rem;
         font-weight: normal;
+        white-space: nowrap;
 
         &:hover {
           color: lightblue;
         }
       }
-      .forget-password-msg {}
+      .err-msg {
+        color: red;
+        text-align: left;
+        font-size: small;
+        font-weight: normal;
+      }
     }
   }
 
@@ -73,12 +70,14 @@ $border-radius: 0.5rem;
 
   .signed-in-with {
     border-bottom: 1px solid black;
+    background-color: white;
     text-overflow: ellipsis;
     overflow: hidden;
   }
 
   .display-name {
     border-bottom: 1px solid black;
+    overflow: hidden;
 
     .display-name-input {
       width: 90%;

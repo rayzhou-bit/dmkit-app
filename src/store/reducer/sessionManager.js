@@ -119,9 +119,9 @@ const setErrorGoogleSignIn = (state, errorCode) => {
     case ('auth/operation-not-allowed'): return updateObject(state, {errorGoogleSignIn: "operation not allowed"});
     case ('auth/operation-not-supported-in-this-environment'): return updateObject(state, {errorGoogleSignIn: "operation not supported"});
     case ('auth/popup-blocked'): return updateObject(state, {errorGoogleSignIn: "sign in popup blocked"});
-    case ('auth/popup-closed-by-user'): return updateObject(state, {errorGoogleSignIn: "sign in popup closed"});
+    // case ('auth/popup-closed-by-user'): return updateObject(state, {errorGoogleSignIn: "sign in popup closed"});
     case ('auth/unauthorized-domain'): return updateObject(state, {errorGoogleSignIn: "unauthorized domain"});
-    default: return updateObject(state, {errorGoogleSignIn: "google sign in unsuccessful"});
+    default: return state;
   }
 };
 
@@ -136,7 +136,7 @@ const setErrorFaceboookSignIn = (state, errorCode) => {
     case ('auth/popup-blocked'): return updateObject(state, {errorFacebookSignIn: "sign in popup blocked"});
     case ('auth/popup-closed-by-user'): return updateObject(state, {errorFacebookSignIn: "sign in popup closed"});
     case ('auth/unauthorized-domain'): return updateObject(state, {errorFacebookSignIn: "unauthorized domain"});
-    default: return updateObject(state, {errorFacebookSignIn: "facebook sign in unsuccessful"});
+    default: return state;
   }
 };
 
