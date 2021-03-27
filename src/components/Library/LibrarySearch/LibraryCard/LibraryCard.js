@@ -62,7 +62,7 @@ const LibraryCard = props => {
   };
 
   const endTitleEdit = () => {
-    if (editingTitle) {setEditingTitle(false)}
+    if (editingTitle) setEditingTitle(false);
   };
   useOutsideClick([titleInputRef], editingTitle, endTitleEdit);
 
@@ -105,20 +105,21 @@ const LibraryCard = props => {
   };
 
   const endTextEdit = () => {
-    if (editingText) {setEditingText(false)}
+    if (editingText) setEditingText(false);
   };
 
   useOutsideClick([textRef], editingText, endTextEdit);
 
   const updTextEdit = () => {
-    if (editingText) {dispatch(actions.updCardText(cardId, textRef.current.value))}
+    if (editingText) dispatch(actions.updCardText(cardId, textRef.current.value));
   };
 
   const keyPressTextHandler = (event) => {
     if (isSelected && editingText) {
       if (event.key === 'Tab') {
         event.preventDefault();
-        endTextEdit();
+        // endTextEdit();
+        // TODO tab key should indent in textarea
       }
     }
   };

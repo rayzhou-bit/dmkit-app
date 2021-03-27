@@ -29,7 +29,8 @@ const CardContent = props => {
     if (isSelected && editingText) {
       if (event.key === 'Tab') {
         event.preventDefault();
-        endTextEdit();
+        // endTextEdit();
+        // TODO tab key should indent in textarea
       }
     }
   };
