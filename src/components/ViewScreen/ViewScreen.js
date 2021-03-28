@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { Rnd } from 'react-rnd';
 
 import './ViewScreen.scss';
 import * as actions from '../../store/actionIndex';
@@ -23,6 +24,7 @@ const ViewScreen = props => {
 
   const viewScreenWidth = 500 *GRID.size;
   const viewScreenHeight = 250 *GRID.size;
+  const [ boardWidth, boardHeight ] = [ 500*GRID.size, 250*GRID.size ];
 
   // FUNCTIONS
   const onCardDrop = (event) => {
@@ -79,6 +81,31 @@ const ViewScreen = props => {
           onDrop={e => onCardDrop(e)} onDragOver={e => e.preventDefault()}>
           {cardList}
         </main>
+  );
+  return (
+    <main className="view-screen">
+      {userId && !activeCampaignId
+        ? <div className="empty-screen">
+            <div>No active project loaded. Please select your project or create a new one.</div>
+          </div>
+        : <div className="board-container">
+            <Rnd
+              bounds="parent"
+              // position
+              // drag
+              dragHandleClassName="board"
+              // size
+              size={{width: boardWidth, height: boardHeight}}
+              // resize
+              enableResizing={false}
+            >
+              <div className="board">
+                {cardList}
+              </div>
+            </Rnd>
+          </div>
+      }
+    </main>
   );
 };
 
