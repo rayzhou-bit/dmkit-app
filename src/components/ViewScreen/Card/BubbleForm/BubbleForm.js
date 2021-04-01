@@ -22,6 +22,7 @@ const BubbleForm = props => {
   // STORE SELECTORS
   const activeCardId = useSelector(state => state.campaignData.activeCardId);
   const activeViewId = useSelector(state => state.campaignData.activeViewId);
+  const activeViewScale = useSelector(state => activeViewId ? state.campaignData.views[activeViewId].scale : null);
   const cardPos = useSelector(state => state.campaignData.cards[cardId].views[activeViewId].pos);
   const cardColor = useSelector(state => state.campaignData.cards[cardId].color);
   // const cardColorForView = useSelector(state => state.campaignData.cards[cardId].views[activeViewId].color);
@@ -57,6 +58,7 @@ const BubbleForm = props => {
       onDragStop={dragStopHandler}
       // size
       size={{width: GRID.size*3, height: GRID.size*1}}
+      scale={activeViewScale}
       // resize
       enableResizing={false}
     >

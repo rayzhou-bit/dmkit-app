@@ -23,15 +23,16 @@ $border-radius: 5px;
 
     .tooltip { left: 130%; top: 15%; white-space: nowrap; }
     .tooltip::after { right: 100%; top: 50%; border-right-color: black; }
+
+    &:hover { background-color: lightblue; }
+    &:disabled { background-color: gray; }
+    &:disabled:hover { background-color: gray; }
   }
 
-  .create-card {
-    top: 0.5 *$btn-height;
-  }
-
-  .copy-card {
-    top: 1.5 *$btn-height;
-  }
+  .create-card { top: 0.5 *$btn-height; }
+  .copy-card { top: 1.5 *$btn-height; }
+  .reset-view { bottom: 4 *$btn-height; }
+  .lock-view { bottom: 3 *$btn-height; }
 
   .save-indicator {
     bottom: 1.6 *$btn-height;
@@ -43,15 +44,6 @@ $border-radius: 5px;
   .save {
     bottom: 0.5 *$btn-height;
     background-color: green;
-
-    &:hover {
-      background-color: lightblue;
-    }
-
-    &:disabled {
-      // background-color: red;
-      // -webkit-filter: grayscale(80%);
-    }
 
     $spinner-base-measurement: 2.5em;
     .spinner,

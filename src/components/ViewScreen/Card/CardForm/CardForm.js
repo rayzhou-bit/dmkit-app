@@ -26,6 +26,7 @@ const CardForm = props => {
   // STORE SELECTORS
   const activeCardId = useSelector(state => state.campaignData.activeCardId);
   const activeViewId = useSelector(state => state.campaignData.activeViewId);
+  const activeViewScale = useSelector(state => activeViewId ? state.campaignData.views[activeViewId].scale : null);
   const cardPos = useSelector(state => state.campaignData.cards[cardId].views[activeViewId].pos);
   const cardSize = useSelector(state => state.campaignData.cards[cardId].views[activeViewId].size);
 
@@ -89,6 +90,7 @@ const CardForm = props => {
       // size
       size={cardSize}
       minWidth={GRID.size*5} minHeight={GRID.size*4}
+      scale={activeViewScale}
       // resize
       resizeGrid={[GRID.size, GRID.size]}
       onResizeStop={resizeStopHandler}

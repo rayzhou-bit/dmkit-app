@@ -48,7 +48,9 @@ const Card = props => {
 
   // STYLES
   const toFrontStyle = {
-    zIndex: dragging ? 20000000 : (cardId === activeCardId) ? 10000000 : (100*cardPos.y + cardPos.x),
+    zIndex: dragging ? 20000*(cardPos.y + cardPos.x) 
+      : (cardId === activeCardId) ? 10000*(cardPos.y + cardPos.x) 
+      : (100*cardPos.y + cardPos.x + 2),
   };
 
   const cardStyle = {

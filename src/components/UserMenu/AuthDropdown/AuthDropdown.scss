@@ -69,10 +69,12 @@ $border-radius: 0.5rem;
   text-align: center;
 
   .signed-in-with {
+    padding: 0.5rem 1rem;
     border-bottom: 1px solid black;
     background-color: white;
     text-overflow: ellipsis;
     overflow: hidden;
+    user-select: auto;
   }
 
   .display-name {

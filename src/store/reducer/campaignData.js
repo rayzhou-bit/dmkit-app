@@ -30,6 +30,7 @@ import { updateObject } from '../../shared/utilityFunctions';
 //   },
 //   views: {
 //     view0: {
+//       pos: {x: "view display x-position", y: "view display x-position"},
 //       title: "view title",
 //       color: "view color",
 //     },
@@ -56,17 +57,22 @@ const reducer = (state = {}, action) => {
     case actionTypes.UNLINK_CARD_FROM_VIEW: return unlinkCardFromView(state, action.cardId);
     case actionTypes.UPD_CARD_POS: return updCardPos(state, action.cardId, action.pos);
     case actionTypes.UPD_CARD_SIZE: return updCardSize(state, action.cardId, action.size);
-    case actionTypes.UPD_CARD_COLOR: return updCardColor(state, action.cardId, action.color);
-    case actionTypes.UPD_CARD_COLOR_FOR_VIEW: return updCardColorForView(state, action.cardId, action.color);
     case actionTypes.UPD_CARD_FORM: return updCardForm(state, action.cardId, action.cardForm);
     case actionTypes.UPD_CARD_TITLE: return updCardTitle(state, action.cardId, action.title);
+    case actionTypes.UPD_CARD_COLOR: return updCardColor(state, action.cardId, action.color);
+    case actionTypes.UPD_CARD_COLOR_FOR_VIEW: return updCardColorForView(state, action.cardId, action.color);
     case actionTypes.UPD_CARD_TEXT: return updCardText(state, action.cardId, action.text);
 
     // VIEW
     case actionTypes.CREATE_VIEW: return createView(state);
     case actionTypes.DESTROY_VIEW: return destroyView(state, action.viewId);
-    case actionTypes.UPD_VIEW_COLOR: return updViewColor(state, action.viewId, action.color);
+    case actionTypes.LOCK_ACTIVE_VIEW: return lockActiveView(state);
+    case actionTypes.UNLOCK_ACTIVE_VIEW: return unlockActiveView(state);
+    case actionTypes.UPD_ACTIVE_VIEW_POS: return updActiveViewPos(state, action.pos);
+    case actionTypes.UPD_ACTIVE_VIEW_SCALE: return updActiveViewScale(state, action.scale);
+    case actionTypes.RESET_ACTIVE_VIEW: return resetActiveView(state);
     case actionTypes.UPD_VIEW_TITLE: return updViewTitle(state, action.viewId, action.title);
+    case actionTypes.UPD_VIEW_COLOR: return updViewColor(state, action.viewId, action.color);
 
     default: return state;
   }
@@ -232,6 +238,7 @@ const updCardText = (state, cardId, text) => {
 const createView = (state) => {
   const newViewId = "view"+state.viewCreateCnt;
   const newView = {
+    pos: { x: 0, y: 0 },
     title: newViewId,
     color: "gray",
   };
@@ -259,6 +266,47 @@ const destroyView = (state, viewId) => {
     views: updatedViews,
   };
   return updateObject(state, updatedState);
+};
+
+const lockActiveView = (state) => {
+  if (!state.activeViewId) return state;
+  let updatedView = {...state.views[state.activeViewId]};
+  updatedView.lock = true;
+  const updatedViews = updateObject(state.views, {[state.activeViewId]: updatedView});
+  return updateObject(state, {views: updatedViews});
+};
+
+const unlockActiveView = (state) => {
+  if (!state.activeViewId) return state;
+  let updatedView = {...state.views[state.activeViewId]};
+  updatedView.lock = false;
+  const updatedViews = updateObject(state.views, {[state.activeViewId]: updatedView});
+  return updateObject(state, {views: updatedViews});
+};
+
+const updActiveViewPos = (state, pos) => {
+  if (!state.activeViewId) return state;
+  let updatedView = {...state.views[state.activeViewId]};
+  updatedView.pos = pos;
+  const updatedViews = updateObject(state.views, {[state.activeViewId]: updatedView});
+  return updateObject(state, {views: updatedViews});
+};
+
+const updActiveViewScale = (state, scale) => {
+  if (!state.activeViewId) return state;
+  let updatedView = {...state.views[state.activeViewId]};
+  updatedView.scale = scale;
+  const updatedViews = updateObject(state.views, {[state.activeViewId]: updatedView});
+  return updateObject(state, {views: updatedViews});
+};
+
+const resetActiveView = (state) => {
+  if (!state.activeViewId) return state;
+  let updatedView = {...state.views[state.activeViewId]};
+  updatedView.pos = { x: 0, y: 0 };
+  updatedView.scale = 1;
+  const updatedViews = updateObject(state.views, {[state.activeViewId]: updatedView});
+  return updateObject(state, {views: updatedViews});
 };
 
 const updViewColor = (state, viewId, color) => {
@@ -302,14 +350,14 @@ const introCampaign = {
       views: {
         view1: {
           pos: {x: 0, y: 0},
-          size: {width: 8*GRID.size, height: 7*GRID.size},
+          size: {width: 8*GRID.size, height: 9*GRID.size},
           cardForm: "card",
         },
       },
       title: "Tools",
       color: "blue",
       content: {
-        text: "Use the buttons to the left to add cards, copy cards and save your progress. You must have an account to save.",
+        text: "Use the buttons to build your project. You can add cards, copy cards, reset the board position. You can also save your progress, but you must first create an account.",
       },
     },
     card2: {
@@ -320,17 +368,17 @@ const introCampaign = {
           cardForm: "card",
         },
       },
-      title: "Views",
+      title: "Tabs",
       color: "blue",
       content: {
-        text: "Use the buttons below to add views and switch between them.",
+        text: "Use the buttons below to add tabs and switch between them.",
       },
     },
     card3: {
       views: {
         view1: {
           pos: {x: 25*GRID.size, y: 3*GRID.size},
-          size: {width: 10*GRID.size, height: 6*GRID.size},
+          size: {width: 10*GRID.size, height: 10*GRID.size},
           cardForm: "card",
         },
       },

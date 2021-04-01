@@ -44,6 +44,10 @@ export {
 
   createView, destroyView,
 
+  lockActiveView, unlockActiveView,
+  updActiveViewPos, updActiveViewScale,
+  resetActiveView,
+
   updViewColor,
   updViewTitle,
 } from './action/view'

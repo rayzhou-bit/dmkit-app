@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Rnd } from 'react-rnd';
 
@@ -20,23 +20,40 @@ const ViewScreen = props => {
   const userId = useSelector(state => state.userData.userId);
   const activeCampaignId = useSelector(state => state.sessionManager.activeCampaignId);
   const activeViewId = useSelector(state => state.campaignData.activeViewId);
+  const activeViewLock = useSelector(state => activeViewId ? state.campaignData.views[activeViewId].lock : null);
+  const activeViewPos = useSelector(state => activeViewId ? state.campaignData.views[activeViewId].pos : null);
+  const activeViewScale = useSelector(state => activeViewId ? state.campaignData.views[activeViewId].scale : 1);
   const cardCollection = useSelector(state => state.campaignData.cards);
 
-  const viewScreenWidth = 500 *GRID.size;
-  const viewScreenHeight = 250 *GRID.size;
-  const [ boardWidth, boardHeight ] = [ 500*GRID.size, 250*GRID.size ];
+  const [ viewWidth, viewHeight ] = [ 60*GRID.size, 50*GRID.size ];
+
+  const viewScreenRef = useRef("view-screen");
+  const viewRef = useRef("view");
 
   // FUNCTIONS
-  const onCardDrop = (event) => {
+  const dragStopHandler = (event, data) => {
+    dispatch(actions.updActiveViewPos({x: data.x, y: data.y}));
+  };
+  
+  const wheelHandler = (event) => {
+    if (activeViewLock === false) {
+      let newScale = activeViewScale ? activeViewScale : 1;
+      newScale += event.deltaY * -0.001;
+      newScale = Math.min(Math.max(GRID.scaleMin, newScale), GRID.scaleMax);
+      dispatch(actions.updActiveViewScale(newScale));
+    }
+  };
+
+  const cardDropHandler = (event) => {
     event.preventDefault();
     const targetCardId = event.dataTransfer.getData("text");
     if (cardCollection[targetCardId]) {
       if (!cardCollection[targetCardId].views[activeViewId]) {
         // future update: more precise pos calculation
         let xCalculation = Math.round((event.clientX-GRID.size-GRID.size)/GRID.size)*GRID.size;
-        if (xCalculation<0) {xCalculation = 0}
+        if (xCalculation < 0) xCalculation = 0;
         let yCalculation = Math.round((event.clientY-GRID.size-GRID.size)/GRID.size)*GRID.size;
-        if (yCalculation<0) {yCalculation = 0}
+        if (yCalculation < 0) yCalculation = 0;
         const pos = {x: xCalculation, y: yCalculation};
         dispatch(actions.linkCardToView(targetCardId, pos));
       } else {
@@ -49,10 +66,8 @@ const ViewScreen = props => {
   };
 
   // STYLES
-  let viewScreenStyle = {
-    backgroundColor: 'transparent',
-    width: viewScreenWidth + 'px',
-    height: viewScreenHeight + 'px',
+  const scaleViewStyle = {
+    transform: 'scale('+activeViewScale+')',
   };
 
   // CARD LIST
@@ -72,38 +87,37 @@ const ViewScreen = props => {
   }
 
   return (
-    userId && !activeCampaignId
-      ? <main className="empty-screen">
-          <div>No active project loaded. Please select your project or create a new one.</div>
-        </main>
-      : <main className="view-screen"
-          style={viewScreenStyle}
-          onDrop={e => onCardDrop(e)} onDragOver={e => e.preventDefault()}>
-          {cardList}
-        </main>
-  );
-  return (
-    <main className="view-screen">
+    <main ref={viewScreenRef} className="view-screen" 
+      onWheel={wheelHandler}>
       {userId && !activeCampaignId
         ? <div className="empty-screen">
-            <div>No active project loaded. Please select your project or create a new one.</div>
+            No active project loaded. Please select your project or create a new one.
           </div>
-        : <div className="board-container">
-            <Rnd
-              bounds="parent"
-              // position
-              // drag
-              dragHandleClassName="board"
-              // size
-              size={{width: boardWidth, height: boardHeight}}
-              // resize
-              enableResizing={false}
-            >
-              <div className="board">
-                {cardList}
-              </div>
-            </Rnd>
-          </div>
+        : activeViewId
+          ? <div className="scale-view"
+              style={scaleViewStyle}>
+              <Rnd
+                // position
+                position={activeViewPos ? activeViewPos : {x: 0, y: 0}}
+                // drag
+                disableDragging={(activeViewLock === undefined) ? true : activeViewLock}
+                dragHandleClassName="drag-view"
+                onDragStop={dragStopHandler}
+                // size
+                size={{width: viewWidth, height: viewHeight}}
+                scale={activeViewScale}
+                // resize
+                enableResizing={false}
+              >
+                <div ref={viewRef} className="view"
+                  onDrop={cardDropHandler} 
+                  onDragOver={e => e.preventDefault()}>
+                  <div className="drag-view" />
+                  {cardList}
+                </div>
+              </Rnd>
+            </div>
+          : null
       }
     </main>
   );

@@ -14,6 +14,7 @@ const App = props => {
 
   // Disable scrolling
   document.body.scroll = "no";
+  document.body.style.backgroundColor = 'gray';
   document.body.style.overflow = 'hidden';
   document.height = window.innerHeight;
 

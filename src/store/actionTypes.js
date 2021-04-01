@@ -54,5 +54,10 @@ export const UPD_CARD_TEXT = 'UPD_CARD_TEXT';
 // view actions
 export const CREATE_VIEW = 'CREATE_VIEW';
 export const DESTROY_VIEW = 'DESTROY_VIEW';
+export const LOCK_ACTIVE_VIEW = 'LOCK_VIEW';
+export const UNLOCK_ACTIVE_VIEW = 'UNLOCK_VIEW';
+export const UPD_ACTIVE_VIEW_POS = 'UPD_ACTIVE_VIEW_POS';
+export const UPD_ACTIVE_VIEW_SCALE = 'UPD_ACTIVE_VIEW_SCALE';
+export const RESET_ACTIVE_VIEW = 'RESET_ACTIVE_VIEW';
 export const UPD_VIEW_TITLE = 'UPD_VIEW_TITLE';
 export const UPD_VIEW_COLOR = 'UPD_VIEW_COLOR';
