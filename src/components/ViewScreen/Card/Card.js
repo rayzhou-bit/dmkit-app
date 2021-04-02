@@ -22,7 +22,7 @@ const Card = props => {
   const cardForm = useSelector(state => state.campaignData.cards[cardId].views[activeViewId].cardForm);
 
   // REFS
-  const cardRef = useRef(cardId+".card");
+  const cardRef = useRef();
 
   // FUNCTIONS: CARD
   const dragStopHandler = (event, data) => {

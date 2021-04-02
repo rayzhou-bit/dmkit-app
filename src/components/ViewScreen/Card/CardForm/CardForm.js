@@ -31,8 +31,8 @@ const CardForm = props => {
   const cardSize = useSelector(state => state.campaignData.cards[cardId].views[activeViewId].size);
 
   // REFS
-  const titleInputRef = useRef(cardId+".card-title");
-  const textInputRef = useRef(cardId+".card-text");
+  const titleInputRef = useRef();
+  const textInputRef = useRef();
   
   // FUNCTIONS
   const resizeStopHandler = (event, direction, ref, delta, position) => {

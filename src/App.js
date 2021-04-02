@@ -10,7 +10,7 @@ import ViewScreen from './components/ViewScreen/ViewScreen';
 
 const App = props => {
   // REFS
-  const toolMenuRef = useRef("toolMenu");
+  const toolMenuRef = useRef();
 
   // Disable scrolling
   document.body.scroll = "no";

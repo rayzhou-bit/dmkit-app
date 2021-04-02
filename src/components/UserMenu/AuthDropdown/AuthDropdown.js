@@ -33,7 +33,7 @@ const AuthDropdown = props => {
       : "enter email above"
     : "";
 
-  const displayNameInputRef = useRef("displayNameInput");
+  const displayNameInputRef = useRef();
 
   // FUNCTIONS
   const emailSignIn = (event) => { 

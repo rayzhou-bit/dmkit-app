@@ -28,11 +28,11 @@ const UserMenu = props => {
   const campaignTitle = useSelector(state => state.campaignData.title);
 
   // REFS
-  const campaignTitleRef = useRef("campaignTitle");
-  const campaignDropdownBtnRef = useRef("campaignDropdownBtn");
-  const campaignDropdownContentRef = useRef("campaignDropdownContent");
-  const authDropdownBtnRef = useRef("userDropdownBtn");
-  const authDropdownContentRef = useRef("userDropdownContent");
+  const campaignTitleRef = useRef();
+  const campaignDropdownBtnRef = useRef();
+  const campaignDropdownContentRef = useRef();
+  const authDropdownBtnRef = useRef();
+  const authDropdownContentRef = useRef();
 
   // FUNCTIONS: CAMPAIGN TITLE
   const beginTitleEdit = () => {

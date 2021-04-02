@@ -1,8 +1,9 @@
-import React, { useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import './ViewSelect.scss';
 import * as actions from '../../store/actionIndex';
+import { useOutsideClick } from '../../shared/utilityFunctions';
 import ViewTab from './ViewTab/ViewTab';
 
 import AddImg from '../../assets/icons/add-32.png';
@@ -14,31 +15,48 @@ import RightArrowImg from '../../assets/icons/right-arrow-32.png';
 const ViewSelect = React.memo(props => {
   const dispatch = useDispatch();
 
+  // STATES
+  const [openViewList, setOpenViewList] = useState(false);
+
   // STORE VALUES
-  const viewCollection = useSelector(state => state.campaignData.views);
+  const activeViewId = useSelector(state => state.campaignData.activeViewId);
   const viewOrder = useSelector(state => state.campaignData.viewOrder);
+  const viewCollection = useSelector(state => state.campaignData.views);
 
-  const tabWidth = 250;
+  const tabWidth = 240;
 
-  // ID & REFS
-  const viewTabContainerRef = useRef("view-tab-container");
+  // REFS
+  const viewListRef = useRef();
+  const viewListBtnRef = useRef();
+  const viewTabContainerRef = useRef();
 
   // FUNCTIONS
-  const createView = () => dispatch(actions.createView());
-
-  const scrollLeft = () => {
-    viewTabContainerRef.current.scrollBy({left: -400, behavior: 'smooth'});
+  const wheelHandler = (event) => {
+    if (event.deltaY > 0) {
+      scrollRight();
+    } else {
+      scrollLeft();
+    }
   };
+  const scrollLeft = () => viewTabContainerRef.current.scrollBy({left: -1.5 *tabWidth, behavior: 'smooth'});
+  const scrollRight = () => viewTabContainerRef.current.scrollBy({left: 1.5 *tabWidth, behavior: 'smooth'});
 
-  const scrollRight = () => {
-    viewTabContainerRef.current.scrollBy({left: 400, behavior: 'smooth'});
-  };
+  useOutsideClick([viewListRef, viewListBtnRef], openViewList, () => setOpenViewList(false));
 
+  // DISPLAY ELEMENTS
+  let viewList = [];
   let viewTabs = [];
   if (viewCollection) {
     for (let x in viewOrder) {
       let viewId = viewOrder[x];
       if (viewCollection[viewId]) {
+        viewList = [
+          ...viewList,
+          <button key={viewId} className="view-list-item btn-any" title={viewCollection[viewId].title}
+            onClick={(viewId !== activeViewId) ? () => dispatch(actions.updActiveViewId(viewId)) : null}>
+            {viewCollection[viewId].title}
+          </button>
+        ];
         viewTabs = [
           ...viewTabs,
           <ViewTab key={viewId} 
@@ -49,31 +67,44 @@ const ViewSelect = React.memo(props => {
   }
 
   // STYLES
-  const tabContStyle = {
-    width: ((viewOrder ? viewOrder.length : 0)+0.5) * tabWidth
+  const viewListStyle = {
+    bottom: openViewList ? "41px" : "-100vh",
   };
 
   return (
     <div className="view-select">
-      <div className="add-view btn-32" onClick={createView}>
+      {/* view buttons */}
+      <button className="add-view view-select-item btn-32" 
+        onClick={() => dispatch(actions.createView())}>
         <img src={AddImg} alt="Add" draggable="false" />
-        <span className="tooltip">Add view</span>
-      </div>
-      <div ref={viewTabContainerRef} className="view-tab-container">
-        <div className="view-tab-container-container" style={tabContStyle}>
+        <span className="tooltip">Add tab</span>
+      </button>
+      <button ref={viewListBtnRef} className="show-view-list view-select-item btn-32"
+        onClick={() => setOpenViewList(!openViewList)}>
+        <div /><div /><div />
+        <span className="tooltip">Show tabs</span>
+      </button>
+      {/* view tabs */}
+      <div ref={viewTabContainerRef} className="view-tab-container"
+        onWheel={wheelHandler}>
+        <div className="view-tab-container-container">
           {viewTabs}
-        <div className="border-line" />
+          <div className="border-line" />
         </div>
       </div>
-      <div className="view-scroll-container">
-        <div className="view-scroll-left btn-32" onClick={scrollLeft}>
-          <img src={LeftArrowImg} alt="Scroll left" draggable="false" />
-          <span className="tooltip">Scroll left</span>
-        </div>
-        <div className="view-scroll-right btn-32" onClick={scrollRight}>
-          <img src={RightArrowImg} alt="Scroll right" draggable="false" />
-          <span className="tooltip">Scroll right</span>
-        </div>
+      {/* view scroll buttons */}
+      <button className="view-scroll-left view-select-item btn-32" onClick={scrollLeft}>
+        <img src={LeftArrowImg} alt="Scroll left" draggable="false" />
+        <span className="tooltip">Scroll left</span>
+      </button>
+      <button className="view-scroll-right view-select-item btn-32" onClick={scrollRight}>
+        <img src={RightArrowImg} alt="Scroll right" draggable="false" />
+        <span className="tooltip">Scroll right</span>
+      </button>
+      {/* view list */}
+      <div ref={viewListRef} className="view-list"
+        style={viewListStyle}>
+        {viewList}
       </div>
     </div>
   );

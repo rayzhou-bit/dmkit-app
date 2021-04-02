@@ -2,15 +2,12 @@
   float: left;
   height: 100%; width: 100%;
   padding: 0;  margin: 0;
-  border-left: 1px solid black;
-  border-right: 1px solid black;
+  border: 1px solid black;
+  border-top: 0;
   border-bottom-left-radius: 5px;
   border-bottom-right-radius: 5px;
 
   white-space: nowrap;
-
-  display: flex;
-  flex-flow: row nowrap;
 
   &:hover .title-btn {
     opacity: 1;
@@ -37,7 +34,6 @@
     color: black;
 
     font-size: 1.5rem;
-    font-weight: bold;
     text-align: left;
     text-overflow: ellipsis;
 

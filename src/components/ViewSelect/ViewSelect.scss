@@ -9,26 +9,39 @@ $menu-size: 42px;
 
   background-color: lightgray;
 
-  display: grid;
-  grid-template-columns: 41px 1fr 82px;
-  
-  .add-view {
-    grid-column: 1 / 2;
+  display: flex;
+  flex-flow: row nowrap;
 
-    position: relative;
-    z-index: 10;
-    
-    border-top: 1px solid black;
-    border-right: 1px solid black;
+  // display: grid;
+  // grid-template-columns: 41px 1fr 82px;
+
+  .view-select-item {
+    border: 1px solid black;
     border-bottom-left-radius: 8px;
     border-bottom-right-radius: 8px;
+    z-index: 10;
+  }
+  
+  .add-view {
     .tooltip { bottom: 120%; left: 15%; white-space: nowrap; }
     .tooltip::after { top: 115%; left: 15%; border-top-color: black; }
   }
 
+  .show-view-list {    
+    .tooltip { bottom: 120%; left: -50%; white-space: nowrap; }
+    .tooltip::after { top: 115%; left: 40%; border-top-color: black; }
+
+    justify-content: space-around;
+    align-items: center;
+    display: flex;
+    flex-flow: column;
+    div {
+      width: 32px; height: 2px;
+      background-color: black;
+    }
+  }
+
   .view-tab-container {
-    grid-column: 2 / 3;
-    
     position: relative;
     width: 100%; height: 100%;
     z-index: 0;
@@ -36,12 +49,12 @@ $menu-size: 42px;
     overflow-x: hidden;
     overflow-y: visible;
 
-    //implement flexbox here later
-    // display: flex;
-    // flex-flow: row nowrap;
-
     .view-tab-container-container {
       height: 100%;
+
+      //implement flexbox here later?
+      display: flex;
+      flex-flow: row nowrap;
 
       .border-line {
         top: 0; right: 0;
@@ -52,27 +65,48 @@ $menu-size: 42px;
     }
   }
 
-  .view-scroll-container {
-    grid-column: 3 / 4;
-    z-index: 1;
-    border-top: 1px solid black;
-    border-left: 1px solid black;
-    border-radius: 8px;
+  .view-scroll-left {
+    border-right: 0;
+    border-bottom-right-radius: 0;
+    .tooltip { bottom: 120%; right: -40%; white-space: nowrap; }
+    .tooltip::after { top: 115%; right: 40%; border-top-color: black; }
+  }
+  .view-scroll-right {
+    border-left: 0;
+    border-bottom-left-radius: 0;
+    .tooltip { bottom: 120%; right: 15%; white-space: nowrap; }
+    .tooltip::after { top: 115%; right: 15%; border-top-color: black; }
+  }
+
+  .view-list {
+    position: absolute;
+    max-width: 40vw; max-height: 80vh;
+    left: $menu-size;
+
+    border: 1px solid black;
+    border-bottom: 0;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+
+    background-color: white;
+
+    overflow-y: scroll;
+
+    z-index: -1;
+
+    -webkit-transition: .2s;
+    transition: .2s;
 
     display: flex;
-    flex: row nowrap;
+    flex-flow: column nowrap;
 
-    .view-scroll-left {
-      position: relative;
-      border-radius: 8px;
-      .tooltip { bottom: 120%; right: -40%; white-space: nowrap; }
-      .tooltip::after { top: 115%; right: 40%; border-top-color: black; }
-    }
-    .view-scroll-right {
-      position: relative;
-      border-radius: 8px;
-      .tooltip { bottom: 120%; right: 15%; white-space: nowrap; }
-      .tooltip::after { top: 115%; right: 15%; border-top-color: black; }
+    .view-list-item {
+      padding: 0.2rem;
+      border-right: 1px solid black;
+      border-bottom: 1px solid black;
+      text-align: left;
+      font-size: 1.2rem;
+      text-overflow: ellipsis;
     }
   }
 }

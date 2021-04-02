@@ -23,9 +23,9 @@ const ViewTab = React.memo(props => {
   const viewPos = viewOrder.indexOf(viewId);
   const viewTitle = useSelector(state => state.campaignData.views[viewId].title);
 
-  // ID & REF
-  let rndRef = useRef(viewId+".rndref");
-  const viewTitleRef = useRef(viewId+".title");
+  // REF
+  let rndRef = useRef();
+  const viewTitleRef = useRef();
 
   // FUNCTIONS
   useEffect(() => {
@@ -36,12 +36,6 @@ const ViewTab = React.memo(props => {
     setDragging(false);
     const posShift = Math.round((data.x - (viewPos*tabWidth)) / tabWidth);
     dispatch(actions.shiftViewInViewOrder(viewId, posShift));
-  };
-
-  const clickHandler = () => {
-    if (viewId !== activeViewId) {
-      dispatch(actions.updActiveViewId(viewId));
-    }
   };
 
   const destroyView = () => dispatch(actions.destroyView(viewId));
@@ -55,21 +49,15 @@ const ViewTab = React.memo(props => {
   };
 
   const endEdit = () => {
-    if (editingTitle) {
-      setEditingTitle(false);
-    }
+    if (editingTitle) setEditingTitle(false);
   };
 
   const updEdit = () => {
-    if (editingTitle) {dispatch(actions.updViewTitle(viewId, viewTitleRef.current.value))}
+    if (editingTitle) dispatch(actions.updViewTitle(viewId, viewTitleRef.current.value));
   };
 
   const keyPressHandler = (event) => {
-    if (viewId === activeViewId) {
-      if (event.key === 'Enter') {
-        endEdit();
-      }
-    }
+    if (event.key === 'Enter') endEdit();
   };
 
   useOutsideClick([viewTitleRef], editingTitle, endEdit);
@@ -88,7 +76,7 @@ const ViewTab = React.memo(props => {
   const titleStyle = { backgroundColor: editingTitle ? "lightskyblue" : "transparent" };
 
   return (
-    <Rnd ref={c => rndRef = c}
+    <Rnd ref={node => rndRef = node}
       style={toFrontStyle}
       bounds="parent"
       // position
@@ -98,7 +86,7 @@ const ViewTab = React.memo(props => {
       onDragStart={()=>setDragging(true)}
       onDragStop={dragStopHandler}
       // size
-      size={{width: tabWidth, height: 40}}
+      size={{width: tabWidth, height: 42}}
       // resize
       enableResizing={false}
       // onClick
@@ -106,14 +94,14 @@ const ViewTab = React.memo(props => {
       <div className="view-tab" style={activeViewStyle}>
         <input ref={viewTitleRef}
           className="title-input" style={titleStyle} type="text" required
-          value={viewTitle} readOnly={!editingTitle}
-          onClick={clickHandler}
+          value={viewTitle} title={viewTitle} readOnly={!editingTitle}
+          onClick={(viewId !== activeViewId) ? () => dispatch(actions.updActiveViewId(viewId)) : null}
           onDoubleClick={(viewId === activeViewId) ? beginEdit : null}
           onChange={updEdit}
-          onKeyDown={(e) => keyPressHandler(e)}
+          onKeyDown={keyPressHandler}
         />
         <button className={(viewId === activeViewId) ? "edit-title title-btn btn-32 active-view" : "edit-title title-btn btn-32 inactive-view"}
-          onClick={() => beginEdit()}>
+          onClick={beginEdit}>
           <img src={EditImg} alt="Edit" draggable="false" />
           {/* <span className="tooltip">Edit title</span> */}
         </button>

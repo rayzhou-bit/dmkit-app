@@ -25,10 +25,11 @@ const ViewScreen = props => {
   const activeViewScale = useSelector(state => activeViewId ? state.campaignData.views[activeViewId].scale : 1);
   const cardCollection = useSelector(state => state.campaignData.cards);
 
-  const [ viewWidth, viewHeight ] = [ 60*GRID.size, 50*GRID.size ];
+  const [ viewWidth, viewHeight ] = [ 100*GRID.size, 50*GRID.size ];
 
-  const viewScreenRef = useRef("view-screen");
-  const viewRef = useRef("view");
+  // REFS
+  const viewScreenRef = useRef();
+  const viewRef = useRef();
 
   // FUNCTIONS
   const dragStopHandler = (event, data) => {

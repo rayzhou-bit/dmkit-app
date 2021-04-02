@@ -23,16 +23,13 @@ const CardTitle = props => {
 
   // STORE SELECTORS
   const activeCardId = useSelector(state => state.campaignData.activeCardId);
-  // const activeViewId = useSelector(state => state.campaignData.activeViewId);
   const cardColor = useSelector(state => state.campaignData.cards[cardId].color);
-  // const cardColorForView = useSelector(state => state.campaignData.cards[cardId].views[activeViewId].color);
-  // const cardColorToDisplay = cardColorForView ? cardColorForView : cardColor ? cardColor : "gray";
   const cardColorToDisplay = cardColor;
   const cardTitle = useSelector(state => state.campaignData.cards[cardId].title);
 
   // REFS
-  const colorSelectRef = useRef(cardId+".card-color-select");
-  const colorBtnRef = useRef(cardId+".card-color-btn");
+  const colorSelectRef = useRef();
+  const colorBtnRef = useRef();
 
   // FUNCTIONS
   const beginTitleEdit = () => {
@@ -114,7 +111,8 @@ const CardTitle = props => {
           <span className="tooltip">Shrink card</span>
         </button>
       </div>
-      <div ref={colorSelectRef} className="color-select" style={{display: openColorSelect ? "grid" : "none"}}>
+      <div ref={colorSelectRef} className="color-select" 
+        style={{display: openColorSelect ? "grid" : "none"}}>
         {colorList}
       </div>
     </>

@@ -29,13 +29,21 @@ const LibraryCard = props => {
   const cardText = useSelector(state => state.campaignData.cards[cardId].content.text);
 
   // REFS
-  const libraryCardRef = useRef(cardId+".library-card");
-  const titleInputRef = useRef(cardId+".library-card-title");
-  const colorSelectRef = useRef(cardId+".library-card-color-select");
-  const colorBtnRef = useRef(cardId+".library-card-color-btn");
-  const deleteBtnRef = useRef(cardId+".library-card-remove-btn");
-  let contentContainerRef = useRef();
-  const textRef = useRef(cardId+".library-card-text");
+  const libraryCardRef = useRef();
+  const titleInputRef = useRef();
+  const colorSelectRef = useRef();
+  const colorBtnRef = useRef();
+  const deleteBtnRef = useRef();
+  const textRef = useRef();
+  const contentContainerCallbackRef = (node) => {
+    if (!node) return;
+    if (!textRef.current) return;
+    const completeTextHeight = textRef.current ? textRef.current.scrollHeight : 1000;
+    const abridgedTextHeight = CARD_FONT_SIZE.text*5.5;
+    node.style.height = isSelected
+      ? completeTextHeight + 'px'
+      : Math.min(abridgedTextHeight, completeTextHeight) + 'px';
+  };
   
   // FUNCTIONS: CARD
   const cardDragHandler = (event) => event.dataTransfer.setData("text", cardId);
@@ -150,15 +158,6 @@ const LibraryCard = props => {
   };
 
   // STYLES: CONTENT
-  contentContainerRef = (node) => {
-    if (!node) return;
-    if (!textRef.current) return;
-    const completeTextHeight = textRef.current ? textRef.current.scrollHeight : 1000;
-    const abridgedTextHeight = CARD_FONT_SIZE.text*5.5;
-    node.style.height = isSelected
-      ? completeTextHeight + 'px'
-      : Math.min(abridgedTextHeight, completeTextHeight) + 'px';
-  };
 
   const textStyle = {
     fontSize: CARD_FONT_SIZE.text+'px',
@@ -204,7 +203,7 @@ const LibraryCard = props => {
       <div ref={colorSelectRef} className="color-select" style={{display: openColorSelect ? "grid" : "none"}}>
         {colorList}
       </div>
-      <div ref={contentContainerRef} className="library-card-content-container">
+      <div ref={contentContainerCallbackRef} className="library-card-content-container">
         <textarea ref={textRef}
           className="library-card-text" style={textStyle} 
           type="text"

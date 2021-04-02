@@ -1,5 +1,5 @@
 $menu-size: 42px;
-$btn-height: 42px;
+$btn-size: 42px;
 $border-radius: 5px;
 
 .tool-menu {
@@ -26,23 +26,23 @@ $border-radius: 5px;
 
     &:hover { background-color: lightblue; }
     &:disabled { background-color: gray; }
-    &:disabled:hover { background-color: gray; }
+    &:disabled:hover { background-color: gray; cursor: not-allowed; }
   }
 
-  .create-card { top: 0.5 *$btn-height; }
-  .copy-card { top: 1.5 *$btn-height; }
-  .reset-view { bottom: 4 *$btn-height; }
-  .lock-view { bottom: 3 *$btn-height; }
+  .create-card { top: 0.5 *$btn-size; }
+  .copy-card { top: 1.5 *$btn-size; }
+  .reset-view { bottom: 4 *$btn-size; }
+  .lock-view { bottom: 3 *$btn-size; }
 
   .save-indicator {
-    bottom: 1.6 *$btn-height;
+    bottom: 1.6 *$btn-size;
     border: 1px solid black;
     border-radius: 50%;
     background-color: yellow;
   }
 
   .save {
-    bottom: 0.5 *$btn-height;
+    bottom: 0.5 *$btn-size;
     background-color: green;
 
     $spinner-base-measurement: 2.5em;

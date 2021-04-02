@@ -21,7 +21,7 @@ const Campaign = props => {
   const campaignData = useSelector(state => state.campaignData);
 
   // REFS
-  const campaignDeleteBtnRef = useRef(campaignId+".deleteBtn");
+  const campaignDeleteBtnRef = useRef();
 
   // FUNCTIONS: campaign management
   const switchCampaign = () => {
