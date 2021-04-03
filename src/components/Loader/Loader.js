@@ -60,11 +60,8 @@ const Loader = props => {
   useEffect(() => {
     if (userId) {
       // dispatch(actions.setStatus('loading'));
-      if (activeCampaignId) {
-        dispatch(fireactions.fetchCampaignData(activeCampaignId));
-      } else {
-        dispatch(actions.setStatus('idle'));
-      }
+      if (activeCampaignId) dispatch(fireactions.fetchCampaignData(activeCampaignId));
+      else dispatch(actions.setStatus('idle'));
     }
   }, [dispatch, activeCampaignId]);
 
@@ -73,7 +70,7 @@ const Loader = props => {
     if (userId) {
       if ((status === 'idle') && campaignData && (Object.keys(campaignData).length !== 0)) {
         // set edit flag when idle
-        dispatch(actions.setCampaignEdit(true));
+        if (!campaignEdit) dispatch(actions.setCampaignEdit(true));
       } else {
         // set status flag after loading data
         dispatch(actions.setStatus('idle'));
@@ -81,7 +78,7 @@ const Loader = props => {
     } else {
       if ((status === 'idle') && campaignData && (Object.keys(campaignData).length !== 0)) {
         // set edit flag when idle
-        dispatch(actions.setIntroCampaignEdit(true));
+        if (!introCampaignEdit) dispatch(actions.setIntroCampaignEdit(true));
       } else {
         // set status flag after loading data
         dispatch(actions.setStatus('idle'));

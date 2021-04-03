@@ -19,7 +19,7 @@ const initialState = {
 
 const reducer = (state = initialState, action) => {
   switch (action.type) {
-    case actionTypes.RESET_SESSION_MANAGER: return initialState;
+    case actionTypes.RESET_SESSION_MANAGER: return {...initialState};
 
     // CAMPAIGN RELATED
     case actionTypes.LOAD_CAMPAIGN_LIST: return updateObject(state, {campaignList: action.campaignList});

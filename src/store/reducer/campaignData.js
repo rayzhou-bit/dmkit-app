@@ -41,7 +41,7 @@ const reducer = (state = {}, action) => {
   switch (action.type) {
     case actionTypes.LOAD_CAMPAIGN_DATA: return action.campaignData;
     case actionTypes.UNLOAD_CAMPAIGN_DATA: return {};
-    case actionTypes.LOAD_INTRO_CAMPAIGN: return introCampaign;
+    case actionTypes.LOAD_INTRO_CAMPAIGN: return {...introCampaign};
 
     // CAMPAIGN
     case actionTypes.UPD_CAMPAIGN_TITLE: return updateObject(state, {title: action.title});

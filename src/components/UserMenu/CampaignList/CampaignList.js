@@ -21,9 +21,7 @@ const CampaignList = props => {
       dispatch(fireactions.saveCampaignData(activeCampaignId, campaignData,
         () => dispatch(fireactions.createCampaign())
       ));
-    } else {
-      dispatch(fireactions.createCampaign());
-    }
+    } else dispatch(fireactions.createCampaign());
   };
 
   let campaignSelect = [];

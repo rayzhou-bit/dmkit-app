@@ -34,9 +34,7 @@ export const fetchActiveCampaignId = () => {
               dispatch(actions.setStatus('idle'));
             };
             console.log("[fetchActiveCampaignId] success loading activeCampaignId", resp.data().activeCampaignId);
-          } else {
-            dispatch(firstTimeSetup(userId));
-          }
+          } else dispatch(firstTimeSetup(userId));
         })
         .catch(err => console.log("[fetchActiveCampaignId] error loading activeCampaignId:", err));
     }
@@ -97,9 +95,7 @@ export const fetchCampaignData = (campaignId, followUpHandler) => {
                   .catch(err => console.log("[fetchCampaignData] error loading views:", err));
               })
               .catch(err => console.log("[fetchCampaignData] error loading cards:", err));
-          } else {
-            console.log("[fetchCampaignData] campaign", campaignId, "does not exist for this user");
-          }
+          } else console.log("[fetchCampaignData] campaign", campaignId, "does not exist for this user");
         })
         .catch(err => console.log("[fetchCampaignData] error loading campaign:", err));
     }

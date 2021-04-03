@@ -33,7 +33,9 @@ const ViewScreen = props => {
 
   // FUNCTIONS
   const dragStopHandler = (event, data) => {
-    dispatch(actions.updActiveViewPos({x: data.x, y: data.y}));
+    if (activeViewPos) {
+      if (activeViewPos.x !== data.x || activeViewPos.y !== data.y) dispatch(actions.updActiveViewPos({x: data.x, y: data.y}));
+    } else dispatch(actions.updActiveViewPos({x: data.x, y: data.y}));
   };
   
   const wheelHandler = (event) => {
@@ -103,6 +105,7 @@ const ViewScreen = props => {
                 // drag
                 disableDragging={(activeViewLock === undefined) ? true : activeViewLock}
                 dragHandleClassName="drag-view"
+                allowAnyClick={true}
                 onDragStop={dragStopHandler}
                 // size
                 size={{width: viewWidth, height: viewHeight}}

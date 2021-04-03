@@ -94,11 +94,8 @@ const LibraryCard = props => {
   useOutsideClick([colorSelectRef, colorBtnRef], openColorSelect, () => setOpenColorSelect(false));
 
   const deleteCard = () => {
-    if (!confirmDelete) {
-      setConfirmDelete(true);
-    } else {
-      dispatch(actions.destroyCard(cardId));
-    }
+    if (!confirmDelete) setConfirmDelete(true);
+    else dispatch(actions.destroyCard(cardId));
   };
 
   useOutsideClick([deleteBtnRef], confirmDelete, () => setConfirmDelete(false));

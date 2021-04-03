@@ -10,10 +10,21 @@ import userReducer from './store/reducer/userData';
 import campaignDataReducer from './store/reducer/campaignData';
 import * as serviceWorker from './serviceWorker';
 
+import * as actionTypes from './store/actionTypes';
+
 const composeEnhancers = 
   process.env.NODE_ENV === 'development' 
   ? window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ 
   : null || compose;
+
+// const editReducer = () =>
+//   baseReducer => (state, action) => {
+//     return dispatch => {
+//       dispatch( { type: actionTypes.SET_CAMPAIGN_EDIT, edit: true } );
+//       dispatch(baseReducer(state, action));
+//     } 
+//   };
+// console.log(Object.values(actionTypes))
 
 const rootReducer = combineReducers({
   sessionManager: sessionManagerReducer,

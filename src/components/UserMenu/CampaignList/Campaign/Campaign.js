@@ -29,9 +29,7 @@ const Campaign = props => {
       dispatch(fireactions.saveCampaignData(activeCampaignId, campaignData,
         dispatch(fireactions.switchCampaign(campaignId))
       ));
-    } else {
-      dispatch(fireactions.switchCampaign(campaignId));
-    }
+    } else dispatch(fireactions.switchCampaign(campaignId));
     setShowCampaignDropdown(false);
   };
 
@@ -40,9 +38,7 @@ const Campaign = props => {
       dispatch(fireactions.saveCampaignData(activeCampaignId, campaignData,
         dispatch(fireactions.copyCampaign(campaignId))
       ));
-    } else {
-      dispatch(fireactions.copyCampaign(campaignId));
-    }
+    } else dispatch(fireactions.copyCampaign(campaignId));
   };
 
   const destroyCampaign = () => {

@@ -32,11 +32,8 @@ const ViewSelect = React.memo(props => {
 
   // FUNCTIONS
   const wheelHandler = (event) => {
-    if (event.deltaY > 0) {
-      scrollRight();
-    } else {
-      scrollLeft();
-    }
+    if (event.deltaY > 0) scrollRight();
+    else scrollLeft();
   };
   const scrollLeft = () => viewTabContainerRef.current.scrollBy({left: -1.5 *tabWidth, behavior: 'smooth'});
   const scrollRight = () => viewTabContainerRef.current.scrollBy({left: 1.5 *tabWidth, behavior: 'smooth'});

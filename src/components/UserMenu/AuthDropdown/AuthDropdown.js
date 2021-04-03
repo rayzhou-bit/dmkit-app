@@ -44,13 +44,9 @@ const AuthDropdown = props => {
         dispatch(fireactions.emailSignIn(emailInput, pswInput, 
           () => dispatch(fireactions.saveIntroCampaignData(campaignData))
         ));
-      } else {
-        dispatch(fireactions.emailSignIn(emailInput, pswInput));
-      }
+      } else dispatch(fireactions.emailSignIn(emailInput, pswInput));
       dispatch(actions.setIntroCampaignEdit(false));
-    } else {
-      dispatch(fireactions.emailSignIn(emailInput, pswInput));
-    }
+    } else dispatch(fireactions.emailSignIn(emailInput, pswInput));
   };
 
   const googleSignIn = (event) => { 
@@ -68,9 +64,7 @@ const AuthDropdown = props => {
           dispatch(fireactions.emailSignOut());
         }
       ));
-    } else {
-      dispatch(fireactions.emailSignOut());
-    }
+    } else dispatch(fireactions.emailSignOut());
     setShowUserDropdown(false);
   };
 

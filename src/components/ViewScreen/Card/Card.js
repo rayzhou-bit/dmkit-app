@@ -27,9 +27,9 @@ const Card = props => {
   // FUNCTIONS: CARD
   const dragStopHandler = (event, data) => {
     setDragging(false);
-    if (data.deltaX !== 0 || data.deltaY !== 0) {
-      dispatch(actions.updCardPos(cardId, {x: data.x, y: data.y}));
-    }
+    if (cardPos) {
+      if (cardPos.x !== data.x || cardPos.y !== data.y) dispatch(actions.updCardPos(cardId, {x: data.x, y: data.y}));
+    } else dispatch(actions.updCardPos(cardId, {x: data.x, y: data.y}));
   };
 
   const cardClickHandler = () => {
@@ -48,9 +48,9 @@ const Card = props => {
 
   // STYLES
   const toFrontStyle = {
-    zIndex: dragging ? 20000*(cardPos.y + cardPos.x) 
-      : (cardId === activeCardId) ? 10000*(cardPos.y + cardPos.x) 
-      : (100*cardPos.y + cardPos.x + 2),
+    zIndex: dragging ? 20000*(cardPos.y + cardPos.x + 10) 
+      : (cardId === activeCardId) ? 10000*(cardPos.y + cardPos.x + 10) 
+      : (100*cardPos.y + cardPos.x + 10),
   };
 
   const cardStyle = {

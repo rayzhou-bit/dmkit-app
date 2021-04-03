@@ -12,7 +12,7 @@ const initialState = {
 const reducer = (state = initialState, action) => {
   switch(action.type) {
     case actionTypes.LOAD_USER: return loadUser(state, action.user);
-    case actionTypes.UNLOAD_USER: return initialState;
+    case actionTypes.UNLOAD_USER: return {...initialState};
 
     case actionTypes.UPD_USER_DISPLAYNAME: return updateObject(state, {displayName: action.displayName});
 
