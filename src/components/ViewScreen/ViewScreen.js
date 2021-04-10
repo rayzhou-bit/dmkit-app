@@ -91,7 +91,8 @@ const ViewScreen = props => {
 
   return (
     <main ref={viewScreenRef} className="view-screen" 
-      onWheel={wheelHandler}>
+      onWheel={wheelHandler}
+      onContextMenu={e => e.preventDefault()}>
       {userId && !activeCampaignId
         ? <div className="empty-screen">
             No active project loaded. Please select your project or create a new one.

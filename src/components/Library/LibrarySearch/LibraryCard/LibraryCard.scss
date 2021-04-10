@@ -3,7 +3,7 @@ $title-bar-height: 2rem;
 .library-card {
   box-sizing: content-box;
   position: relative;
-  width: 98%;
+  width: 98%; height: auto;
   margin-bottom: 0.5rem;
 
   &:hover .title-btn {
@@ -84,30 +84,35 @@ $title-bar-height: 2rem;
 }
 
 .library-card-content-container {
-  width: 100%;
-  text-align: center;
-  overflow-y: scroll;
+  position: relative;
+  height: fit-content;
+  // width: 100%;
+  // text-align: center;
+  // overflow-y: scroll;
   
+  // overflow: auto;
+
   -webkit-transition: .4s;
   transition: .4s;
 
+  // display: block;
   display: flex;
   flex-flow: column nowrap;
 
   .library-card-text {
-    flex: 1 1 auto;
-    box-sizing: border-box;
-    width: 100%;
+    // flex: 1 1 auto;
+    // box-sizing: border-box;
+    width: 100%; height: fit-content;
 
     margin: 0;  padding: 5px;
     border: 0;
 
-    background-color: #ddd;
+    // background-color: #ddd;
 
-    overflow: hidden;
+    // overflow: hidden;
     resize: none;
     
-    -webkit-transition: .4s;
-    transition: .4s;
+    // -webkit-transition: .4s;
+    // transition: .4s;
   }
 }

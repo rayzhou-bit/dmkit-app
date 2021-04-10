@@ -6,6 +6,7 @@ const initialState = {
     // campaignId: campaignTitle,
   },
   activeCampaignId: null,
+  activeCardId: null,
 
   status: 'loading',  // idle, loading or saving
   campaignEdit: false,  // flag for any unsaved changes
@@ -27,6 +28,7 @@ const reducer = (state = initialState, action) => {
     case actionTypes.REMOVE_CAMPAIGN_FROM_LIST: return removeCampaignFromList(state, action.campaignId);
     case actionTypes.UPD_CAMPAIGN_ON_LIST: return updCampaignOnList(state, action.title);
     case actionTypes.UPD_ACTIVE_CAMPAIGN_ID: return updateObject(state, {activeCampaignId: action.activeCampaignId});
+    case actionTypes.UPD_ACTIVE_CARD_ID: return updateObject(state, {activeCardId: action.activeCardId});
 
     case actionTypes.SET_STATUS: return updateObject(state, {status: action.status});
     case actionTypes.SET_CAMPAIGN_EDIT: return updateObject(state, {campaignEdit: action.edit});

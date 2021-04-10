@@ -68,6 +68,7 @@ $border-radius: 0.5rem;
 } 
 
 .dmkit-title {
+  position: relative;
   width: 100%; height: 100%;
   line-height: 41px;
 
@@ -87,7 +88,7 @@ $border-radius: 0.5rem;
     transition: opacity 0.2s linear;
   }
 
-  .title-text {
+  .campaign-title-text {
     position: relative;
     height: 100%; width: 100%;
 
@@ -113,6 +114,7 @@ $border-radius: 0.5rem;
   }
 
   .edit-title {
+    position: absolute;
     right: 0;
     border-bottom-right-radius: $border-radius;
     background-color: lightgray;

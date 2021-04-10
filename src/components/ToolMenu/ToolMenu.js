@@ -23,10 +23,10 @@ const ToolMenu = props => {
   const campaignEdit = useSelector(state => state.sessionManager.campaignEdit);
   const introCampaignEdit = useSelector(state => state.sessionManager.introCampaignEdit);
   const activeCampaignId = useSelector(state => state.sessionManager.activeCampaignId);
+  const activeCardId = useSelector(state => state.sessionManager.activeCardId);
   const activeViewId = useSelector(state => state.campaignData.activeViewId);
   const activeViewLock = useSelector(state => activeViewId ? state.campaignData.views[activeViewId].lock : null);
   const campaignData = useSelector(state => state.campaignData);
-  const activeCardId = useSelector(state => state.campaignData.activeCardId);
 
   // FUNCTIONS
   const createCard = () => dispatch(actions.createCard(activeCampaignId));

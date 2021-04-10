@@ -8,6 +8,8 @@ import { auth } from '../../store/firestoreAPI/firebase';
 import Backdrop from '../UI/Backdrop/Backdrop';
 import Spinner from '../UI/Spinner/Spinner';
 
+// Manages loading, saving and campaignData edit flag
+
 const Loader = props => {
   const dispatch = useDispatch();
   

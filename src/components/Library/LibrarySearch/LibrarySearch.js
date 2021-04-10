@@ -9,7 +9,7 @@ import SearchImg from '../../../assets/icons/search2.png';
 const LibrarySearch = props => {
   // STATES
   const [enteredSearch, setEnteredSearch] = useState('');
-  const [searchFilter, setSearchFilter] = useState('current'); // all, current, unused
+  const [searchFilter, setSearchFilter] = useState('all'); // all, current, unused
 
   // STORE SELECTORS
   const activeViewId = useSelector(state => state.campaignData.activeViewId);

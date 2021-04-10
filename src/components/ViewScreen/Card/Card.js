@@ -1,9 +1,15 @@
 import React, { useState, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { Rnd } from 'react-rnd';
 
+import './Card.scss';
 import * as actions from '../../../store/actionIndex';
-import CardForm from './CardForm/CardForm';
-import BubbleForm from './BubbleForm/BubbleForm';
+import { useOutsideClick } from '../../../shared/utilityFunctions';
+import { GRID } from '../../../shared/constants/grid';
+import { CARD_FONT_SIZE } from '../../../shared/constants/fontSize';
+import { TEXT_COLOR_WHEN_BACKGROUND_IS } from '../../../shared/constants/colors';
+import CardTitle from './CardTitle/CardTitle';
+import CardContent from './CardContent/CardContent';
 
 const Card = props => {
   const {cardId, toolMenuRef, 
@@ -14,12 +20,17 @@ const Card = props => {
   // STATES
   const [dragging, setDragging] = useState(false);
   const [isSelected, setIsSelected] = useState(false);
+  const [editingCard, setEditingCard] = useState(false);
 
   // STORE SELECTORS
-  const activeCardId = useSelector(state => state.campaignData.activeCardId);
+  const activeCardId = useSelector(state => state.sessionManager.activeCardId);
   const activeViewId = useSelector(state => state.campaignData.activeViewId);
+  const activeViewScale = useSelector(state => activeViewId ? state.campaignData.views[activeViewId].scale : null);
   const cardPos = useSelector(state => state.campaignData.cards[cardId].views[activeViewId].pos);
+  const cardSize = useSelector(state => state.campaignData.cards[cardId].views[activeViewId].size);
+  const cardColor = useSelector(state => state.campaignData.cards[cardId].color);
   const cardForm = useSelector(state => state.campaignData.cards[cardId].views[activeViewId].cardForm);
+  const cardTitle = useSelector(state => state.campaignData.cards[cardId].title);
 
   // REFS
   const cardRef = useRef();
@@ -30,6 +41,15 @@ const Card = props => {
     if (cardPos) {
       if (cardPos.x !== data.x || cardPos.y !== data.y) dispatch(actions.updCardPos(cardId, {x: data.x, y: data.y}));
     } else dispatch(actions.updCardPos(cardId, {x: data.x, y: data.y}));
+  };
+  
+  const resizeStopHandler = (event, direction, ref, delta, position) => {
+    if (delta.width !== 0 || delta.height !== 0) {
+      dispatch(actions.updCardSize(cardId, {width: ref.style.width, height: ref.style.height}));
+      if (["top", "left", "topRight", "bottomLeft", "topLeft"].indexOf(direction) !== -1) {
+          dispatch(actions.updCardPos(cardId, {x: position.x, y: position.y}));
+      }
+    }
   };
 
   const cardClickHandler = () => {
@@ -45,6 +65,15 @@ const Card = props => {
       [cardId]: null,
     })
   };
+  
+  const changeTypeToCard = () => dispatch(actions.updCardForm(cardId, "card"));
+
+  useOutsideClick([cardRef, toolMenuRef], isSelected, 
+    () => {
+      if (cardId === activeCardId) dispatch(actions.updActiveCardId(null));
+      setIsSelected(false);
+    }
+  );
 
   // STYLES
   const toFrontStyle = {
@@ -58,28 +87,60 @@ const Card = props => {
     margin: (cardId === activeCardId) ? '0px' : '2px',
     animation: cardAnimation ? cardAnimation[cardId] : null,
   };
+  
+  const bubbleLetterStyle = {
+    fontSize: CARD_FONT_SIZE.title+'px',
+    color: TEXT_COLOR_WHEN_BACKGROUND_IS[cardColor],
+    backgroundColor: cardColor, 
+  };
 
   // DISPLAY ELEMENTS
   const cardObject = (
-    <CardForm cardId={cardId} cardRef={cardRef} toolMenuRef={toolMenuRef}
-      isSelected={isSelected} setIsSelected={setIsSelected} setDragging={setDragging}
-      dragStopHandler={dragStopHandler} cardClickHandler={cardClickHandler}
-      toFrontStyle={toFrontStyle} cardStyle={cardStyle}
-      onAnimationEnd={onAnimationEnd} />
+    <div ref={cardRef} className="card" style={cardStyle}
+      onClick={cardClickHandler}
+      onAnimationEnd={onAnimationEnd}>
+      <CardTitle cardId={cardId} setEditingCard={setEditingCard} />
+      <CardContent cardId={cardId} setEditingCard={setEditingCard} />
+    </div>
   );
 
   const bubbleObject = (
-    <BubbleForm cardId={cardId} cardRef={cardRef} toolMenuRef={toolMenuRef}
-      isSelected={isSelected} setIsSelected={setIsSelected} setDragging={setDragging}
-      dragStopHandler={dragStopHandler} cardClickHandler={cardClickHandler}
-      toFrontStyle={toFrontStyle} cardStyle={cardStyle}
-      onAnimationEnd={onAnimationEnd} />
+    <div ref={cardRef} className="bubble" style={cardStyle}
+      onClick={cardClickHandler}
+      onDoubleClick={changeTypeToCard}
+      onAnimationEnd={onAnimationEnd}>
+      <div className="short" style={bubbleLetterStyle} title={cardTitle ? cardTitle : null}>
+        {/* {cardTitle ? cardTitle.split(' ')[0] : ""}  */}
+        {cardTitle ? cardTitle : ""}
+      </div>
+    </div>
   );
 
   return (
-    cardForm === "bubble"
-      ? bubbleObject 
-      : cardObject
+    <Rnd style={toFrontStyle}
+      bounds="parent"
+      // position
+      position={cardPos}
+      // drag
+      disableDragging={editingCard}
+      dragHandleClassName={(cardForm === "bubble") ? "short" : "title-container"}
+      dragGrid={[GRID.size, GRID.size]}
+      onDragStart={()=>setDragging(true)}
+      onDragStop={dragStopHandler}
+      // size
+      size={(cardForm === "bubble") ? {width: GRID.size*3, height: GRID.size*1} : cardSize}
+      minWidth={(cardForm === "bubble") ? null : GRID.size*5} 
+      minHeight={(cardForm === "bubble") ? null : GRID.size*4}
+      scale={activeViewScale}
+      // resize
+      enableResizing={(cardForm === "bubble") ? false : true}
+      resizeGrid={[GRID.size, GRID.size]}
+      onResizeStop={resizeStopHandler}
+    >
+      {cardForm === "bubble"
+        ? bubbleObject 
+        : cardObject}
+    </Rnd>
   );
 };
 

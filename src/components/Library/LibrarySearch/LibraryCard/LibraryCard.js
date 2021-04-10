@@ -5,9 +5,10 @@ import { useOutsideClick } from '../../../../shared/utilityFunctions';
 import './LibraryCard.scss';
 import * as actions from '../../../../store/actionIndex';
 import { CARD_FONT_SIZE } from '../../../../shared/constants/fontSize';
-import { TEXT_COLOR_WHEN_BACKGROUND_IS, CARD_TITLEBAR_EDIT_COLORS, CARD_TITLEBAR_COLORS } from '../../../../shared/constants/colors';
+import { CARD_TITLEBAR_COLORS } from '../../../../shared/constants/colors';
+import TitleInput from '../../../UI/Inputs/TitleInput';
+import ContentTextarea from '../../../UI/Inputs/ContentTextarea';
 
-import EditImg from '../../../../assets/icons/edit-24.png';
 import DeleteImg from '../../../../assets/icons/delete-24.png';
 
 const LibraryCard = props => {
@@ -18,19 +19,17 @@ const LibraryCard = props => {
   const [isSelected, setIsSelected] = useState(false);
   const [openColorSelect, setOpenColorSelect] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
-  const [editingTitle, setEditingTitle] = useState(false);
   const [editingText, setEditingText] = useState(false);
-  const editingCard = (editingTitle || editingText) ? true : false;
+  const [editingCard, setEditingCard] = useState(false);
 
   // STORE SELECTORS
-  const activeCardId = useSelector(state => state.campaignData.activeCardId);
+  const activeCardId = useSelector(state => state.sessionManager.activeCardId);
   const cardColor = useSelector(state => state.campaignData.cards[cardId].color);
   const cardTitle = useSelector(state => state.campaignData.cards[cardId].title);
   const cardText = useSelector(state => state.campaignData.cards[cardId].content.text);
 
   // REFS
   const libraryCardRef = useRef();
-  const titleInputRef = useRef();
   const colorSelectRef = useRef();
   const colorBtnRef = useRef();
   const deleteBtnRef = useRef();
@@ -61,36 +60,6 @@ const LibraryCard = props => {
   });
 
   // FUNCTIONS: TITLEBAR
-  const beginTitleEdit = () => {
-    if (!editingTitle) {
-      titleInputRef.current.focus();
-      titleInputRef.current.setSelectionRange(titleInputRef.current.value.length, titleInputRef.current.value.length);
-      setEditingTitle(true);
-    }
-  };
-
-  const endTitleEdit = () => {
-    if (editingTitle) setEditingTitle(false);
-  };
-  useOutsideClick([titleInputRef], editingTitle, endTitleEdit);
-
-  const updTitleEdit = () => {
-    if (editingTitle) dispatch(actions.updCardTitle(cardId, titleInputRef.current.value));
-  };
-
-  const keyPressTitleHandler = (event) => {
-    if (isSelected && editingTitle) {
-      if (event.key === 'Enter') {
-        endTitleEdit();
-      }
-      if (event.key === 'Tab') {
-        event.preventDefault();
-        endTitleEdit();
-        beginTextEdit();
-      }
-    }
-  };
-
   useOutsideClick([colorSelectRef, colorBtnRef], openColorSelect, () => setOpenColorSelect(false));
 
   const deleteCard = () => {
@@ -137,17 +106,6 @@ const LibraryCard = props => {
   };
 
   // STYLES: TITLEBAR
-  const titleStyle = {
-    fontSize: CARD_FONT_SIZE.title+'px',
-    color: TEXT_COLOR_WHEN_BACKGROUND_IS[cardColor], 
-    backgroundColor: editingTitle ? CARD_TITLEBAR_EDIT_COLORS[cardColor] : cardColor, 
-    cursor: editingTitle ? "text" : "move",
-    MozUserSelect: editingTitle ? "default" : "none",
-    WebkitUserSelect: editingTitle ? "default" : "none",
-    msUserSelect: editingTitle ? "default" : "none",
-  };
-  const editBtnStyle = { backgroundColor: cardColor ? cardColor : "white" };
-  const editBtnImgStyle = { WebkitFilter: (TEXT_COLOR_WHEN_BACKGROUND_IS[cardColor] === "white") ? 'invert(100%)' : null };
   const colorBtnStyle = { backgroundColor: cardColor ? cardColor : "white" };
   const deleteBtnStyle = {
     backgroundColor: confirmDelete ? "red" : null,
@@ -155,10 +113,18 @@ const LibraryCard = props => {
   };
 
   // STYLES: CONTENT
-
   const textStyle = {
     fontSize: CARD_FONT_SIZE.text+'px',
     backgroundColor: editingText ? "white" : "lightgray",
+  };
+
+  const contentContainerStyle = {
+    // minHeight: isSelected ? 4*CARD_FONT_SIZE.text + 'px' : 2*CARD_FONT_SIZE.text + 'px',
+    // maxHeight: isSelected ? '50vh' : 4*CARD_FONT_SIZE.text + 'px',
+  };
+
+  const contentContainerAdjust = () => {
+
   };
 
   // DISPLAY ELEMENTS
@@ -174,18 +140,8 @@ const LibraryCard = props => {
     <div ref={libraryCardRef} className="library-card" style={cardStyle} 
       draggable={!editingCard} onDragStart={e => cardDragHandler(e)}
       onClick={cardClickHandler}>
+      {/* title */}
       <div className="library-card-title-container">
-        <input ref={titleInputRef}
-          className="title-input" style={titleStyle} type="text" required
-          value={cardTitle} readOnly={!editingTitle}
-          onDoubleClick={(cardId === activeCardId) ? beginTitleEdit : null}
-          onChange={updTitleEdit}
-          onKeyDown={e => keyPressTitleHandler(e)} />
-        <button className="edit-title title-btn btn-24" style={editBtnStyle}
-          onClick={() => beginTitleEdit()}>
-          <img src={EditImg} alt="Edit" draggable="false" style={editBtnImgStyle} />
-          <span className="tooltip">Edit title</span>
-        </button>
         <button ref={colorBtnRef} className="change-color title-btn btn-24"
           onClick={() => setOpenColorSelect(!openColorSelect)}>
           <div style={colorBtnStyle} />
@@ -196,11 +152,17 @@ const LibraryCard = props => {
           <img src={DeleteImg} alt="Delete" draggable="false" />
           <span className="tooltip">Delete card</span>
         </button>
+        <TitleInput className="title-input" btnClassName="edit-title title-btn btn-24"
+          type="card" color={cardColor} btnSize={24}
+          value={cardTitle} saveValue={v => dispatch(actions.updCardTitle(cardId, v))}
+          setEditingParent={setEditingCard} />
       </div>
+      {/* color */}
       <div ref={colorSelectRef} className="color-select" style={{display: openColorSelect ? "grid" : "none"}}>
         {colorList}
       </div>
-      <div ref={contentContainerCallbackRef} className="library-card-content-container">
+      {/* content */}
+      <div className="library-card-content-container" style={contentContainerStyle}>
         <textarea ref={textRef}
           className="library-card-text" style={textStyle} 
           type="text"
@@ -209,6 +171,9 @@ const LibraryCard = props => {
           onDoubleClick={(cardId !== activeCardId) ? beginTextEdit : null}
           onChange={updTextEdit}
           onKeyDown={e => keyPressTextHandler(e)} />
+        {/* <ContentTextarea className="library-card-text"
+          value={cardText} saveValue={v => dispatch(actions.updCardText(cardId, v))}
+          setEditingParent={setEditingCard} /> */}
       </div>
     </div>
   );

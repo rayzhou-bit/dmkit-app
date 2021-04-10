@@ -45,7 +45,6 @@ const reducer = (state = {}, action) => {
 
     // CAMPAIGN
     case actionTypes.UPD_CAMPAIGN_TITLE: return updateObject(state, {title: action.title});
-    case actionTypes.UPD_ACTIVE_CARD_ID: return updateObject(state, {activeCardId: action.activeCardId});
     case actionTypes.UPD_ACTIVE_VIEW_ID: return updateObject(state, {activeViewId: action.activeViewId});
     case actionTypes.SHIFT_VIEW_IN_VIEW_ORDER: return shiftViewInViewOrder(state, action.shiftedViewId, action.posShift);
 

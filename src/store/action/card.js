@@ -1,10 +1,9 @@
 import * as actionTypes from '../actionTypes';
 
 // actions for sessionManager reducer
-
-// actions for campaingData reducer
 export const updActiveCardId = (activeCardId) => { return { type: actionTypes.UPD_ACTIVE_CARD_ID, activeCardId: activeCardId }; };
 
+// actions for campaingData reducer
 export const createCard = () => { return { type: actionTypes.CREATE_CARD }; };
 export const copyCard = (cardId) => { return { type: actionTypes.COPY_CARD, cardId: cardId }; };
 export const destroyCard = (cardId) => { return { type: actionTypes.DESTROY_CARD, cardId: cardId }; };
