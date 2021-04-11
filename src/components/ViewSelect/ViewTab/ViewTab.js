@@ -103,12 +103,12 @@ const ViewTab = React.memo(props => {
         <button className={(viewId === activeViewId) ? "edit-title title-btn btn-32 active-view" : "edit-title title-btn btn-32 inactive-view"}
           onClick={beginEdit}>
           <img src={EditImg} alt="Edit" draggable="false" />
-          {/* <span className="tooltip">Edit title</span> */}
+          <span className="tooltip">Edit title</span>
         </button>
         <button className={(viewId === activeViewId) ? "destroy-view title-btn btn-32 active-view" : "destroy-view title-btn btn-32 inactive-view"}
           onClick={destroyView}>
           <img src={CloseImg} alt="Delete" draggable="false" />
-          {/* <span className="tooltip">Delete view</span> */}
+          <span className="tooltip">Delete view</span>
         </button>
       </div>
     </Rnd>

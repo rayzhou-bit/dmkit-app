@@ -91,7 +91,7 @@ const TitleInput = props => {
         <span className="tooltip">Edit title</span>
       </button>
       <input ref={inputRef} className={className} style={inputStyle}
-        type="text" required
+        type="text" required maxLength="50"
         value={inputValue ? inputValue : ""} title={inputValue} readOnly={!editing}
         onBlur={endEdit}
         onDoubleClick={beginEdit}

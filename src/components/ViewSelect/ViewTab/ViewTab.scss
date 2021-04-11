@@ -1,5 +1,5 @@
 .view-tab {
-  float: left;
+  // float: left;
   height: 100%; width: 100%;
   padding: 0;  margin: 0;
   border: 1px solid black;
@@ -69,10 +69,3 @@
 .inactive-view {
   background-color: lightgray;
 }
-
-// .view-tab-divider {
-//   height: 32px; width: 1px;
-//   margin: auto;
-//   z-index: 5;
-//   background-color: black;
-// }

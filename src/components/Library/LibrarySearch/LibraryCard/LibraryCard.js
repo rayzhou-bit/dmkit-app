@@ -62,40 +62,11 @@ const LibraryCard = props => {
   // FUNCTIONS: TITLEBAR
   useOutsideClick([colorSelectRef, colorBtnRef], openColorSelect, () => setOpenColorSelect(false));
 
+  useOutsideClick([deleteBtnRef], confirmDelete, () => setConfirmDelete(false));
+  
   const deleteCard = () => {
     if (!confirmDelete) setConfirmDelete(true);
     else dispatch(actions.destroyCard(cardId));
-  };
-
-  useOutsideClick([deleteBtnRef], confirmDelete, () => setConfirmDelete(false));
-
-  // FUNCTIONS: TEXT BODY
-  const beginTextEdit = () => {
-    if (!editingText) {
-      textRef.current.focus();
-      textRef.current.setSelectionRange(textRef.current.value.length, textRef.current.value.length);
-      setEditingText(true);
-    }
-  };
-
-  const endTextEdit = () => {
-    if (editingText) setEditingText(false);
-  };
-
-  useOutsideClick([textRef], editingText, endTextEdit);
-
-  const updTextEdit = () => {
-    if (editingText) dispatch(actions.updCardText(cardId, textRef.current.value));
-  };
-
-  const keyPressTextHandler = (event) => {
-    if (isSelected && editingText) {
-      if (event.key === 'Tab') {
-        event.preventDefault();
-        // endTextEdit();
-        // TODO tab key should indent in textarea
-      }
-    }
   };
 
   // STYLES: CARD
@@ -119,12 +90,9 @@ const LibraryCard = props => {
   };
 
   const contentContainerStyle = {
-    // minHeight: isSelected ? 4*CARD_FONT_SIZE.text + 'px' : 2*CARD_FONT_SIZE.text + 'px',
-    // maxHeight: isSelected ? '50vh' : 4*CARD_FONT_SIZE.text + 'px',
-  };
-
-  const contentContainerAdjust = () => {
-
+    minHeight: isSelected ? 6*CARD_FONT_SIZE.text + 'px' : 3*CARD_FONT_SIZE.text + 'px',
+    maxHeight: isSelected ? '50vh' : 4*CARD_FONT_SIZE.text + 'px',
+    height: isSelected ? '35vh' : 4*CARD_FONT_SIZE.text + 'px',
   };
 
   // DISPLAY ELEMENTS
@@ -163,17 +131,9 @@ const LibraryCard = props => {
       </div>
       {/* content */}
       <div className="library-card-content-container" style={contentContainerStyle}>
-        <textarea ref={textRef}
-          className="library-card-text" style={textStyle} 
-          type="text"
-          value={cardText} readOnly={!editingText}
-          onClick={(cardId === activeCardId) ? beginTextEdit : null}
-          onDoubleClick={(cardId !== activeCardId) ? beginTextEdit : null}
-          onChange={updTextEdit}
-          onKeyDown={e => keyPressTextHandler(e)} />
-        {/* <ContentTextarea className="library-card-text"
+        <ContentTextarea className="library-card-textarea"
           value={cardText} saveValue={v => dispatch(actions.updCardText(cardId, v))}
-          setEditingParent={setEditingCard} /> */}
+          setEditingParent={setEditingCard} />
       </div>
     </div>
   );

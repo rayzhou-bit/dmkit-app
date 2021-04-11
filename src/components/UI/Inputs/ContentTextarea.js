@@ -14,16 +14,6 @@ const ContentTextarea = props => {
 
   const [textareaValue, setTextareaValue] = useState("");
   const [editing, setEditing] = useState(false);
-  
-  // const contentContainerCallbackRef = (node) => {
-  //   if (!node) return;
-  //   if (!textRef.current) return;
-  //   const completeTextHeight = textRef.current ? textRef.current.scrollHeight : 1000;
-  //   const abridgedTextHeight = CARD_FONT_SIZE.text*5.5;
-  //   node.style.height = isSelected
-  //     ? completeTextHeight + 'px'
-  //     : Math.min(abridgedTextHeight, completeTextHeight) + 'px';
-  // };
 
   useEffect(() => {
     setTextareaValue(value);
@@ -33,8 +23,6 @@ const ContentTextarea = props => {
     if (!editing) {
       setEditing(true);
       if (setEditingParent) setEditingParent(true);
-      event.target.setSelectionRange(event.target.value.length, event.target.value.length);
-      // TODO set cursor at mouse position
     }
   };
 
@@ -72,10 +60,8 @@ const ContentTextarea = props => {
       type="text"
       value={textareaValue ? textareaValue : ""} readOnly={!editing}
       placeholder="Fill me in!"
-      onFocus={beginEdit} 
       onBlur={endEdit}
-      onMouseDown={!editing ? e => e.preventDefault() : null} // prevents focus on single click
-      onClick={e => e.target.focus()}
+      onClick={beginEdit}
       onChange={e => setTextareaValue(e.target.value)}
       onKeyDown={keyPressHandler}
       onDragOver={e => e.preventDefault()}

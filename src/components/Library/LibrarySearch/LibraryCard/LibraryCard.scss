@@ -85,34 +85,22 @@ $title-bar-height: 2rem;
 
 .library-card-content-container {
   position: relative;
-  height: fit-content;
-  // width: 100%;
-  // text-align: center;
-  // overflow-y: scroll;
-  
-  // overflow: auto;
 
   -webkit-transition: .4s;
   transition: .4s;
 
-  // display: block;
   display: flex;
   flex-flow: column nowrap;
 
-  .library-card-text {
-    // flex: 1 1 auto;
-    // box-sizing: border-box;
-    width: 100%; height: fit-content;
+  .library-card-textarea {
+    flex: 1 1 auto;
+    box-sizing: border-box;
+    width: 100%;
 
     margin: 0;  padding: 5px;
     border: 0;
 
-    // background-color: #ddd;
-
-    // overflow: hidden;
+    overflow-y: scroll;
     resize: none;
-    
-    // -webkit-transition: .4s;
-    // transition: .4s;
   }
 }
