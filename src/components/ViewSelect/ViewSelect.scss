@@ -18,6 +18,7 @@ $menu-size: 42px;
   // grid-template-columns: 41px 1fr 82px;
 
   .view-select-item {
+    position: absolute;
     border: 1px solid black;
     border-bottom-left-radius: 8px;
     border-bottom-right-radius: 8px;
@@ -25,11 +26,13 @@ $menu-size: 42px;
   }
   
   .add-view {
+    left: 0;
     .tooltip { bottom: 120%; left: 15%; white-space: nowrap; }
     .tooltip::after { top: 115%; left: 15%; border-top-color: black; }
   }
 
-  .show-view-list {    
+  .show-view-list {
+    left: 41px;
     .tooltip { bottom: 120%; left: -50%; white-space: nowrap; }
     .tooltip::after { top: 115%; left: 40%; border-top-color: black; }
 
@@ -43,37 +46,15 @@ $menu-size: 42px;
     }
   }
 
-  .view-tab-container {
-    position: relative;
-    width: 100%; height: 100%;
-    z-index: 0;
-    white-space: nowrap;
-    overflow-x: hidden;
-    overflow-y: visible;
-
-    .view-tab-container-container {
-      height: 100%;
-
-      //implement flexbox here later?
-      display: flex;
-      flex-flow: row nowrap;
-
-      .border-line {
-        top: 0; right: 0;
-        width: 100vw;
-        z-index: 0;
-        border-top: 1px solid black;
-      }
-    }
-  }
-
   .view-scroll-left {
+    right: 41px;
     border-right: 0;
     border-bottom-right-radius: 0;
     .tooltip { bottom: 150%; right: -40%; white-space: nowrap; }
     .tooltip::after { top: 115%; right: 40%; border-top-color: black; }
   }
   .view-scroll-right {
+    right: 0;
     border-left: 0;
     border-bottom-left-radius: 0;
     .tooltip { bottom: 150%; right: 15%; white-space: nowrap; }
@@ -109,6 +90,30 @@ $menu-size: 42px;
       text-align: left;
       font-size: 1.2rem;
       text-overflow: ellipsis;
+    }
+  }
+}
+
+.view-tab-container {
+  position: absolute;
+  inset: 0 82px;
+  z-index: 0;
+  white-space: nowrap;
+  overflow-x: hidden;
+  overflow-y: visible;
+
+  .view-tab-container-container {
+    position: absolute;
+    height: 100%;
+
+    display: flex;
+    flex-flow: row nowrap;
+
+    .border-line {
+      top: 0; right: 0;
+      width: 100vw;
+      z-index: 0;
+      border-top: 1px solid black;
     }
   }
 }

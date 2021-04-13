@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import { createStore, applyMiddleware, compose, combineReducers } from 'redux';
 import thunk from 'redux-thunk';
+import undoable from 'redux-undo';
 
 import App from './App';
 import sessionManagerReducer from './store/reducer/sessionManager';

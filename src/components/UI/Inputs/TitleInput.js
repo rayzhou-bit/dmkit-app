@@ -65,6 +65,10 @@ const TitleInput = props => {
       WebkitUserSelect: editing ? "default" : "none",
       msUserSelect: editing ? "default" : "none",
     };
+  } else if (type === "view") {
+    inputStyle = {
+      backgroundColor: editing ? "lightskyblue" : "transparent",
+    }
   }
   if (color) {
     inputStyle = {
