@@ -24,13 +24,13 @@ const Card = props => {
 
   // STORE SELECTORS
   const activeCardId = useSelector(state => state.sessionManager.activeCardId);
-  const activeViewId = useSelector(state => state.campaignData.activeViewId);
-  const activeViewScale = useSelector(state => activeViewId ? state.campaignData.views[activeViewId].scale : null);
-  const cardPos = useSelector(state => state.campaignData.cards[cardId].views[activeViewId].pos);
-  const cardSize = useSelector(state => state.campaignData.cards[cardId].views[activeViewId].size);
-  const cardColor = useSelector(state => state.campaignData.cards[cardId].color);
-  const cardForm = useSelector(state => state.campaignData.cards[cardId].views[activeViewId].cardForm);
-  const cardTitle = useSelector(state => state.campaignData.cards[cardId].title);
+  const activeViewId = useSelector(state => state.campaignData.present.activeViewId);
+  const activeViewScale = useSelector(state => activeViewId ? state.campaignData.present.views[activeViewId].scale : null);
+  const cardPos = useSelector(state => state.campaignData.present.cards[cardId].views[activeViewId].pos);
+  const cardSize = useSelector(state => state.campaignData.present.cards[cardId].views[activeViewId].size);
+  const cardColor = useSelector(state => state.campaignData.present.cards[cardId].color);
+  const cardForm = useSelector(state => state.campaignData.present.cards[cardId].views[activeViewId].cardForm);
+  const cardTitle = useSelector(state => state.campaignData.present.cards[cardId].title);
 
   // REFS
   const cardRef = useRef();

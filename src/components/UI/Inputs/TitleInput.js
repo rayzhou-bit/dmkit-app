@@ -55,21 +55,26 @@ const TitleInput = props => {
   let inputStyle = styles ? { ...styles.input} : {};
   let btnStyle = styles ? { ...styles.btn } : {};
   let btnImgStyle = styles ? { ...styles.btnImg } : {};
+  inputStyle = {
+    ...inputStyle,
+    userSelect: editing ? "default" : "none",
+    MozUserSelect: editing ? "default" : "none",
+    WebkitUserSelect: editing ? "default" : "none",
+    msUserSelect: editing ? "default" : "none",
+  };
+  // apply input type
   if (type === "card") {
     inputStyle = {
       ...inputStyle,
       fontSize: CARD_FONT_SIZE.title+'px',
       cursor: editing ? "text" : "move",
-      userSelect: editing ? "default" : "none",
-      MozUserSelect: editing ? "default" : "none",
-      WebkitUserSelect: editing ? "default" : "none",
-      msUserSelect: editing ? "default" : "none",
     };
   } else if (type === "view") {
     inputStyle = {
       backgroundColor: editing ? "lightskyblue" : "transparent",
     }
   }
+  // apply color
   if (color) {
     inputStyle = {
       ...inputStyle,

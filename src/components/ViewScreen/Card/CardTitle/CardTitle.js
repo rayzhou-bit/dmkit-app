@@ -18,8 +18,8 @@ const CardTitle = props => {
   const [openColorSelect, setOpenColorSelect] = useState(false);
 
   // STORE SELECTORS
-  const cardColor = useSelector(state => state.campaignData.cards[cardId].color);
-  const cardTitle = useSelector(state => state.campaignData.cards[cardId].title);
+  const cardColor = useSelector(state => state.campaignData.present.cards[cardId].color);
+  const cardTitle = useSelector(state => state.campaignData.present.cards[cardId].title);
 
   // REFS
   const colorSelectRef = useRef();

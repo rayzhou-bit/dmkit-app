@@ -13,7 +13,7 @@ const CampaignList = props => {
   const userId = useSelector(state => state.userData.userId);
   const campaignList = useSelector(state => state.sessionManager.campaignList);
   const activeCampaignId = useSelector(state => state.sessionManager.activeCampaignId);
-  const campaignData = useSelector(state => state.campaignData);
+  const campaignData = useSelector(state => state.campaignData.present);
 
   // FUNCTIONS
   const newCampaign = () => {

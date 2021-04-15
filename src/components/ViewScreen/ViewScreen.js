@@ -19,11 +19,11 @@ const ViewScreen = props => {
   // STORE SELECTORS
   const userId = useSelector(state => state.userData.userId);
   const activeCampaignId = useSelector(state => state.sessionManager.activeCampaignId);
-  const activeViewId = useSelector(state => state.campaignData.activeViewId);
-  const activeViewLock = useSelector(state => activeViewId ? state.campaignData.views[activeViewId].lock : null);
-  const activeViewPos = useSelector(state => activeViewId ? state.campaignData.views[activeViewId].pos : null);
-  const activeViewScale = useSelector(state => activeViewId ? state.campaignData.views[activeViewId].scale : 1);
-  const cardCollection = useSelector(state => state.campaignData.cards);
+  const activeViewId = useSelector(state => state.campaignData.present.activeViewId);
+  const activeViewLock = useSelector(state => activeViewId ? state.campaignData.present.views[activeViewId].lock : null);
+  const activeViewPos = useSelector(state => activeViewId ? state.campaignData.present.views[activeViewId].pos : null);
+  const activeViewScale = useSelector(state => activeViewId ? state.campaignData.present.views[activeViewId].scale : 1);
+  const cardCollection = useSelector(state => state.campaignData.present.cards);
 
   const [ viewWidth, viewHeight ] = [ 100*GRID.size, 50*GRID.size ];
 

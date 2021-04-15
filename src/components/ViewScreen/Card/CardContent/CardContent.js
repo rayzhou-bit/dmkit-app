@@ -10,7 +10,7 @@ const CardContent = props => {
   const dispatch = useDispatch();
 
   // STORE SELECTORS
-  const cardText = useSelector(state => state.campaignData.cards[cardId].content.text);
+  const cardText = useSelector(state => state.campaignData.present.cards[cardId].content.text);
 
   // FUNCTIONS
 

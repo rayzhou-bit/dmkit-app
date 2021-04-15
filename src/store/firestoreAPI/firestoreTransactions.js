@@ -13,6 +13,7 @@ const firstTimeSetup = (userId) => {
       store.collection("users").doc(userId).set({activeCampaignId: null})
         .then(resp => {
           console.log("[firstTimeSetup] success performing first time setup");
+          console.log("[Status] idle. Triggered by first time setup completion.");
           dispatch(actions.setStatus('idle'));
         })
         .catch(err => console.log("[firstTimeSetup] error performing first time setup:", err));
@@ -31,6 +32,7 @@ export const fetchActiveCampaignId = () => {
             dispatch(actions.updActiveCampaignId(resp.data().activeCampaignId));
             if (!resp.data().activeCampaignId) {
               dispatch(actions.unloadCampaignData());
+              console.log("[Status] idle. Triggered by lack of server side activeCampaignId.");
               dispatch(actions.setStatus('idle'));
             };
             console.log("[fetchActiveCampaignId] success loading activeCampaignId", resp.data().activeCampaignId);
@@ -106,6 +108,7 @@ export const saveCampaignData = (campaignId, campaignData, followUpHandler) => {
   const user = getUser();
   return dispatch => {
     if (user && campaignId) {
+      console.log("[Status] saving. Triggered by save.");
       dispatch(actions.setStatus('saving'));
       const userId = user.uid;
       const batch = store.batch();
@@ -149,6 +152,7 @@ export const saveIntroCampaignData = (campaignData, followUpHandler) => {
   const user = getUser();
   return dispatch => {
     if (user) {
+      console.log("[Status] saving. Triggered by intro campaign save.");
       dispatch(actions.setStatus('saving'));
       const userId = user.uid;
       // CAMPAIGN data

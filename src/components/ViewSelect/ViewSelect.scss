@@ -35,15 +35,6 @@ $menu-size: 42px;
     left: 41px;
     .tooltip { bottom: 120%; left: -50%; white-space: nowrap; }
     .tooltip::after { top: 115%; left: 40%; border-top-color: black; }
-
-    justify-content: space-around;
-    align-items: center;
-    display: flex;
-    flex-flow: column;
-    div {
-      width: 32px; height: 2px;
-      background-color: black;
-    }
   }
 
   .view-scroll-left {
@@ -71,7 +62,7 @@ $menu-size: 42px;
     border-top-left-radius: 8px;
     border-top-right-radius: 8px;
 
-    background-color: white;
+    background-color: gray;
 
     overflow-y: scroll;
 
@@ -87,6 +78,7 @@ $menu-size: 42px;
       padding: 0.2rem;
       border-right: 1px solid black;
       border-bottom: 1px solid black;
+      background-color: lightgray;
       text-align: left;
       font-size: 1.2rem;
       text-overflow: ellipsis;

@@ -18,7 +18,7 @@ const Campaign = props => {
 
   // STORE SELECTORS
   const activeCampaignId = useSelector(state => state.sessionManager.activeCampaignId);
-  const campaignData = useSelector(state => state.campaignData);
+  const campaignData = useSelector(state => state.campaignData.present);
 
   // REFS
   const campaignDeleteBtnRef = useRef();

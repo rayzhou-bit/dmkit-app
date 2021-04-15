@@ -17,10 +17,10 @@ const ViewTab = React.memo(props => {
   const [editingView, setEditingView] = useState(false);
 
   // STORE SELECTORS
-  const activeViewId = useSelector(state => state.campaignData.activeViewId);
-  const viewOrder = useSelector(state => state.campaignData.viewOrder);
+  const activeViewId = useSelector(state => state.campaignData.present.activeViewId);
+  const viewOrder = useSelector(state => state.campaignData.present.viewOrder);
   const viewPos = viewOrder.indexOf(viewId);
-  const viewTitle = useSelector(state => state.campaignData.views[viewId].title);
+  const viewTitle = useSelector(state => state.campaignData.present.views[viewId].title);
 
   // REF
   let rndRef = useRef();
@@ -31,12 +31,16 @@ const ViewTab = React.memo(props => {
   }, [viewOrder]);
 
   const dragStopHandler = (event, data) => {
-    setDragging(false);
     const posShift = Math.round((data.x - (viewPos*tabWidth)) / tabWidth);
-    dispatch(actions.shiftViewInViewOrder(viewId, posShift));
+    if (posShift !== 0) dispatch(actions.shiftViewInViewOrder(viewId, posShift));
+    else rndRef.updatePosition({x: viewPos*tabWidth, y: 0});
+    setDragging(false);
   };
 
-  const destroyView = () => dispatch(actions.destroyView(viewId));
+  const destroyView = (event) => {
+    event.stopPropagation();
+    dispatch(actions.destroyView(viewId));
+  };
   
   // STYLES
   const toFrontStyle = {
@@ -50,7 +54,8 @@ const ViewTab = React.memo(props => {
   };
 
   return (
-    <Rnd ref={node => rndRef = node}
+    <Rnd 
+      ref={node => rndRef = node}
       style={toFrontStyle}
       bounds="parent"
       // position
@@ -64,6 +69,7 @@ const ViewTab = React.memo(props => {
       // resize
       enableResizing={false}
       // onClick
+      onClick={(viewId !== activeViewId) ? () => dispatch(actions.updActiveViewId(viewId)) : null}
     >
       <div className="view-tab" style={viewTabStyle}>
         <button className={(viewId === activeViewId) ? "destroy-view title-btn btn-32 active-view" : "destroy-view title-btn btn-32 inactive-view"}

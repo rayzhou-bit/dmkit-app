@@ -7,7 +7,6 @@ import { updateObject } from '../../shared/utilityFunctions';
 // const exampleReducerStructure =
 // {
 //   title: "campaign title",
-//   activeCardId: "card0",
 //   activeViewId: "view0",
 //   viewOrder: ["view0"],
 //   cardCreateCnt: 1,
@@ -83,243 +82,352 @@ const shiftViewInViewOrder = (state, shiftedViewId, posShift) => {
   const newPos = updatedViewOrder.indexOf(shiftedViewId) + posShift;
   updatedViewOrder = updatedViewOrder.filter(id => id !== shiftedViewId);
   updatedViewOrder.splice(newPos, 0, shiftedViewId);
-  return updateObject(state, {viewOrder: updatedViewOrder});
+  return updateObject(state, {
+    viewOrder: updatedViewOrder,
+  });
 };
 
 // CARD
 const createCard = (state) => {
   if (!state.activeViewId) return state;
   const newCardId = "card"+state.cardCreateCnt;
-  const newCard = {
-    views: {
-      [state.activeViewId]: {
-        pos: {x: 3*GRID.size, y: 3*GRID.size},
-        size: {width: 8*GRID.size, height: 10*GRID.size},
-        cardType: "card",
-      },
-    },
-    title: newCardId,
-    color: "gray",
-    content: {text: ""},
-  };
-  const updatedCards = updateObject(state.cards, {[newCardId]: newCard});
-  const updatedState = {
+  return updateObject(state, {
     activeCardId: newCardId,
     cardCreateCnt: state.cardCreateCnt + 1,
-    cards: updatedCards,
-  };
-  return updateObject(state, updatedState);
+    cards: {
+      ...state.cards,
+      [newCardId]: {
+        views: {
+          [state.activeViewId]: {
+            pos: {x: 3*GRID.size, y: 3*GRID.size},
+            size: {width: 8*GRID.size, height: 10*GRID.size},
+            cardType: "card",
+          },
+        },
+        title: newCardId,
+        color: "gray",
+        content: {text: ""},
+      },
+    },
+  });
 };
 
 const copyCard = (state, cardId) => {
   // this copies everything from the other card except it only appears in the activeView
   if (!state.activeViewId) return state;
   const newCardId = "card"+state.cardCreateCnt;
-  let newCard = {...state.cards[cardId]};
-  // position updates
-  newCard.views = { [state.activeViewId]: {...state.cards[cardId].views[state.activeViewId]} };
-  newCard.views[state.activeViewId].pos = {
-    x: newCard.views[state.activeViewId].pos.x + GRID.size,
-    y: newCard.views[state.activeViewId].pos.y + GRID.size,
-  };
-  // content updates
-  newCard.content = {...state.cards[cardId].content};
-  const updatedCards = updateObject(state.cards, {[newCardId]: newCard});
-  const updatedState = {
+  return updateObject(state, {
     activeCardId: newCardId,
     cardCreateCnt: state.cardCreateCnt + 1,
-    cards: updatedCards,
-  };
-  return updateObject(state, updatedState);
-}
+    cards: {
+      ...state.cards,
+      [newCardId]: {
+        ...state.cards[cardId],
+        views: {
+          [state.activeViewId]: {
+            ...state.cards[cardId].views[state.activeViewId],
+            pos: {
+              x: state.cards[cardId].views[state.activeViewId].pos.x + GRID.size,
+              y: state.cards[cardId].views[state.activeViewId].pos.y + GRID.size,
+            },
+          },
+        },
+      },
+    },
+  });
+};
 
 const destroyCard = (state, cardId) => {
   let updatedCards = {...state.cards};
   delete updatedCards[cardId];
-  const updatedState = {
+  return updateObject(state, {
     activeCardId: cardId === state.activeCardId ? null : state.activeCardId,
     cards: updatedCards,
-  }
-  return updateObject(state, updatedState);
+  });
 };
 
 const linkCardToView = (state, cardId, pos) => {
   if (!state.activeViewId) return state;
-  let updatedCard = {...state.cards[cardId]};
-  const viewSettings = {
-    pos: pos,
-    size: {width: 8*GRID.size, height: 10*GRID.size},
-    cardType: "card",
-  };
-  updatedCard.views = updateObject(updatedCard.views, {[state.activeViewId]: viewSettings});
-  const updatedCards = updateObject(state.cards, {[cardId]: updatedCard});
-  const updatedState = {
+  return updateObject(state, {
     activeCardId: cardId,
-    cards: updatedCards,
-  }
-  return updateObject(state, updatedState);
+    cards: {
+      ...state.cards,
+      [cardId]: {
+        ...state.cards[cardId],
+        views: {
+          ...state.cards[cardId].views,
+          [state.activeViewId]: {
+            pos: pos,
+            size: {width: 8*GRID.size, height: 10*GRID.size},
+            cardType: "card",
+          },
+        },
+      },
+    },
+  });
 };
 
 const unlinkCardFromView = (state, cardId) => {
   if (!state.activeViewId) return state;
-  let updatedCard = {...state.cards[cardId]};
-  delete updatedCard.views[state.activeViewId];
-  const updatedCards = updateObject(state.cards, {[cardId]: updatedCard});
-  const updatedState = {
+  let updatedCardViews = {...state.cards[cardId].views};
+  delete updatedCardViews[state.activeViewId];
+  return updateObject(state, {
     activeCardId: null,
-    cards: updatedCards,
-  };
-  return updateObject(state, updatedState);
+    cards: {
+      ...state.cards,
+      [cardId]: {
+        ...state.cards[cardId],
+        views: updatedCardViews,
+      },
+    },
+  });
 };
 
 const updCardPos = (state, cardId, newPos) => {
   if (!state.activeViewId) return state;
-  let updatedCard = {...state.cards[cardId]};
-  let roundedPos = {
+  const roundedPos = {
     x: Math.round(newPos.x / GRID.size) * GRID.size,
     y: Math.round(newPos.y / GRID.size) * GRID.size
   };
-  updatedCard.views[state.activeViewId].pos = roundedPos;
-  const updatedCards = updateObject(state.cards, {[cardId]: updatedCard});
-  return updateObject(state, {cards: updatedCards});
+  return updateObject(state, {
+    cards: {
+      ...state.cards,
+      [cardId]: {
+        ...state.cards[cardId],
+        views: {
+          ...state.cards[cardId].views,
+          [state.activeViewId]: {
+            ...state.cards[cardId].views[state.activeViewId],
+            pos: roundedPos,
+          },
+        },
+      },
+    },
+  });
 };
 
 const updCardSize = (state, cardId, newSize) => {
   if (!state.activeViewId) return state;
-  let updatedCard = {...state.cards[cardId]};
-  let roundedSize = {
+  const roundedSize = {
     width: (Math.round(newSize.width.split("px").shift() / GRID.size) * GRID.size) + "px",
     height: (Math.round(newSize.height.split("px").shift() / GRID.size) * GRID.size) + "px"
   };
-  updatedCard.views[state.activeViewId].size = roundedSize;
-  const updatedCards = updateObject(state.cards, {[cardId]: updatedCard});
-  return updateObject(state, {cards: updatedCards});
+  return updateObject(state, {
+    cards: {
+      ...state.cards,
+      [cardId]: {
+        ...state.cards[cardId],
+        views: {
+          ...state.cards[cardId].views,
+          [state.activeViewId]: {
+            ...state.cards[cardId].views[state.activeViewId],
+            size: roundedSize,
+          },
+        },
+      },
+    },
+  });
 };
 
 const updCardColor = (state, cardId, color) => {
-  let updatedCard = {...state.cards[cardId]};
-  updatedCard.color = color;
-  const updatedCards = updateObject(state.cards, {[cardId]: updatedCard});
-  return updateObject(state, {cards: updatedCards});
+  return updateObject(state, {
+    cards: {
+      ...state.cards,
+      [cardId]: {
+        ...state.cards[cardId],
+        color: color,
+      },
+    },
+  });
 };
 
 const updCardColorForView = (state, cardId, color) => {
   if (!state.activeViewId) return state;
-  let updatedCard = {...state.cards[cardId]};
-  updatedCard.views[state.activeViewId].color = color;
-  const updatedCards = updateObject(state.cards, {[cardId]: updatedCard});
-  return updateObject(state, {cards: updatedCards});
+  return updateObject(state, {
+    cards: {
+      ...state.cards,
+      [cardId]: {
+        ...state.cards[cardId],
+        views: {
+          ...state.cards[cardId].views,
+          [state.activeViewId]: {
+            ...state.cards[cardId].views[state.activeViewId],
+            color: color,
+          },
+        },
+      },
+    },
+  });
 };
 
 const updCardForm = (state, cardId, cardForm) => {
   if (!state.activeViewId) return state;
-  let updatedCard = {...state.cards[cardId]};
-  updatedCard.views[state.activeViewId].cardForm = cardForm;
-  const updatedCards = updateObject(state.cards, {[cardId]: updatedCard});
-  return updateObject(state, {cards: updatedCards});
+  return updateObject(state, {
+    cards: {
+      ...state.cards,
+      [cardId]: {
+        ...state.cards[cardId],
+        views: {
+          ...state.cards[cardId].views,
+          [state.activeViewId]: {
+            ...state.cards[cardId].views[state.activeViewId],
+            cardForm: cardForm,
+          },
+        },
+      },
+    },
+  });
 };
 
 const updCardTitle = (state, cardId, title) => {
-  let updatedCard = {...state.cards[cardId]};
-  updatedCard.title = title;
-  const updatedCards = updateObject(state.cards, {[cardId]: updatedCard});
-  return updateObject(state, {cards: updatedCards});
+  return updateObject(state, {
+    cards: {
+      ...state.cards,
+      [cardId]: {
+        ...state.cards[cardId],
+        title: title,
+      },
+    },
+  });
 };
 
 const updCardText = (state, cardId, text) => {
-  let updatedCard = {...state.cards[cardId]};
-  updatedCard.content.text = text;
-  const updatedCards = updateObject(state.cards, {[cardId]: updatedCard});
-  return updateObject(state, {cards: updatedCards});
+  return updateObject(state, {
+    cards: {
+      ...state.cards,
+      [cardId]: {
+        ...state.cards[cardId],
+        content: {
+          ...state.cards[cardId].content,
+          text: text,
+        },
+      },
+    },
+  });
 };
 
 // VIEW
 const createView = (state) => {
   const newViewId = "view"+state.viewCreateCnt;
-  const newView = {
-    pos: { x: 0, y: 0 },
-    title: newViewId,
-    color: "gray",
-  };
-  const updatedViews = updateObject(state.views, {[newViewId]: newView});
   let updatedViewOrder = [...state.viewOrder];
   const pos = state.activeViewId ? updatedViewOrder.indexOf(state.activeViewId) + 1 : 0;
   updatedViewOrder.splice(pos, 0, newViewId);
-  const updatedState = {
+  return updateObject(state, {
     activeViewId: newViewId,
     viewOrder: updatedViewOrder,
     viewCreateCnt: state.viewCreateCnt + 1,
-    views: updatedViews,
-  };
-  return updateObject(state, updatedState);
+    views: {
+      ...state.views,
+      [newViewId]: {
+        pos: { x: 0, y: 0 },
+        scale: 1,
+        lock: true,
+        color: "gray",
+        title: newViewId,
+      },
+    },
+  });
 };
 
 const destroyView = (state, viewId) => {
   let updatedViews = {...state.views};
   delete updatedViews[viewId];
-  let updatedViewOrder = [...state.viewOrder];
-  updatedViewOrder = updatedViewOrder.filter(id => id !== viewId);
-  const updatedState = {
+  const updatedViewOrder = [...state.viewOrder].filter(id => id !== viewId);
+  return updateObject(state, {
     activeViewId: viewId === state.activeViewId ? null : state.activeViewId,
     viewOrder: updatedViewOrder,
     views: updatedViews,
-  };
-  return updateObject(state, updatedState);
+  });
 };
 
 const lockActiveView = (state) => {
   if (!state.activeViewId) return state;
-  let updatedView = {...state.views[state.activeViewId]};
-  updatedView.lock = true;
-  const updatedViews = updateObject(state.views, {[state.activeViewId]: updatedView});
-  return updateObject(state, {views: updatedViews});
+  return updateObject(state, {
+    views: {
+      ...state.views,
+      [state.activeViewId]: {
+        ...state.views[state.activeViewId],
+        lock: true,
+      },
+    },
+  });
 };
 
 const unlockActiveView = (state) => {
   if (!state.activeViewId) return state;
-  let updatedView = {...state.views[state.activeViewId]};
-  updatedView.lock = false;
-  const updatedViews = updateObject(state.views, {[state.activeViewId]: updatedView});
-  return updateObject(state, {views: updatedViews});
+  return updateObject(state, {
+    views: {
+      ...state.views,
+      [state.activeViewId]: {
+        ...state.views[state.activeViewId],
+        lock: false,
+      },
+    },
+  });
 };
 
 const updActiveViewPos = (state, pos) => {
   if (!state.activeViewId) return state;
-  let updatedView = {...state.views[state.activeViewId]};
-  updatedView.pos = pos;
-  const updatedViews = updateObject(state.views, {[state.activeViewId]: updatedView});
-  return updateObject(state, {views: updatedViews});
+  return updateObject(state, {
+    views: {
+      ...state.views,
+      [state.activeViewId]: {
+        ...state.views[state.activeViewId],
+        pos: pos,
+      },
+    },
+  });
 };
 
 const updActiveViewScale = (state, scale) => {
   if (!state.activeViewId) return state;
-  let updatedView = {...state.views[state.activeViewId]};
-  updatedView.scale = scale;
-  const updatedViews = updateObject(state.views, {[state.activeViewId]: updatedView});
-  return updateObject(state, {views: updatedViews});
+  return updateObject(state, {
+    views: {
+      ...state.views,
+      [state.activeViewId]: {
+        ...state.views[state.activeViewId],
+        scale: scale,
+      },
+    },
+  });
 };
 
 const resetActiveView = (state) => {
   if (!state.activeViewId) return state;
-  let updatedView = {...state.views[state.activeViewId]};
-  updatedView.pos = { x: 0, y: 0 };
-  updatedView.scale = 1;
-  const updatedViews = updateObject(state.views, {[state.activeViewId]: updatedView});
-  return updateObject(state, {views: updatedViews});
+  return updateObject(state, {
+    views: {
+      ...state.views,
+      [state.activeViewId]: {
+        ...state.views[state.activeViewId],
+        pos: { x: 0, y: 0 },
+        scale: 1,
+      },
+    },
+  });
 };
 
 const updViewColor = (state, viewId, color) => {
-  let updatedView = {...state.views[viewId]};
-  updatedView.color = color;
-  const updatedViews = updateObject(state.views, {[viewId]: updatedView});
-  return updateObject(state, {views: updatedViews});
+  return updateObject(state, {
+    views: {
+      ...state.views,
+      [viewId]: {
+        ...state.views[viewId],
+        color: color,
+      },
+    },
+  });
 };
 
 const updViewTitle = (state, viewId, title) => {
-  let updatedView = {...state.views[viewId]};
-  updatedView.title = title;
-  const updatedViews = updateObject(state.views, {[viewId]: updatedView});
-  return updateObject(state, {views: updatedViews});
+  return updateObject(state, {
+    views: {
+      ...state.views,
+      [viewId]: {
+        ...state.views[viewId],
+        title: title,
+      },
+    },
+  });
 };
 
 // INTRO CAMPAIGN STATE
@@ -390,12 +498,18 @@ const introCampaign = {
   },
   views: {
     view0: {
-      title: "Welcome!",
+      pos: { x: 0, y: 0 },
+      scale: 1,
+      lock: true,
       color: "green",
+      title: "Welcome!",
     },
     view1: {
+      pos: { x: 0, y: 0 },
+      scale: 1,
+      lock: true,
+      color: "blue",
       title: "READ ME",
-      color: "red",
     },
   },
 };

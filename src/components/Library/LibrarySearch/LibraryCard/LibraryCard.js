@@ -19,14 +19,13 @@ const LibraryCard = props => {
   const [isSelected, setIsSelected] = useState(false);
   const [openColorSelect, setOpenColorSelect] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
-  const [editingText, setEditingText] = useState(false);
   const [editingCard, setEditingCard] = useState(false);
 
   // STORE SELECTORS
   const activeCardId = useSelector(state => state.sessionManager.activeCardId);
-  const cardColor = useSelector(state => state.campaignData.cards[cardId].color);
-  const cardTitle = useSelector(state => state.campaignData.cards[cardId].title);
-  const cardText = useSelector(state => state.campaignData.cards[cardId].content.text);
+  const cardColor = useSelector(state => state.campaignData.present.cards[cardId].color);
+  const cardTitle = useSelector(state => state.campaignData.present.cards[cardId].title);
+  const cardText = useSelector(state => state.campaignData.present.cards[cardId].content.text);
 
   // REFS
   const libraryCardRef = useRef();
@@ -34,15 +33,6 @@ const LibraryCard = props => {
   const colorBtnRef = useRef();
   const deleteBtnRef = useRef();
   const textRef = useRef();
-  const contentContainerCallbackRef = (node) => {
-    if (!node) return;
-    if (!textRef.current) return;
-    const completeTextHeight = textRef.current ? textRef.current.scrollHeight : 1000;
-    const abridgedTextHeight = CARD_FONT_SIZE.text*5.5;
-    node.style.height = isSelected
-      ? completeTextHeight + 'px'
-      : Math.min(abridgedTextHeight, completeTextHeight) + 'px';
-  };
   
   // FUNCTIONS: CARD
   const cardDragHandler = (event) => event.dataTransfer.setData("text", cardId);
@@ -84,11 +74,6 @@ const LibraryCard = props => {
   };
 
   // STYLES: CONTENT
-  const textStyle = {
-    fontSize: CARD_FONT_SIZE.text+'px',
-    backgroundColor: editingText ? "white" : "lightgray",
-  };
-
   const contentContainerStyle = {
     minHeight: isSelected ? 6*CARD_FONT_SIZE.text + 'px' : 3*CARD_FONT_SIZE.text + 'px',
     maxHeight: isSelected ? '50vh' : 4*CARD_FONT_SIZE.text + 'px',

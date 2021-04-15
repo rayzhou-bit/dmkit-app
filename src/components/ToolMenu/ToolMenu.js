@@ -1,12 +1,16 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { ActionCreators } from 'redux-undo';
 
 import './ToolMenu.scss';
 import * as actions from '../../store/actionIndex';
 import * as fireactions from '../../store/firestoreIndex';
+import { store } from '../../index';
 
 import AddImg from '../../assets/icons/add-32.png';
 import CopyImg from '../../assets/icons/copy-32.png';
+import UndoImg from '../../assets/icons/undo-32.png';
+import RedoImg from '../../assets/icons/redo-32.png';
 import ResetImg from '../../assets/icons/reset-32.png';
 import LockImg from '../../assets/icons/lock-32.png';
 import UnlockImg from '../../assets/icons/unlock-32.png';
@@ -24,23 +28,21 @@ const ToolMenu = props => {
   const introCampaignEdit = useSelector(state => state.sessionManager.introCampaignEdit);
   const activeCampaignId = useSelector(state => state.sessionManager.activeCampaignId);
   const activeCardId = useSelector(state => state.sessionManager.activeCardId);
-  const activeViewId = useSelector(state => state.campaignData.activeViewId);
-  const activeViewLock = useSelector(state => activeViewId ? state.campaignData.views[activeViewId].lock : null);
-  const campaignData = useSelector(state => state.campaignData);
+  const activeViewId = useSelector(state => state.campaignData.present.activeViewId);
+  const activeViewLock = useSelector(state => activeViewId ? state.campaignData.present.views[activeViewId].lock : null);
+  const campaignData = useSelector(state => state.campaignData.present);
+  const pastCampaignData = useSelector(state => state.campaignData.past);
+  const futureCampaignData = useSelector(state => state.campaignData.future);
 
   // FUNCTIONS
-  const createCard = () => dispatch(actions.createCard(activeCampaignId));
-
-  const copyCard = () => {
-    if (activeCardId) {
-      dispatch(actions.copyCard(activeCardId));
-    }
-  };
-
   const saveEditedData = () => {
+    console.log("[Status] saving. Triggered by manual save.");
     dispatch(actions.setStatus('saving'));
     dispatch(fireactions.saveCampaignData(activeCampaignId, campaignData,
-      () => dispatch(actions.setStatus('idle'))
+      () => {
+        console.log("[Status] idle. Triggered by manual save completion.");
+        dispatch(actions.setStatus('idle'))
+      }
     ));
   };
 
@@ -54,22 +56,42 @@ const ToolMenu = props => {
 
   return (
     <div className="tool-menu" ref={toolMenuRef}>
-      {/* card buttons */}
-      <button className="create-card toolmenu-item btn-32" onClick={createCard}>
+      {/* create card */}
+      <button className="create-card toolmenu-item btn-32" 
+        disabled={!activeViewId}
+        onClick={() => dispatch(actions.createCard())}>
         <img src={AddImg} alt="Add" draggable="false" />
         <span className="tooltip">{(userId && !activeCampaignId) ? "Please select a project first." : "Add card"}</span>
       </button>
-      <button className="copy-card toolmenu-item btn-32" onClick={copyCard}>
+      {/* copy card */}
+      <button className="copy-card toolmenu-item btn-32" 
+        disabled={!activeViewId || !activeCardId}
+        onClick={() => dispatch(actions.copyCard(activeCardId))}>
         <img src={CopyImg} alt="Copy" draggable="false" />
         <span className="tooltip">{(userId && !activeCampaignId) ? "Please select a project first." : "Copy card"}</span>
       </button>
-      {/* view buttons */}
+      {/* undo */}
+      <button className="undo toolmenu-item btn-32"
+        disabled={pastCampaignData.length === 0}
+        onClick={() => store.dispatch(ActionCreators.undo())}>
+        <img src={UndoImg} alt="Undo" draggable="false" />
+        <span className="tooltip">{(userId && !activeCampaignId) ? "Please select a project first." : "Undo"}</span>
+      </button>
+      {/* redo */}
+      <button className="redo toolmenu-item btn-32"
+        disabled={futureCampaignData.length === 0}
+        onClick={() => store.dispatch(ActionCreators.redo())}>
+        <img src={RedoImg} alt="Redo" draggable="false" />
+        <span className="tooltip">{(userId && !activeCampaignId) ? "Please select a project first." : "Redo"}</span>
+      </button>
+      {/* reset view */}
       <button className="reset-view toolmenu-item btn-32" 
         disabled={(activeViewLock === undefined) ? true : activeViewLock}
         onClick={() => dispatch(actions.resetActiveView())}>
         <img src={ResetImg} alt="Reset" draggable="false" />
         <span className="tooltip">Reset board position</span>
       </button>
+      {/* lock/unlock view */}
       {activeViewLock === false
         ? <button className="lock-view toolmenu-item btn-32" onClick={() => dispatch(actions.lockActiveView())}>
             <img src={UnlockImg} alt="Lock" draggable="false" />
@@ -79,7 +101,7 @@ const ToolMenu = props => {
             <img src={LockImg} alt="Unlock" draggable="false" />
             <span className="tooltip">Unlock board</span>
           </button>}
-      {/* save buttons */}
+      {/* unsaved work indicator */}
       {(campaignEdit || introCampaignEdit)
         ? <div className="save-indicator toolmenu-item btn-32">
             <img src={AlertImg} alt="Unsaved changes" draggable="false" />
@@ -87,6 +109,7 @@ const ToolMenu = props => {
           </div>
         : null
       }
+      {/* save */}
       <button className="save toolmenu-item btn-32" 
         disabled={disableSave}
         onClick={saveEditedData}>

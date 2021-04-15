@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { ActionCreators } from 'redux-undo';
 
 import './Loader.scss';
 import * as actions from '../../store/actionIndex';
@@ -19,11 +20,13 @@ const Loader = props => {
   const activeCampaignId = useSelector(state => state.sessionManager.activeCampaignId);
   const campaignEdit = useSelector(state => state.sessionManager.campaignEdit);
   const introCampaignEdit = useSelector(state => state.sessionManager.introCampaignEdit);
-  const campaignData = useSelector(state => state.campaignData);
+  const campaignData = useSelector(state => state.campaignData.present);
+  const latestUnfiltered = useSelector(state => state.campaignData._latestUnfiltered);
   
   // Auth listener
   useEffect(() => {
     const authListener = auth.onAuthStateChanged(user => {
+      console.log("[Status] loading. Triggered by auth listener.");
       dispatch(actions.setStatus('loading'));
       if (user && user.uid) {
         // Signed in
@@ -53,6 +56,7 @@ const Loader = props => {
         dispatch(actions.unloadUser());
         dispatch(actions.resetSessionManager());
         dispatch(actions.loadIntroCampaign());
+        dispatch(ActionCreators.clearHistory());
       }
     });
     return () => authListener();
@@ -62,8 +66,12 @@ const Loader = props => {
   useEffect(() => {
     if (userId) {
       // dispatch(actions.setStatus('loading'));
-      if (activeCampaignId) dispatch(fireactions.fetchCampaignData(activeCampaignId));
-      else dispatch(actions.setStatus('idle'));
+      if (activeCampaignId) dispatch(fireactions.fetchCampaignData(activeCampaignId, 
+        () => dispatch(ActionCreators.clearHistory())));
+      else {
+        console.log("[Status] idle. Triggered by activeCampaignId change.");
+        dispatch(actions.setStatus('idle'));
+      }
     }
   }, [dispatch, activeCampaignId]);
 
@@ -75,6 +83,7 @@ const Loader = props => {
         if (!campaignEdit) dispatch(actions.setCampaignEdit(true));
       } else {
         // set status flag after loading data
+        console.log("[Status] idle. Triggered by post-load.");
         dispatch(actions.setStatus('idle'));
       }
     } else {
@@ -83,18 +92,23 @@ const Loader = props => {
         if (!introCampaignEdit) dispatch(actions.setIntroCampaignEdit(true));
       } else {
         // set status flag after loading data
+        console.log("[Status] idle. Triggered by post-load.");
         dispatch(actions.setStatus('idle'));
       }
     }
-  }, [dispatch, campaignData]);
+  }, [dispatch, latestUnfiltered]);
 
   // Autosave every minute
   useEffect(() => {
     const autoSave = setInterval(() => {
       if ((status=== 'idle') && userId && activeCampaignId && campaignEdit) {
+        console.log("[Status] saving. Triggered by autosave.");
         dispatch(actions.setStatus('saving'));
         dispatch(fireactions.saveCampaignData(activeCampaignId, campaignData, 
-          () => dispatch(actions.setStatus('idle'))
+          () => {
+            console.log("[Status] idle. Triggered by autosave completion.");
+            dispatch(actions.setStatus('idle'))
+          }
         ));
       }
     }, 60000);

@@ -21,7 +21,7 @@ const AuthDropdown = props => {
   const userId = useSelector(state => state.userData.userId);
   const email = useSelector(state => state.userData.email);
   const introCampaignEdit = useSelector(state => state.sessionManager.introCampaignEdit);
-  const campaignData = useSelector (state => state.campaignData);
+  const campaignData = useSelector (state => state.campaignData.present);
   const activeCampaignId = useSelector(state => state.sessionManager.activeCampaignId);
   const passwordResetError = useSelector(state => state.sessionManager.errorPasswordReset);
   const emailSignInError = useSelector(state => state.sessionManager.errorEmailSignIn);
@@ -57,9 +57,11 @@ const AuthDropdown = props => {
   const emailSignOut = (event) => { 
     event.preventDefault(); 
     if (activeCampaignId) {
+      console.log("[Status] saving. Triggered by sign out.");
       dispatch(actions.setStatus('saving'));
       dispatch(fireactions.saveCampaignData(activeCampaignId, campaignData, 
         () => {
+          console.log("[Status] idle. Triggered by sign out completion.");
           dispatch(actions.setStatus('idle'));
           dispatch(fireactions.emailSignOut());
         }

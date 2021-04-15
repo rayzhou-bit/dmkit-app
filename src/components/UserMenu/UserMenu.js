@@ -22,7 +22,7 @@ const UserMenu = props => {
   const userId = useSelector(state => state.userData.userId);
   const displayName = useSelector(state => state.userData.displayName);
   const email = useSelector(state => state.userData.email);
-  const campaignTitle = useSelector(state => state.campaignData.title);
+  const campaignTitle = useSelector(state => state.campaignData.present.title);
 
   // REFS
   const campaignDropdownBtnRef = useRef();

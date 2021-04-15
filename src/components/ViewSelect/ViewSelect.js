@@ -7,6 +7,7 @@ import { useOutsideClick } from '../../shared/utilityFunctions';
 import ViewTab from './ViewTab/ViewTab';
 
 import AddImg from '../../assets/icons/add-32.png';
+import MenuImg from '../../assets/icons/menu-32.png';
 import LeftArrowImg from '../../assets/icons/left-arrow-32.png';
 import RightArrowImg from '../../assets/icons/right-arrow-32.png';
 
@@ -19,9 +20,9 @@ const ViewSelect = React.memo(props => {
   const [openViewList, setOpenViewList] = useState(false);
 
   // STORE VALUES
-  const activeViewId = useSelector(state => state.campaignData.activeViewId);
-  const viewOrder = useSelector(state => state.campaignData.viewOrder);
-  const viewCollection = useSelector(state => state.campaignData.views);
+  const activeViewId = useSelector(state => state.campaignData.present.activeViewId);
+  const viewOrder = useSelector(state => state.campaignData.present.viewOrder);
+  const viewCollection = useSelector(state => state.campaignData.present.views);
 
   const tabWidth = 240;
 
@@ -49,7 +50,9 @@ const ViewSelect = React.memo(props => {
       if (viewCollection[viewId]) {
         viewList = [
           ...viewList,
-          <button key={viewId} className="view-list-item btn-any" title={viewCollection[viewId].title}
+          <button key={viewId} 
+            className="view-list-item btn-any" style={{backgroundColor: (viewId === activeViewId) ? "white" : null}}
+            title={viewCollection[viewId].title}
             onClick={(viewId !== activeViewId) ? () => dispatch(actions.updActiveViewId(viewId)) : null}>
             {viewCollection[viewId].title}
           </button>
@@ -78,7 +81,7 @@ const ViewSelect = React.memo(props => {
       </button>
       <button ref={viewListBtnRef} className="show-view-list view-select-item btn-32"
         onClick={() => setOpenViewList(!openViewList)}>
-        <div /><div /><div />
+        <img src={MenuImg} alt="Menu" draggable="false" />
         <span className="tooltip">Show tabs</span>
       </button>
       {/* view tabs */}

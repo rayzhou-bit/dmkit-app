@@ -31,6 +31,8 @@ $border-radius: 5px;
 
   .create-card { top: 0.5 *$btn-size; }
   .copy-card { top: 1.5 *$btn-size; }
+  .undo { bottom: 6.5 *$btn-size; }
+  .redo { bottom: 5.5 *$btn-size; }
   .reset-view { bottom: 4 *$btn-size; }
   .lock-view { bottom: 3 *$btn-size; }
 
