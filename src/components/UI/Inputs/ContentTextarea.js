@@ -62,6 +62,7 @@ const ContentTextarea = props => {
       placeholder="Fill me in!"
       onBlur={endEdit}
       onClick={beginEdit}
+      onWheel={e => e.stopPropagation()}
       onChange={e => setTextareaValue(e.target.value)}
       onKeyDown={keyPressHandler}
       onDragOver={e => e.preventDefault()}
