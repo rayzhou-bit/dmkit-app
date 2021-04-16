@@ -38,6 +38,7 @@ const ViewSelect = React.memo(props => {
   };
   const scrollLeft = () => viewTabContainerRef.current.scrollBy({left: -1.5 *tabWidth, behavior: 'smooth'});
   const scrollRight = () => viewTabContainerRef.current.scrollBy({left: 1.5 *tabWidth, behavior: 'smooth'});
+  const scrollTo = (viewId) => viewTabContainerRef.current.scrollTo({left: viewOrder.indexOf(viewId) *tabWidth, behavior: 'smooth'});
 
   useOutsideClick([viewListRef, viewListBtnRef], openViewList, () => setOpenViewList(false));
 
@@ -53,7 +54,10 @@ const ViewSelect = React.memo(props => {
           <button key={viewId} 
             className="view-list-item btn-any" style={{backgroundColor: (viewId === activeViewId) ? "white" : null}}
             title={viewCollection[viewId].title}
-            onClick={(viewId !== activeViewId) ? () => dispatch(actions.updActiveViewId(viewId)) : null}>
+            onClick={(viewId !== activeViewId) ? () => {
+                dispatch(actions.updActiveViewId(viewId));
+                scrollTo(viewId);
+              } : null}>
             {viewCollection[viewId].title}
           </button>
         ];
