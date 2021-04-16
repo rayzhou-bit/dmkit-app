@@ -25,7 +25,7 @@ const ViewScreen = props => {
   const activeViewScale = useSelector(state => activeViewId ? state.campaignData.present.views[activeViewId].scale : 1);
   const cardCollection = useSelector(state => state.campaignData.present.cards);
 
-  const [ viewWidth, viewHeight ] = [ 100*GRID.size, 50*GRID.size ];
+  const [ viewWidth, viewHeight ] = [ 100*GRID.size, 70*GRID.size ];
 
   // REFS
   const viewScreenRef = useRef();
@@ -42,6 +42,7 @@ const ViewScreen = props => {
     if (activeViewLock === false) {
       let newScale = activeViewScale ? activeViewScale : 1;
       newScale += event.deltaY * -0.001;
+      newScale = Math.round(newScale*10) / 10;
       newScale = Math.min(Math.max(GRID.scaleMin, newScale), GRID.scaleMax);
       dispatch(actions.updActiveViewScale(newScale));
     }
@@ -119,6 +120,7 @@ const ViewScreen = props => {
                   onDragOver={e => e.preventDefault()}>
                   <div className="drag-view" />
                   {cardList}
+                  <div className="grid" style={{backgroundSize: GRID.size+" "+GRID.size}} />
                 </div>
               </Rnd>
             </div>

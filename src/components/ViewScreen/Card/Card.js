@@ -124,13 +124,13 @@ const Card = props => {
       // drag
       disableDragging={editingCard}
       dragHandleClassName={(cardForm === "bubble") ? "short" : "title-container"}
-      dragGrid={[GRID.size, GRID.size]}
+      // dragGrid={[GRID.size, GRID.size]}
       onDragStart={()=>setDragging(true)}
       onDragStop={dragStopHandler}
       // size
       size={(cardForm === "bubble") ? {width: GRID.size*3, height: GRID.size*1} : cardSize}
       minWidth={(cardForm === "bubble") ? null : GRID.size*5} 
-      minHeight={(cardForm === "bubble") ? null : GRID.size*4}
+      minHeight={(cardForm === "bubble") ? null : GRID.size*5}
       scale={activeViewScale}
       // resize
       enableResizing={(cardForm === "bubble") ? false : true}
