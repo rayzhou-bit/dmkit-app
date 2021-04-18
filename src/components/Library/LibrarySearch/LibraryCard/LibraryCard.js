@@ -20,9 +20,12 @@ const LibraryCard = props => {
   const [openColorSelect, setOpenColorSelect] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [editingCard, setEditingCard] = useState(false);
+  const [cardAnimation, setCardAnimation] = useState({});
 
   // STORE SELECTORS
   const activeCardId = useSelector(state => state.sessionManager.activeCardId);
+  const activeViewId = useSelector(state => state.campaignData.present.activeViewId);
+  const cardViews = useSelector(state => state.campaignData.present.cards[cardId].views);
   const cardColor = useSelector(state => state.campaignData.present.cards[cardId].color);
   const cardTitle = useSelector(state => state.campaignData.present.cards[cardId].title);
   const cardText = useSelector(state => state.campaignData.present.cards[cardId].content.text);
@@ -32,10 +35,24 @@ const LibraryCard = props => {
   const colorSelectRef = useRef();
   const colorBtnRef = useRef();
   const deleteBtnRef = useRef();
-  const textRef = useRef();
   
   // FUNCTIONS: CARD
-  const cardDragHandler = (event) => event.dataTransfer.setData("text", cardId);
+  const cardDragStartHandler = (event) => event.dataTransfer.setData("text", cardId);
+  const cardDragEndHandler = () => {
+    if (cardViews[activeViewId]) {
+      setCardAnimation({
+        ...cardAnimation,
+        [cardId]: 'library-card-blink .25s step-end 3 alternate',
+      });
+    };
+  };
+
+  const onAnimationEnd = () => {
+    setCardAnimation({
+      ...cardAnimation,
+      [cardId]: null,
+    })
+  };
 
   const cardClickHandler = () => {
     if (!isSelected) {
@@ -64,6 +81,7 @@ const LibraryCard = props => {
     border: cardId === activeCardId ? '3px solid black' : '1px solid black',
     margin: cardId === activeCardId ? '0px 0px 8px 0px' : '2px 2px 10px 2px',
     zIndex: cardId === activeCardId ? '100' : '0',
+    animation: cardAnimation ? cardAnimation[cardId] : null,
   };
 
   // STYLES: TITLEBAR
@@ -91,8 +109,10 @@ const LibraryCard = props => {
 
   return (
     <div ref={libraryCardRef} className="library-card" style={cardStyle} 
-      draggable={!editingCard} onDragStart={e => cardDragHandler(e)}
-      onClick={cardClickHandler}>
+      draggable={!editingCard} 
+      onDragStart={cardDragStartHandler} onDragEnd={cardDragEndHandler}
+      onClick={cardClickHandler}
+      onAnimationEnd={onAnimationEnd}>
       {/* title */}
       <div className="library-card-title-container">
         <button ref={colorBtnRef} className="change-color title-btn btn-24"

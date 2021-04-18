@@ -4,7 +4,6 @@ $title-bar-height: 2rem;
   box-sizing: content-box;
   position: relative;
   width: 98%; height: auto;
-  margin-bottom: 0.5rem;
 
   &:hover .title-btn {
     opacity: 1;
@@ -102,5 +101,13 @@ $title-bar-height: 2rem;
 
     overflow-y: scroll;
     resize: none;
+  }
+}
+
+@keyframes library-card-blink {
+  50% {
+    border: 3px solid red;
+    margin: 0px;
+    margin-bottom: 8px;
   }
 }

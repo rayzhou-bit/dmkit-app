@@ -63,7 +63,7 @@ const ViewScreen = props => {
       } else {
         setCardAnimation({
           ...cardAnimation,
-          [targetCardId]: 'blink .25s step-end 3 alternate',
+          [targetCardId]: 'card-blink .25s step-end 3 alternate',
         });
       }
     }

@@ -63,10 +63,15 @@ const LibrarySearch = props => {
     <>
       <div className="library-search-bar-container">
         <img src={SearchImg} alt="Search" />
-        <input className="library-search-input"
-          type="search" placeholder="Search..."
-          value={enteredSearch} onChange={e => setEnteredSearch(e.target.value)}
-        />
+        <div className="search-bar">
+          <input className="search-input"
+            type="search" placeholder="Search..."
+            value={enteredSearch} onChange={e => setEnteredSearch(e.target.value)}
+          />
+          <div className="search-count">
+            {(cardList.length) + "/" + (cardCollection ? Object.keys(cardCollection).length : "")}
+          </div>
+        </div>
       </div>
       <div className="library-search-types">
         <div style={searchFilter==='all' ? {borderBottom: "3px solid black", backgroundColor: "#ededed"} : null} 

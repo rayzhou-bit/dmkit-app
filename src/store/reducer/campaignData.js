@@ -308,7 +308,7 @@ const updCardText = (state, cardId, text) => {
 
 // VIEW
 const createView = (state) => {
-  const newViewId = "view"+state.viewCreateCnt;
+  const newViewId = "untitled"+state.viewCreateCnt;
   let updatedViewOrder = [...state.viewOrder];
   const pos = state.activeViewId ? updatedViewOrder.indexOf(state.activeViewId) + 1 : 0;
   updatedViewOrder.splice(pos, 0, newViewId);
