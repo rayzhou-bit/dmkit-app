@@ -5,9 +5,9 @@ import { Rnd } from 'react-rnd';
 import './Card.scss';
 import * as actions from '../../../store/actionIndex';
 import { useOutsideClick } from '../../../shared/utilityFunctions';
-import { GRID } from '../../../shared/constants/grid';
-import { CARD_FONT_SIZE } from '../../../shared/constants/fontSize';
-import { TEXT_COLOR_WHEN_BACKGROUND_IS } from '../../../shared/constants/colors';
+import { GRID } from '../../../shared/grid';
+import { CARD_FONT_SIZE } from '../../../shared/fontSize';
+import { TEXT_COLOR_WHEN_BACKGROUND_IS } from '../../../shared/colors';
 import CardTitle from './CardTitle/CardTitle';
 import CardContent from './CardContent/CardContent';
 

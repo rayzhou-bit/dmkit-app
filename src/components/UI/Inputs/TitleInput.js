@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 
-import { CARD_FONT_SIZE } from '../../../shared/constants/fontSize';
-import { TEXT_COLOR_WHEN_BACKGROUND_IS, CARD_TITLEBAR_EDIT_COLORS } from '../../../shared/constants/colors';
+import { CARD_FONT_SIZE } from '../../../shared/fontSize';
+import { TEXT_COLOR_WHEN_BACKGROUND_IS, CARD_TITLEBAR_EDIT_COLORS } from '../../../shared/colors';
 
 import EditImg24 from '../../../assets/icons/edit-24.png';
 import EditImg32 from '../../../assets/icons/edit-32.png';
