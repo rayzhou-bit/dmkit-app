@@ -101,6 +101,14 @@ $title-bar-height: 2rem;
 
     overflow-y: scroll;
     resize: none;
+
+    &:read-only {
+      cursor: default;
+    }
+  
+    &:read-write {
+      background-color: white;
+    }
   }
 }
 

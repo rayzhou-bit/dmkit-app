@@ -118,7 +118,6 @@ const ToolMenu = props => {
           : <img src={SaveImg} alt="Save" draggable="false" />}
         <span className="tooltip">{saveTooltip}</span>
       </button>
-      <div className="back-strip" />
     </div>
   );
 };

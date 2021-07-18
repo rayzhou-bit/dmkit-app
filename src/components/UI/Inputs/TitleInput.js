@@ -48,7 +48,7 @@ const TitleInput = props => {
   const keyPressHandler = (event) => {
     if (editing) {
       if (event.key === 'Enter' || event.key === 'Tab') endEdit();
-    };
+    }
   };
 
   // STYLES

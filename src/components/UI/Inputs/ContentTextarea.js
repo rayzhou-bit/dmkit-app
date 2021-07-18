@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 
 import { CARD_FONT_SIZE } from '../../../shared/fontSize';
 
+import './ContentTextarea.scss';
+
 // Creates a title text with an edit button
 // css is fully controlled by props
 
@@ -52,8 +54,7 @@ const ContentTextarea = props => {
   const textareaStyle = {
     ...styles,
     fontSize: CARD_FONT_SIZE.text+'px',
-    backgroundColor: editing ? "white" : "lightgray",
-  }
+  };
 
   return (
     <textarea className={className} style={textareaStyle}

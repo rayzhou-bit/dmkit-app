@@ -1,13 +1,16 @@
-// Layout colors
+// Theme 1 colors
 $color-1: #F3F0ED;
 $color-2: #EBE5DB;
 $color-3: #E7DCCB;
 $color-4: #F5F5F5;
 $color-5: #F3F3F3;
+$text-color: black;
+$inverse-text-color: white;
 
 $viewscreen-bg-color: $color-1;
 
 $usermenu-bg-color: $color-2;
+$usermenu-bd-color: $color-3;
 
 $toolmenu-bg-color: $color-2;
 $toolmenu-bd-color: $color-3;
@@ -18,6 +21,9 @@ $viewselect-bd-color: $color-2;
 $viewselect-button-bg-color: $color-2;
 
 $dropmenu-bg-color: $color-5;
+
+$library-bg-color: $color-5;
+$library-search-bg-color: $color-2;
 
 $card-bg-color: $color-5;
 $card-bd-color: $color-2;

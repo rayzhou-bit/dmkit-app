@@ -1,3 +1,5 @@
+@import '../../shared/theme';
+
 $menu-size: 42px;
 $btn-size: 42px;
 $border-radius: 5px;
@@ -6,8 +8,11 @@ $border-radius: 5px;
   position: fixed;
   left: 0; top: $menu-size; bottom: $menu-size;
   z-index: 50;
-
   width: $menu-size;
+
+  border-right: 1px solid $toolmenu-bd-color;
+
+  background-color: $toolmenu-bg-color;
 
   display: flex;
   flex-flow: column nowrap;
@@ -16,10 +21,9 @@ $border-radius: 5px;
     position: absolute;
     place-items: center;
 
-    border: 1px solid black;
-    border-left: 0px;
-    border-top-right-radius: $border-radius;
-    border-bottom-right-radius: $border-radius;
+    border-radius: $border-radius;
+
+    background-color: $toolmenu-button-bg-color;
 
     .tooltip { left: 130%; top: 15%; white-space: nowrap; }
     .tooltip::after { right: 100%; top: 50%; border-right-color: black; }
@@ -115,16 +119,6 @@ $border-radius: 5px;
         transform: rotate(360deg);
       }
     }
-  }
-
-  .back-strip {
-    position: absolute;
-    width: 0.7 *$menu-size; height: 100%;
-
-    border-right: 1px solid black;
-    background-color: lightgray;
-
-    z-index: -10;
   }
 }
 

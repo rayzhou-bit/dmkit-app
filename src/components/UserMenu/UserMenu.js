@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useOutsideClick } from '../../shared/utilityFunctions';
 
@@ -10,10 +10,16 @@ import CampaignList from './CampaignList/CampaignList';
 import AuthDropdown from './AuthDropdown/AuthDropdown';
 import SignUp from './SignUp/SignUp';
 
+import UndoImg from '../../assets/icons/undo-32.png';
+import RedoImg from '../../assets/icons/redo-32.png';
+import SaveImg from '../../assets/icons/save-32.png';
+
 const UserMenu = props => {
   const dispatch = useDispatch();
 
   // STATES
+  const [titleValue, setTitleValue] = useState("");
+  const [editingTitle, setEditingTitle] = useState(false);
   const [showCampaignDropdown, setShowCampaignDropdown] = useState(false);
   const [showUserDropdown, setShowUserDropdown] = useState(false);
   const [showSignUp, setShowSignUp] = useState(false);
@@ -22,15 +28,44 @@ const UserMenu = props => {
   const userId = useSelector(state => state.userData.userId);
   const displayName = useSelector(state => state.userData.displayName);
   const email = useSelector(state => state.userData.email);
+  const status = useSelector(state => state.sessionManager.status);
+  const activeCampaignId = useSelector(state => state.sessionManager.activeCampaignId);
   const campaignTitle = useSelector(state => state.campaignData.present.title);
 
   // REFS
+  const titleInputRef = useRef();
   const campaignDropdownBtnRef = useRef();
   const campaignDropdownContentRef = useRef();
   const authDropdownBtnRef = useRef();
   const authDropdownContentRef = useRef();
 
   // FUNCTIONS: CAMPAIGN TITLE
+  useEffect(() => {
+    setTitleValue(campaignTitle);
+  }, [setTitleValue, campaignTitle]);
+
+  const beginTitleEdit = () => {
+    if (!editingTitle) {
+      setEditingTitle(true);
+      titleInputRef.current.focus();
+      titleInputRef.current.setSelectionRange(titleInputRef.current.value.length, titleInputRef.current.value.length);
+    }
+  };
+
+  const endTitleEdit = () => {
+    if (editingTitle) {
+      document.getSelection().removeAllRanges();
+      if (titleValue !== campaignTitle) dispatch(actions.updCampaignTitle(titleValue));
+      setEditingTitle(false);
+    }
+  };
+
+  const titleKeyPressHandler = (e) => {
+    if (editingTitle) {
+      if (e.key === 'Enter' || e.key === 'Tab') endTitleEdit();
+    }
+  };
+
   const campaignDropdownHandler = () => {
     dispatch(fireactions.fetchCampaignList());
     setShowCampaignDropdown(!showCampaignDropdown);
@@ -44,15 +79,50 @@ const UserMenu = props => {
     () => setShowUserDropdown(false)
   );
 
+  const saveTooltip = userId
+    ? (status === 'saving')
+      ? "Saving..."
+      : "Save"
+    : "Please create an account to save!";
+
   return (
     <>
-      <div className="user-menu">
+      <div className="usermenu">
         {/* title */}
-        <div className="dmkit-title">
+        <input ref={titleInputRef} className="usermenu-title"
+          type="text" required maxLength="50"
+          value={titleValue ? titleValue : ""} title={campaignTitle} readOnly={!editingTitle}
+          onBlur={endTitleEdit}
+          onClick={beginTitleEdit}
+          onChange={e => setTitleValue(e.target.value)}
+          onKeyDown={titleKeyPressHandler}
+          onDragOver={e => e.preventDefault()}
+        />
+        {/* <div className="dmkit-title">
           <TitleInput className="campaign-title-text" btnClassName="edit-title btn-32" 
             btnSize={32}
             value={campaignTitle} saveValue={v => dispatch(actions.updCampaignTitle(v))} />
-        </div>
+        </div> */}
+        {/* undo */}
+        <button className="usermenu-btn btn-any">
+          undo
+          <img src={UndoImg} alt="Undo" draggable="false" />
+          <span className="tooltip">{(userId && !activeCampaignId) ? "Please select a project first." : "Undo"}</span>
+        </button>
+        {/* redo */}
+        <button className="usermenu-btn btn-any">
+          redo
+          <img src={RedoImg} alt="Redo" draggable="false" />
+          <span className="tooltip">{(userId && !activeCampaignId) ? "Please select a project first." : "Redo"}</span>
+        </button>
+        {/* save */}
+        <button className="usermenu-btn btn-any">
+          save
+          {(status === 'saving')
+          ? <div className="spinner" />
+          : <img src={SaveImg} alt="Save" draggable="false" />}
+          <span className="tooltip">{saveTooltip}</span>
+        </button>
         {/* campaign select */}
         <div className="campaign-dropdown" 
           style={{display: userId ? "block" : "none"}}>
@@ -65,7 +135,7 @@ const UserMenu = props => {
             <CampaignList setShowCampaignDropdown={setShowCampaignDropdown} />
           </div>
         </div>
-        {/* user profile */}
+        {/* user settings / login */}
         <div className="auth-dropdown">
           <div ref={authDropdownBtnRef} className="dropdown-btn btn-any" 
             onClick={()=>setShowUserDropdown(!showUserDropdown)}>

@@ -1,5 +1,4 @@
 .card-content {
-  background-color: white;
   border-bottom-left-radius: 7px; border-bottom-right-radius: 7px;
 
   flex: auto;
@@ -11,7 +10,6 @@
     border: 0;
     border-bottom-left-radius: 7px; border-bottom-right-radius: 7px;
 
-    background-color: #ddd;
     font-size: 18px;
     text-overflow: ellipsis;
 
@@ -19,8 +17,11 @@
     overflow: auto;
     
     &:read-only {
-      background-color: lightgray;
       cursor: default;
+    }
+
+    &:read-write {
+      background-color: white;
     }
   }
 }
