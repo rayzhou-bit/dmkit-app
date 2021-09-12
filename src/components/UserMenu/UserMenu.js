@@ -1,10 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { ActionCreators } from 'redux-undo';
 import { useOutsideClick } from '../../shared/utilityFunctions';
 
 import './UserMenu.scss';
 import * as actions from '../../store/actionIndex';
 import * as fireactions from '../../store/firestoreIndex';
+import { store } from '../../index';
+
 import TitleInput from '../UI/Inputs/TitleInput';
 import CampaignList from './CampaignList/CampaignList';
 import AuthDropdown from './AuthDropdown/AuthDropdown';
@@ -31,6 +34,9 @@ const UserMenu = props => {
   const status = useSelector(state => state.sessionManager.status);
   const activeCampaignId = useSelector(state => state.sessionManager.activeCampaignId);
   const campaignTitle = useSelector(state => state.campaignData.present.title);
+  const campaignData = useSelector(state => state.campaignData.present);
+  const pastCampaignData = useSelector(state => state.campaignData.past);
+  const futureCampaignData = useSelector(state => state.campaignData.future);
 
   // REFS
   const titleInputRef = useRef();
@@ -78,6 +84,20 @@ const UserMenu = props => {
   useOutsideClick([authDropdownBtnRef, authDropdownContentRef], showUserDropdown, 
     () => setShowUserDropdown(false)
   );
+  
+  // FUNCTIONS: SAVE
+  const saveEditedData = () => {
+    console.log("[Status] saving. Triggered by manual save.");
+    dispatch(actions.setStatus('saving'));
+    dispatch(fireactions.saveCampaignData(activeCampaignId, campaignData,
+      () => {
+        console.log("[Status] idle. Triggered by manual save completion.");
+        dispatch(actions.setStatus('idle'))
+      }
+    ));
+  };
+
+  let disableSave = ((status === 'idle') && userId && activeCampaignId) ? false : true;
 
   const saveTooltip = userId
     ? (status === 'saving')
@@ -103,26 +123,35 @@ const UserMenu = props => {
             btnSize={32}
             value={campaignTitle} saveValue={v => dispatch(actions.updCampaignTitle(v))} />
         </div> */}
+
         {/* undo */}
-        <button className="usermenu-btn btn-any">
+        <button className="usermenu-btn btn-any"
+          disabled={pastCampaignData.length === 0}
+          onClick={() => store.dispatch(ActionCreators.undo())}>
           undo
           <img src={UndoImg} alt="Undo" draggable="false" />
           <span className="tooltip">{(userId && !activeCampaignId) ? "Please select a project first." : "Undo"}</span>
         </button>
         {/* redo */}
-        <button className="usermenu-btn btn-any">
+        <button className="usermenu-btn btn-any"
+          disabled={futureCampaignData.length === 0}
+          onClick={() => store.dispatch(ActionCreators.redo())}>
           redo
           <img src={RedoImg} alt="Redo" draggable="false" />
           <span className="tooltip">{(userId && !activeCampaignId) ? "Please select a project first." : "Redo"}</span>
         </button>
         {/* save */}
-        <button className="usermenu-btn btn-any">
+        <button className="usermenu-btn btn-any"
+          disabled={disableSave}
+          onClick={saveEditedData}>
           save
-          {(status === 'saving')
+          {/* {(status === 'saving')
           ? <div className="spinner" />
-          : <img src={SaveImg} alt="Save" draggable="false" />}
+          : <img src={SaveImg} alt="Save" draggable="false" />} */}
+          <img src={SaveImg} alt="Save" draggable="false" />
           <span className="tooltip">{saveTooltip}</span>
         </button>
+        
         {/* campaign select */}
         <div className="campaign-dropdown" 
           style={{display: userId ? "block" : "none"}}>
