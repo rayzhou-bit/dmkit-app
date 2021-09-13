@@ -1,15 +1,35 @@
-.toolmenu-item {
-  position: absolute;
-  place-items: center;
+@import '../../../shared/theme';
 
-  border-radius: $border-radius;
+$btn-height: 0px;
+$img-size: 35px;
 
-  background-color: $toolmenu-button-bg-color;
+$btn-size: 42px;
+$border-radius: 5px;
 
-  .tooltip { left: 130%; top: 15%; white-space: nowrap; }
-  .tooltip::after { right: 100%; top: 50%; border-right-color: black; }
+.toolmenu-btn {
+  margin: 0.3em;
+  button {
+    position: relative;
+    place-items: center;
 
-  &:hover { background-color: lightblue; }
-  &:disabled { background-color: gray; }
-  &:disabled:hover { background-color: gray; cursor: not-allowed; }
+    padding: auto;
+    border-radius: $border-radius;
+  
+    background-color: $toolmenu-button-bg-color;
+  
+    .tooltip { left: 130%; top: 15%; white-space: nowrap; }
+    .tooltip::after { right: 100%; top: 50%; border-right-color: black; }
+  
+    &:hover { background-color: lightblue; }
+    &:disabled { background-color: gray; }
+    &:disabled:hover { background-color: gray; cursor: not-allowed; }
+  
+    img {
+    }
+  }
+
+  p {
+    margin: 0.1em auto 0.2em auto;
+    text-align: center;
+  }
 }

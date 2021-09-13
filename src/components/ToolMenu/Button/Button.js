@@ -3,15 +3,24 @@ import React from 'react';
 import './Button.scss';
 
 const Button = props => {
-  const {pos, disabled, img,
+  const {pos, disabled, 
+    img, name, tooltip,
     clicked} = props;
+  
+  const position = pos*45 + 15 + "px";
 
-  <button className="create-card toolmenu-item btn-32" 
-    disabled={disabled}
-    onClick={clicked}>
-    <img src={img} alt="Add" draggable="false" />
-    <span className="tooltip">{(userId && !activeCampaignId) ? "Please select a project first." : "Add card"}</span>
-  </button>
+  return (
+    <div className="toolmenu-btn">
+      <button className="btn-32" 
+      //style={{top: position}}
+        disabled={disabled}
+        onClick={clicked}>
+        <img src={img} draggable="false" />
+        <span className="tooltip">{tooltip}</span>
+      </button>
+      <p>{name}</p>
+    </div>
+  );
 };
 
 export default Button;

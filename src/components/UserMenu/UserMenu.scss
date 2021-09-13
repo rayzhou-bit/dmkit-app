@@ -3,6 +3,10 @@
 $menu-height: 42px;
 $border-radius: 0.5rem;
 
+// TODO: below settings are things for save spinner
+$menu-size: 42px;
+$btn-size: 42px;
+
 .usermenu {
   position: fixed;
   top: 0; left: 0; right: 0;
@@ -10,7 +14,7 @@ $border-radius: 0.5rem;
   
   height: $menu-height;
 
-  border-bottom: 1px solid $usermenu-bd-color;
+  border-bottom: 3px solid $usermenu-bd-color;
   background-color: $usermenu-bg-color;
 
   display: flex;
@@ -154,4 +158,86 @@ $border-radius: 0.5rem;
 
 .usermenu-dropdown{
 
+}
+
+
+.save-indicator {
+  bottom: 1.6 *$btn-size;
+  border: 1px solid black;
+  border-radius: 50%;
+  background-color: yellow;
+}
+
+.save {
+  bottom: 0.5 *$btn-size;
+  background-color: green;
+
+  $spinner-base-measurement: 2.5em;
+  .spinner,
+  .spinner:before,
+  .spinner:after {
+    border-radius: 50%;
+  }
+  .spinner {
+    color: white;
+    font-size: 11px;
+    text-indent: -99999em;
+    margin: auto;
+    position: relative;
+    width: $spinner-base-measurement;
+    height: $spinner-base-measurement;
+    box-shadow: inset 0 0 0 0.1*$spinner-base-measurement;
+    -webkit-transform: translateZ(0);
+    -ms-transform: translateZ(0);
+    transform: translateZ(0);
+  }
+  .spinner:before,
+  .spinner:after {
+    position: absolute;
+    content: '';
+  }
+  .spinner:before {
+    width: 0.52*$spinner-base-measurement;
+    height: 1.02*$spinner-base-measurement;
+    background: green;
+    border-radius: 1.02*$spinner-base-measurement 0 0 1.02*$spinner-base-measurement;
+    top: -0.01*$spinner-base-measurement;
+    left: -0.01*$spinner-base-measurement;
+    -webkit-transform-origin: 0.51*$spinner-base-measurement 0.51*$spinner-base-measurement;
+    transform-origin: 0.51*$spinner-base-measurement 0.51*$spinner-base-measurement;
+    -webkit-animation: load2 2s infinite ease 1.5s;
+    animation: load2 2s infinite ease 1.5s;
+  }
+  .spinner:after {
+    width: 0.52*$spinner-base-measurement;
+    height: 1.02*$spinner-base-measurement;
+    background: green;
+    border-radius: 0 1.02*$spinner-base-measurement 1.02*$spinner-base-measurement 0;
+    top: -0.01*$spinner-base-measurement;
+    left: 0.49*$spinner-base-measurement;
+    -webkit-transform-origin: 0.01*$spinner-base-measurement 0.51*$spinner-base-measurement;
+    transform-origin: 0.01*$spinner-base-measurement 0.51*$spinner-base-measurement;
+    -webkit-animation: load2 2s infinite ease;
+    animation: load2 2s infinite ease;
+  }
+  @-webkit-keyframes load2 {
+    0% {
+      -webkit-transform: rotate(0deg);
+      transform: rotate(0deg);
+    }
+    100% {
+      -webkit-transform: rotate(360deg);
+      transform: rotate(360deg);
+    }
+  }
+  @keyframes load2 {
+    0% {
+      -webkit-transform: rotate(0deg);
+      transform: rotate(0deg);
+    }
+    100% {
+      -webkit-transform: rotate(360deg);
+      transform: rotate(360deg);
+    }
+  }
 }
