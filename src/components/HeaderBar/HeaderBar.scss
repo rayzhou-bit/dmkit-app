@@ -1,21 +1,21 @@
 @import '../../shared/theme';
 
-$menu-height: 42px;
-$border-radius: 0.5rem;
+$menu-height: 40px;
+$border-radius: 1px;
 
 // TODO: below settings are things for save spinner
 $menu-size: 42px;
 $btn-size: 42px;
 
 .usermenu {
-  position: fixed;
+  position: absolute;
   top: 0; left: 0; right: 0;
   z-index: 100;
   
   height: $menu-height;
 
-  border-bottom: 3px solid $usermenu-bd-color;
-  background-color: $usermenu-bg-color;
+  border-bottom: 3px solid $headerbar-bd-color;
+  background-color: $headerbar-bg-color;
 
   display: flex;
   flex-flow: row nowrap;

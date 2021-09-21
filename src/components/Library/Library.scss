@@ -4,7 +4,7 @@ $menu-size: 42px;
 $btn-divider-height: 8px;
 
 .library {
-  position: fixed;
+  position: absolute;
   top: $menu-size; bottom: $menu-size;
   z-index: 80;
   

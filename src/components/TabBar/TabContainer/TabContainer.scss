@@ -1,0 +1,23 @@
+.view-tab-container {
+  position: absolute;
+  inset: 0 82px;
+  z-index: 0;
+  white-space: nowrap;
+  // overflow-x: hidden;
+  // overflow-y: visible;
+
+  .view-tab-container-container {
+    position: absolute;
+    height: 100%;
+
+    display: flex;
+    flex-flow: row nowrap;
+
+    .border-line {
+      top: 0; right: 0;
+      width: 100vw;
+      z-index: 0;
+      border-top: 1px solid black;
+    }
+  }
+}

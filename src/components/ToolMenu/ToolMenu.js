@@ -26,23 +26,11 @@ const ToolMenu = props => {
   return (
     <div className="tool-menu" ref={toolMenuRef}>
       {/* new card */}
-      {/* <button className="create-card toolmenu-item btn-32" 
-        disabled={!activeViewId}
-        onClick={() => dispatch(actions.createCard())}>
-        <img src={AddImg} alt="Add" draggable="false" />
-        <span className="tooltip">{(userId && !activeCampaignId) ? "Please select a project first." : "Add card"}</span>
-      </button> */}
       <Button pos={0} disabled={!activeViewId}
         img={AddImg} name={"new"} tooltip={"New Card"} 
         clicked={() => dispatch(actions.createCard())}
       />
       {/* copy card */}
-      {/* <button className="copy-card toolmenu-item btn-32" 
-        disabled={!activeViewId || !activeCardId}
-        onClick={() => dispatch(actions.copyCard(activeCardId))}>
-        <img src={CopyImg} alt="Copy" draggable="false" />
-        <span className="tooltip">{(userId && !activeCampaignId) ? "Please select a project first." : "Copy card"}</span>
-      </button> */}
       <Button pos={1} disabled={!activeViewId || !activeCardId}
         img={CopyImg} name={"copy"} tooltip={"Copy Card"}
         clicked={() => dispatch(actions.copyCard(activeCardId))}

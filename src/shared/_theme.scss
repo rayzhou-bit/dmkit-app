@@ -1,29 +1,46 @@
 // Theme 1 colors
-$color-1: #F3F0ED;
-$color-2: #EBE5DB;
-$color-3: #E7DCCB;
-$color-4: #F5F5F5;
-$color-5: #F3F3F3;
+$bg-color-1: #F3F0ED;
+$bg-color-2: #EBE5DB;
+$bg-color-3: #E7DCCB;
+$bg-color-4: #F5F5F5;
+$bg-color-5: #F3F3F3;
+
+$bd-color-1: #E7DCCB;
+$bd-color-2: #EBE5DB;
+
+$ds-color-1: #CAB89A;
+
+$divider-color: #E7DCCB;
+
 $text-color: black;
 $inverse-text-color: white;
 
-$viewscreen-bg-color: $color-1;
+// HEADER BAR
+$headerbar-bg-color: $bg-color-2;
+$headerbar-bd-color: $bd-color-1;
 
-$usermenu-bg-color: $color-2;
-$usermenu-bd-color: $color-3;
+// TAB BAR
+$tabbar-bg-color: $bg-color-4;
+$tabbar-bd-color: $bd-color-2;
+$tabbar-button-bg-color: $bg-color-2;
+$inactive-tab-bg-color: $bg-color-1;
+$tab-menu-bg-color: $bg-color-5;
+$tab-menu-bd-color: $bd-color-2;
+$tab-menu-ds-color: $ds-color-1;
 
-$toolmenu-bg-color: $color-2;
-$toolmenu-bd-color: $color-3;
-$toolmenu-button-bg-color: $color-3;
+// TOOL MENU
+$toolmenu-bg-color: $bg-color-2;
+$toolmenu-bd-color: $bd-color-1;
+$toolmenu-button-bg-color: $bg-color-3;
 
-$viewselect-bg-color: $color-4;
-$viewselect-bd-color: $color-2;
-$viewselect-button-bg-color: $color-2;
+$dropmenu-bg-color: $bg-color-5; //??? WHAT IS THIS
 
-$dropmenu-bg-color: $color-5;
+// LIBRARY
+$library-bg-color: $bg-color-5;
+$library-search-bg-color: $bg-color-2;
 
-$library-bg-color: $color-5;
-$library-search-bg-color: $color-2;
+// VIEWSCREEN
+$viewscreen-bg-color: $bg-color-1;
 
-$card-bg-color: $color-5;
-$card-bd-color: $color-2;
+$card-bg-color: $bg-color-5;
+$card-bd-color: $bd-color-2;

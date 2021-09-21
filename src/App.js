@@ -2,10 +2,10 @@ import React, { useRef } from 'react';
 
 import './App.scss';
 import Loader from './components/Loader/Loader';
-import UserMenu from './components/UserMenu/UserMenu';
+import HeaderBar from './components/HeaderBar/HeaderBar';
 import ToolMenu from './components/ToolMenu/ToolMenu';
 import Library from './components/Library/Library';
-import ViewSelect from './components/ViewSelect/ViewSelect';
+import TabBar from './components/TabBar/TabBar';
 import ViewScreen from './components/ViewScreen/ViewScreen';
 
 const App = props => {
@@ -21,10 +21,10 @@ const App = props => {
   return (
     <div className="layout">
       <Loader />
-      <UserMenu />
+      <HeaderBar />
       <ToolMenu toolMenuRef={toolMenuRef} />
       <Library />
-      <ViewSelect />
+      <TabBar />
       <ViewScreen toolMenuRef={toolMenuRef} />
     </div>
   );

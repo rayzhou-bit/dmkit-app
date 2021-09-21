@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import './ViewSelect.scss';
+import './TabBar.scss';
 import * as actions from '../../store/actionIndex';
 import { useOutsideClick } from '../../shared/utilityFunctions';
 import ViewTab from './ViewTab/ViewTab';
@@ -11,9 +11,9 @@ import MenuImg from '../../assets/icons/menu-32.png';
 import LeftArrowImg from '../../assets/icons/left-arrow-32.png';
 import RightArrowImg from '../../assets/icons/right-arrow-32.png';
 
-// ViewSelect is the container for all the ViewTab's. This is located at the bottom of the screen.
+// TabBar is the container for all the ViewTab's. This is located at the bottom of the screen.
 
-const ViewSelect = React.memo(props => {
+const TabBar = React.memo(props => {
   const dispatch = useDispatch();
 
   // STATES
@@ -24,7 +24,7 @@ const ViewSelect = React.memo(props => {
   const viewOrder = useSelector(state => state.campaignData.present.viewOrder);
   const viewCollection = useSelector(state => state.campaignData.present.views);
 
-  const tabWidth = 240;
+  const tabWidth = 200;
 
   // REFS
   const viewListRef = useRef();
@@ -57,9 +57,8 @@ const ViewSelect = React.memo(props => {
             onClick={(viewId !== activeViewId) ? () => {
                 dispatch(actions.updActiveViewId(viewId));
                 scrollTo(viewId);
-              } : null}>
-            {viewCollection[viewId].title}
-          </button>
+              } : null}
+          />
         ];
         viewTabs = [
           ...viewTabs,
@@ -77,17 +76,19 @@ const ViewSelect = React.memo(props => {
 
   return (
     <div className="view-select">
-      {/* view buttons */}
+      {/* add view button */}
       <button className="add-view view-select-item btn-32" 
         onClick={() => dispatch(actions.createView())}>
         <img src={AddImg} alt="Add" draggable="false" />
         <span className="tooltip">Add tab</span>
       </button>
+      {/* view select button */}
       <button ref={viewListBtnRef} className="show-view-list view-select-item btn-32"
         onClick={() => setOpenViewList(!openViewList)}>
         <img src={MenuImg} alt="Menu" draggable="false" />
         <span className="tooltip">Show tabs</span>
       </button>
+
       {/* view tabs */}
       <div ref={viewTabContainerRef} className="view-tab-container"
         onWheel={wheelHandler}>
@@ -97,14 +98,15 @@ const ViewSelect = React.memo(props => {
         </div>
       </div>
       {/* view scroll buttons */}
-      <button className="view-scroll-left view-select-item btn-32" onClick={scrollLeft}>
+      {/* <button className="view-scroll-left view-select-item btn-32" onClick={scrollLeft}>
         <img src={LeftArrowImg} alt="Scroll left" draggable="false" />
         <span className="tooltip">Scroll left</span>
       </button>
       <button className="view-scroll-right view-select-item btn-32" onClick={scrollRight}>
         <img src={RightArrowImg} alt="Scroll right" draggable="false" />
         <span className="tooltip">Scroll right</span>
-      </button>
+      </button> */}
+      
       {/* view list */}
       <div ref={viewListRef} className="view-list"
         style={viewListStyle}>
@@ -114,4 +116,4 @@ const ViewSelect = React.memo(props => {
   );
 });
 
-export default ViewSelect;
+export default TabBar;

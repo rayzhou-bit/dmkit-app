@@ -93,12 +93,12 @@ const TitleInput = props => {
 
   return (
     <>
-      <button className={btnClassName} style={btnStyle}
+      {/* <button className={btnClassName} style={btnStyle}
         onClick={beginEdit}>
         <img style={btnImgStyle} 
           src={(btnSize === 24) ? EditImg24 : EditImg32} alt="Edit" draggable="false" />
         <span className="tooltip">Edit title</span>
-      </button>
+      </button> */}
       <input ref={inputRef} className={className} style={inputStyle}
         type="text" required maxLength="50"
         value={inputValue ? inputValue : ""} title={inputValue} readOnly={!editing}

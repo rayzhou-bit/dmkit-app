@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { ActionCreators } from 'redux-undo';
 import { useOutsideClick } from '../../shared/utilityFunctions';
 
-import './UserMenu.scss';
+import './HeaderBar.scss';
 import * as actions from '../../store/actionIndex';
 import * as fireactions from '../../store/firestoreIndex';
 import { store } from '../../index';
@@ -17,7 +17,7 @@ import UndoImg from '../../assets/icons/undo-32.png';
 import RedoImg from '../../assets/icons/redo-32.png';
 import SaveImg from '../../assets/icons/save-32.png';
 
-const UserMenu = props => {
+const HeaderBar = props => {
   const dispatch = useDispatch();
 
   // STATES
@@ -111,7 +111,7 @@ const UserMenu = props => {
         {/* title */}
         <input ref={titleInputRef} className="usermenu-title"
           type="text" required maxLength="50"
-          value={titleValue ? titleValue : ""} title={campaignTitle} readOnly={!editingTitle}
+          value={titleValue ? titleValue : ""} title={titleValue ? titleValue : ""} readOnly={!editingTitle}
           onBlur={endTitleEdit}
           onClick={beginTitleEdit}
           onChange={e => setTitleValue(e.target.value)}
@@ -182,4 +182,4 @@ const UserMenu = props => {
   );
 };
 
-export default UserMenu;
+export default HeaderBar;

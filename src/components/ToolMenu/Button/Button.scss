@@ -1,18 +1,15 @@
 @import '../../../shared/theme';
 
-$btn-height: 0px;
-$img-size: 35px;
-
-$btn-size: 42px;
+$btn-size: 38px;
 $border-radius: 5px;
 
 .toolmenu-btn {
-  margin: 0.3em;
+  margin: 10px 13px 0 13px;
   button {
     position: relative;
     place-items: center;
 
-    padding: auto;
+    height: $btn-size; width: $btn-size; 
     border-radius: $border-radius;
   
     background-color: $toolmenu-button-bg-color;
@@ -25,6 +22,7 @@ $border-radius: 5px;
     &:disabled:hover { background-color: gray; cursor: not-allowed; }
   
     img {
+        margin: auto;
     }
   }
 
