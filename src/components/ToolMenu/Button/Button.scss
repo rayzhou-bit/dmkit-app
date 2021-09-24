@@ -4,7 +4,8 @@ $btn-size: 38px;
 $border-radius: 5px;
 
 .toolmenu-btn {
-  margin: 10px 13px 0 13px;
+  margin: 10px auto 0 auto;
+  
   button {
     position: relative;
     place-items: center;

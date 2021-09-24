@@ -321,7 +321,7 @@ const createView = (state) => {
       [newViewId]: {
         pos: { x: 0, y: 0 },
         scale: 1,
-        lock: true,
+        lock: false,
         color: "gray",
         title: newViewId,
       },

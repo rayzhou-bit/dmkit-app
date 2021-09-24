@@ -1,23 +1,27 @@
 @import '../../../shared/theme';
 
 .menu-list {
+  padding: 7px 14px;
 
   button {
     box-sizing: border-box;
     width: 100%;
     
-    background-color: transparent;
     border: 0;
+    margin-bottom: 4px;
+    
+    background-color: transparent;
 
     text-align: left;
     font-style: normal;
-    font-size: 11px;
+    font-size: 16px;
     line-height: 25px;
     letter-spacing: 0.05em;
   }
 
   hr {
-    margin: 0px 0;
+    margin-bottom: 4px;
+    
     color: $divider-color;
   }
 }

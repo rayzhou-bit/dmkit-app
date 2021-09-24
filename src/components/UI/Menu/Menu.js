@@ -6,7 +6,7 @@ import './Menu.scss';
 //  Each option should have a name and a call.
 //  If there is no call, a divider is created.
 
-// TODO: add submenus
+// TODO: add submenus?
 
 const Menu = props => {
   const {options} = props;
@@ -15,10 +15,10 @@ const Menu = props => {
   if (options) {
     for (let i in options) {
       const option = options[i];
-      let thisOption = <hr className="solid"/>;
+      let thisOption = <hr key={i} className="solid"/>;
       if (option[1]) {
         thisOption = (
-          <button className="btn-any" onClick={option[1]}>
+          <button key={i} className="btn-any" onClick={option[1]}>
               {option[0]}
           </button>
         );

@@ -1,3 +1,4 @@
+// GLOBAL CSS //
 * {
   box-sizing: border-box;
 
@@ -13,13 +14,19 @@
   font-weight: 400;
 }
 
-.layout {
-  position: absolute; z-index: 0;
-  top: 0; right: 0; bottom: 0; left: 0;
-}
-
 input:focus, textarea:focus, select:focus, button:focus {
   outline: none;
+}
+
+button {
+  img { vertical-align: middle;}
+}
+
+// GLOBAL CLASSES //
+.layout {
+  position: absolute;
+  top: 0; right: 0; bottom: 0; left: 0;
+  z-index: 0;
 }
 
 .btn-24 { // button for an img of 24px x 24px

@@ -3,13 +3,13 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Rnd } from 'react-rnd';
 import { useOutsideClick } from '../../../shared/utilityFunctions';
 
-import './ViewTab.scss';
+import './Tab.scss';
 import * as actions from '../../../store/actionIndex';
 import Menu from '../../UI/Menu/Menu';
 
 import OpenMenuImg from '../../../assets/icons/open-menu.png';
 
-const ViewTab = React.memo(props => {
+const Tab = React.memo(props => {
   const {viewId, tabWidth} = props;
   const dispatch = useDispatch();
 
@@ -51,7 +51,6 @@ const ViewTab = React.memo(props => {
   const beginEditTitle = (event) => {
     if (!editingTitle) {
       setEditingTitle(true);
-      console.log('hello')
       titleRef.current.focus();
       titleRef.current.setSelectionRange(titleRef.current.value.length, titleRef.current.value.length);
     }
@@ -113,7 +112,8 @@ const ViewTab = React.memo(props => {
       // onClick
       // onClick={(viewId !== activeViewId) ? () => dispatch(actions.updActiveViewId(viewId)) : null}
     >
-      <div className={(viewId === activeViewId) ? "active-tab view-tab" : "inactive-tab view-tab"}>
+      <div className={(viewId === activeViewId) ? "active-tab view-tab" : "inactive-tab view-tab"}
+        style={{gridTemplateColumns: `${tabWidth-30}px 30px`}}>
         <input ref={titleRef} className="title-input" style={inputStyle}
           type="text" required maxLength="20"
           value={titleValue ? titleValue : ""} title={titleValue ? titleValue : ""} readOnly={!editingTitle}
@@ -124,7 +124,7 @@ const ViewTab = React.memo(props => {
           onKeyDown={keyPressHandlerTitle}
           onDragOver={e => e.preventDefault()}
         />
-        <button ref={showMenuBtnRef} className="opt-btn btn-24"
+        <button ref={showMenuBtnRef} className="menu-btn btn-24"
           onClick={() => setShowMenu(!showMenu)}>
           <img src={OpenMenuImg} alt="Delete" draggable="false" />
           {/* <span className="tooltip">Options</span> */}
@@ -136,12 +136,11 @@ const ViewTab = React.memo(props => {
               // ["Duplicate tab", beginEditTitle], TODO!
               ["divider"],
               ["Close tab", destroyView]
-            ]}
-          />
+            ]} />
         </div>
       </div>
     </Rnd>
   );
 });
 
-export default ViewTab;
+export default Tab;

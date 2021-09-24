@@ -13,15 +13,8 @@ const ToolMenu = props => {
   const dispatch = useDispatch();
 
   // STORE VALUES
-  const userId = useSelector(state => state.userData.userId);
-  const status = useSelector(state => state.sessionManager.status);
-  const campaignEdit = useSelector(state => state.sessionManager.campaignEdit);
-  const introCampaignEdit = useSelector(state => state.sessionManager.introCampaignEdit);
-  const activeCampaignId = useSelector(state => state.sessionManager.activeCampaignId);
   const activeCardId = useSelector(state => state.sessionManager.activeCardId);
   const activeViewId = useSelector(state => state.campaignData.present.activeViewId);
-  const activeViewLock = useSelector(state => activeViewId ? state.campaignData.present.views[activeViewId].lock : null);
-  const campaignData = useSelector(state => state.campaignData.present);
 
   return (
     <div className="tool-menu" ref={toolMenuRef}>
@@ -34,6 +27,13 @@ const ToolMenu = props => {
       <Button pos={1} disabled={!activeViewId || !activeCardId}
         img={CopyImg} name={"copy"} tooltip={"Copy Card"}
         clicked={() => dispatch(actions.copyCard(activeCardId))}
+      />
+      
+      <Button pos={2} disabled
+        name={"image"} tooltip={"New Image"}
+      />
+      <Button pos={3} disabled
+        name={"stat"} tooltip={"Statblock"}
       />
     </div>
   );

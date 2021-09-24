@@ -1,16 +1,17 @@
 @import '../../shared/theme';
 
-$user-menu-height: 40px;
-$view-select-height: 32px;
+$toolmenu-width: 64px;
+$header-bar-height: 40px;
+$tab-bar-height: 32px;
+
 $btn-size: 42px;
 $border-radius: 1px;
 
 .tool-menu {
   position: absolute;
-  left: 0; top: 0; bottom: 0;
+  left: 0; top: $header-bar-height; bottom: $tab-bar-height;
+  width: $toolmenu-width;
   z-index: 50;
-  width: auto;
-  padding: $user-menu-height 0 $view-select-height 0;
 
   border-right: 1px solid $toolmenu-bd-color;
 
