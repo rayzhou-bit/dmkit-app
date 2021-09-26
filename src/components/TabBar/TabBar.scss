@@ -1,17 +1,16 @@
+@import '../../shared/layout';
 @import '../../shared/theme';
-
-$tabbar-height: 32px;
 
 // follow viewscreen example. use position absolute
 
-.view-select {
+.tab-bar {
   position: absolute;
   bottom: 0; left: 0; right: 0;
-  z-index: 90;
+  z-index: $tab-bar-z;
 
-  height: $tabbar-height;
+  height: $tab-bar-height;
 
-  background-color: $tabbar-bg-color;
+  background-color: $tab-bar-bg-color;
 
   display: flex;
   flex-flow: row nowrap;
@@ -31,7 +30,7 @@ $tabbar-height: 32px;
 
     .gap {
       width: 0.1em;
-      background-color: $tabbar-bg-color;
+      background-color: $tab-bar-bg-color;
     }
 
     .add-tab {
@@ -56,13 +55,13 @@ $tabbar-height: 32px;
 
     .tablist-container {
       position: absolute;
-      left: 32px; top: $tabbar-height;
+      left: 32px; top: $tab-bar-height;
       max-height: 50vh;
       min-width: 10vw; max-width: 20vw;
       z-index: -2;
       overflow-y: scroll;
 
-      border: 1px solid $tabbar-bd-color;
+      border: 1px solid $tab-bar-bd-color;
 
       background-color: $tab-menu-bg-color;
 

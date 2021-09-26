@@ -79,7 +79,7 @@ const TabBar = React.memo(props => {
   };
 
   return (
-    <div className="view-select">
+    <div className="tab-bar">
       {/* buttons & tab list*/}
       <div className="btn-container">
         {/* add tab */}

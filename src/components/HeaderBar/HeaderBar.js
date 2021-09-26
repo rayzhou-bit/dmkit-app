@@ -107,7 +107,7 @@ const HeaderBar = props => {
 
   return (
     <>
-      <div className="usermenu">
+      <div className="header-bar">
         {/* title */}
         <input ref={titleInputRef} className="usermenu-title"
           type="text" required maxLength="50"

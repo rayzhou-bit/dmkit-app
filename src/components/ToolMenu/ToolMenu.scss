@@ -1,17 +1,11 @@
+@import '../../shared/layout';
 @import '../../shared/theme';
-
-$toolmenu-width: 64px;
-$header-bar-height: 40px;
-$tab-bar-height: 32px;
-
-$btn-size: 42px;
-$border-radius: 1px;
 
 .tool-menu {
   position: absolute;
   left: 0; top: $header-bar-height; bottom: $tab-bar-height;
-  width: $toolmenu-width;
-  z-index: 50;
+  width: $tool-menu-width;
+  z-index: $tool-menu-z;
 
   border-right: 1px solid $toolmenu-bd-color;
 

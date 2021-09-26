@@ -1,18 +1,15 @@
+@import '../../shared/layout';
 @import '../../shared/theme';
 
-$menu-height: 40px;
-$border-radius: 1px;
-
 // TODO: below settings are things for save spinner
-$menu-size: 42px;
 $btn-size: 42px;
 
-.usermenu {
+.header-bar {
   position: absolute;
   top: 0; left: 0; right: 0;
-  z-index: 100;
+  z-index: $header-bar-z;
   
-  height: $menu-height;
+  height: $header-bar-height;
 
   border-bottom: 3px solid $headerbar-bd-color;
   background-color: $headerbar-bg-color;
@@ -41,8 +38,6 @@ $btn-size: 42px;
     // border-left: 1px solid black;
     // border-right: 1px solid black;
     // border-bottom: 2px solid black;
-    // border-bottom-left-radius: $border-radius;
-    // border-bottom-right-radius: $border-radius;
 
     line-height: 41px;
     text-align: center;
@@ -64,8 +59,6 @@ $btn-size: 42px;
     border-left: 1px solid black;
     border-right: 1px solid black;
     border-bottom: 1px solid black;
-    // border-bottom-left-radius: $border-radius;
-    // border-bottom-right-radius: $border-radius;
 
     background-color: white;
 
@@ -114,7 +107,6 @@ $btn-size: 42px;
   .edit-title {
     position: absolute;
     right: 0;
-    // border-bottom-right-radius: $border-radius;
     z-index: 1;
 
     opacity: 0;
