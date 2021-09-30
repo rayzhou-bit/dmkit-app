@@ -127,17 +127,16 @@ const Tab = React.memo(props => {
         <button ref={showMenuBtnRef} className="menu-btn btn-24"
           onClick={() => setShowMenu(!showMenu)}>
           <img src={OpenMenuImg} alt="Delete" draggable="false" />
-          {/* <span className="tooltip">Options</span> */}
+          <div ref={menuRef} className="option-menu" 
+            style={{display: showMenu ? "block" : "none"}}>
+            <Menu options={[
+                ["Rename", beginEditTitle],
+                // ["Duplicate tab", beginEditTitle], TODO!
+                ["divider"],
+                ["Close tab", destroyView]
+              ]} />
+          </div>
         </button>
-        <div ref={menuRef} className="option-menu" 
-          style={{display: showMenu ? "block" : "none"}}>
-          <Menu options={[
-              ["Rename", beginEditTitle],
-              // ["Duplicate tab", beginEditTitle], TODO!
-              ["divider"],
-              ["Close tab", destroyView]
-            ]} />
-        </div>
       </div>
     </Rnd>
   );

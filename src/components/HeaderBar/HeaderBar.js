@@ -13,9 +13,9 @@ import CampaignList from './CampaignList/CampaignList';
 import AuthDropdown from './AuthDropdown/AuthDropdown';
 import SignUp from './SignUp/SignUp';
 
-import UndoImg from '../../assets/icons/undo-32.png';
-import RedoImg from '../../assets/icons/redo-32.png';
-import SaveImg from '../../assets/icons/save-32.png';
+import UndoImg from '../../assets/icons/undo.png';
+import RedoImg from '../../assets/icons/redo.png';
+import SaveImg from '../../assets/icons/save.png';
 
 const HeaderBar = props => {
   const dispatch = useDispatch();
@@ -23,8 +23,8 @@ const HeaderBar = props => {
   // STATES
   const [titleValue, setTitleValue] = useState("");
   const [editingTitle, setEditingTitle] = useState(false);
-  const [showCampaignDropdown, setShowCampaignDropdown] = useState(false);
-  const [showUserDropdown, setShowUserDropdown] = useState(false);
+  const [showProjectsDropdown, setShowProjectsDropdown] = useState(false);
+  const [showSettingsDropdown, setShowSettingsDropdown] = useState(false);
   const [showSignUp, setShowSignUp] = useState(false);
 
   // STORE SELECTORS
@@ -74,15 +74,15 @@ const HeaderBar = props => {
 
   const campaignDropdownHandler = () => {
     dispatch(fireactions.fetchCampaignList());
-    setShowCampaignDropdown(!showCampaignDropdown);
+    setShowProjectsDropdown(!showProjectsDropdown);
   };
 
-  useOutsideClick([campaignDropdownBtnRef, campaignDropdownContentRef], showCampaignDropdown, 
-    () => setShowCampaignDropdown(false)
+  useOutsideClick([campaignDropdownBtnRef, campaignDropdownContentRef], showProjectsDropdown, 
+    () => setShowProjectsDropdown(false)
   );
 
-  useOutsideClick([authDropdownBtnRef, authDropdownContentRef], showUserDropdown, 
-    () => setShowUserDropdown(false)
+  useOutsideClick([authDropdownBtnRef, authDropdownContentRef], showSettingsDropdown, 
+    () => setShowSettingsDropdown(false)
   );
   
   // FUNCTIONS: SAVE
@@ -109,8 +109,8 @@ const HeaderBar = props => {
     <>
       <div className="header-bar">
         {/* title */}
-        <input ref={titleInputRef} className="usermenu-title"
-          type="text" required maxLength="50"
+        <input ref={titleInputRef} className="title"
+          type="text" required maxLength="100"
           value={titleValue ? titleValue : ""} title={titleValue ? titleValue : ""} readOnly={!editingTitle}
           onBlur={endTitleEdit}
           onClick={beginTitleEdit}
@@ -118,41 +118,30 @@ const HeaderBar = props => {
           onKeyDown={titleKeyPressHandler}
           onDragOver={e => e.preventDefault()}
         />
-        {/* <div className="dmkit-title">
-          <TitleInput className="campaign-title-text" btnClassName="edit-title btn-32" 
-            btnSize={32}
-            value={campaignTitle} saveValue={v => dispatch(actions.updCampaignTitle(v))} />
-        </div> */}
 
-        {/* undo */}
-        <button className="usermenu-btn btn-any"
+        {/* undo button */}
+        <button className="btn btn-any"
           disabled={pastCampaignData.length === 0}
           onClick={() => store.dispatch(ActionCreators.undo())}>
-          undo
+          <p>undo</p>
           <img src={UndoImg} alt="Undo" draggable="false" />
-          <span className="tooltip">{(userId && !activeCampaignId) ? "Please select a project first." : "Undo"}</span>
         </button>
-        {/* redo */}
-        <button className="usermenu-btn btn-any"
+        {/* redo button */}
+        <button className="btn btn-any"
           disabled={futureCampaignData.length === 0}
           onClick={() => store.dispatch(ActionCreators.redo())}>
-          redo
+          <p>redo</p>
           <img src={RedoImg} alt="Redo" draggable="false" />
-          <span className="tooltip">{(userId && !activeCampaignId) ? "Please select a project first." : "Redo"}</span>
         </button>
-        {/* save */}
-        <button className="usermenu-btn btn-any"
+        {/* save button */}
+        <button className="save btn btn-any"
           disabled={disableSave}
           onClick={saveEditedData}>
-          save
-          {/* {(status === 'saving')
-          ? <div className="spinner" />
-          : <img src={SaveImg} alt="Save" draggable="false" />} */}
+          <p>{ (status === 'saving') ? "saving.." : "save" }</p>
           <img src={SaveImg} alt="Save" draggable="false" />
-          <span className="tooltip">{saveTooltip}</span>
         </button>
         
-        {/* campaign select */}
+        {/* project open */}
         <div className="campaign-dropdown" 
           style={{display: userId ? "block" : "none"}}>
           <div ref={campaignDropdownBtnRef} className="dropdown-btn btn-any" 
@@ -160,22 +149,24 @@ const HeaderBar = props => {
             Projects
           </div>
           <div ref={campaignDropdownContentRef} className="dropdown-content" 
-            style={{display: showCampaignDropdown ? "block" : "none"}}>
-            <CampaignList setShowCampaignDropdown={setShowCampaignDropdown} />
+            style={{display: showProjectsDropdown ? "block" : "none"}}>
+            <CampaignList setShowProjectsDropdown={setShowProjectsDropdown} />
           </div>
         </div>
-        {/* user settings / login */}
+
+        {/* settings open */}
         <div className="auth-dropdown">
           <div ref={authDropdownBtnRef} className="dropdown-btn btn-any" 
-            onClick={()=>setShowUserDropdown(!showUserDropdown)}>
+            onClick={()=>setShowSettingsDropdown(!showSettingsDropdown)}>
             {displayName ? displayName : email ? email : "Sign In / Sign Up"}
           </div>
           <div ref={authDropdownContentRef} className="dropdown-content" 
-            style={{display: showUserDropdown ? "block" : "none"}}>
-            <AuthDropdown setShowSignUp={setShowSignUp} setShowUserDropdown={setShowUserDropdown} />
+            style={{display: showSettingsDropdown ? "block" : "none"}}>
+            <AuthDropdown setShowSignUp={setShowSignUp} setShowSettingsDropdown={setShowSettingsDropdown} />
           </div>
         </div>
       </div>
+
       {/* sign up pop up */}
       <SignUp showSignUp={showSignUp} onBackdropClick={()=>setShowSignUp(false)} />
     </>

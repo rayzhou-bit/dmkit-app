@@ -4,7 +4,7 @@ import { Rnd } from 'react-rnd';
 
 import './ViewScreen.scss';
 import * as actions from '../../store/actionIndex';
-import { GRID } from '../../shared/grid';
+import { GRID } from '../../shared/_grid';
 import Card from './Card/Card';
 
 // ViewScreen is the main portion the user is looking at. This is located in the center of the screen.
@@ -25,7 +25,7 @@ const ViewScreen = props => {
   const activeViewScale = useSelector(state => activeViewId ? state.campaignData.present.views[activeViewId].scale : 1);
   const cardCollection = useSelector(state => state.campaignData.present.cards);
 
-  const [ viewWidth, viewHeight ] = [ 100*GRID.size, 70*GRID.size ];
+  const [ viewWidth, viewHeight ] = [ 200*GRID.size, 150*GRID.size ];
 
   // REFS
   const viewScreenRef = useRef();
@@ -53,7 +53,7 @@ const ViewScreen = props => {
     const targetCardId = event.dataTransfer.getData("text");
     if (cardCollection[targetCardId]) {
       if (!cardCollection[targetCardId].views[activeViewId]) {
-        // future update: more precise pos calculation
+        // TODO: more precise pos calculation
         let xCalculation = Math.round((event.clientX-GRID.size-GRID.size)/GRID.size)*GRID.size;
         if (xCalculation < 0) xCalculation = 0;
         let yCalculation = Math.round((event.clientY-GRID.size-GRID.size)/GRID.size)*GRID.size;
@@ -63,15 +63,10 @@ const ViewScreen = props => {
       } else {
         setCardAnimation({
           ...cardAnimation,
-          [targetCardId]: 'card-blink .25s step-end 3 alternate',
+          [targetCardId]: 'card-blink .25s step-end 4 alternate',
         });
       }
     }
-  };
-
-  // STYLES
-  const scaleViewStyle = {
-    transform: 'scale('+activeViewScale+')',
   };
 
   // CARD LIST
@@ -94,13 +89,13 @@ const ViewScreen = props => {
     <main ref={viewScreenRef} className="view-screen" 
       onWheel={wheelHandler}
       onContextMenu={e => e.preventDefault()}>
-      {userId && !activeCampaignId
+      {(userId && !activeCampaignId)
         ? <div className="empty-screen">
             No active project loaded. Please select your project or create a new one.
           </div>
         : activeViewId
           ? <div className="scale-view"
-              style={scaleViewStyle}>
+              style={{transform: 'scale('+activeViewScale+')'}}>
               <Rnd
                 // position
                 position={activeViewPos ? activeViewPos : {x: 0, y: 0}}
@@ -119,8 +114,8 @@ const ViewScreen = props => {
                   onDrop={cardDropHandler} 
                   onDragOver={e => e.preventDefault()}>
                   <div className="drag-view" />
-                  {cardList}
                   <div className="grid" style={{backgroundSize: GRID.size+" "+GRID.size}} />
+                  {cardList}
                 </div>
               </Rnd>
             </div>

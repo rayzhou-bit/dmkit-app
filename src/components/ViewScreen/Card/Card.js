@@ -5,11 +5,12 @@ import { Rnd } from 'react-rnd';
 import './Card.scss';
 import * as actions from '../../../store/actionIndex';
 import { useOutsideClick } from '../../../shared/utilityFunctions';
-import { GRID } from '../../../shared/grid';
-import { CARD_FONT_SIZE } from '../../../shared/fontSize';
+import { GRID } from '../../../shared/_grid';
+import { CARD_FONT_SIZE } from '../../../shared/_fontSize';
 import { TEXT_COLOR_WHEN_BACKGROUND_IS } from '../../../shared/colors';
 import CardTitle from './CardTitle/CardTitle';
 import CardContent from './CardContent/CardContent';
+import Blurb from './Blurb/Blurb';
 
 const Card = props => {
   const {cardId, toolMenuRef, 
@@ -65,8 +66,6 @@ const Card = props => {
       [cardId]: null,
     })
   };
-  
-  const changeTypeToCard = () => dispatch(actions.updCardForm(cardId, "card"));
 
   useOutsideClick([cardRef, toolMenuRef], isSelected, 
     () => {
@@ -76,22 +75,10 @@ const Card = props => {
   );
 
   // STYLES
-  const toFrontStyle = {
-    zIndex: dragging ? 20000*(cardPos.y + cardPos.x + 10) 
-      : (cardId === activeCardId) ? 10000*(cardPos.y + cardPos.x + 10) 
-      : (100*cardPos.y + cardPos.x + 10),
-  };
-
   const cardStyle = {
     border: (cardId === activeCardId) ? '3px solid black' : '1px solid black',
     margin: (cardId === activeCardId) ? '0px' : '2px',
     animation: cardAnimation ? cardAnimation[cardId] : null,
-  };
-  
-  const bubbleLetterStyle = {
-    fontSize: CARD_FONT_SIZE.title+'px',
-    color: TEXT_COLOR_WHEN_BACKGROUND_IS[cardColor],
-    backgroundColor: cardColor, 
   };
 
   // DISPLAY ELEMENTS
@@ -104,42 +91,36 @@ const Card = props => {
     </div>
   );
 
-  const bubbleObject = (
-    <div ref={cardRef} className="bubble" style={cardStyle}
-      onClick={cardClickHandler}
-      onDoubleClick={changeTypeToCard}
-      onAnimationEnd={onAnimationEnd}>
-      <div className="short" style={bubbleLetterStyle} title={cardTitle ? cardTitle : null}>
-        {/* {cardTitle ? cardTitle.split(' ')[0] : ""}  */}
-        {cardTitle ? cardTitle : ""}
-      </div>
-    </div>
-  );
-
   return (
-    <Rnd style={toFrontStyle}
-      bounds="parent"
+    <Rnd bounds="parent"
+      // z-index
+      style={{zIndex: dragging 
+        ? 20000*(cardPos.y + cardPos.x + 10) 
+        : (cardId === activeCardId) 
+        ? 10000*(cardPos.y + cardPos.x + 10) 
+        : (100*cardPos.y + cardPos.x + 10),
+      }}
       // position
       position={cardPos}
       // drag
       disableDragging={editingCard}
-      dragHandleClassName={(cardForm === "bubble") ? "short" : "title-container"}
-      // dragGrid={[GRID.size, GRID.size]}
+      dragHandleClassName="title-container"
       onDragStart={()=>setDragging(true)}
       onDragStop={dragStopHandler}
       // size
-      size={(cardForm === "bubble") ? {width: GRID.size*3, height: GRID.size*1} : cardSize}
-      minWidth={(cardForm === "bubble") ? null : GRID.size*5} 
-      minHeight={(cardForm === "bubble") ? null : GRID.size*5}
+      size={(cardForm === "card") ? cardSize : {width: GRID.size*9, height: GRID.size*3}}
+      minWidth={(cardForm === "card") ? GRID.size*9 : null} 
+      minHeight={(cardForm === "card") ? GRID.size*9 : null}
       scale={activeViewScale}
       // resize
-      enableResizing={(cardForm === "bubble") ? false : true}
+      enableResizing={(cardForm === "card") ? true : false}
       resizeGrid={[GRID.size, GRID.size]}
       onResizeStop={resizeStopHandler}
     >
-      {cardForm === "bubble"
-        ? bubbleObject 
-        : cardObject}
+      {cardForm === "card"
+        ? cardObject 
+        : <Blurb cardId={cardId} toolMenuRef={toolMenuRef} cardAnimation={cardAnimation} setCardAnimation={setCardAnimation} />
+      }
     </Rnd>
   );
 };

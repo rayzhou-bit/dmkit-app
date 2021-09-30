@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-import { CARD_FONT_SIZE } from '../../../shared/fontSize';
+import { CARD_FONT_SIZE } from '../../../shared/_fontSize';
 
 import './ContentTextarea.scss';
 

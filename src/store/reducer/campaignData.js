@@ -1,5 +1,5 @@
 import * as actionTypes from '../actionTypes';
-import { GRID } from '../../shared/grid';
+import { GRID } from '../../shared/_grid';
 import { updateObject } from '../../shared/utilityFunctions';
 
 // The campaignData reducer mirrors the campaign data structure on firebase
@@ -17,7 +17,7 @@ import { updateObject } from '../../shared/utilityFunctions';
 //         view0: {
 //           pos: {x: "card x-position", y: "card y-position"},
 //           size: {width: "card width", height: "card height"},
-//           cardForm: "card or bubble",
+//           cardForm: "card or blurb",
 //         },
 //       },
 //       title: "card title",

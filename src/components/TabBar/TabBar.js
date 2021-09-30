@@ -73,11 +73,6 @@ const TabBar = React.memo(props => {
     }
   }
 
-  // STYLES
-  const tabListStyle = {
-    bottom: openTabList ? "41px" : "-100vh",
-  };
-
   return (
     <div className="tab-bar">
       {/* buttons & tab list*/}

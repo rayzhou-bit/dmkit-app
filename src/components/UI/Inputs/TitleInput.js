@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 
-import { CARD_FONT_SIZE } from '../../../shared/fontSize';
+import { CARD_FONT_SIZE } from '../../../shared/_fontSize';
 import { TEXT_COLOR_WHEN_BACKGROUND_IS, CARD_TITLEBAR_EDIT_COLORS } from '../../../shared/colors';
 
 import EditImg24 from '../../../assets/icons/edit-24.png';

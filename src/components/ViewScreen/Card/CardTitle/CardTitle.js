@@ -54,7 +54,7 @@ const CardTitle = props => {
           <span className="tooltip">Remove from view</span>
         </button>
         <button className="shrink title-btn btn-24" 
-          onClick={() => dispatch(actions.updCardForm(cardId, "bubble"))}>
+          onClick={() => dispatch(actions.updCardForm(cardId, "blurb"))}>
           <img src={ShrinkImg} alt="Shrink" draggable="false" />
           <span className="tooltip">Shrink card</span>
         </button>

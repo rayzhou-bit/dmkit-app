@@ -1,8 +1,9 @@
+@import '../../shared/layout';
 @import '../../shared/theme';
 
 .view-screen {
   position: absolute;
-  inset: 42px 0 42px 42px;
+  inset: $header-bar-height 0 $tab-bar-height $tool-menu-width;
   z-index: 0;
 
   .empty-screen {
@@ -23,8 +24,7 @@
     .grid {
       position: absolute;
       inset: 0;
-      background-image: url("../../assets/grid-30.png");
-      background-position: -2px -2px;
+      background-image: url("../../assets/grid-15.png");
     }
   }
 
@@ -32,7 +32,7 @@
 
   .drag-view {
     position: absolute;
-    inset: 0px;
+    inset: -100vh -100vw;
     z-index: 1;
   }
 }

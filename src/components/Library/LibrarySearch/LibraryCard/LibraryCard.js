@@ -4,7 +4,7 @@ import { useOutsideClick } from '../../../../shared/utilityFunctions';
 
 import './LibraryCard.scss';
 import * as actions from '../../../../store/actionIndex';
-import { CARD_FONT_SIZE } from '../../../../shared/fontSize';
+import { CARD_FONT_SIZE } from '../../../../shared/_fontSize';
 import { CARD_TITLEBAR_COLORS } from '../../../../shared/colors';
 import TitleInput from '../../../UI/Inputs/TitleInput';
 import ContentTextarea from '../../../UI/Inputs/ContentTextarea';
@@ -42,7 +42,7 @@ const LibraryCard = props => {
     if (cardViews[activeViewId]) {
       setCardAnimation({
         ...cardAnimation,
-        [cardId]: 'library-card-blink .25s step-end 3 alternate',
+        [cardId]: 'library-card-blink .25s step-end 4 alternate',
       });
     };
   };

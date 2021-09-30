@@ -1,0 +1,43 @@
+.blurb {
+  // box-sizing: content-box;
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  // position: relative;
+  // height: 100%; width: 100%;
+
+  margin: 2px;
+  border: 1px solid black;
+
+  .title-container {
+    width: 100%; height: 100%;
+
+    cursor: move;
+
+    p {
+      width: 100%;
+      margin: auto 3px;
+
+      font-weight: bold;
+      text-overflow: ellipsis;
+
+      white-space: nowrap;
+      overflow: hidden;
+    }
+  }
+}
+
+.active-blurb {
+  margin: 0;
+  border: 3px solid black;
+}
+
+.blink-blurb {
+  animation: blurb-blink .25s step-end 4 alternate;
+}
+
+@keyframes blurb-blink {
+  50% {
+    border: 3px solid red;
+    margin: 0px;
+  }
+}

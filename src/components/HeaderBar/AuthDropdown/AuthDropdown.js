@@ -7,7 +7,7 @@ import * as actions from '../../../store/actionIndex';
 import * as fireactions from '../../../store/firestoreIndex';
 
 const AuthDropdown = props => {
-  const {setShowSignUp, setShowUserDropdown} = props;
+  const {setShowSignUp, setShowSettingsDropdown} = props;
   const dispatch = useDispatch();
 
   // STATES
@@ -67,7 +67,7 @@ const AuthDropdown = props => {
         }
       ));
     } else dispatch(fireactions.emailSignOut());
-    setShowUserDropdown(false);
+    setShowSettingsDropdown(false);
   };
 
   const sendPasswordResetEmail = () => {
@@ -88,14 +88,14 @@ const AuthDropdown = props => {
   // On sign in or sign out
   useEffect(() => {
     if (userId) {
-      setShowUserDropdown(false);
+      setShowSettingsDropdown(false);
       setEmailInput("");
       setPswInput("");
       setShowPasswordResetMsg(false);
       setShowDisplayInput(false);
       setDisplayNameInput("");
     }
-  }, [userId, setEmailInput, setPswInput, setShowUserDropdown]);
+  }, [userId, setEmailInput, setPswInput, setShowSettingsDropdown]);
 
   const signInContainer = (
     <div className="sign-in-dropdown">
@@ -134,7 +134,7 @@ const AuthDropdown = props => {
         <div className="sign-in-error" style={{display: (googleSignInError !== "") ? "block" : "none"}}>{googleSignInError}</div>
       </button>
       <button className="sign-up dropdown-item btn-any"
-        onClick={()=>{setShowSignUp(true); setShowUserDropdown(false);}}>
+        onClick={()=>{setShowSignUp(true); setShowSettingsDropdown(false);}}>
         Sign Up with Email
       </button>
     </div>
