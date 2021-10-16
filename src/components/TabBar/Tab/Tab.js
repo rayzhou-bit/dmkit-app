@@ -7,7 +7,7 @@ import './Tab.scss';
 import * as actions from '../../../store/actionIndex';
 import Menu from '../../UI/Menu/Menu';
 
-import OpenMenuImg from '../../../assets/icons/open-menu.png';
+import OpenMenuImg from '../../../assets/icons/drop-down-dark.png';
 
 const Tab = React.memo(props => {
   const {viewId, tabWidth} = props;

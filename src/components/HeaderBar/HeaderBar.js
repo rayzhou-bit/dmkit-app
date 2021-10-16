@@ -1,14 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { ActionCreators } from 'redux-undo';
-import { useOutsideClick } from '../../shared/utilityFunctions';
 
-import './HeaderBar.scss';
 import * as actions from '../../store/actionIndex';
 import * as fireactions from '../../store/firestoreIndex';
+import { useOutsideClick } from '../../shared/utilityFunctions';
 import { store } from '../../index';
 
-import TitleInput from '../UI/Inputs/TitleInput';
+import './HeaderBar.scss';
 import CampaignList from './CampaignList/CampaignList';
 import AuthDropdown from './AuthDropdown/AuthDropdown';
 import SignUp from './SignUp/SignUp';
@@ -71,19 +70,6 @@ const HeaderBar = props => {
       if (e.key === 'Enter' || e.key === 'Tab') endTitleEdit();
     }
   };
-
-  const campaignDropdownHandler = () => {
-    dispatch(fireactions.fetchCampaignList());
-    setShowProjectsDropdown(!showProjectsDropdown);
-  };
-
-  useOutsideClick([campaignDropdownBtnRef, campaignDropdownContentRef], showProjectsDropdown, 
-    () => setShowProjectsDropdown(false)
-  );
-
-  useOutsideClick([authDropdownBtnRef, authDropdownContentRef], showSettingsDropdown, 
-    () => setShowSettingsDropdown(false)
-  );
   
   // FUNCTIONS: SAVE
   const saveEditedData = () => {
@@ -104,6 +90,20 @@ const HeaderBar = props => {
       ? "Saving..."
       : "Save"
     : "Please create an account to save!";
+
+  // FUNCTIONS: DROPDOWNS
+  const campaignDropdownHandler = () => {
+    dispatch(fireactions.fetchCampaignList());
+    setShowProjectsDropdown(!showProjectsDropdown);
+  };
+
+  useOutsideClick([campaignDropdownBtnRef, campaignDropdownContentRef], showProjectsDropdown, 
+    () => setShowProjectsDropdown(false)
+  );
+
+  useOutsideClick([authDropdownBtnRef, authDropdownContentRef], showSettingsDropdown, 
+    () => setShowSettingsDropdown(false)
+  );
 
   return (
     <>

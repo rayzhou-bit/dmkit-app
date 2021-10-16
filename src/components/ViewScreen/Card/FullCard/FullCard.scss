@@ -1,0 +1,26 @@
+.full-card {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+
+  margin: 2px;
+  border: 1px solid black;
+
+  display: flex;
+  flex-flow: column nowrap;
+}
+
+.active-full-card {
+  margin: 0;
+  border: 3px solid black;
+}
+
+.blink-full-card {
+  animation: full-card-blink .25s step-end 4 alternate;
+}
+
+@keyframes full-card-blink {
+  50% {
+    border: 3px solid red;
+    margin: 0px;
+  }
+}

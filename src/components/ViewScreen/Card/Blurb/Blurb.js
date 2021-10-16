@@ -1,11 +1,12 @@
 import React, { useState, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import './Blurb.scss';
 import * as actions from '../../../../store/actionIndex';
 import { useOutsideClick } from '../../../../shared/utilityFunctions';
 import { CARD_FONT_SIZE } from '../../../../shared/_fontSize';
 import { TEXT_COLOR_WHEN_BACKGROUND_IS } from '../../../../shared/colors';
+
+import './Blurb.scss';
 
 const Blurb = props => {
   const { 
@@ -61,8 +62,9 @@ const Blurb = props => {
       }}
       onClick={cardClickHandler}
       onDoubleClick={changeTypeToCard}
-      onAnimationEnd={onAnimationEnd}>
-      <div className="title-container" 
+      onAnimationEnd={onAnimationEnd}
+    >
+      <div className="title" 
         style={{
           fontSize: CARD_FONT_SIZE.title+'px',
           color: TEXT_COLOR_WHEN_BACKGROUND_IS[cardColor],

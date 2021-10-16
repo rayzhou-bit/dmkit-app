@@ -29,25 +29,3 @@
     }
   }
 }
-
-.blurb {
-  position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
-
-  display: grid;
-  place-items: center;
-
-  .title-container {
-    width: 100%; height: 100%;
-    font-weight: bold;
-    overflow: hidden;
-    cursor: move;
-  }
-}
-
-@keyframes card-blink {
-  50% {
-    border: 3px solid red;
-    margin: 0px;
-  }
-}

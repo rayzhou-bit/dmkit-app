@@ -17,7 +17,7 @@ const LibraryCard = props => {
 
   // STATES
   const [isSelected, setIsSelected] = useState(false);
-  const [openColorSelect, setOpenColorSelect] = useState(false);
+  const [showColorMenu, setShowColorMenu] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [editingCard, setEditingCard] = useState(false);
   const [cardAnimation, setCardAnimation] = useState({});
@@ -28,12 +28,12 @@ const LibraryCard = props => {
   const cardViews = useSelector(state => state.campaignData.present.cards[cardId].views);
   const cardColor = useSelector(state => state.campaignData.present.cards[cardId].color);
   const cardTitle = useSelector(state => state.campaignData.present.cards[cardId].title);
-  const cardText = useSelector(state => state.campaignData.present.cards[cardId].content.text);
+  const cardText = useSelector(state => (state.campaignData.present.cards[cardId].content ? state.campaignData.present.cards[cardId].content.text : ""));
 
   // REFS
   const libraryCardRef = useRef();
   const colorSelectRef = useRef();
-  const colorBtnRef = useRef();
+  const showColorMenuBtnRef = useRef();
   const deleteBtnRef = useRef();
   
   // FUNCTIONS: CARD
@@ -67,7 +67,7 @@ const LibraryCard = props => {
   });
 
   // FUNCTIONS: TITLEBAR
-  useOutsideClick([colorSelectRef, colorBtnRef], openColorSelect, () => setOpenColorSelect(false));
+  useOutsideClick([colorSelectRef, showColorMenuBtnRef], showColorMenu, () => setShowColorMenu(false));
 
   useOutsideClick([deleteBtnRef], confirmDelete, () => setConfirmDelete(false));
   
@@ -115,8 +115,8 @@ const LibraryCard = props => {
       onAnimationEnd={onAnimationEnd}>
       {/* title */}
       <div className="library-card-title-container">
-        <button ref={colorBtnRef} className="change-color title-btn btn-24"
-          onClick={() => setOpenColorSelect(!openColorSelect)}>
+        <button ref={showColorMenuBtnRef} className="change-color title-btn btn-24"
+          onClick={() => setShowColorMenu(!showColorMenu)}>
           <div style={colorBtnStyle} />
           <span className="tooltip">Change color</span>
         </button>
@@ -131,7 +131,7 @@ const LibraryCard = props => {
           setEditingParent={setEditingCard} />
       </div>
       {/* color */}
-      <div ref={colorSelectRef} className="color-select" style={{display: openColorSelect ? "grid" : "none"}}>
+      <div ref={colorSelectRef} className="color-select" style={{display: showColorMenu ? "grid" : "none"}}>
         {colorList}
       </div>
       {/* content */}
