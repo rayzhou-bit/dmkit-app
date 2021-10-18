@@ -133,7 +133,7 @@ const Tab = React.memo(props => {
                 ["Rename", beginEditTitle],
                 // ["Duplicate tab", beginEditTitle], TODO!
                 ["divider"],
-                ["Close tab", destroyView]
+                ["Delete tab", destroyView, 'red'],
               ]} />
           </div>
         </button>

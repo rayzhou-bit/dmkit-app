@@ -81,14 +81,17 @@ const CardTitle = props => {
   }
 
   return (
-    <div className="card-title" style={{height: GRID.size*3 - 3}}>
+    <div className="card-title" 
+      style={{
+        height: GRID.size*3 - 3,
+        backgroundColor: editingTitle ? CARD_TITLEBAR_EDIT_COLORS[cardColor] : cardColor,
+      }}>
       {/* <div className="title"> */}
         {/* card title */}
         <input ref={titleInputRef} className="title" 
           style={{
             fontSize: CARD_FONT_SIZE.title+'px',
             color: TEXT_COLOR_WHEN_BACKGROUND_IS[cardColor],
-            backgroundColor: editingTitle ? CARD_TITLEBAR_EDIT_COLORS[cardColor] : cardColor,
             cursor: editingTitle ? "text" : "move",
             userSelect: editingTitle ? "default" : "none",
             MozUserSelect: editingTitle ? "default" : "none",
@@ -112,8 +115,8 @@ const CardTitle = props => {
         <button ref={showColorMenuBtnRef} 
           className="show-color-menu-btn btn btn-24"
           onClick={() => setShowColorMenu(!showColorMenu)}>
-          <div className="color-img"
-            style={{ backgroundColor: cardColor ? cardColor : "white" }} />
+          <div className="color-img" 
+            style={{borderColor: TEXT_COLOR_WHEN_BACKGROUND_IS[cardColor] === 'white' ? 'lightgray' : 'darkgray'}} />
           {!showColorMenu ? <span className="tooltip">Color</span> : null}
           {/* color menu */}
           <div ref={colorMenuRef} className="color-menu" 
@@ -126,20 +129,21 @@ const CardTitle = props => {
         <button ref={showOptionMenuBtnRef} 
           className="show-option-menu-btn btn btn-24"
           onClick={() => setShowOptionMenu(!showOptionMenu)}>
-          <img src={OpenMenuDarkImg} alt="Options" draggable="false" />
+          <img src={TEXT_COLOR_WHEN_BACKGROUND_IS[cardColor] === 'white' ? OpenMenuLightImg : OpenMenuDarkImg} 
+            alt="Options" draggable="false" />
           {!showOptionMenu ? <span className="tooltip">Options</span> : null}
           {/* options menu */}
           <div ref={optionMenuRef} className="option-menu"
             style={{display: showOptionMenu ? "block" : "none"}}>
             <Menu options={[
-              ["Duplicate card", () => dispatch(actions.copyCard(cardId))],
-              ["Remove card", () => dispatch(actions.unlinkCardFromView(cardId))],
-              ["divider"],
               ["Rename", beginTitleEdit],
               ["divider"],
+              ["Duplicate card", () => dispatch(actions.copyCard(cardId))],
+              ["Shrink card", () => dispatch(actions.updCardForm(cardId, "blurb"))],
+              ["divider"],
+              ["Remove card", () => dispatch(actions.unlinkCardFromView(cardId)), 'red'],
               // ["Bring to front"], TODO!
               // ["Send to back"], TODO!
-              ["Shrink card", () => dispatch(actions.updCardForm(cardId, "blurb"))],
             ]} />
           </div>
         </button>

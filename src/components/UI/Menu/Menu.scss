@@ -1,14 +1,16 @@
 @import '../../../shared/theme';
 
 .menu-list {
-  padding: 7px 14px;
+  padding: 0;
 
-  button {
+  display: flex;
+  flex-flow: column nowrap;
+
+  .menu-btn {
     box-sizing: border-box;
     width: 100%;
-    
+    padding: 0.4rem 0.6rem;
     border: 0;
-    // margin-bottom: 4px;
     
     background-color: transparent;
 
@@ -17,11 +19,17 @@
     font-size: 14px;
     // line-height: 25px;
     letter-spacing: 0.05em;
+    white-space: nowrap;
+
+    &:hover {
+      background-color: $hover-text-bg-color;
+    }
   }
 
-  hr {
-    // margin-bottom: 4px;
-    
+  .divider {
+    margin: 0.2rem 0.6rem;
+    border-style: solid;
     color: $divider-color;
+    background-color: $divider-color;
   }
 }

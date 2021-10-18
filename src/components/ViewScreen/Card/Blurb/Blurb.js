@@ -64,16 +64,14 @@ const Blurb = props => {
       onDoubleClick={changeTypeToCard}
       onAnimationEnd={onAnimationEnd}
     >
-      <div className="title" 
-        style={{
-          fontSize: CARD_FONT_SIZE.title+'px',
-          color: TEXT_COLOR_WHEN_BACKGROUND_IS[cardColor],
-          backgroundColor: cardColor, 
-        }} 
-        title={cardTitle ? cardTitle : null}
-      >
-        <p>{cardTitle ? cardTitle : ""}</p>
-      </div>
+      <input className="title" 
+          style={{
+            fontSize: CARD_FONT_SIZE.title+'px',
+            color: TEXT_COLOR_WHEN_BACKGROUND_IS[cardColor],
+          }}
+          type="text" required maxLength="50"
+          value={cardTitle ? cardTitle : ""} title={cardTitle ? cardTitle : ""} readOnly
+        />
     </div>
   );
 };

@@ -15,11 +15,13 @@ const Menu = props => {
   if (options) {
     for (let i in options) {
       const option = options[i];
-      let thisOption = <hr key={i} className="solid"/>;
+      let thisOption = <hr key={i} className="divider"/>;
       if (option[1]) {
         thisOption = (
-          <button key={i} className="btn-any" onClick={option[1]}>
-              {option[0]}
+          <button key={i} className="menu-btn btn-any" 
+            style={{color: option[2] ? option[2] : null}}
+            onClick={option[1]}>
+            {option[0]}
           </button>
         );
       }

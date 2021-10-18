@@ -1,3 +1,5 @@
+@import './shared/theme';
+
 // GLOBAL CSS //
 * {
   box-sizing: border-box;
@@ -47,7 +49,7 @@ button {
   place-items: center;
 
   &:hover {
-    background-color: lightskyblue;
+    background-color: $hover-text-bg-color;
   }
 
   &:hover .tooltip {

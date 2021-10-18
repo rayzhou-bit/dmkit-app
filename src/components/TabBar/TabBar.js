@@ -18,7 +18,7 @@ const TabBar = React.memo(props => {
   const dispatch = useDispatch();
 
   // STATES
-  const [openTabList, setOpenTabList] = useState(false);
+  const [showTabList, setShowTabList] = useState(false);
   const [scroll, setScroll] = useState(0);    // this is used for scroll-container with translateX
   const [containerSize, setContainerSize] = useState(0)
   const tabWidth = 200;
@@ -48,7 +48,7 @@ const TabBar = React.memo(props => {
   const scrollRight = () => setScroll(Math.max(scroll-tabWidth, -1*(containerSize - 5*tabWidth)));
   const scrollTo = (viewId) => setScroll(Math.max(Math.min( tabWidth * viewOrder.indexOf(viewId) , 0), -1*(containerSize - 5*tabWidth)));
 
-  useOutsideClick([tabListRef, tabListBtnRef], openTabList, () => setOpenTabList(false));
+  useOutsideClick([tabListRef, tabListBtnRef], showTabList, () => setShowTabList(false));
 
   // DISPLAY ELEMENTS
   let viewTabs = [];
@@ -75,8 +75,10 @@ const TabBar = React.memo(props => {
 
   return (
     <div className="tab-bar">
+
       {/* buttons & tab list*/}
       <div className="btn-container">
+
         {/* add tab */}
         <button className="add-tab btn-32" 
           onClick={() => dispatch(actions.createView())}>
@@ -84,30 +86,32 @@ const TabBar = React.memo(props => {
           <span className="tooltip">Add tab</span>
         </button>
         <div className="gap" />
-        {/* view select button */}
+
+        {/* tab select button */}
         <button ref={tabListBtnRef} className="show-tablist btn-32"
-          onClick={() => setOpenTabList(!openTabList)}>
+          onClick={() => setShowTabList(!showTabList)}>
           <img src={MenuImg} alt="Select Tab" draggable="false" />
-          <span className="tooltip">Tab select</span>
+          {!showTabList ? <span className="tooltip">Tab select</span> : null}
+          {/* tab list */}
+          <div ref={tabListRef} className="tablist-container"
+            style={showTabList ? {transform: `translateY(-100%) translateY(-44px)`} : null}>
+            <Menu options={tabList} />
+          </div>
         </button>
         <div className="gap" />
+
         {/* scroll left */}
         <button className="view-scroll-left btn-32" onClick={scrollLeft}>
           <img src={LeftArrowImg} alt="Scroll left" draggable="false" />
           <span className="tooltip">Scroll left</span>
         </button>
         <div className="gap" />
+
         {/* scroll right */}
         <button className="view-scroll-right btn-32" onClick={scrollRight}>
           <img src={RightArrowImg} alt="Scroll right" draggable="false" />
           <span className="tooltip">Scroll right</span>
         </button>
-        
-        {/* tab list */}
-        <div ref={tabListRef} className="tablist-container"
-          style={openTabList ? {transform: `translateY(-100%) translateY(-44px)`} : null}>
-          <Menu options={tabList} />
-        </div>
       </div>
 
       {/* view tabs */}

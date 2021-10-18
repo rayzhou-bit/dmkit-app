@@ -1,3 +1,5 @@
+@import '../../../../shared/theme';
+
 .campaign {
   width: 100%; height: 31px;
   border-bottom: 1px solid black;
@@ -22,7 +24,7 @@
     overflow: hidden;
   
     &:hover {
-      background-color: lightskyblue;
+      background-color: $hover-text-bg-color;
     }
   }
   
