@@ -45,9 +45,9 @@ $btn-divider-height: 8px;
   height: 32px; width: 32px;
   padding: 4px;
 
-  background-color: lightgray;
+  background-color: $library-button-bg-color;
 
-  border: 1px solid black;
+  border: 1px solid $library-button-bd-color;
   border-right: 0px;
   border-top-left-radius: 5px;
   border-bottom-left-radius: 5px;
