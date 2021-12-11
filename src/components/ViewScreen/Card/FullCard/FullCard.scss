@@ -1,9 +1,12 @@
+@import '../../../../shared/theme';
+
 .full-card {
   position: absolute;
   top: 0; left: 0; right: 0; bottom: 0;
 
   margin: 2px;
-  border: 1px solid black;
+  border: 1px solid $card-bd-color;
+  box-shadow: 2px 2px 8px -3px $card-ds-color;
 
   display: flex;
   flex-flow: column nowrap;

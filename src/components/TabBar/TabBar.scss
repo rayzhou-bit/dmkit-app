@@ -62,15 +62,14 @@
       overflow-y: scroll;
 
       border: 1px solid $tab-menu-bd-color;
-      box-shadow: 2px 2px $ds-color-1;
-      background-color: $tab-menu-bg-color;
+      box-shadow: 2px 2px 8px -3px $tab-menu-ds-color;
 
       background-color: $tab-menu-bg-color;
 
       -webkit-transition: .15s;
       transition: .15s;
 
-      button { padding: 0.1rem 0.3rem; }
+      //button { padding: 0.1rem 0.3rem; }
     }
   }
 

@@ -8,6 +8,7 @@ import { useOutsideClick } from '../../shared/utilityFunctions';
 import { store } from '../../index';
 
 import './HeaderBar.scss';
+import Menu from '../UI/Menu/Menu';
 import CampaignList from './CampaignList/CampaignList';
 import AuthDropdown from './AuthDropdown/AuthDropdown';
 import SignUp from './SignUp/SignUp';
@@ -31,6 +32,7 @@ const HeaderBar = props => {
   const displayName = useSelector(state => state.userData.displayName);
   const email = useSelector(state => state.userData.email);
   const status = useSelector(state => state.sessionManager.status);
+  const campaignList = useSelector(state => state.sessionManager.campaignList);
   const activeCampaignId = useSelector(state => state.sessionManager.activeCampaignId);
   const campaignTitle = useSelector(state => state.campaignData.present.title);
   const campaignData = useSelector(state => state.campaignData.present);
@@ -97,13 +99,33 @@ const HeaderBar = props => {
     setShowProjectsDropdown(!showProjectsDropdown);
   };
 
-  useOutsideClick([campaignDropdownBtnRef, campaignDropdownContentRef], showProjectsDropdown, 
-    () => setShowProjectsDropdown(false)
-  );
+  useOutsideClick([campaignDropdownBtnRef, campaignDropdownContentRef], showProjectsDropdown, () => setShowProjectsDropdown(false));
+  useOutsideClick([authDropdownBtnRef, authDropdownContentRef], showSettingsDropdown, () => setShowSettingsDropdown(false));
 
-  useOutsideClick([authDropdownBtnRef, authDropdownContentRef], showSettingsDropdown, 
-    () => setShowSettingsDropdown(false)
-  );
+  // FUNCTIONS: CAMPAIGN
+  const switchCampaign = (c) => {
+    if (activeCampaignId) {
+      if (activeCampaignId !== c) {
+        dispatch(fireactions.saveCampaignData(activeCampaignId, campaignData, 
+          dispatch(fireactions.switchCampaign(c))));
+      }
+    } else dispatch(fireactions.switchCampaign(c));
+  };
+
+  // DISPLAY ELEMENTS
+  let campaigns = [];
+  if (userId) {
+    for (let campaignId in campaignList) {
+      campaigns = [
+        ...campaigns,
+        [campaignList[campaignId], () => {
+            switchCampaign(campaignId);
+            setShowProjectsDropdown(false);
+          }
+        ]
+      ];
+    }
+  }
 
   return (
     <>
@@ -150,7 +172,8 @@ const HeaderBar = props => {
           </div>
           <div ref={campaignDropdownContentRef} className="dropdown-content" 
             style={{display: showProjectsDropdown ? "block" : "none"}}>
-            <CampaignList setShowProjectsDropdown={setShowProjectsDropdown} />
+            <Menu options={campaigns} />
+            {/* <CampaignList setShowProjectsDropdown={setShowProjectsDropdown} /> */}
           </div>
         </div>
 

@@ -500,14 +500,14 @@ const introCampaign = {
     view0: {
       pos: { x: 0, y: 0 },
       scale: 1,
-      lock: true,
+      lock: false,
       color: "green",
       title: "Welcome!",
     },
     view1: {
       pos: { x: 0, y: 0 },
       scale: 1,
-      lock: true,
+      lock: false,
       color: "blue",
       title: "READ ME",
     },

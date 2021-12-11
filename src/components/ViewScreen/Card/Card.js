@@ -5,7 +5,6 @@ import { Rnd } from 'react-rnd';
 import * as actions from '../../../store/actionIndex';
 import { GRID } from '../../../shared/_grid';
 
-import './Card.scss';
 import FullCard from './FullCard/FullCard';
 import Blurb from './Blurb/Blurb';
 

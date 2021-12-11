@@ -66,8 +66,10 @@ const TabBar = React.memo(props => {
         tabList = [
           ...tabList,
           [viewCollection[viewId].title, () => {
-            dispatch(actions.updActiveViewId(viewId));
-            scrollTo(viewId)}]
+              dispatch(actions.updActiveViewId(viewId));
+              scrollTo(viewId);
+            }
+          ]
         ];
       }
     }

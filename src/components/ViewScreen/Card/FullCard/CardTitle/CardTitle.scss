@@ -4,7 +4,7 @@ $title-height: 45px;
 $btn-size: 31px;
 
 .card-title {
-  border-bottom: 1px solid black;
+  border-bottom: 1px solid $card-bd-color;
   
   display: flex;
   flex-flow: row nowrap;
@@ -57,7 +57,8 @@ $btn-size: 31px;
     z-index: 1;
     
     border: 1px solid $tab-menu-bd-color;
-    box-shadow: 2px 2px $ds-color-1;
+    box-shadow: 2px 2px 8px -3px $card-dropdown-ds-color;
+    
     background-color: $tab-menu-bg-color;
   
     display: grid;
@@ -83,7 +84,8 @@ $btn-size: 31px;
     z-index: 1;
 
     border: 1px solid $tab-menu-bd-color;
-    box-shadow: 2px 2px $ds-color-1;
+    box-shadow: 2px 2px 8px -3px $card-dropdown-ds-color;
+
     background-color: $tab-menu-bg-color;
     
     display: flex;
