@@ -464,7 +464,7 @@ const introCampaign = {
       title: "Tools",
       color: "blue",
       content: {
-        text: "Use the buttons to build your project. You can add cards, copy cards, reset the board position. You can also save your progress, but you must first create an account.",
+        text: "Use the buttons to build your campaign. You can add cards, copy cards, reset the board position. You can also save your progress, but you must first create an account.",
       },
     },
     card2: {

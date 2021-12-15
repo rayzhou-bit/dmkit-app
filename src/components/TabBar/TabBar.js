@@ -87,7 +87,6 @@ const TabBar = React.memo(props => {
           <img src={AddImg} alt="Add Tab" draggable="false" />
           <span className="tooltip">Add tab</span>
         </button>
-        <div className="gap" />
 
         {/* tab select button */}
         <button ref={tabListBtnRef} className="show-tablist btn-32"
@@ -96,18 +95,17 @@ const TabBar = React.memo(props => {
           {!showTabList ? <span className="tooltip">Tab select</span> : null}
           {/* tab list */}
           <div ref={tabListRef} className="tablist-container"
-            style={showTabList ? {transform: `translateY(-100%) translateY(-44px)`} : null}>
+            // style={showTabList ? {transform: `translateY(-100%) translateY(-44px)`} : null}>
+            style={{display: showTabList ? "block" : "none"}}>
             <Menu options={tabList} />
           </div>
         </button>
-        <div className="gap" />
 
         {/* scroll left */}
         <button className="view-scroll-left btn-32" onClick={scrollLeft}>
           <img src={LeftArrowImg} alt="Scroll left" draggable="false" />
           <span className="tooltip">Scroll left</span>
         </button>
-        <div className="gap" />
 
         {/* scroll right */}
         <button className="view-scroll-right btn-32" onClick={scrollRight}>

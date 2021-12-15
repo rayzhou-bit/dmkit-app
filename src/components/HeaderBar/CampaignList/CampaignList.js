@@ -6,7 +6,7 @@ import * as fireactions from '../../../store/firestoreIndex';
 import Campaign from './Campaign/Campaign';
 
 const CampaignList = props => {
-  const {setShowProjectsDropdown} = props;
+  const {setShowCampaignsDropdown} = props;
   const dispatch = useDispatch();
 
   // SELECTORS
@@ -31,13 +31,13 @@ const CampaignList = props => {
         ...campaignSelect,
         <Campaign key={campaignId}
           campaignId={campaignId} campaignTitle={campaignList[campaignId]} 
-          setShowProjectsDropdown={setShowProjectsDropdown}
+          setShowCampaignsDropdown={setShowCampaignsDropdown}
         />,
       ];
     };
     campaignSelect = [
       ...campaignSelect,
-      <button key="newCampaign" className="new-campaign btn-any" onClick={newCampaign}>New Project</button>
+      <button key="newCampaign" className="new-campaign btn-any" onClick={newCampaign}>New Campaign</button>
     ];
   }
 

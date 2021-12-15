@@ -90,12 +90,12 @@ const ViewScreen = props => {
       onWheel={wheelHandler}
       onContextMenu={e => e.preventDefault()}>
       {(userId && !activeCampaignId)
-        // Empty screen for no loaded project
+        // Empty screen for no loaded campaign
         ? <div className="empty-screen">
-            No active project loaded. Please select your project or create a new one.
+            No active campaign loaded. Please select your campaign or create a new one.
           </div>
         : activeViewId
-          // Card-filled screen for loaded project
+          // Card-filled screen for loaded campaign
           ? <div className="scale-view"
               style={{transform: 'scale('+activeViewScale+')'}}>
               <Rnd
@@ -121,7 +121,7 @@ const ViewScreen = props => {
                 </div>
               </Rnd>
             </div>
-          // Empty screen for project with no tabs
+          // Empty screen for campaign with no tabs
           : null
       }
     </main>

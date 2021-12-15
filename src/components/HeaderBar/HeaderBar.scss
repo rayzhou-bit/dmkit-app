@@ -39,32 +39,83 @@ $btn-size: 42px;
     &:read-write { background-color: white; }
   }
 
-  // buttons
-  .btn {
-    margin: 0;
-    padding: 0 10px;
-    background-color: transparent;
-
+  // header buttons
+  .btn-container {
     display: flex;
     flex-flow: row nowrap;
 
-    p { 
-      margin: auto 0;
-      font-size: 18px;
-      text-align: left;
-      letter-spacing: 0.015em;
+    .header-btn {
+      flex-grow: 1;
+
+      margin: 0;
+      padding: 0 10px;
+      background-color: transparent;
+  
+      display: flex;
+      flex-flow: row nowrap;
+  
+      p { 
+        margin: auto 0;
+        font-size: 18px;
+        text-align: left;
+        letter-spacing: 0.015em;
+      }
+  
+      &:hover {
+        background-color: lightblue;
+      }
     }
 
-    &:hover {
-      background-color: lightblue;
+    .save-btn {
+      padding: 0 30px;
+      p { 
+        width: 3.2em; 
+        // border: 1px solid black;
+        // border-right: 0;
+      }
+      img {
+        // border: 1px solid black;
+        // border-left: 0;
+      }
+    }
+
+    // dropdown containers
+    .campaign-container {
+      position: absolute;
+      top: $header-bar-height + 8px; left: 0px;
+      max-height: 50vh;
+      min-width: 10vw; max-width: 20vw;
+      z-index: -2;
+      overflow-y: auto;
+  
+      border: 1px solid $headerbar-dropdown-bd-color;
+      box-shadow: 2px 2px 8px -3px $headerbar-dropdown-ds-color;
+  
+      background-color: $headerbar-dropdown-bg-color;
+  
+      -webkit-transition: .15s;
+      transition: .15s;
+    }
+
+    .settings-container {
+      position: absolute;
+      top: $header-bar-height + 8px;
+      right: 0;
+      max-height: 50vh;
+      min-width: 10vw; max-width: 20vw;
+      z-index: -2;
+      // overflow-y: scroll;
+  
+      border: 1px solid $headerbar-dropdown-bd-color;
+      box-shadow: 2px 2px 8px -3px $headerbar-dropdown-ds-color;
+  
+      background-color: $headerbar-dropdown-bg-color;
+  
+      -webkit-transition: .15s;
+      transition: .15s;
     }
   }
-  .save {
-    padding: 0 30px;
-    p { width: 3.2em; }
-  }
 
-  // dropdowns
   .campaign-dropdown {
     display: inline-block;
     position: relative;
@@ -101,9 +152,7 @@ $btn-size: 42px;
     width: 94%;
     z-index: 110;
 
-    border-left: 1px solid black;
-    border-right: 1px solid black;
-    border-bottom: 1px solid black;
+    border: 1px solid $bd-color-1;
 
     background-color: white;
 
