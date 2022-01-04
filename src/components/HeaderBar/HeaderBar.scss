@@ -82,7 +82,7 @@ $btn-size: 42px;
     // dropdown containers
     .campaign-container {
       position: absolute;
-      top: $header-bar-height + 8px; left: 0px;
+      top: $header-bar-height + 8px; right: 0px;
       max-height: 50vh;
       min-width: 10vw; max-width: 20vw;
       z-index: -2;
