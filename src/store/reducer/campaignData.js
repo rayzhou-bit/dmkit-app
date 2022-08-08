@@ -464,7 +464,7 @@ const introCampaign = {
       title: "Tools",
       color: "blue",
       content: {
-        text: "Use the buttons to build your project. You can add cards, copy cards, reset the board position. You can also save your progress, but you must first create an account.",
+        text: "Use the buttons to build your campaign. You can add cards, copy cards, reset the board position. You can also save your progress, but you must first create an account.",
       },
     },
     card2: {
@@ -500,14 +500,14 @@ const introCampaign = {
     view0: {
       pos: { x: 0, y: 0 },
       scale: 1,
-      lock: true,
+      lock: false,
       color: "green",
       title: "Welcome!",
     },
     view1: {
       pos: { x: 0, y: 0 },
       scale: 1,
-      lock: true,
+      lock: false,
       color: "blue",
       title: "READ ME",
     },

@@ -10,7 +10,7 @@ import CopyImg from '../../../../assets/icons/copy-24.png';
 import DeleteImg from '../../../../assets/icons/delete-24.png';
 
 const Campaign = props => {
-  const {campaignId, campaignTitle, setShowProjectsDropdown} = props;
+  const {campaignId, campaignTitle, setShowCampaignsDropdown} = props;
   const dispatch = useDispatch();
 
   // STATES
@@ -30,7 +30,7 @@ const Campaign = props => {
         dispatch(fireactions.switchCampaign(campaignId))
       ));
     } else dispatch(fireactions.switchCampaign(campaignId));
-    setShowProjectsDropdown(false);
+    setShowCampaignsDropdown(false);
   };
 
   const copyCampaign = () => {
