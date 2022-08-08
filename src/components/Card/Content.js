@@ -1,10 +1,10 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import * as actions from '../../../../../store/actionIndex';
+import * as actions from '../../store/actionIndex';
 
-import './CardContent.scss';
-import ContentTextarea from '../../../../UI/Inputs/ContentTextarea';
+import './index.scss';
+import ContentTextarea from '../UI/Inputs/ContentTextarea';
 
 const CardContent = props => {
   const {cardId, setEditingCard } = props;

@@ -1,12 +1,14 @@
 import React, { useState, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import * as actions from '../../../../store/actionIndex';
-import { useOutsideClick } from '../../../../shared/utilityFunctions';
-import { CARD_FONT_SIZE } from '../../../../shared/_fontSize';
-import { TEXT_COLOR_WHEN_BACKGROUND_IS } from '../../../../shared/colors';
+import * as actions from '../../../store/actionIndex';
+import { useOutsideClick } from '../../../shared/utilityFunctions';
+import { CARD_FONT_SIZE } from '../../../shared/_fontSize';
+import { TEXT_COLOR_WHEN_BACKGROUND_IS } from '../../../shared/colors';
 
 import './Blurb.scss';
+
+// TODO: currently removed. may reimplement later
 
 const Blurb = props => {
   const { 
