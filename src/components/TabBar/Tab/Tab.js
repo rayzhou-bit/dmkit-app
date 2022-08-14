@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Rnd } from 'react-rnd';
-import { useOutsideClick } from '../../../shared/utilityFunctions';
+import { useOutsideClick } from '../../../shared/utils';
 
 import './Tab.scss';
 import * as actions from '../../../store/actionIndex';

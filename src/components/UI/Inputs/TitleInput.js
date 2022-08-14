@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 
-import { CARD_FONT_SIZE } from '../../../shared/_fontSize';
-import { TEXT_COLOR_WHEN_BACKGROUND_IS, CARD_TITLEBAR_EDIT_COLORS } from '../../../shared/colors';
+import { BG_COLORS, CARD_FONT_SIZE } from '../../../shared/_styles';
+import { TEXT_COLOR_WHEN_BACKGROUND_IS } from '../../../shared/colors';
 
 import EditImg24 from '../../../assets/icons/edit-24.png';
 import EditImg32 from '../../../assets/icons/edit-32.png';
@@ -79,7 +79,7 @@ const TitleInput = props => {
     inputStyle = {
       ...inputStyle,
       color: TEXT_COLOR_WHEN_BACKGROUND_IS[color],
-      backgroundColor: editing ? CARD_TITLEBAR_EDIT_COLORS[color] : color,
+      backgroundColor: editing ? BG_COLORS.edit[color] : color,
     };
     btnStyle = {
       ...btnStyle,

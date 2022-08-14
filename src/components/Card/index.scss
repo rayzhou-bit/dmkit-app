@@ -1,62 +1,65 @@
 @import '../../shared/layout';
 @import '../../shared/theme';
 
+$corner-radius: 12px;
+
 $title-height: 45px;
 $btn-size: 31px;
+
+// .card {
+//   position: absolute;
+//   top: 0; left: 0; right: 0; bottom: 0;
+
+//   background-color: lightgray;
+
+//   display: flex;
+//   flex-flow: column nowrap;
+
+//   .color-select {
+//     position:absolute;
+//     right: -1px; top: 32px;
+//     border-top: 1px solid black;
+//     border-right: 1px solid black;
+//     z-index: 10;
+
+//     display: grid;
+//     grid-template-columns: repeat(3, 1fr);
+//     grid-template-rows: repeat(3, 1fr);
+
+//     button {
+//       grid-column: span 1;
+//       grid-row: span 1;
+//       width: 31px; height: 31px;
+//       border: 0;
+//       border-left: 1px solid black;
+//       border-bottom: 1px solid black;
+//       outline: none;
+//     }
+//   }
+// }
 
 .card {
   position: absolute;
   top: 0; left: 0; right: 0; bottom: 0;
 
-  background-color: lightgray;
-
-  display: flex;
-  flex-flow: column nowrap;
-
-  .color-select {
-    position:absolute;
-    right: -1px; top: 32px;
-    border-top: 1px solid black;
-    border-right: 1px solid black;
-    z-index: 10;
-
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: repeat(3, 1fr);
-
-    button {
-      grid-column: span 1;
-      grid-row: span 1;
-      width: 31px; height: 31px;
-      border: 0;
-      border-left: 1px solid black;
-      border-bottom: 1px solid black;
-      outline: none;
-    }
-  }
-}
-
-.full-card {
-  position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
-
   margin: 2px;
   border: 1px solid black;
+  border-radius: $corner-radius;
 
   display: flex;
   flex-flow: column nowrap;
 }
 
-.active-full-card {
+.active-card {
   margin: 0;
   border: 3px solid black;
 }
 
-.blink-full-card {
-  animation: full-card-blink .25s step-end 4 alternate;
+.blink-card {
+  animation: card-blink .25s step-end 4 alternate;
 }
 
-@keyframes full-card-blink {
+@keyframes card-blink {
   50% {
     border: 3px solid red;
     margin: 0px;
@@ -65,6 +68,8 @@ $btn-size: 31px;
 
 .card-title {
   border-bottom: 1px solid $card-bd-color;
+  border-top-left-radius: $corner-radius;
+  border-top-right-radius: $corner-radius;
   
   display: flex;
   flex-flow: row nowrap;
@@ -154,7 +159,8 @@ $btn-size: 31px;
 }
 
 .card-content {
-  border-bottom-left-radius: 7px; border-bottom-right-radius: 7px;
+  border-bottom-left-radius: $corner-radius;
+  border-bottom-right-radius: $corner-radius;
 
   flex: auto;
 
@@ -163,6 +169,8 @@ $btn-size: 31px;
     height: 100%; width: 100%;
     margin: 0;  padding: 5px;
     border: 0;
+    border-bottom-left-radius: $corner-radius;
+    border-bottom-right-radius: $corner-radius;
 
     font-size: 18px;
     text-overflow: ellipsis;
@@ -177,5 +185,20 @@ $btn-size: 31px;
     &:read-write {
       background-color: white;
     }
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-bottom-right-radius: $corner-radius;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #888;
+    border-bottom-right-radius: $corner-radius;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #555;
   }
 }

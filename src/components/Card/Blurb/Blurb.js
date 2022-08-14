@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import * as actions from '../../../store/actionIndex';
-import { useOutsideClick } from '../../../shared/utilityFunctions';
+import { useOutsideClick } from '../../../shared/utils';
 import { CARD_FONT_SIZE } from '../../../shared/_fontSize';
 import { TEXT_COLOR_WHEN_BACKGROUND_IS } from '../../../shared/colors';
 

@@ -2,22 +2,19 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import * as actions from '../../store/actionIndex';
-import { useOutsideClick } from '../../shared/utilityFunctions';
-import { GRID } from '../../shared/_grid';
-import { CARD_FONT_SIZE } from '../../shared/_fontSize';
-import { CARD_TITLEBAR_COLORS, TEXT_COLOR_WHEN_BACKGROUND_IS, CARD_TITLEBAR_EDIT_COLORS } from '../../shared/colors';
+import { useOutsideClick } from '../../shared/utils';
+import { GRID } from '../../shared/_dimensions';
+import { CARD_FONT_SIZE, BG_COLORS, TEXT_COLOR_WHEN_BACKGROUND_IS } from '../../shared/_styles';
 
 import './index.scss';
 import Menu from '../UI/Menu/Menu';
-import TitleInput from '../UI/Inputs/TitleInput';
 
 import OpenMenuDarkImg from '../../assets/icons/drop-down-dark.png';
 import OpenMenuLightImg from '../../assets/icons/drop-down-light.png';
-import ShrinkImg from '../../assets/icons/shrink-24.png';
-import CloseImg from '../../assets/icons/remove-24.png';
 
-const CardTitle = props => {
-  const { cardId, setEditingCard } = props;
+const CardTitle = ({
+  cardId
+}) => {
   const dispatch = useDispatch();
 
   // STATES
@@ -73,7 +70,7 @@ const CardTitle = props => {
 
   // DISPLAY ELEMENTS
   let colorList = [];
-  for (let color in CARD_TITLEBAR_COLORS) {
+  for (let color in BG_COLORS.display) {
     let colorStyle = { backgroundColor: color };
     colorList = [...colorList,
       <button key={color} style={colorStyle} onClick={() => dispatch(actions.updCardColor(cardId, color))} />
@@ -84,7 +81,7 @@ const CardTitle = props => {
     <div className="card-title" 
       style={{
         height: GRID.size*3 - 3,
-        backgroundColor: editingTitle ? CARD_TITLEBAR_EDIT_COLORS[cardColor] : cardColor,
+        backgroundColor: editingTitle ? BG_COLORS.edit[cardColor] : cardColor,
       }}>
       {/* <div className="title"> */}
         {/* card title */}

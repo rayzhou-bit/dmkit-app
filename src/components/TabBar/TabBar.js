@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import './TabBar.scss';
 import * as actions from '../../store/actionIndex';
-import { useOutsideClick } from '../../shared/utilityFunctions';
+import { useOutsideClick } from '../../shared/utils';
 import Tab from './Tab/Tab';
 import Menu from '../UI/Menu/Menu';
 

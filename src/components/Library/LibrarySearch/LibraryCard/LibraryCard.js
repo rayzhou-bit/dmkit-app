@@ -1,11 +1,10 @@
 import React, { useState, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useOutsideClick } from '../../../../shared/utilityFunctions';
+import { useOutsideClick } from '../../../../shared/utils';
 
 import './LibraryCard.scss';
 import * as actions from '../../../../store/actionIndex';
-import { CARD_FONT_SIZE } from '../../../../shared/_fontSize';
-import { CARD_TITLEBAR_COLORS } from '../../../../shared/colors';
+import { BG_COLORS, CARD_FONT_SIZE } from '../../../../shared/_styles';
 import TitleInput from '../../../UI/Inputs/TitleInput';
 import ContentTextarea from '../../../UI/Inputs/ContentTextarea';
 
@@ -100,7 +99,7 @@ const LibraryCard = props => {
 
   // DISPLAY ELEMENTS
   let colorList = [];
-  for (let color in CARD_TITLEBAR_COLORS) {
+  for (let color in BG_COLORS.display) {
     let colorStyle = { backgroundColor: color };
     colorList = [...colorList,
       <button key={color} style={colorStyle} onClick={() => dispatch(actions.updCardColor(cardId, color))} />

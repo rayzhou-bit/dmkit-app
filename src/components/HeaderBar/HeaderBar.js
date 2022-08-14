@@ -4,7 +4,7 @@ import { ActionCreators } from 'redux-undo';
 
 import * as actions from '../../store/actionIndex';
 import * as fireactions from '../../store/firestoreIndex';
-import { useOutsideClick } from '../../shared/utilityFunctions';
+import { useOutsideClick } from '../../shared/utils';
 import { store } from '../../index';
 
 import './HeaderBar.scss';

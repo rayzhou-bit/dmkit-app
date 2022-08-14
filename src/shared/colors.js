@@ -1,26 +1,4 @@
-export const CARD_TITLEBAR_COLORS = {
-  red: 'red',
-  orange: 'orange',
-  yellow: 'yellow',
-  green: 'green',
-  blue: 'blue',
-  purple: 'purple',
-  gray: 'gray',
-  black: 'black',
-  white: 'white',
-};
-
-export const CARD_TITLEBAR_EDIT_COLORS = {
-  red: 'salmon',
-  orange: 'navajowhite',
-  yellow: 'lightyellow',
-  green: 'lightgreen',
-  blue: 'lightblue',
-  purple: 'violet',
-  gray: 'lightgray',
-  black: 'darkgray',
-  white: 'lightgray',
-};
+// TODO RETIRE THIS. USE _styles.js
 
 export const VIEW_TITLEBAR_COLORS = {
   red: 'red',

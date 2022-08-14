@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useOutsideClick } from '../../../../shared/utilityFunctions';
+import { useOutsideClick } from '../../../../shared/utils';
 
 import './Campaign.scss';
 import * as actions from '../../../../store/actionIndex';

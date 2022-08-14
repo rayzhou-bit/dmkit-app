@@ -1,6 +1,6 @@
 import * as actions from '../actionIndex';
 import { auth, googleProvider, facebookProvider } from './firebase';
-import { getParameterByName } from '../../shared/utilityFunctions';
+import { getParameterByName } from '../../shared/utils';
 
 const getUser = () => auth.currentUser ? auth.currentUser : null;
 

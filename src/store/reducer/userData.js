@@ -1,5 +1,5 @@
 import * as actionTypes from '../actionTypes';
-import { updateObject } from '../../shared/utilityFunctions';
+import { updateObject } from '../../shared/utils';
 
 const initialState = {
   userId: null,
