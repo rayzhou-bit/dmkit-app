@@ -1,4 +1,8 @@
-import {useEffect} from 'react';
+import { 
+  useDispatch,
+  useEffect,
+  useState,
+} from 'react';
 
 export const updateObject = (oldObject, updatedProperties) => {
   return {
@@ -7,24 +11,25 @@ export const updateObject = (oldObject, updatedProperties) => {
   };
 };
 
-export const useOutsideClick = (refArray, cond, handler) => {
+export const useOutsideClick = (refArray, conditional, handler) => {
+  // Note: I've tried to update this syntax but this just works.
   // refArray contains an array of references that the user can click without triggering func
   useEffect(() => {
     const handleClickOutside = (event) => {
-      let runHandler = true;
-      for (let i = 0; i < refArray.length && runHandler; i++) {
-        const ref = refArray[i];
-        if (ref.current && ref.current.contains(event.target)){
-          runHandler = false;
+      let run = true;
+      for (let i = 0; i < refArray.length && run; i++) {
+        let ref = refArray[i];
+        if (ref.current && ref.current.contains(event.target)) {
+          run = false;
         }
       }
       
-      if (runHandler && refArray.length > 0) {
+      if (run && refArray.length > 0) {
         handler();
       }
     };
 
-    if (cond) {
+    if (conditional) {
       document.addEventListener("mousedown", handleClickOutside);
     }
     return () => {
@@ -34,7 +39,7 @@ export const useOutsideClick = (refArray, cond, handler) => {
     // adding refArray and handler as dependencies below causes an issue with re-renders
     // these re-renders keep other useOutsideClicks from completing their run
     // TODO figure out a way around this for exhaustive-deps
-  }, [cond]);
+  }, [conditional]);
 };
 
 export const getParameterByName = (name) => {

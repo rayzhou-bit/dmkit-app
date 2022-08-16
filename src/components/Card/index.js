@@ -1,10 +1,12 @@
 import React from 'react';
 import { Rnd } from 'react-rnd';
 
+import * as hooks from './hooks';
+
 import './index.scss';
 import Title from './Title';
 import Content from './Content';
-import * as hooks from './hooks';
+import ColorDropdown from './ColorDropdown';
 
 const Card = ({
   cardAnimation,
@@ -14,8 +16,12 @@ const Card = ({
 }) => {
   const {
     cardConfig,
+    colorDropdownRef,
+    contentConfig,
     rndConfig,
-    setEditingCard,
+    showColorDropdown,
+    showMenuDropdown,
+    titleConfig,
   } = hooks.useCardHooks({
     cardAnimation,
     cardId,
@@ -26,9 +32,16 @@ const Card = ({
   return (
     <Rnd {...rndConfig}>
       <div {...cardConfig}>
-        <Title cardId={cardId} />
-        <Content cardId={cardId} setEditingCard={setEditingCard} />
-        {/* DropdownColor? */}
+        <Title
+          cardId={cardId}
+          showColorDropdown={showColorDropdown}
+          showMenuDropdown={showMenuDropdown}
+          titleConfig={titleConfig}
+        />
+        <Content textareaConfig={contentConfig} />
+        {showColorDropdown
+          ? <ColorDropdown cardId={cardId} colorDropdownRef={colorDropdownRef} />
+          : null}
         {/* DropdownMenu? */}
       </div>
     </Rnd>

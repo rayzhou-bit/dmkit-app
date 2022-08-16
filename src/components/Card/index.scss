@@ -6,38 +6,6 @@ $corner-radius: 12px;
 $title-height: 45px;
 $btn-size: 31px;
 
-// .card {
-//   position: absolute;
-//   top: 0; left: 0; right: 0; bottom: 0;
-
-//   background-color: lightgray;
-
-//   display: flex;
-//   flex-flow: column nowrap;
-
-//   .color-select {
-//     position:absolute;
-//     right: -1px; top: 32px;
-//     border-top: 1px solid black;
-//     border-right: 1px solid black;
-//     z-index: 10;
-
-//     display: grid;
-//     grid-template-columns: repeat(3, 1fr);
-//     grid-template-rows: repeat(3, 1fr);
-
-//     button {
-//       grid-column: span 1;
-//       grid-row: span 1;
-//       width: 31px; height: 31px;
-//       border: 0;
-//       border-left: 1px solid black;
-//       border-bottom: 1px solid black;
-//       outline: none;
-//     }
-//   }
-// }
-
 .card {
   position: absolute;
   top: 0; left: 0; right: 0; bottom: 0;
@@ -116,45 +84,10 @@ $btn-size: 31px;
     .tooltip { top: 120%; right: -28%; }
     .tooltip::after { bottom: 100%; right: 40%; border-bottom-color: black; }
   }
-  .color-menu {
-    position: absolute;
-    top: $title-height; right: -33px; 
-    z-index: 1;
-    
-    border: 1px solid $tab-menu-bd-color;
-    box-shadow: 2px 2px 8px -3px $card-dropdown-ds-color;
-    
-    background-color: $tab-menu-bg-color;
-  
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: repeat(3, 1fr);
-  
-    button {
-      grid-column: span 1;
-      grid-row: span 1;
-      width: 31px; height: 31px;
-      border: 0 solid;
-      outline: none;
-    }
-  }
 
   .show-option-menu-btn {
     .tooltip { top: 120%; right: -57%; }
     .tooltip::after { bottom: 100%; right: 40%; border-bottom-color: black; }
-  }
-  .option-menu {
-    position: absolute;
-    top: $title-height; right: 4px;
-    z-index: 1;
-
-    border: 1px solid $tab-menu-bd-color;
-    box-shadow: 2px 2px 8px -3px $card-dropdown-ds-color;
-
-    background-color: $tab-menu-bg-color;
-    
-    display: flex;
-    flex-flow: column nowrap;
   }
 }
 
@@ -202,3 +135,72 @@ $btn-size: 31px;
     background: #555;
   }
 }
+
+.color-menu {
+  position: absolute;
+  top: $title-height; right: -33px; 
+  z-index: 1;
+  
+  border: 1px solid $tab-menu-bd-color;
+  box-shadow: 2px 2px 8px -3px $card-dropdown-ds-color;
+  
+  background-color: $tab-menu-bg-color;
+
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+
+  button {
+    grid-column: span 1;
+    grid-row: span 1;
+    width: 31px; height: 31px;
+    border: 0 solid;
+    outline: none;
+  }
+}
+
+.option-menu {
+  position: absolute;
+  top: $title-height; right: 4px;
+  z-index: 1;
+
+  border: 1px solid $tab-menu-bd-color;
+  box-shadow: 2px 2px 8px -3px $card-dropdown-ds-color;
+
+  background-color: $tab-menu-bg-color;
+  
+  display: flex;
+  flex-flow: column nowrap;
+}
+
+// .card {
+//   position: absolute;
+//   top: 0; left: 0; right: 0; bottom: 0;
+
+//   background-color: lightgray;
+
+//   display: flex;
+//   flex-flow: column nowrap;
+
+//   .color-select {
+//     position:absolute;
+//     right: -1px; top: 32px;
+//     border-top: 1px solid black;
+//     border-right: 1px solid black;
+//     z-index: 10;
+
+//     display: grid;
+//     grid-template-columns: repeat(3, 1fr);
+//     grid-template-rows: repeat(3, 1fr);
+
+//     button {
+//       grid-column: span 1;
+//       grid-row: span 1;
+//       width: 31px; height: 31px;
+//       border: 0;
+//       border-left: 1px solid black;
+//       border-bottom: 1px solid black;
+//       outline: none;
+//     }
+//   }
+// }

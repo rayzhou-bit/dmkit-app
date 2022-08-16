@@ -3,9 +3,6 @@ import React, { useState, useRef, useEffect } from 'react';
 import { BG_COLORS, CARD_FONT_SIZE } from '../../../shared/_styles';
 import { TEXT_COLOR_WHEN_BACKGROUND_IS } from '../../../shared/colors';
 
-import EditImg24 from '../../../assets/icons/edit-24.png';
-import EditImg32 from '../../../assets/icons/edit-32.png';
-
 // Creates a title text with an edit button
 // css is fully controlled by props
 

@@ -34,6 +34,20 @@ export const BG_COLORS = {
   },
 };
 
+export const TEXT_COLOR = {
+  forBgColor: {
+    red: 'white',
+    orange: 'black',
+    yellow: 'black',
+    green: 'white',
+    blue: 'white',
+    purple: 'white',
+    gray: 'black',
+    black: 'white',
+    white: 'black',
+  },
+};
+
 export const VIEW_TITLEBAR_COLORS = {
   red: 'red',
   orange: 'orange',
