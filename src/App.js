@@ -21,11 +21,11 @@ const App = props => {
   return (
     <div className="layout">
       <Loader />
-      <HeaderBar />
+      {/* <HeaderBar />
       <ToolMenu toolMenuRef={toolMenuRef} />
       <Library />
-      <TabBar />
-      <ViewScreen toolMenuRef={toolMenuRef} />
+      <TabBar /> */}
+      {/* <ViewScreen toolMenuRef={toolMenuRef} /> */}
     </div>
   );
 };

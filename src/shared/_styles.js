@@ -1,3 +1,5 @@
+// TODO retire this. use config.js
+
 export const CARD_FONT_SIZE = {
   // in px
   title: 20,

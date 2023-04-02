@@ -1,6 +1,6 @@
 import { auth, store } from './firebase';
 
-import * as actions from '../actionIndex';
+import * as actions from '../../data';
 import { updateObject } from '../../shared/utils';
 import { GRID } from '../../shared/_dimensions';
 
@@ -14,7 +14,7 @@ const firstTimeSetup = (userId) => {
         .then(resp => {
           console.log("[firstTimeSetup] success performing first time setup");
           console.log("[Status] idle. Triggered by first time setup completion.");
-          dispatch(actions.setStatus('idle'));
+          dispatch(actions.account.setStatus('idle'));
         })
         .catch(err => console.log("[firstTimeSetup] error performing first time setup:", err));
     }
@@ -29,11 +29,11 @@ export const fetchActiveCampaignId = () => {
       store.collection("users").doc(userId).get()
         .then(resp => {
           if (resp.exists) {
-            dispatch(actions.updActiveCampaignId(resp.data().activeCampaignId));
+            dispatch(actions.account.updActiveCampaign(resp.data().activeCampaignId));
             if (!resp.data().activeCampaignId) {
-              dispatch(actions.unloadCampaignData());
+              dispatch(actions.app.unloadCampaign());
               console.log("[Status] idle. Triggered by lack of server side activeCampaignId.");
-              dispatch(actions.setStatus('idle'));
+              dispatch(actions.account.setStatus('idle'));
             };
             console.log("[fetchActiveCampaignId] success loading activeCampaignId", resp.data().activeCampaignId);
           } else dispatch(firstTimeSetup(userId));
@@ -54,7 +54,7 @@ export const fetchCampaignList = () => {
           campaignSnapshot.forEach(campaign => {
             campaignList = updateObject(campaignList, {[campaign.id]: campaign.data().title});
           });
-          dispatch(actions.loadCampaignList(campaignList));
+          dispatch(actions.account.loadCampaignList(campaignList));
           console.log("[loadCampaignList] success loading campaignList");
         })
         .catch(err => console.log("[loadCampaignList] error loading campaignList:", err));
@@ -89,8 +89,9 @@ export const fetchCampaignData = (campaignId, followUpHandler) => {
                       viewCollection = updateObject(viewCollection, {[view.id]: view.data()})
                     });
                     campaignData = updateObject(campaignData, {views: viewCollection});
+                    console.log('test', campaignData)
                     // LOAD DATA
-                    dispatch(actions.loadCampaignData(campaignData));
+                    // dispatch(actions.loadCampaignData(campaignData));
                     if (followUpHandler) followUpHandler();
                     console.log("[fetchCampaignData] success loading campaign");
                   })
@@ -109,7 +110,7 @@ export const saveCampaignData = (campaignId, campaignData, followUpHandler) => {
   return dispatch => {
     if (user && campaignId) {
       console.log("[Status] saving. Triggered by save.");
-      dispatch(actions.setStatus('saving'));
+      dispatch(actions.account.setStatus('saving'));
       const userId = user.uid;
       const batch = store.batch();
       // CAMPAIGN data
@@ -137,7 +138,7 @@ export const saveCampaignData = (campaignId, campaignData, followUpHandler) => {
       // SAVE DATA (BATCH COMMIT)
       batch.commit()
         .then(resp => {
-          dispatch(actions.setCampaignEdit(false));
+          dispatch(actions.account.setCampaignEdit(false));
           if (followUpHandler) followUpHandler();
           console.log("[saveActiveCampaignData] success saving campaign");
         })
@@ -153,7 +154,7 @@ export const saveIntroCampaignData = (campaignData, followUpHandler) => {
   return dispatch => {
     if (user) {
       console.log("[Status] saving. Triggered by intro campaign save.");
-      dispatch(actions.setStatus('saving'));
+      dispatch(actions.account.setStatus('saving'));
       const userId = user.uid;
       // CAMPAIGN data
       let campaignPackage = {...campaignData};
@@ -182,7 +183,7 @@ export const saveIntroCampaignData = (campaignData, followUpHandler) => {
               .then(resp => {
                 store.collection("users").doc(userId).set({activeCampaignId: campaignId})
                   .then(resp => {
-                    dispatch(actions.setCampaignEdit(false));
+                    dispatch(actions.account.setCampaignEdit(false));
                     if (followUpHandler) followUpHandler();
                     console.log("[saveIntroCampaignData] success saving intro campaign");
                   })
@@ -210,7 +211,7 @@ export const switchCampaign = (campaignId, followUpHandler) => {
       const userId = user.uid;
       store.collection("users").doc(userId).set({activeCampaignId: campaignId})
         .then(resp => {
-          dispatch(actions.updActiveCampaignId(campaignId));
+          dispatch(actions.account.updActiveCampaign(campaignId));
           if (followUpHandler) followUpHandler();
           console.log("[switchCampaign] success loading activeCampaignId", campaignId);
         })
@@ -255,7 +256,7 @@ export const createCampaign = (followUpHandler) => {
                   color: "gray",
                 })
                   .then(resp => {
-                    // dispatch(actions.createCampaign(campaignId, "untitled campaign"));
+                    dispatch(actions.account.createCampaign(campaignId, "untitled campaign"));
                     if (followUpHandler) followUpHandler();
                     console.log("[createCampaign] added campaign:", campaignId);
                   })
@@ -344,7 +345,7 @@ export const destroyCampaign = (campaignId, followUpHandler) => {
       const userId = user.uid;
       store.collection("users").doc(userId).collection("campaigns").doc(campaignId).delete()
         .then(resp => {
-          dispatch(actions.removeCampaignFromList(campaignId));
+          dispatch(actions.account.destroyCampaign(campaignId));
           if (followUpHandler) followUpHandler();
           console.log("[destroyCampaign] success deleting campaign", campaignId);
         })

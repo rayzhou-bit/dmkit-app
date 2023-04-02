@@ -1,3 +1,5 @@
+// TODO retire this. use config.js
+
 export const GRID = {
   // in px
   size: 15,       // change grid image in ViewScreen.scss

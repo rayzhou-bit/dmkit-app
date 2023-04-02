@@ -1,4 +1,4 @@
-// TODO RETIRE THIS. USE _styles.js
+// TODO RETIRE THIS. USE config.js
 
 export const VIEW_TITLEBAR_COLORS = {
   red: 'red',
