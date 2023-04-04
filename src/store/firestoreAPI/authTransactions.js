@@ -1,8 +1,62 @@
+import { 
+  getAuth,
+  onAuthStateChanged,
+  GoogleAuthProvider,
+  FacebookAuthProvider,
+} from '@firebase/auth';
+import { ActionCreators } from 'redux-undo';
+
+import { auth } from './firebase';
 import * as actions from '../actionIndex';
-import { auth, googleProvider, facebookProvider } from './firebase';
+import * as fireactions from '../firestoreIndex';
 import { getParameterByName } from '../../shared/utilityFunctions';
 
+// const auth = getAuth();
+const googleProvider = new GoogleAuthProvider();
+const facebookProvider = new FacebookAuthProvider();
+
 const getUser = () => auth.currentUser ? auth.currentUser : null;
+
+export const manageUser = ({
+  dispatch,
+  introCampaignEdit,
+  campaignData,
+}) => {
+  auth.onAuthStateChanged(user => {
+    console.log("[Status] loading. Triggered by auth listener.");
+    dispatch(actions.setStatus('loading'));
+    if (user && user.uid) {
+      // Signed in
+      console.log("[authListener] signed in user:", user.uid);
+      dispatch(actions.loadUser(user));
+      // prompt user to save intro campaign
+      if (introCampaignEdit) {
+        let save = window.confirm("Would you like to save your work as a new campaign?");
+        if (!save) {
+          dispatch(fireactions.fetchCampaignList());
+          dispatch(fireactions.fetchActiveCampaignId());
+        } else {
+          dispatch(fireactions.saveIntroCampaignData(campaignData,
+            () => {
+              dispatch(fireactions.fetchCampaignList());
+              dispatch(fireactions.fetchActiveCampaignId());
+            }
+          ));
+        }
+      } else {
+        dispatch(fireactions.fetchCampaignList());
+        dispatch(fireactions.fetchActiveCampaignId());
+      }
+    } else {
+      // Signed out
+      console.log("[authListener] signed out");
+      dispatch(actions.unloadUser());
+      dispatch(actions.resetSessionManager());
+      dispatch(actions.loadIntroCampaign());
+      dispatch(ActionCreators.clearHistory());
+    }
+  });
+};
 
 export const updateDisplayName = (displayName) => {
   const user = getUser();

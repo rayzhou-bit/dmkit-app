@@ -1,5 +1,15 @@
-import { auth, store } from './firebase';
+import {
+  doc,
+  addDoc,
+  setDoc,
+  getDoc,
+  updateDoc,
+  deleteDoc,
+  collection,
+  getDocs,
+} from '@firebase/firestore';
 
+import { auth, db } from './firebase';
 import * as actions from '../actionIndex';
 import { updateObject } from '../../shared/utilityFunctions';
 import { GRID } from '../../shared/constants/grid';
@@ -10,7 +20,7 @@ const getUser = () => auth.currentUser ? auth.currentUser : null;
 const firstTimeSetup = (userId) => {
   return dispatch => {
     if (userId) {
-      store.collection("users").doc(userId).set({activeCampaignId: null})
+      setDoc(doc(db, "users", userId), { activeCampaignId: null })
         .then(resp => {
           console.log("[firstTimeSetup] success performing first time setup");
           console.log("[Status] idle. Triggered by first time setup completion.");
@@ -26,7 +36,7 @@ export const fetchActiveCampaignId = () => {
   return dispatch => {
     if (user) {
       const userId = user.uid;
-      store.collection("users").doc(userId).get()
+      getDoc(doc(db, "users", userId))
         .then(resp => {
           if (resp.exists) {
             dispatch(actions.updActiveCampaignId(resp.data().activeCampaignId));
@@ -48,7 +58,7 @@ export const fetchCampaignList = () => {
   return dispatch => {
     if (user) {
       const userId = user.uid;
-      store.collection("users").doc(userId).collection("campaigns").get()
+      getDocs(collection(db, "users", userId, "campaigns"))
         .then(campaignSnapshot => {
           let campaignList = {};
           campaignSnapshot.forEach(campaign => {
@@ -69,12 +79,12 @@ export const fetchCampaignData = (campaignId, followUpHandler) => {
       const userId = user.uid;
       let campaignData = {};
       // CAMPAIGN data
-      store.collection("users").doc(userId).collection("campaigns").doc(campaignId).get()
+      getDoc(doc(db, "users", userId, "campaigns", campaignId))
         .then(campaign => {
           if (campaign.exists) {
             campaignData = updateObject(campaignData, campaign.data());
             // CARD data
-            store.collection("users").doc(userId).collection("campaigns").doc(campaignId).collection("cards").get()
+            getDocs(collection(db, "users", userId, "campaigns", campaignId, "cards"))
               .then(cardSnapshot => {
                 let cardCollection = {};
                 cardSnapshot.forEach(card => {
@@ -82,7 +92,7 @@ export const fetchCampaignData = (campaignId, followUpHandler) => {
                 });
                 campaignData = updateObject(campaignData, {cards: cardCollection});
                 // VIEW data
-                store.collection("users").doc(userId).collection("campaigns").doc(campaignId).collection("views").get()
+                getDocs(collection(db, "users", userId, "campaigns", campaignId, "views"))
                   .then(viewSnapshot => {
                     let viewCollection = {};
                     viewSnapshot.forEach(view => {
@@ -111,26 +121,26 @@ export const saveCampaignData = (campaignId, campaignData, followUpHandler) => {
       console.log("[Status] saving. Triggered by save.");
       dispatch(actions.setStatus('saving'));
       const userId = user.uid;
-      const batch = store.batch();
+      const batch = db.writeBatch();
       // CAMPAIGN data
       let campaignPackage = {...campaignData};
       delete campaignPackage.cards;
       delete campaignPackage.views;
       batch.set(
-        store.collection("users").doc(userId).collection("campaigns").doc(campaignId),
+        doc(db, "users", userId, "campaigns", campaignId),
         campaignPackage
       );
       // CARD data
       for (let cardId in campaignData.cards) {
         batch.set(
-          store.collection("users").doc(userId).collection("campaigns").doc(campaignId).collection("cards").doc(cardId),
+          doc(db, "users", userId, "campaigns", campaignId, "cards", cardId),
           campaignData.cards[cardId]
         );
       }
       // VIEW data
       for (let viewId in campaignData.views) {
         batch.set(
-          store.collection("users").doc(userId).collection("campaigns").doc(campaignId).collection("views").doc(viewId),
+          doc(db, "users", userId, "campaigns", campaignId, "views", viewId),
           campaignData.views[viewId]
         );
       }
@@ -159,28 +169,30 @@ export const saveIntroCampaignData = (campaignData, followUpHandler) => {
       let campaignPackage = {...campaignData};
       delete campaignPackage.cards;
       delete campaignPackage.views;
-      store.collection("users").doc(userId).collection("campaigns").add(campaignPackage)
+      addDoc(collection(db, "users", userId, "campaigns"), campaignPackage)
         .then(resp => {
           const campaignId = resp.id;
           if (campaignId) {
-            const batch = store.batch();
+            const batch = db.writeBatch();
             // CARD data
             for (let cardId in campaignData.cards) {
               batch.set(
-                store.collection("users").doc(userId).collection("campaigns").doc(campaignId).collection("cards").doc(cardId),
+                doc(db, "users", userId, "campaigns", campaignId, "cards", cardId),
                 campaignData.cards[cardId]
               );
             }
             // VIEW data
             for (let viewId in campaignData.views) {
               batch.set(
-                store.collection("users").doc(userId).collection("campaigns").doc(campaignId).collection("views").doc(viewId),
+                doc(db, "users", userId, "campaigns", campaignId, "views", viewId),
                 campaignData.views[viewId]
               );
             }
             batch.commit()
               .then(resp => {
-                store.collection("users").doc(userId).set({activeCampaignId: campaignId})
+                updateDoc(doc(db, "users", userId), {
+                  activeCampaignId: campaignId,
+                })
                   .then(resp => {
                     dispatch(actions.setCampaignEdit(false));
                     if (followUpHandler) followUpHandler();
@@ -208,7 +220,9 @@ export const switchCampaign = (campaignId, followUpHandler) => {
   return dispatch => {
     if (user) {
       const userId = user.uid;
-      store.collection("users").doc(userId).set({activeCampaignId: campaignId})
+      updateDoc(doc(db, "users", userId), {
+        activeCampaignId: campaignId,
+      })
         .then(resp => {
           dispatch(actions.updActiveCampaignId(campaignId));
           if (followUpHandler) followUpHandler();
@@ -231,12 +245,12 @@ export const createCampaign = (followUpHandler) => {
         cardCreateCnt: 1, viewCreateCnt: 1,
       };
       // create the campaign
-      store.collection("users").doc(userId).collection("campaigns").add(campaignData)
+      addDoc(collection(db, "users", userId, "campaigns"), campaignData)
         .then(resp => {
           const campaignId = resp.id;
           if (campaignId) {
             // create the card
-            store.collection("users").doc(userId).collection("campaigns").doc(campaignId).collection("cards").doc("card0").set({
+            setDoc(doc(db, "users", userId, "campaigns", campaignId, "cards", "card0"), {
               views: {
                 view0: {
                   pos: {x: 3*GRID.size, y: 3*GRID.size},
@@ -247,12 +261,16 @@ export const createCampaign = (followUpHandler) => {
               title: "card0",
               color: "gray",
               content: {text: ""},
+            }, {
+              merge: true,
             })
               .then(resp => {
                 // create the view
-                store.collection("users").doc(userId).collection("campaigns").doc(campaignId).collection("views").doc("view0").set({
+                setDoc(doc(db, "users", userId, "campaigns", campaignId, "views", "view0"), {
                   title: "view0",
                   color: "gray",
+                }, {
+                  merge: true
                 })
                   .then(resp => {
                     dispatch(actions.addCampaignToList(campaignId, "untitled campaign"));
@@ -277,25 +295,25 @@ export const copyCampaign = (campaignId, followUpHandler) => {
     if (user) {
       const userId = user.uid;
       // fetch CAMPAIGN
-      store.collection("users").doc(userId).collection("campaigns").doc(campaignId).get()
+      getDoc(doc(db, "users", userId, "campaigns", campaignId))
         .then(campaign => {
           if (campaign.exists) {
             let campaignData = campaign.data();
             campaignData.title = campaignData.title + " (copy)";
             // copy CAMPAIGN
-            store.collection("users").doc(userId).collection("campaigns").add(campaignData)
+            addDoc(collection(db, "users", userId, "campaigns"), campaignData)
               .then(resp => {
                 console.log("[copyCampaign] copied campaign level info");
                 const copiedCampaignId = resp.id;
                 if (copiedCampaignId) {
                   // fetch CARDS
-                  store.collection("users").doc(userId).collection("campaigns").doc(campaignId).collection("cards").get()
+                  getDocs(collection(db, "users", userId, "campaigns", campaignId, "cards"))
                     .then(cardSnapshot => {
                       // copy CARDS
-                      const cardBatch = store.batch();
+                      const cardBatch = db.writeBatch();
                       cardSnapshot.forEach(card => {
                         cardBatch.set(
-                          store.collection("users").doc(userId).collection("campaigns").doc(copiedCampaignId).collection("cards").doc(card.id),
+                          doc(db, "users", userId, "campaigns", copiedCampaignId, "cards", card.id),
                           card.data()
                         );
                       });
@@ -303,13 +321,13 @@ export const copyCampaign = (campaignId, followUpHandler) => {
                         .then(resp => {
                           console.log("[copyCampaign] copied cards");
                           // fetch VIEWS
-                          store.collection("users").doc(userId).collection("campaigns").doc(campaignId).collection("views").get()
+                          getDocs(collection(db, "users", userId, "campaigns", campaignId, "views"))
                             .then(viewSnapshot => {
                               // copy VIEWS
-                              const viewBatch = store.batch();
+                              const viewBatch = db.writeBatch();
                               viewSnapshot.forEach(view => {
                                 viewBatch.set(
-                                  store.collection("users").doc(userId).collection("campaigns").doc(copiedCampaignId).collection("views").doc(view.id),
+                                  doc(db, "users", userId, "campaigns", copiedCampaignId, "views", view.id),
                                   view.data()
                                 );
                               })
@@ -342,7 +360,7 @@ export const destroyCampaign = (campaignId, followUpHandler) => {
   return dispatch => {
     if (user && campaignId) {
       const userId = user.uid;
-      store.collection("users").doc(userId).collection("campaigns").doc(campaignId).delete()
+      deleteDoc(doc(db, "users", userId, "campaigns", campaignId))
         .then(resp => {
           dispatch(actions.removeCampaignFromList(campaignId));
           if (followUpHandler) followUpHandler();
