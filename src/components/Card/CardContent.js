@@ -1,8 +1,8 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import * as actions from '../../../../store/actionIndex';
-import ContentTextarea from '../../../UI/Inputs/ContentTextarea';
+import * as actions from '../../store/actionIndex';
+import ContentTextarea from '../UI/Inputs/ContentTextarea';
 
 import './index.scss';
 

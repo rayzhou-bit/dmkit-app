@@ -1,13 +1,13 @@
 import React, { useState, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import * as actions from '../../../../store/actionIndex';
-import { useOutsideClick } from '../../../../shared/utilityFunctions';
-import { CARD_TITLEBAR_COLORS } from '../../../../shared/constants/colors';
-import TitleInput from '../../../UI/Inputs/TitleInput';
+import * as actions from '../../store/actionIndex';
+import { useOutsideClick } from '../../shared/utilityFunctions';
+import { CARD_TITLEBAR_COLORS } from '../../shared/constants/colors';
+import TitleInput from '../UI/Inputs/TitleInput';
 
-import ShrinkImg from '../../../../assets/icons/shrink-24.png';
-import CloseImg from '../../../../assets/icons/remove-24.png';
+import ShrinkImg from '../../assets/icons/shrink-24.png';
+import CloseImg from '../../assets/icons/remove-24.png';
 
 import './index.scss';
 

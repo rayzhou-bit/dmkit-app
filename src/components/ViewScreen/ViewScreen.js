@@ -5,7 +5,7 @@ import { Rnd } from 'react-rnd';
 import './ViewScreen.scss';
 import * as actions from '../../store/actionIndex';
 import { GRID } from '../../shared/constants/grid';
-import Card from './Card';
+import Card from '../Card';
 
 // ViewScreen is the main portion the user is looking at. This is located in the center of the screen.
 

@@ -7,6 +7,7 @@ import {
   deleteDoc,
   collection,
   getDocs,
+  writeBatch,
 } from '@firebase/firestore';
 
 import { auth, db } from './firebase';
@@ -121,7 +122,7 @@ export const saveCampaignData = (campaignId, campaignData, followUpHandler) => {
       console.log("[Status] saving. Triggered by save.");
       dispatch(actions.setStatus('saving'));
       const userId = user.uid;
-      const batch = db.writeBatch();
+      const batch = writeBatch(db);
       // CAMPAIGN data
       let campaignPackage = {...campaignData};
       delete campaignPackage.cards;
@@ -173,7 +174,7 @@ export const saveIntroCampaignData = (campaignData, followUpHandler) => {
         .then(resp => {
           const campaignId = resp.id;
           if (campaignId) {
-            const batch = db.writeBatch();
+            const batch = writeBatch(db);
             // CARD data
             for (let cardId in campaignData.cards) {
               batch.set(
@@ -310,7 +311,7 @@ export const copyCampaign = (campaignId, followUpHandler) => {
                   getDocs(collection(db, "users", userId, "campaigns", campaignId, "cards"))
                     .then(cardSnapshot => {
                       // copy CARDS
-                      const cardBatch = db.writeBatch();
+                      const cardBatch = writeBatch(db);
                       cardSnapshot.forEach(card => {
                         cardBatch.set(
                           doc(db, "users", userId, "campaigns", copiedCampaignId, "cards", card.id),
@@ -324,7 +325,7 @@ export const copyCampaign = (campaignId, followUpHandler) => {
                           getDocs(collection(db, "users", userId, "campaigns", campaignId, "views"))
                             .then(viewSnapshot => {
                               // copy VIEWS
-                              const viewBatch = db.writeBatch();
+                              const viewBatch = writeBatch(db);
                               viewSnapshot.forEach(view => {
                                 viewBatch.set(
                                   doc(db, "users", userId, "campaigns", copiedCampaignId, "views", view.id),
