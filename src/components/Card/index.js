@@ -1,20 +1,23 @@
-import React, { useState, useRef } from 'react';
+import { useState, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Rnd } from 'react-rnd';
 
-import './Card.scss';
-import * as actions from '../../../store/actionIndex';
 import { useOutsideClick } from '../../../shared/utilityFunctions';
 import { GRID } from '../../../shared/constants/grid';
 import { CARD_FONT_SIZE } from '../../../shared/constants/fontSize';
 import { TEXT_COLOR_WHEN_BACKGROUND_IS } from '../../../shared/constants/colors';
-import CardTitle from './CardTitle/CardTitle';
-import CardContent from './CardContent/CardContent';
+import * as actions from '../../../store/actionIndex';
 
-const Card = props => {
-  const {cardId, toolMenuRef, 
-    cardAnimation, setCardAnimation,
-  } = props;
+import './index.scss';
+import CardTitle from './CardTitle';
+import CardContent from './CardContent';
+
+const Card = ({
+  cardId,
+  toolMenuRef, 
+  cardAnimation,
+  setCardAnimation,
+}) => {
   const dispatch = useDispatch();
 
   // STATES
@@ -39,15 +42,19 @@ const Card = props => {
   const dragStopHandler = (event, data) => {
     setDragging(false);
     if (cardPos) {
-      if (cardPos.x !== data.x || cardPos.y !== data.y) dispatch(actions.updCardPos(cardId, {x: data.x, y: data.y}));
-    } else dispatch(actions.updCardPos(cardId, {x: data.x, y: data.y}));
+      if (cardPos.x !== data.x || cardPos.y !== data.y) {
+        dispatch(actions.updCardPos(cardId, {x: data.x, y: data.y}));
+      }
+    } else {
+      dispatch(actions.updCardPos(cardId, {x: data.x, y: data.y}));
+    }
   };
   
   const resizeStopHandler = (event, direction, ref, delta, position) => {
     if (delta.width !== 0 || delta.height !== 0) {
       dispatch(actions.updCardSize(cardId, {width: ref.style.width, height: ref.style.height}));
       if (["top", "left", "topRight", "bottomLeft", "topLeft"].indexOf(direction) !== -1) {
-          dispatch(actions.updCardPos(cardId, {x: position.x, y: position.y}));
+        dispatch(actions.updCardPos(cardId, {x: position.x, y: position.y}));
       }
     }
   };

@@ -1,12 +1,15 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import './CardContent.scss';
 import * as actions from '../../../../store/actionIndex';
 import ContentTextarea from '../../../UI/Inputs/ContentTextarea';
 
-const CardContent = props => {
-  const {cardId, setEditingCard } = props;
+import './index.scss';
+
+const CardContent = ({
+  cardId,
+  setEditingCard,
+}) => {
   const dispatch = useDispatch();
 
   // STORE SELECTORS
