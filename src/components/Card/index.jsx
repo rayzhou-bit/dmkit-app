@@ -32,7 +32,6 @@ export const Card = ({
   const cardPos = useSelector(state => state.campaignData.present.cards[cardId].views[activeViewId].pos);
   const cardSize = useSelector(state => state.campaignData.present.cards[cardId].views[activeViewId].size);
   const cardColor = useSelector(state => state.campaignData.present.cards[cardId].color);
-  const cardForm = useSelector(state => state.campaignData.present.cards[cardId].views[activeViewId].cardForm);
   const cardTitle = useSelector(state => state.campaignData.present.cards[cardId].title);
 
   // REFS
@@ -101,28 +100,6 @@ export const Card = ({
     backgroundColor: cardColor, 
   };
 
-  // DISPLAY ELEMENTS
-  const cardObject = (
-    <div ref={cardRef} className="card" style={cardStyle}
-      onClick={cardClickHandler}
-      onAnimationEnd={onAnimationEnd}>
-      <CardTitle cardId={cardId} setEditingCard={setEditingCard} />
-      <CardContent cardId={cardId} setEditingCard={setEditingCard} />
-    </div>
-  );
-
-  const bubbleObject = (
-    <div ref={cardRef} className="bubble" style={cardStyle}
-      onClick={cardClickHandler}
-      onDoubleClick={changeTypeToCard}
-      onAnimationEnd={onAnimationEnd}>
-      <div className="short" style={bubbleLetterStyle} title={cardTitle ? cardTitle : null}>
-        {/* {cardTitle ? cardTitle.split(' ')[0] : ""}  */}
-        {cardTitle ? cardTitle : ""}
-      </div>
-    </div>
-  );
-
   return (
     <Rnd style={toFrontStyle}
       bounds="parent"
@@ -130,23 +107,26 @@ export const Card = ({
       position={cardPos}
       // drag
       disableDragging={editingCard}
-      dragHandleClassName={(cardForm === "bubble") ? "short" : "title-container"}
+      dragHandleClassName="title-container"
       // dragGrid={[GRID.size, GRID.size]}
       onDragStart={()=>setDragging(true)}
       onDragStop={dragStopHandler}
       // size
-      size={(cardForm === "bubble") ? {width: GRID.size*3, height: GRID.size*1} : cardSize}
-      minWidth={(cardForm === "bubble") ? null : GRID.size*5} 
-      minHeight={(cardForm === "bubble") ? null : GRID.size*5}
+      size={cardSize}
+      minWidth={GRID.size*5} 
+      minHeight={GRID.size*5}
       scale={activeViewScale}
       // resize
-      enableResizing={(cardForm === "bubble") ? false : true}
+      enableResizing={true}
       resizeGrid={[GRID.size, GRID.size]}
       onResizeStop={resizeStopHandler}
     >
-      {cardForm === "bubble"
-        ? bubbleObject 
-        : cardObject}
+      <div ref={cardRef} className="card" style={cardStyle}
+        onClick={cardClickHandler}
+        onAnimationEnd={onAnimationEnd}>
+        <CardTitle cardId={cardId} setEditingCard={setEditingCard} />
+        <CardContent cardId={cardId} setEditingCard={setEditingCard} />
+      </div>
     </Rnd>
   );
 };

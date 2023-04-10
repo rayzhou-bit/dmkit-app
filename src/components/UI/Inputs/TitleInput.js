@@ -3,9 +3,6 @@ import React, { useState, useRef, useEffect } from 'react';
 import { CARD_FONT_SIZE } from '../../../shared/constants/fontSize';
 import { TEXT_COLOR_WHEN_BACKGROUND_IS, CARD_TITLEBAR_EDIT_COLORS } from '../../../shared/constants/colors';
 
-import EditImg24 from '../../../assets/icons/edit-24.png';
-import EditImg32 from '../../../assets/icons/edit-32.png';
-
 // Creates a title text with an edit button
 // css is fully controlled by props
 
@@ -93,12 +90,12 @@ const TitleInput = props => {
 
   return (
     <>
-      <button className={btnClassName} style={btnStyle}
+      {/* <button className={btnClassName} style={btnStyle}
         onClick={beginEdit}>
         <img style={btnImgStyle} 
           src={(btnSize === 24) ? EditImg24 : EditImg32} alt="Edit" draggable="false" />
         <span className="tooltip">Edit title</span>
-      </button>
+      </button> */}
       <input ref={inputRef} className={className} style={inputStyle}
         type="text" required maxLength="50"
         value={inputValue ? inputValue : ""} title={inputValue} readOnly={!editing}

@@ -5,13 +5,13 @@ import { CARD_FONT_SIZE } from '../../../shared/constants/fontSize';
 // Creates a title text with an edit button
 // css is fully controlled by props
 
-const ContentTextarea = props => {
-  const { 
-    className, styles,
-    value, saveValue,
-    setEditingParent,
-  } = props;
-
+const ContentTextarea = ({ 
+  className,
+  styles,
+  value,
+  saveValue,
+  setEditingParent,
+}) => {
   const [textareaValue, setTextareaValue] = useState("");
   const [editing, setEditing] = useState(false);
 
@@ -22,16 +22,22 @@ const ContentTextarea = props => {
   const beginEdit = (event) => {
     if (!editing) {
       setEditing(true);
-      if (setEditingParent) setEditingParent(true);
+      if (setEditingParent) {
+        setEditingParent(true);
+      }
     }
   };
 
   const endEdit = (event) => {
     if (editing) {
       document.getSelection().removeAllRanges();
-      if (textareaValue !== value) saveValue(textareaValue);
+      if (textareaValue !== value) {
+        saveValue(textareaValue);
+      }
       setEditing(false);
-      if (setEditingParent) setEditingParent(false);
+      if (setEditingParent) {
+        setEditingParent(false);
+      }
     }
   };
 
@@ -47,13 +53,12 @@ const ContentTextarea = props => {
         // setTextareaValue(newValue);
       }
     };
-  }
+  };
 
   const textareaStyle = {
     ...styles,
     fontSize: CARD_FONT_SIZE.text+'px',
-    backgroundColor: editing ? "white" : "lightgray",
-  }
+  };
 
   return (
     <textarea className={className} style={textareaStyle}

@@ -56,11 +56,11 @@ const CardTitle = ({
           <img src={CloseImg} alt="Close" draggable="false" />
           <span className="tooltip">Remove from view</span>
         </button>
-        <button className="shrink title-btn btn-24" 
+        {/* <button className="shrink title-btn btn-24" 
           onClick={() => dispatch(actions.updCardForm(cardId, "bubble"))}>
           <img src={ShrinkImg} alt="Shrink" draggable="false" />
           <span className="tooltip">Shrink card</span>
-        </button>
+        </button> */}
         <TitleInput className="title-input" btnClassName="edit-title title-btn btn-24" 
           type="card" color={cardColor} btnSize={24}
           value={cardTitle} saveValue={v => dispatch(actions.updCardTitle(cardId, v))}

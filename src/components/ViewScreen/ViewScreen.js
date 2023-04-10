@@ -9,8 +9,9 @@ import Card from '../Card';
 
 // ViewScreen is the main portion the user is looking at. This is located in the center of the screen.
 
-const ViewScreen = props => {
-  const {toolMenuRef} = props;
+const ViewScreen = ({
+  toolMenuRef,
+}) => {
   const dispatch = useDispatch();
 
   // STATES

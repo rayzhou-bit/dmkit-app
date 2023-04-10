@@ -1,6 +1,6 @@
 $border-radius: 12px;
+$title-bar-height: 37px;
 
-$title-bar-height: 2rem;
 $btn-size: 31px;
 
 .card {
@@ -13,28 +13,6 @@ $btn-size: 31px;
 
   display: flex;
   flex-flow: column nowrap;
-
-  .color-select {
-    position:absolute;
-    right: -1px; top: 32px;
-    border-top: 1px solid black;
-    border-right: 1px solid black;
-    z-index: 10;
-
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: repeat(3, 1fr);
-
-    button {
-      grid-column: span 1;
-      grid-row: span 1;
-      width: 31px; height: 31px;
-      border: 0;
-      border-left: 1px solid black;
-      border-bottom: 1px solid black;
-      outline: none;
-    }
-  }
 }
 
 .bubble {
@@ -62,6 +40,27 @@ $btn-size: 31px;
   }
 }
 
+.color-select {
+  position:absolute;
+  right: -1px; top: 32px;
+  border-top: 1px solid black;
+  border-right: 1px solid black;
+  z-index: 10;
+
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+
+  button {
+    grid-column: span 1;
+    grid-row: span 1;
+    width: 31px; height: 31px;
+    border: 0;
+    border-left: 1px solid black;
+    border-bottom: 1px solid black;
+    outline: none;
+  }
+}
 
 .title-container {
   height: $title-bar-height;
@@ -98,13 +97,13 @@ $btn-size: 31px;
     padding-bottom: 4px;
     border-left: 1px solid black;
   
-    opacity: 0;
-    transition: visibility 0s 0.6s, opacity 0.6s linear;
+    // opacity: 0;
+    // transition: visibility 0s 0.6s, opacity 0.6s linear;
   }
-  &:hover .title-btn {
-    opacity: 1;
-    transition: opacity 0.2s linear;
-  }
+  // &:hover .title-btn {
+  //   opacity: 1;
+  //   transition: opacity 0.2s linear;
+  // }
 
   // individual button styles
   .edit-title {
@@ -143,7 +142,7 @@ $btn-size: 31px;
 
 .card-content {
   background-color: white;
-  border-bottom-left-radius: 7px; border-bottom-right-radius: 7px;
+  border-radius: 0 0 $border-radius $border-radius;
 
   flex: auto;
 
@@ -152,19 +151,31 @@ $btn-size: 31px;
     height: 100%; width: 100%;
     margin: 0;  padding: 5px;
     border: 0;
-    border-bottom-left-radius: 12px;
-    border-bottom-right-radius: 12px;
+    border-radius: 0 0 $border-radius $border-radius;
 
-    background-color: #ddd;
+    background-color: white;
     font-size: 18px;
     text-overflow: ellipsis;
 
     resize: none;
     overflow: auto;
     
-    &:read-only {
-      background-color: lightgray;
-      cursor: default;
-    }
+    // &:read-only {
+    //   background-color: lightgray;
+    //   cursor: default;
+    // }
+  }
+
+  textarea::-webkit-scrollbar {
+    width: 7px;
+  }
+
+  textarea::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.1);
+  }
+
+  textarea::-webkit-scrollbar-thumb {
+    background-color: darkgrey;
+    outline: 1px solid slategrey;
   }
 }
