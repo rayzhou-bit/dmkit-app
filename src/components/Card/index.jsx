@@ -9,8 +9,8 @@ import { TEXT_COLOR_WHEN_BACKGROUND_IS } from '../../shared/constants/colors';
 import * as actions from '../../store/actionIndex';
 
 import './index.scss';
-import CardTitle from './CardTitle';
-import CardContent from './CardContent';
+import Title from './Title';
+import Content from './Content';
 
 export const Card = ({
   cardId,
@@ -71,8 +71,6 @@ export const Card = ({
       [cardId]: null,
     })
   };
-  
-  const changeTypeToCard = () => dispatch(actions.updCardForm(cardId, "card"));
 
   useOutsideClick([cardRef, toolMenuRef], isSelected, 
     () => {
@@ -93,12 +91,6 @@ export const Card = ({
     margin: (cardId === activeCardId) ? '0px' : '2px',
     animation: cardAnimation ? cardAnimation[cardId] : null,
   };
-  
-  const bubbleLetterStyle = {
-    fontSize: CARD_FONT_SIZE.title+'px',
-    color: TEXT_COLOR_WHEN_BACKGROUND_IS[cardColor],
-    backgroundColor: cardColor, 
-  };
 
   return (
     <Rnd style={toFrontStyle}
@@ -107,7 +99,7 @@ export const Card = ({
       position={cardPos}
       // drag
       disableDragging={editingCard}
-      dragHandleClassName="title-container"
+      dragHandleClassName="title"
       // dragGrid={[GRID.size, GRID.size]}
       onDragStart={()=>setDragging(true)}
       onDragStop={dragStopHandler}
@@ -117,15 +109,24 @@ export const Card = ({
       minHeight={GRID.size*5}
       scale={activeViewScale}
       // resize
-      enableResizing={true}
+      enableResizing={{
+        bottomLeft: true,
+        bottomRight: true,
+        topLeft: true,
+        topRight: true,
+      }}
       resizeGrid={[GRID.size, GRID.size]}
       onResizeStop={resizeStopHandler}
     >
-      <div ref={cardRef} className="card" style={cardStyle}
+      <div
+        className="card" 
         onClick={cardClickHandler}
-        onAnimationEnd={onAnimationEnd}>
-        <CardTitle cardId={cardId} setEditingCard={setEditingCard} />
-        <CardContent cardId={cardId} setEditingCard={setEditingCard} />
+        onAnimationEnd={onAnimationEnd}
+        ref={cardRef} 
+        style={cardStyle}
+      >
+        <Title cardId={cardId} setEditingCard={setEditingCard} />
+        <Content cardId={cardId} setEditingCard={setEditingCard} />
       </div>
     </Rnd>
   );

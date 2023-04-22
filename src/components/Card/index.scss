@@ -1,4 +1,4 @@
-$border-radius: 12px;
+$round-bd: 12px;
 $title-bar-height: 37px;
 
 $btn-size: 31px;
@@ -6,31 +6,17 @@ $btn-size: 31px;
 .card {
   position: absolute;
   top: 0; left: 0; right: 0; bottom: 0;
+  padding: 0;
+  margin: 0;
+  overflow: hidden;
   
-  border-radius: $border-radius;
+  border: 1px solid black;
+  border-radius: $round-bd;
 
   background-color: lightgray;
 
   display: flex;
   flex-flow: column nowrap;
-}
-
-.bubble {
-  position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
-
-  border-radius: $border-radius;
-
-  display: grid;
-  place-items: center;
-
-  .short {
-    width: 100%; height: 100%;
-    border-radius: $border-radius;
-    font-weight: bold;
-    overflow: hidden;
-    cursor: move;
-  }
 }
 
 @keyframes card-blink {
@@ -40,32 +26,47 @@ $btn-size: 31px;
   }
 }
 
-.color-select {
-  position:absolute;
-  right: -1px; top: 32px;
-  border-top: 1px solid black;
-  border-right: 1px solid black;
-  z-index: 10;
+.title {
+  position: absolute;
+  top: 0; left: 0; right: 0;
 
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  grid-template-rows: repeat(3, 1fr);
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: right;
+
+  .input-div {
+    padding: 3px;
+    height: 24px;
+    width: 100%;
+    background-color: transparent;
+
+    input {
+      height: 100%;
+      width: 100%;
+      border: 0;
+      background-color: transparent;
+  
+      &:read-only {
+        cursor: default;
+      }
+    }
+  }
 
   button {
-    grid-column: span 1;
-    grid-row: span 1;
-    width: 31px; height: 31px;
-    border: 0;
-    border-left: 1px solid black;
-    border-bottom: 1px solid black;
-    outline: none;
+    background-color: transparent;
+
+    .tooltip { top: 130%; right: 0; white-space: nowrap; }
+    .tooltip::after { bottom: 100%; right: 10%; border-bottom-color: black; }
   }
 }
+
+
+
 
 .title-container {
   height: $title-bar-height;
   border-bottom: 1px solid black;
-  border-radius: $border-radius;
+  border-radius: $round-bd;
 
   display: flex;
   flex-flow: row nowrap;
@@ -75,7 +76,7 @@ $btn-size: 31px;
     height: 100%; width: 100%;
     padding-left: 5px;
     border: 0;
-    border-radius: $border-radius;
+    border-radius: $round-bd;
 
     text-align: left;
     font-weight: bold;
@@ -140,9 +141,31 @@ $btn-size: 31px;
   }
 }
 
+.color-select {
+  position:absolute;
+  right: -1px; top: 32px;
+  border-top: 1px solid black;
+  border-right: 1px solid black;
+  z-index: 10;
+
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+
+  button {
+    grid-column: span 1;
+    grid-row: span 1;
+    width: 31px; height: 31px;
+    border: 0;
+    border-left: 1px solid black;
+    border-bottom: 1px solid black;
+    outline: none;
+  }
+}
+
 .card-content {
   background-color: white;
-  border-radius: 0 0 $border-radius $border-radius;
+  border-radius: 0 0 $round-bd $round-bd;
 
   flex: auto;
 
@@ -151,7 +174,7 @@ $btn-size: 31px;
     height: 100%; width: 100%;
     margin: 0;  padding: 5px;
     border: 0;
-    border-radius: 0 0 $border-radius $border-radius;
+    border-radius: 0 0 $round-bd $round-bd;
 
     background-color: white;
     font-size: 18px;
@@ -160,14 +183,14 @@ $btn-size: 31px;
     resize: none;
     overflow: auto;
     
-    // &:read-only {
-    //   background-color: lightgray;
-    //   cursor: default;
-    // }
+    &:read-only {
+      cursor: default;
+    }
   }
 
   textarea::-webkit-scrollbar {
-    width: 7px;
+    cursor: default;
+    width: 19px;
   }
 
   textarea::-webkit-scrollbar-track {
@@ -176,6 +199,8 @@ $btn-size: 31px;
 
   textarea::-webkit-scrollbar-thumb {
     background-color: darkgrey;
-    outline: 1px solid slategrey;
+    // outline: 1px solid slategrey;
+    border: 5px solid white;
+    border-radius: $round-bd;
   }
 }

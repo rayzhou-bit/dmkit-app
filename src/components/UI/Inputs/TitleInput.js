@@ -89,7 +89,7 @@ const TitleInput = props => {
   }
 
   return (
-    <>
+    <div className="input-div">
       {/* <button className={btnClassName} style={btnStyle}
         onClick={beginEdit}>
         <img style={btnImgStyle} 
@@ -99,13 +99,14 @@ const TitleInput = props => {
       <input ref={inputRef} className={className} style={inputStyle}
         type="text" required maxLength="50"
         value={inputValue ? inputValue : ""} title={inputValue} readOnly={!editing}
+        size=''
         onBlur={endEdit}
         onDoubleClick={beginEdit}
         onChange={e => setInputValue(e.target.value)}
         onKeyDown={keyPressHandler}
         onDragOver={e => e.preventDefault()}
       />
-    </>
+    </div>
   );
 };
 

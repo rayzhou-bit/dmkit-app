@@ -6,7 +6,7 @@ import ContentTextarea from '../UI/Inputs/ContentTextarea';
 
 import './index.scss';
 
-const CardContent = ({
+const Content = ({
   cardId,
   setEditingCard,
 }) => {
@@ -30,4 +30,4 @@ const CardContent = ({
   );
 };
 
-export default CardContent;
+export default Content;
