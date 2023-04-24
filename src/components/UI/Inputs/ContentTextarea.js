@@ -55,22 +55,20 @@ const ContentTextarea = ({
     };
   };
 
-  const textareaStyle = {
-    ...styles,
-    fontSize: CARD_FONT_SIZE.text+'px',
-  };
-
   return (
-    <textarea className={className} style={textareaStyle}
-      type="text"
-      value={textareaValue ? textareaValue : ""} readOnly={!editing}
-      placeholder="Fill me in!"
+    <textarea
+      className={className}
       onBlur={endEdit}
-      onClick={beginEdit}
-      onWheel={e => e.stopPropagation()}
       onChange={e => setTextareaValue(e.target.value)}
-      onKeyDown={keyPressHandler}
+      onClick={beginEdit}
       onDragOver={e => e.preventDefault()}
+      onKeyDown={keyPressHandler}
+      onWheel={e => e.stopPropagation()}
+      placeholder="Fill me in!"
+      readOnly={!editing}
+      style={styles}
+      type="text"
+      value={textareaValue ? textareaValue : ""}
     />
   );
 };

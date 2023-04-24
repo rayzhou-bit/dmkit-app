@@ -21,7 +21,7 @@ export const Card = ({
   const dispatch = useDispatch();
 
   // STATES
-  const [dragging, setDragging] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
   const [isSelected, setIsSelected] = useState(false);
   const [editingCard, setEditingCard] = useState(false);
 
@@ -37,9 +37,11 @@ export const Card = ({
   // REFS
   const cardRef = useRef();
 
+  const isActive = cardId === activeCardId;
+
   // FUNCTIONS: CARD
   const dragStopHandler = (event, data) => {
-    setDragging(false);
+    setIsDragging(false);
     if (cardPos) {
       if (cardPos.x !== data.x || cardPos.y !== data.y) {
         dispatch(actions.updCardPos(cardId, {x: data.x, y: data.y}));
@@ -60,7 +62,7 @@ export const Card = ({
 
   const cardClickHandler = () => {
     if (!isSelected) {
-      if (cardId !== activeCardId) dispatch(actions.updActiveCardId(cardId));
+      if (!isActive) dispatch(actions.updActiveCardId(cardId));
       setIsSelected(true);
     }
   };
@@ -74,21 +76,19 @@ export const Card = ({
 
   useOutsideClick([cardRef, toolMenuRef], isSelected, 
     () => {
-      if (cardId === activeCardId) dispatch(actions.updActiveCardId(null));
+      if (isActive) dispatch(actions.updActiveCardId(null));
       setIsSelected(false);
     }
   );
 
   // STYLES
   const toFrontStyle = {
-    zIndex: dragging ? 20000*(cardPos.y + cardPos.x + 10) 
-      : (cardId === activeCardId) ? 10000*(cardPos.y + cardPos.x + 10) 
+    zIndex: isDragging ? 20000*(cardPos.y + cardPos.x + 10) 
+      : (isActive) ? 10000*(cardPos.y + cardPos.x + 10) 
       : (100*cardPos.y + cardPos.x + 10),
   };
 
   const cardStyle = {
-    border: (cardId === activeCardId) ? '3px solid black' : '1px solid black',
-    margin: (cardId === activeCardId) ? '0px' : '2px',
     animation: cardAnimation ? cardAnimation[cardId] : null,
   };
 
@@ -99,14 +99,14 @@ export const Card = ({
       position={cardPos}
       // drag
       disableDragging={editingCard}
-      dragHandleClassName="title"
+      dragHandleClassName="input-div"
       // dragGrid={[GRID.size, GRID.size]}
-      onDragStart={()=>setDragging(true)}
+      onDragStart={()=>setIsDragging(true)}
       onDragStop={dragStopHandler}
       // size
       size={cardSize}
-      minWidth={GRID.size*5} 
-      minHeight={GRID.size*5}
+      minWidth={GRID.size*10} 
+      minHeight={GRID.size*12}
       scale={activeViewScale}
       // resize
       enableResizing={{
@@ -119,13 +119,18 @@ export const Card = ({
       onResizeStop={resizeStopHandler}
     >
       <div
-        className="card" 
+        className={"card" + (isActive ? " active" : " not-active")}
         onClick={cardClickHandler}
         onAnimationEnd={onAnimationEnd}
         ref={cardRef} 
         style={cardStyle}
       >
-        <Title cardId={cardId} setEditingCard={setEditingCard} />
+        <Title
+          cardId={cardId}
+          color={cardColor}
+          setEditingCard={setEditingCard}
+          title={cardTitle}
+        />
         <Content cardId={cardId} setEditingCard={setEditingCard} />
       </div>
     </Rnd>

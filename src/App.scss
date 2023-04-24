@@ -29,16 +29,12 @@ input:focus, textarea:focus, select:focus, button:focus {
   padding: 4px;
 }
 
-.btn-24, .btn-32, .btn-any { 
+button { 
   box-sizing: content-box;
   position: relative;
   margin: 0; border: 0;
   
   place-items: center;
-
-  &:hover {
-    background-color: lightskyblue;
-  }
 
   &:hover .tooltip {
     visibility: visible;
