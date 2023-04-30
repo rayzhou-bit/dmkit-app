@@ -448,7 +448,7 @@ const introCampaign = {
         },
       },
       title: "Greetings Traveler!",
-      color: "green",
+      color: "jungle",
       content: {
         text: "Welcome to DM Kit, a tool to help plan your next adventure. Take a look at the READ ME tab for more information on functions. If you would like to save your work, please create an account!",
       },
@@ -462,7 +462,7 @@ const introCampaign = {
         },
       },
       title: "Tools",
-      color: "blue",
+      color: "cotton_blue",
       content: {
         text: "Use the buttons to build your project. You can add cards, copy cards, reset the board position. You can also save your progress, but you must first create an account.",
       },
@@ -476,7 +476,7 @@ const introCampaign = {
         },
       },
       title: "Tabs",
-      color: "blue",
+      color: "cobalt",
       content: {
         text: "Use the buttons below to add tabs and switch between them.",
       },
@@ -490,7 +490,7 @@ const introCampaign = {
         },
       },
       title: "Library",
-      color: "blue",
+      color: "lavender",
       content: {
         text: "All the cards you create are stored in the library, which you can access by clicking the book to the right. The same card can be placed in multiple views and edited from multiple places.",
       },
