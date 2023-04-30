@@ -1,12 +1,13 @@
 import React, { useState, useRef } from 'react';
 import { useDispatch } from 'react-redux';
+import { useOutsideClick } from '../../shared/utilityFunctions';
 
 import * as actions from '../../store/actionIndex';
-import { useOutsideClick } from '../../shared/utilityFunctions';
-import { CARD_TITLEBAR_COLORS } from '../../shared/constants/colors';
 import TitleInput from '../UI/Inputs/TitleInput';
 
 import './index.scss';
+import '../../styles/colors.scss';
+import { CardColorKeys, LightColors } from '../../styles/colors';
 
 const Title = ({
   cardId,
@@ -28,26 +29,15 @@ const Title = ({
   // FUNCTIONS
   useOutsideClick([colorSelectRef, openColorBtnRef], openColorSelect, () => setOpenColorSelect(false));
 
-  // DISPLAY ELEMENTS
-  let colorList = [];
-  for (let color in CARD_TITLEBAR_COLORS) {
-    let colorStyle = { backgroundColor: color };
-    colorList = [...colorList,
-      <button key={color} style={colorStyle} onClick={() => dispatch(actions.updCardColor(cardId, color))} />
-    ];
-  }
-
-  // TODO SET UP COLOR FILE
-  const isLightColor = false;
+  const isLightColor = LightColors.includes(color);
+  console.log(color, isLightColor)
 
   return (
     <div
-      className="title"
-      style={{backgroundColor: color}}
+      className={"title " + color}
     >
       <TitleInput
         className={"input-div" + (isLightColor ? " dark" : " light")}
-        color={color} 
         saveValue={(value) => dispatch(actions.updCardTitle(cardId, value))}
         setEditingParent={setEditingCard}
         type="card" 
@@ -59,21 +49,13 @@ const Title = ({
         // onClick={() => setOpenColorSelect(!openColorSelect)}
       >
         <i className={"open-color-icon" + (isLightColor ? " dark" : " light")} />
-        {/* <span className="tooltip">Color</span> */}
       </button>
       <button
         className="open-dropdown-btn"
         // onClick={() => dispatch(actions.unlinkCardFromView(cardId))}
       >
         <i className={"open-dropdown-icon" + (isLightColor ? " dark" : " light")} />
-        {/* <span className="tooltip">Options</span> */}
       </button>
-      {/* <div className="title-container">
-      </div>
-      <div ref={colorSelectRef} className="color-select" 
-        style={{display: openColorSelect ? "grid" : "none"}}>
-        {colorList}
-      </div> */}
     </div>
   );
 };

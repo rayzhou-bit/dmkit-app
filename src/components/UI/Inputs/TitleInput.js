@@ -8,7 +8,6 @@ import { TEXT_COLOR_WHEN_BACKGROUND_IS, CARD_TITLEBAR_EDIT_COLORS } from '../../
 
 const TitleInput = ({
   className,
-  color,
   saveValue,
   setEditingParent,
   styles,
