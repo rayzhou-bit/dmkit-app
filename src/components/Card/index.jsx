@@ -2,11 +2,12 @@ import React, { useState, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Rnd } from 'react-rnd';
 
-import useOutsideClick from '../../utils/useOutsideClick';
+import './index.scss';
 import { GRID } from '../../shared/constants/grid';
+
+import useOutsideClick from '../../utils/useOutsideClick';
 import * as actions from '../../store/actionIndex';
 
-import './index.scss';
 import Title from './Title';
 import Content from './Content';
 

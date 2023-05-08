@@ -1,0 +1,66 @@
+@use '../../components/Card/index.scss' as card;
+
+.action-dropdown {
+  position: absolute;
+  top: card.$title-height + 5px;
+  right: 5px;
+
+  background: white;
+  border: 1px solid #F4F4F4;
+  box-shadow: 0px 0px 8px -3px #9B9B9B;
+  border-radius: 12px;
+  padding: 13px;
+  
+  ul {
+    margin: 0;
+    padding: 0;
+    li {
+      list-style: none;
+    }
+  }
+}
+
+.item-btn {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  background-color: white;
+
+  display: grid;
+  grid-template-columns: auto 20px;
+
+  .btn-title {
+    box-sizing: border-box;
+    width: 100%;
+    margin: 0;
+    padding-right: 15px;
+    text-align: left;
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 25px;
+    letter-spacing: 0.05em;
+    font-feature-settings: 'kern' off;
+    background-color: white;
+  }
+  .btn-icon {
+    display: block;
+    width: auto;
+    height: auto;
+    max-width: 20px;
+    max-height: 20px;
+    margin: auto;
+  }
+}
+
+.break {
+  margin: 8px 0;
+  border: 1px solid #F4F4F4;
+}
+
+.danger {
+  font-weight: 600 !important;
+  line-height: 30px !important;
+  color: #ED5E31 !important;
+}
