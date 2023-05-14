@@ -5,6 +5,7 @@
   "author": "Ray",
   "private": true,
   "dependencies": {
+    "@reduxjs/toolkit": "^1.9.5",
     "dotenv": "^8.6.0",
     "firebase": "^9.19.1",
     "normalize.css": "^8.0.1",

@@ -1,7 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
-import { createStore, applyMiddleware, compose, combineReducers } from 'redux';
+import { applyMiddleware, compose, combineReducers } from 'redux';
+import { configureStore } from '@reduxjs/toolkit';
 import thunk from 'redux-thunk';
 import undoable, { includeAction } from 'redux-undo';
 
@@ -46,9 +47,11 @@ const rootReducer = combineReducers({
   }),
 });
 
-export const store = createStore(rootReducer, composeEnhancers(
-  applyMiddleware(thunk)
-));
+export const store = configureStore({
+  reducer: rootReducer,
+  // middleware: composeEnhancers(applyMiddleware(thunk)),
+  devTools: process.env.NODE_ENV !== 'production',
+});
 
 const app = (
   <Provider store={store}>
