@@ -1,4 +1,5 @@
 import React, { useRef } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
 import './App.scss';
 import Loader from './components/Loader/Loader';
@@ -7,8 +8,13 @@ import ToolMenu from './components/ToolMenu/ToolMenu';
 import Library from './components/Library/Library';
 import ViewSelect from './components/ViewSelect/ViewSelect';
 import ViewScreen from './components/ViewScreen/ViewScreen';
+import Popup from './sharedComponents/Popup';
+import { resetPopup } from './store/actionIndex';
 
-const App = props => {
+const App = () => {
+  const dispatch = useDispatch();
+  const popup = useSelector(state => state.sessionManager.popup);
+
   // REFS
   const toolMenuRef = useRef();
 
@@ -26,6 +32,7 @@ const App = props => {
       <Library />
       <ViewSelect />
       <ViewScreen toolMenuRef={toolMenuRef} />
+      <Popup resetCallback={() => dispatch(resetPopup())} type={popup.type} />
     </div>
   );
 };

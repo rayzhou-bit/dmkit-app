@@ -8,13 +8,13 @@ import useOutsideClick from '../../utils/useOutsideClick';
 export const ColorDropdown = ({
   btnRef,
   cardColor,
-  closeDropdown,
   isOpen,
-  updateColor,
+  onClose,
+  onUpdateColor,
 }) => {
   const dropdownRef = useRef();
   
-  useOutsideClick([btnRef, dropdownRef], isOpen, closeDropdown);
+  useOutsideClick([btnRef, dropdownRef], isOpen, onClose);
 
   if (!isOpen) return null;
 
@@ -28,7 +28,7 @@ export const ColorDropdown = ({
       ...colorList,
       <button
         className={className}
-        onClick={() => updateColor(color)}
+        onClick={() => onUpdateColor(color)}
       />
     ];
   });

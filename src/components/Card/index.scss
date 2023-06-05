@@ -167,3 +167,38 @@ $btn-width: 26px;
     }
   }
 }
+
+.delete-confirmation {
+  position: fixed;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 40%;
+  padding: 2%;
+  
+  background: white;
+  border: solid 1px #F4F4F4;
+  box-shadow: 0 5px 40px -3px #D4D4D4;
+  border-radius: 12px;
+
+  .confirmation-text {
+
+    h1 {}
+    p {}
+  }
+
+  .x-btn {}
+  .cancel-btn {
+  }
+  .confirm-btn {}
+  button {
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 300;
+    font-size: 18px;
+    line-height: 21px;
+
+    text-align: center;
+    letter-spacing: 0.015em;
+    color: black;
+  }
+}

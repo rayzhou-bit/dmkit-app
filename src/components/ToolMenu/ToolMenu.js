@@ -6,6 +6,7 @@ import './ToolMenu.scss';
 import * as actions from '../../store/actionIndex';
 import * as fireactions from '../../store/firestoreIndex';
 import { store } from '../../index';
+// import store from '../../data/store';
 
 import AddImg from '../../assets/icons/add-32.png';
 import CopyImg from '../../assets/icons/copy-32.png';

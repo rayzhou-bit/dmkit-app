@@ -8,14 +8,19 @@ const initialState = {
   activeCampaignId: null,
   activeCardId: null,
 
+  popup: {
+    id: '',
+    type: '',
+  },
+
   status: 'loading',  // idle, loading or saving
   campaignEdit: false,  // flag for any unsaved changes
 
-  errorPasswordReset: "",
-  errorEmailSignIn: "",
-  errorEmailSignUp: "",
-  errorGoogleSignIn: "",
-  errorFacebookSignIn: "",
+  errorPasswordReset: '',
+  errorEmailSignIn: '',
+  errorEmailSignUp: '',
+  errorGoogleSignIn: '',
+  errorFacebookSignIn: '',
 };
 
 const reducer = (state = initialState, action) => {
@@ -33,6 +38,10 @@ const reducer = (state = initialState, action) => {
     case actionTypes.SET_STATUS: return updateObject(state, {status: action.status});
     case actionTypes.SET_CAMPAIGN_EDIT: return updateObject(state, {campaignEdit: action.edit});
     case actionTypes.SET_INTRO_CAMPAIGN_EDIT: return updateObject(state, {introCampaignEdit: action.edit});
+
+    // POP UP
+    case actionTypes.RESET_POPUP: return updateObject(state, {popup: {id: '', type: ''}});
+    case actionTypes.SET_POPUP: return updateObject(state, {popup: action.popup});
 
     // ERRORS
     case actionTypes.SET_ERROR_PASSWORD_RESET: return setErrorPasswordReset(state, action.errorCode);

@@ -7,6 +7,9 @@ export const addCampaignToList = (campaignId, campaignTitle) => { return { type:
 export const removeCampaignFromList = (campaignId) => { return { type: actionTypes.REMOVE_CAMPAIGN_FROM_LIST, campaignId: campaignId }; };
 export const updActiveCampaignId = (activeCampaignId) => { return { type: actionTypes.UPD_ACTIVE_CAMPAIGN_ID, activeCampaignId: activeCampaignId }; };
 
+export const resetPopup = () => { return { type: actionTypes.RESET_POPUP }; };
+export const setPopup = (popup) => { return { type: actionTypes.SET_POPUP, popup: popup }; };
+
 export const setStatus = (status) => { return { type: actionTypes.SET_STATUS, status: status }; };
 export const setCampaignEdit = (edit) => { return { type: actionTypes.SET_CAMPAIGN_EDIT, edit: edit }; };
 export const setIntroCampaignEdit = (edit) => { return { type: actionTypes.SET_INTRO_CAMPAIGN_EDIT, edit: edit }; };

@@ -16,6 +16,9 @@ export {
   loadCampaignList, addCampaignToList, removeCampaignFromList,
   updActiveCampaignId,
 
+  resetPopup,
+  setPopup,
+
   setStatus,
   setCampaignEdit, setIntroCampaignEdit,
 
