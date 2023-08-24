@@ -93,14 +93,14 @@ const LibraryCard = (props) => {
 
   // STYLES: CARD
   const cardStyle = {
-    border: cardId === activeCardId ? "3px solid black" : "1px solid black",
+    border: cardId === activeCardId ? "3px solid #EBE5DB" : "2px solid #EBE5DB",
     margin: cardId === activeCardId ? "0px 0px 8px 0px" : "2px 2px 10px 2px",
     zIndex: cardId === activeCardId ? "100" : "0",
     animation: cardAnimation ? cardAnimation[cardId] : null,
   };
 
   // STYLES: TITLEBAR
-  const colorBtnStyle = { backgroundColor: cardColor ? cardColor : "white" };
+  const colorBtnStyle = { backgroundColor: cardColor ? cardColor : "#f4f4f4" };
   const deleteBtnStyle = {
     backgroundColor: confirmDelete ? "red" : null,
     opacity: confirmDelete ? 1 : null,
