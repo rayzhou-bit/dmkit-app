@@ -100,7 +100,8 @@ const LibraryCard = (props) => {
   };
 
   // STYLES: TITLEBAR
-  const colorBtnStyle = { backgroundColor: cardColor ? cardColor : "#DCDCDD" };
+  //colorBtnStyle removed in place of color based className, for review
+  //const colorBtnStyle = { backgroundColor: cardColor ? cardColor : "#DCDCDD" };
   const deleteBtnStyle = {
     backgroundColor: confirmDelete ? "red" : null,
     opacity: confirmDelete ? 1 : null,
