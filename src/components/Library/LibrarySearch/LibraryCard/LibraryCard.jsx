@@ -100,7 +100,7 @@ const LibraryCard = (props) => {
   };
 
   // STYLES: TITLEBAR
-  const colorBtnStyle = { backgroundColor: cardColor ? cardColor : "#f4f4f4" };
+  const colorBtnStyle = { backgroundColor: cardColor ? cardColor : "#DCDCDD" };
   const deleteBtnStyle = {
     backgroundColor: confirmDelete ? "red" : null,
     opacity: confirmDelete ? 1 : null,
@@ -141,16 +141,13 @@ const LibraryCard = (props) => {
       onAnimationEnd={onAnimationEnd}
     >
       {/* title */}
-      <div
-        className="library-card-title-container"
-        style={{ backgroundColor: cardColor }}
-      >
+      <div className={`library-card-title-container ` + cardColor}>
         <button
           ref={colorBtnRef}
           className="change-color title-btn btn-24"
           onClick={() => setOpenColorSelect(!openColorSelect)}
         >
-          <div style={colorBtnStyle} />
+          <div className={cardColor} />
           <span className="tooltip">Change color</span>
         </button>
         <button
