@@ -1,0 +1,79 @@
+
+.delete-confirmation {
+  margin: auto;
+  padding: 7%;
+  
+  background: white;
+  border: solid 1px #F4F4F4;
+  box-shadow: 0 5px 40px -3px #D4D4D4;
+  border-radius: 12px;
+
+  .row {
+    display: inline-block;
+    h1 {
+      color: #000;
+      text-align: center;
+      font-family: Roboto;
+      font-size: 18px;
+      font-style: normal;
+      font-weight: 300;
+      line-height: normal;
+      letter-spacing: 0.27px;
+    }
+    p {
+      width: auto;
+      white-space: nowrap;
+
+      color: #363B4E;
+      text-align: center;
+      font-kerning: none;
+      font-family: Roboto;
+      font-size: 13px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 18px; /* 138.462% */
+      letter-spacing: 0.65px;
+    }
+  }
+
+  .x-btn {
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin: 4% 4% 0 0;
+    width: 19px;
+    height: 18px;
+    background-color: #FFFFFF;
+    border-color: #DBE2EB;
+    background-image: url('../../assets/icons/close-window.png');
+    &:hover { background-image: url('../../assets/icons/close-window-hover.png'); }
+  }
+
+  .btn {
+    width: 80px;
+    height: 29px;
+    margin: 10px;
+    border: 2px;
+    border-radius: 6px;
+
+    color: #000;
+    text-align: center;
+    font-kerning: none;
+    font-family: Roboto;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 28px; /* 233.333% */
+    letter-spacing: 0.6px;
+  }
+  .cancel {
+    background-color: #FFFFFF;
+    border-color: #DBE2EB;
+    &:hover { background-color: #DBE2EB; }
+  }
+  .confirm {
+    background-color: #E8F5FE;
+    border-color: #E8F5FE;
+    &:hover { background-color: #C1E9FF; }
+  }
+}

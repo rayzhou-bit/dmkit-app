@@ -8,14 +8,17 @@ export const updateObject = (oldObject, updatedProperties) => {
 };
 
 export const useOutsideClick = (refs, condition, handler) => {
-  // refs contains an array of references that the user can click without triggering func
+  //  Props:
+  //    refs: <array> of useRefs that the user can click without triggering the handler
+  //    condition: <boolean> that determines if the handler should be run
+  //    handler: <function> that runs onclick if condition and refs are met
   useEffect(() => {
     const handleClickOutside = (event) => {
       console.log('test event.target', event.target)
       let runHandler = true;
       refs.forEach(ref => {
         if (ref.current && ref.current.contains(event.target)) {
-          console.log('test refcurrent', ref.current)
+          // console.log('test refcurrent', ref.current)
           runHandler = false;
         }
       });

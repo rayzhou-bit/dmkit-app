@@ -1,15 +1,26 @@
-import React from 'react';
+import React, { useRef } from 'react';
 
 import './index.scss';
+import { useOutsideClick } from '../../shared/utilityFunctions';
 import { PopupKeys } from './PopupKey';
 import * as Card from '../../components/Card/DeleteConfirmation';
+
+/*
+  There can only be one pop up on the screen at a time, so
+  the Popup component should only be called from /src/App.js.
+  The popup type is stored in the redux state.
+    An empty type means there is no popup.
+    There can be types such as card, tab and more.
+*/
 
 export const Popup = ({
   resetCallback,
   type,
 }) => {
-  // The popup displayed here depends on type.
-  //   An empty string means there should be no popup.
+  const popupRef = useRef();
+
+  useOutsideClick([popupRef], true, () => resetCallback());
+
   if (!type) return null;
 
   let pop;
@@ -24,7 +35,7 @@ export const Popup = ({
   }
 
   return (
-    <div className='wrapper' onClick={resetCallback}>
+    <div className='popup-wrapper' ref={popupRef}>
       {pop}
     </div>
   );
