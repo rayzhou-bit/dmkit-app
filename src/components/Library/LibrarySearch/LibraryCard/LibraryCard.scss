@@ -6,11 +6,14 @@ $title-bar-height: 2rem;
   width: 98%;
   height: auto;
   border-radius: 12px;
-  border: 2px solid #f4f4f4;
   box-shadow: 2px 8px -3px #d7d6d6;
 
-  &:hover {
-    border: 2px solid #c1e9ff;
+  .library-border {
+    border-radius: 12px;
+    box-shadow: 0 0 0 2px #f4f4f4;
+  }
+  &:hover .library-border {
+    box-shadow: 0 0 0 3px #c1e9ff;
   }
   &:hover .title-btn {
     opacity: 1;
@@ -134,7 +137,7 @@ $title-bar-height: 2rem;
     margin: 0;
     padding: 5px;
     border: 0;
-
+    border-radius: 12px;
     overflow-y: scroll;
     resize: none;
 

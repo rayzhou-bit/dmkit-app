@@ -140,55 +140,57 @@ const LibraryCard = (props) => {
       onClick={cardClickHandler}
       onAnimationEnd={onAnimationEnd}
     >
-      {/* title */}
-      <div className={`library-card-title-container ` + cardColor}>
-        <button
-          ref={colorBtnRef}
-          className="change-color title-btn btn-24"
-          onClick={() => setOpenColorSelect(!openColorSelect)}
+      <div className="library-border">
+        {/* title */}
+        <div className={`library-card-title-container ` + cardColor}>
+          <button
+            ref={colorBtnRef}
+            className="change-color title-btn btn-24"
+            onClick={() => setOpenColorSelect(!openColorSelect)}
+          >
+            <div className={cardColor} />
+            <span className="tooltip">Change color</span>
+          </button>
+          <button
+            ref={deleteBtnRef}
+            className="delete-card title-btn btn-24"
+            style={deleteBtnStyle}
+            onClick={deleteCard}
+          >
+            <img src={DeleteImg} alt="Delete" draggable="false" />
+            <span className="tooltip">Delete card</span>
+          </button>
+          <TitleInput
+            className="title-input"
+            btnClassName="edit-title title-btn btn-24"
+            type="card"
+            color={cardColor}
+            btnSize={24}
+            value={cardTitle}
+            saveValue={(v) => dispatch(actions.updCardTitle(cardId, v))}
+            setEditingParent={setEditingCard}
+          />
+        </div>
+        {/* color */}
+        <div
+          ref={colorSelectRef}
+          className="color-select"
+          style={{ display: openColorSelect ? "grid" : "none" }}
         >
-          <div className={cardColor} />
-          <span className="tooltip">Change color</span>
-        </button>
-        <button
-          ref={deleteBtnRef}
-          className="delete-card title-btn btn-24"
-          style={deleteBtnStyle}
-          onClick={deleteCard}
+          {colorList}
+        </div>
+        {/* content */}
+        <div
+          className="library-card-content-container"
+          style={contentContainerStyle}
         >
-          <img src={DeleteImg} alt="Delete" draggable="false" />
-          <span className="tooltip">Delete card</span>
-        </button>
-        <TitleInput
-          className="title-input"
-          btnClassName="edit-title title-btn btn-24"
-          type="card"
-          color={cardColor}
-          btnSize={24}
-          value={cardTitle}
-          saveValue={(v) => dispatch(actions.updCardTitle(cardId, v))}
-          setEditingParent={setEditingCard}
-        />
-      </div>
-      {/* color */}
-      <div
-        ref={colorSelectRef}
-        className="color-select"
-        style={{ display: openColorSelect ? "grid" : "none" }}
-      >
-        {colorList}
-      </div>
-      {/* content */}
-      <div
-        className="library-card-content-container"
-        style={contentContainerStyle}
-      >
-        <ContentTextarea
-          className="library-card-textarea"
-          value={cardText}
-          saveValue={(v) => dispatch(actions.updCardText(cardId, v))}
-          setEditingParent={setEditingCard}
-        />
+          <ContentTextarea
+            className="library-card-textarea"
+            value={cardText}
+            saveValue={(v) => dispatch(actions.updCardText(cardId, v))}
+            setEditingParent={setEditingCard}
+          />
+        </div>
       </div>
     </div>
   );
