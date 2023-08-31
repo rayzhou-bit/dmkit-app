@@ -93,7 +93,6 @@ const LibraryCard = (props) => {
 
   // STYLES: CARD
   const cardStyle = {
-    border: cardId === activeCardId ? "3px solid #f4f4f4" : "2px solid #f4f4f4",
     margin: cardId === activeCardId ? "0px 0px 8px 0px" : "2px 2px 10px 2px",
     zIndex: cardId === activeCardId ? "100" : "0",
     animation: cardAnimation ? cardAnimation[cardId] : null,
