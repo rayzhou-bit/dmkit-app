@@ -32,7 +32,6 @@ const composeEnhancers =
 //       dispatch(baseReducer(state, action));
 //     } 
 //   };
-console.log(Object.values(actionTypes))
 
 const rootReducer = combineReducers({
   sessionManager: sessionManagerReducer,

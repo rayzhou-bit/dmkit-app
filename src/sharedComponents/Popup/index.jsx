@@ -19,7 +19,7 @@ export const Popup = ({
 }) => {
   const popupRef = useRef();
 
-  useOutsideClick([popupRef], true, () => resetCallback());
+  useOutsideClick([popupRef], (type !== ''), () => resetCallback());
 
   if (!type) return null;
 
