@@ -10,6 +10,7 @@ export const DeleteConfirmation = ({
 
   const cardId = useSelector(state => state.sessionManager.popup.id);
 
+  const cancelClick = () => dispatch(resetPopup());
   const confirmClick = () => {
     console.log('test', cardId)
     dispatch(destroyCard(cardId));
@@ -18,15 +19,15 @@ export const DeleteConfirmation = ({
 
   return (
     <div className='delete-confirmation'>
-      <div className='x-btn' onClick={() => dispatch(resetPopup())} />
+      <div className='x-btn' onClick={cancelClick} />
       <div className='row'>
-        <h1>Game Master!</h1>
+        <h1 className='heading'>Game Master!</h1>
       </div>
       <div className='row'>
-        <p>Are you sure you want to delete this card?</p>
+        <p className='message'>Are you sure you want to delete this card?</p>
       </div>
       <div className='row'>
-        <button className='cancel btn' onClick={() => dispatch(resetPopup())}>
+        <button className='cancel btn' onClick={cancelClick}>
           Cancel
         </button>
         <button className='confirm btn' onClick={confirmClick}>
