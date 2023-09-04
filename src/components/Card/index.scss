@@ -5,12 +5,21 @@ $round-radius: 12px;
 $title-height: 32px;
 $btn-width: 26px;
 
-.active { margin: 2px; border: 1px solid #C1E9FF; }
-.not-active { margin: 2px; border: 1px solid #F4F4F4; }
+.active {
+  margin: 2px;
+  border: 1px solid #c1e9ff;
+}
+.not-active {
+  margin: 2px;
+  border: 1px solid #f4f4f4;
+}
 .card {
   position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
-  box-shadow: 2px 2px 8px -3px #D7d6D6;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  box-shadow: 2px 2px 8px -3px #d7d6d6;
   border-radius: $round-radius;
 
   display: grid;
@@ -18,7 +27,7 @@ $btn-width: 26px;
 
   &:hover {
     margin: 0px;
-    border: 3px solid #C1E9FF;
+    border: 3px solid #c1e9ff;
   }
 }
 
@@ -36,24 +45,28 @@ $btn-width: 26px;
   grid-template-columns: auto $btn-width $btn-width;
   padding: 0 ($round-radius)-6px;
 
-  .dark { color: black; }
-  .light { color: white; }
+  .dark {
+    color: black;
+  }
+  .light {
+    color: white;
+  }
   .input-div {
     width: 100%;
     border-radius: $round-radius 0 0 0;
     background-color: transparent;
 
     .editing {
-      background-color: #C1E9FF;
-      color: #363B4E;
+      background-color: #c1e9ff;
+      color: #363b4e;
       user-select: default;
       -moz-user-select: default;
       -webkit-user-select: default;
       cursor: text;
     }
     .editing-2 {
-      background-color: #5BC5FF;
-      color: #363B4E;
+      background-color: #5bc5ff;
+      color: #363b4e;
       user-select: default;
       -moz-user-select: default;
       -webkit-user-select: default;
@@ -66,14 +79,14 @@ $btn-width: 26px;
       border: 0;
       background-color: transparent;
 
-      font-family: 'Roboto';
+      font-family: "Roboto";
       font-style: normal;
       font-weight: 600;
       font-size: 13px;
       line-height: 25px;
       text-align: center;
       letter-spacing: 0.05em;
-      font-feature-settings: 'kern' off;
+      font-feature-settings: "kern" off;
       color: inherit;
       text-overflow: ellipsis;
 
@@ -89,11 +102,15 @@ $btn-width: 26px;
       border-style: solid;
     }
     &:hover i {
-      border-color: #5BC5FF;
+      border-color: #5bc5ff;
     }
 
-    .dark { border-color: black; }
-    .light { border-color: white; }
+    .dark {
+      border-color: black;
+    }
+    .light {
+      border-color: white;
+    }
     .open-color-icon {
       width: 16px;
       height: 16px;
@@ -119,7 +136,9 @@ $btn-width: 26px;
       animation-fill-mode: both;
     }
     @keyframes bounce {
-      50% { transform: translateY(2px); }
+      50% {
+        transform: translateY(2px);
+      }
     }
   }
 }
@@ -129,27 +148,28 @@ $btn-width: 26px;
 
   .text {
     box-sizing: border-box;
-    height: 100%; width: 100%;
+    height: 100%;
+    width: 100%;
     padding: 18px 24px;
     margin: 0;
     border: 0;
     border-radius: inherit;
     background-color: white;
 
-    font-family: 'Roboto';
     font-style: normal;
     font-weight: 400;
     font-size: 12px;
+    font-family: "Roboto";
     line-height: 20px;
     letter-spacing: 0.05em;
-    font-feature-settings: 'kern' off;
+    font-feature-settings: "kern" off;
     color: black;
     text-overflow: ellipsis;
     resize: none;
     overflow: auto;
 
     cursor: auto;
-    
+
     &:read-only {
       cursor: default;
     }
@@ -158,7 +178,7 @@ $btn-width: 26px;
       width: 19px;
     }
     &::-webkit-scrollbar-track {
-      -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.1);
+      -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
     }
     &::-webkit-scrollbar-thumb {
       background-color: darkgrey;
