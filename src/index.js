@@ -14,6 +14,12 @@ import * as serviceWorker from './serviceWorker';
 import * as actionTypes from './store/actionTypes';
 // import store from './data/store';
 
+/* TODO: redux refactor
+    Files under /data will be the future store for dmkit.
+    Get these files to work with the app.
+    Files under /store to be removed.
+*/
+
 const composeEnhancers = 
   process.env.NODE_ENV === 'development' 
   ? window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ 

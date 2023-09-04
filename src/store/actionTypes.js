@@ -1,3 +1,9 @@
+/* TODO: redux refactor
+    Files under /data will be the future store for dmkit.
+    Get these files to work with the app.
+    Files under /store to be removed.
+*/
+
 /*------------------*/
 // userData reducer //
 export const LOAD_USER = 'LOAD_USER';
