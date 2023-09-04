@@ -5,13 +5,13 @@ import useOutsideClick from '../../utils/useOutsideClick';
 
 export const ActionDropdown = ({
   btnRef,
-  closeDropdown,
   isOpen,
   items,
+  onClose,
 }) => {
   const dropdownRef = useRef();
   
-  useOutsideClick([btnRef, dropdownRef], isOpen, closeDropdown);
+  useOutsideClick([btnRef, dropdownRef], isOpen, onClose);
 
   if (!isOpen) return null;
 
@@ -28,7 +28,13 @@ export const ActionDropdown = ({
       itemsList = [
         ...itemsList,
         <li>
-          <button className='item-btn' onClick={callback}>
+          <button
+            className='item-btn'
+            onClick={() => {
+              callback();
+              onClose();
+            }}
+          >
             <p className={type + ' btn-title'} >{title}</p>
             {icon ? <img className='btn-icon' src={icon} /> : null}
           </button>
