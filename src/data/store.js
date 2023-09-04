@@ -6,6 +6,12 @@ import * as campaign from './campaign/reducers';
 import * as session from './session/reducers';
 import * as user from './user/reducers';
 
+/* TODO: redux refactor
+    Files under /data will be the future store for dmkit.
+    Get these files to work with the app.
+    Files under /store to be removed.
+*/
+
 const rootReducer = combineReducers({
   campaignData: undoable(
     campaign.reducer,
