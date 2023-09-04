@@ -14,11 +14,9 @@ export const useOutsideClick = (refs, condition, handler) => {
   //    handler: <function> that runs onclick if condition and refs are met
   useEffect(() => {
     const handleClickOutside = (event) => {
-      console.log('test event.target', event.target)
       let runHandler = true;
       refs.forEach(ref => {
         if (ref.current && ref.current.contains(event.target)) {
-          // console.log('test refcurrent', ref.current)
           runHandler = false;
         }
       });

@@ -12,7 +12,6 @@ export const DeleteConfirmation = ({
 
   const cancelClick = () => dispatch(resetPopup());
   const confirmClick = () => {
-    console.log('test', cardId)
     dispatch(destroyCard(cardId));
     dispatch(resetPopup());
   };
