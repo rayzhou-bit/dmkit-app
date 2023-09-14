@@ -133,6 +133,8 @@ const LibraryCard = (props) => {
         >
           <ContentTextarea
             className="library-card-textarea"
+            isSelected={isSelected}
+            lib={true}
             value={cardText}
             saveValue={(v) => dispatch(actions.updCardText(cardId, v))}
             setEditingParent={setEditingCard}
