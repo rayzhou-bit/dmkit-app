@@ -1,13 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 
-import { CARD_FONT_SIZE } from '../../../shared/constants/fontSize';
+import { CARD_FONT_SIZE } from "../../../shared/constants/fontSize";
 
 // Creates a title text with an edit button
 // css is fully controlled by props
 
-const ContentTextarea = ({ 
+const ContentTextarea = ({
   className,
   styles,
+  isSelected,
+  lib = false,
   value,
   saveValue,
   setEditingParent,
@@ -43,7 +45,7 @@ const ContentTextarea = ({
 
   const keyPressHandler = (event) => {
     if (editing) {
-      if (event.key === 'Tab') {
+      if (event.key === "Tab") {
         event.preventDefault();
         // TODO make tab indent. need to set cursor position after value state update
         // const { selectionStart, selectionEnd } = event.target;
@@ -52,23 +54,31 @@ const ContentTextarea = ({
         // event.target.setSelectionRange(0,0);
         // setTextareaValue(newValue);
       }
-    };
+    }
   };
+
+  //slice content
+  //if text content is greater than 300 char
+  //slice + ...
+  const slice =
+    textareaValue.length > 300 && lib
+      ? textareaValue.slice(0, 300) + "..."
+      : textareaValue;
 
   return (
     <textarea
       className={className}
       onBlur={endEdit}
-      onChange={e => setTextareaValue(e.target.value)}
+      onChange={(e) => setTextareaValue(e.target.value)}
       onClick={beginEdit}
-      onDragOver={e => e.preventDefault()}
+      onDragOver={(e) => e.preventDefault()}
       onKeyDown={keyPressHandler}
-      onWheel={e => e.stopPropagation()}
+      onWheel={(e) => e.stopPropagation()}
       placeholder="Fill me in!"
       readOnly={!editing}
       style={styles}
       type="text"
-      value={textareaValue ? textareaValue : ""}
+      value={textareaValue ? (isSelected ? textareaValue : slice) : ""}
     />
   );
 };
