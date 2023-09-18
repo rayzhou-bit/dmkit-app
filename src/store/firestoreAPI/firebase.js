@@ -1,15 +1,19 @@
-import { initializeApp } from "@firebase/app";
-import { getFirestore, collection } from "@firebase/firestore";
-import { getAuth, GoogleAuthProvider, FacebookAuthProvider } from "@firebase/auth";
+import { initializeApp } from '@firebase/app';
+import { getFirestore, collection } from '@firebase/firestore';
+import {
+  getAuth,
+  GoogleAuthProvider,
+  FacebookAuthProvider,
+} from '@firebase/auth';
 
 const firebaseConfig = {
-  apiKey: process.env.REACT_APP_API_KEY,
-  authDomain: process.env.REACT_APP_AUTH_DOMAIN,
-  databaseURL: process.env.REACT_APP_DATABASE_URL,
-  projectId: process.env.REACT_APP_PROJECT_ID,
-  storageBucket: process.env.REACT_APP_STORAGE_BUCKET,
-  messagingSenderId: process.env.REACT_APP_MESSAGE_SENDER_ID,
-  appId: process.env.REACT_APP_APP_ID
+  apiKey: import.meta.env.VITE_APP_API_KEY,
+  authDomain: import.meta.env.VITE_APP_AUTH_DOMAIN,
+  databaseURL: import.meta.env.VITE_APP_DATABASE_URL,
+  projectId: import.meta.env.VITE_APP_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_APP_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_APP_MESSAGE_SENDER_ID,
+  appId: import.meta.env.VITE_APP_APP_ID,
 };
 
 const app = initializeApp(firebaseConfig);
@@ -19,8 +23,4 @@ const auth = getAuth();
 export const googleProvider = new GoogleAuthProvider();
 export const facebookProvider = new FacebookAuthProvider();
 
-export {
-  app,
-  auth,
-  db,
-};
+export { app, auth, db };
