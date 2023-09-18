@@ -104,8 +104,8 @@ const LibraryCard = (props) => {
     minHeight: isSelected
       ? 6 * CARD_FONT_SIZE.text + "px"
       : 3 * CARD_FONT_SIZE.text + "px",
-    maxHeight: isSelected ? "50vh" : 4 * CARD_FONT_SIZE.text + "px",
-    height: isSelected ? "35vh" : 4 * CARD_FONT_SIZE.text + "px",
+    maxHeight: isSelected ? "50vh" : 5 * CARD_FONT_SIZE.text + "px",
+    height: isSelected ? "35vh" : 5 * CARD_FONT_SIZE.text + "px",
   };
 
   return (
