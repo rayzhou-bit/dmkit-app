@@ -62,7 +62,7 @@ const SignUp = (props) => {
   const emailVerifyScreen = (
     <div className="email-verify-screen">
       <p>Please verify your email by clicking the link in your verification email.</p>
-      <button onClick={() => dispatch(fireactions.sendEmailVerification())}>Resend Email</button>
+      <button onClick={() => dispatch(fireactions.sendVerificationToEmail())}>Resend Email</button>
     </div>
   );
 

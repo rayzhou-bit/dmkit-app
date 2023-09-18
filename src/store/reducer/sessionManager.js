@@ -90,7 +90,7 @@ const updCampaignOnList = (state, title) => {
 
 //ERRORS
 const setErrorPasswordReset = (state, errorCode) => {
-  // error codes for firebase method Auth.sendPasswordResetEmail
+  // error codes for firebase method Auth.sendPasswordResetToEmail
   switch (errorCode) {
     case ('auth/invalid-email'): return updateObject(state, {errorPasswordReset: "email address is not valid"});
     case ('auth/user-not-found'): return updateObject(state, {errorPasswordReset: "user does not exist"});
