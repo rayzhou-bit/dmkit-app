@@ -1,10 +1,20 @@
-import {
-  getAuth,
-  onAuthStateChanged,
-  GoogleAuthProvider,
-  FacebookAuthProvider,
-} from '@firebase/auth';
 import { ActionCreators } from 'redux-undo';
+import {
+  applyActionCode,
+  checkActionCode,
+  confirmPasswordReset,
+  createUserWithEmailAndPassword,
+  FacebookAuthProvider,
+  getAuth,
+  GoogleAuthProvider,
+  onAuthStateChanged,
+  sendEmailVerification,
+  sendPasswordResetEmail,
+  signInWithEmailAndPassword,
+  signInWithPopup,
+  signOut,
+  verifyPasswordResetCode,
+} from '@firebase/auth';
 
 import { auth } from './firebase';
 import * as actions from '../actionIndex';
@@ -18,7 +28,7 @@ const facebookProvider = new FacebookAuthProvider();
 const getUser = () => (auth.currentUser ? auth.currentUser : null);
 
 export const manageUser = ({ dispatch, introCampaignEdit, campaignData }) => {
-  auth.onAuthStateChanged((user) => {
+  onAuthStateChanged(auth, (user) => {
     console.log('[Status] loading. Triggered by auth listener.');
     dispatch(actions.setStatus('loading'));
     if (user && user.uid) {
@@ -75,8 +85,7 @@ export const updateDisplayName = (displayName) => {
 
 export const emailSignIn = (email, psw, followUpHandler) => {
   return (dispatch) =>
-    auth
-      .signInWithEmailAndPassword(email, psw)
+    signInWithEmailAndPassword(auth, email, psw)
       .then((resp) => {
         console.log('[emailSignIn] sign in successful');
         dispatch(actions.unsetErrorEmailSignIn());
@@ -90,16 +99,14 @@ export const emailSignIn = (email, psw, followUpHandler) => {
 
 export const emailSignOut = () => {
   return (dispatch) =>
-    auth
-      .signOut()
+    signOut(auth)
       .then(console.log('[emailSignout] sign out successful'))
       .catch((err) => console.log('[emailSignOut] error:', err));
 };
 
 export const googleSignIn = () => {
   return (dispatch) =>
-    auth
-      .signInWithPopup(googleProvider)
+    signInWithPopup(auth, googleProvider)
       .then((resp) => {
         console.log('[googleSignIn] sign in successful');
         dispatch(actions.unsetErrorGoogleSignUp());
@@ -112,8 +119,7 @@ export const googleSignIn = () => {
 
 export const facebookSignIn = () => {
   return (dispatch) =>
-    auth
-      .signInWithPopup(facebookProvider)
+    signInWithPopup(auth, facebookProvider)
       .then((resp) => {
         console.log('[facebookSignIn] sign in successful');
         dispatch(actions.unsetErrorFacebookSignUp());
@@ -126,12 +132,11 @@ export const facebookSignIn = () => {
 
 export const emailSignUp = (email, psw) => {
   return (dispatch) =>
-    auth
-      .createUserWithEmailAndPassword(email, psw)
+    createUserWithEmailAndPassword(auth, email, psw)
       .then((resp) => {
         console.log('[emailSignUp] sign up successful:', resp);
         dispatch(actions.unsetErrorEmailSignUp());
-        sendEmailVerification();
+        sendVerificationToEmail();
       })
       .catch((err) => {
         console.log('[emailSignUp] error:', err);
@@ -139,32 +144,27 @@ export const emailSignUp = (email, psw) => {
       });
 };
 
-export const sendEmailVerification = () => {
-  const actionCodeSettings = {
-    url: import.meta.env.VITE_APP_CONFIRMATION_EMAIL_REDIRECT,
-  };
+export const sendVerificationToEmail = () => {
   return (dispatch) =>
-    auth.currentUser
-      .sendEmailVerification(actionCodeSettings)
+    sendEmailVerification(auth.currentUser)
       .then((resp) =>
-        console.log('[sendEmailVerification] sent email verification:', resp)
+        console.log('[sendVerificationToEmail] sent email verification:', resp)
       )
-      .catch((err) => console.log('[sendEmailVerification] error:', err));
+      .catch((err) => console.log('[sendVerificationToEmail] error:', err));
 };
 
-export const sendPasswordResetEmail = (email) => {
+export const sendPasswordResetToEmail = (email) => {
   return (dispatch) =>
-    auth
-      .sendPasswordResetEmail(email)
+    sendPasswordResetEmail(auth, email)
       .then((resp) => {
         console.log(
-          '[sendPasswordResetEmail] sent password reset email to:',
+          '[sendPasswordResetToEmail] sent password reset email to:',
           email
         );
         dispatch(actions.unsetErrorPasswordReset());
       })
       .catch((err) => {
-        console.log('[sendPasswordResetEmail] error:', err);
+        console.log('[sendPasswordResetToEmail] error:', err);
         dispatch(actions.setErrorPasswordReset(err.code));
       });
 };
@@ -195,8 +195,7 @@ export const emailActionHandler = () => {
 };
 
 const handleResetPassword = (actionCode, continueUrl) => {
-  auth
-    .verifyPasswordResetCode(actionCode)
+  verifyPasswordResetCode(auth, actionCode)
     .then((email) => {
       // let accountEmail = email;
 
@@ -205,8 +204,7 @@ const handleResetPassword = (actionCode, continueUrl) => {
       let newPassword = '...';
 
       // Save the new password.
-      auth
-        .confirmPasswordReset(actionCode, newPassword)
+      confirmPasswordReset(auth, actionCode, newPassword)
         .then((resp) => {
           // Password reset has been confirmed and new password updated.
           // TODO: Display a link back to the app, or sign-in the user directly
@@ -232,14 +230,13 @@ const handleRecoverEmail = (actionCode) => {
   // parameter.
   let restoredEmail = null;
   // Confirm the action code is valid.
-  auth
-    .checkActionCode(actionCode)
+  checkActionCode(auth, actionCode)
     .then((info) => {
       // Get the restored email address.
       restoredEmail = info['data']['email'];
 
       // Revert to the old email.
-      return auth.applyActionCode(actionCode);
+      return applyActionCode(auth, actionCode);
     })
     .then(() => {
       // Account email reverted to restoredEmail
@@ -248,8 +245,7 @@ const handleRecoverEmail = (actionCode) => {
 
       // You might also want to give the user the option to reset their password
       // in case the account was compromised:
-      auth
-        .sendPasswordResetEmail(restoredEmail)
+      sendPasswordResetEmail(auth, restoredEmail)
         .then(() => {
           // Password reset confirmation sent. Ask user to check their email.
         })
@@ -264,8 +260,7 @@ const handleRecoverEmail = (actionCode) => {
 
 const handleVerifyEmail = (actionCode, continueUrl) => {
   // Try to apply the email verification code.
-  auth
-    .applyActionCode(actionCode)
+  applyActionCode(auth, actionCode)
     .then((resp) => {
       console.log('[handleVerifyEmail] email verified:', resp);
       // Email address has been verified.

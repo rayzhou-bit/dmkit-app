@@ -70,8 +70,8 @@ const AuthDropdown = props => {
     setShowUserDropdown(false);
   };
 
-  const sendPasswordResetEmail = () => {
-    dispatch(fireactions.sendPasswordResetEmail(emailInput));
+  const sendPasswordResetToEmail = () => {
+    dispatch(fireactions.sendPasswordResetToEmail(emailInput));
     setShowPasswordResetMsg(true);
   };
   
@@ -119,7 +119,7 @@ const AuthDropdown = props => {
           <div className="form-row">
             <button className="sign-in btn-any" type="submit">Sign In</button>
             <div className="forget-password"
-              onClick={sendPasswordResetEmail}>
+              onClick={sendPasswordResetToEmail}>
               Forget your password?
             </div>
           </div>
