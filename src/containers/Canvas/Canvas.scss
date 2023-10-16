@@ -22,7 +22,9 @@
     .grid {
       position: absolute;
       inset: 0;
-      background-image: url("../../assets/grid-30.png");
+      background: white;
+      background-image: radial-gradient(#FFD749 0.75px, transparent 0);
+      background-size: 12px 12px;
       background-position: -2px -2px;
     }
   }
