@@ -33,6 +33,7 @@ const Title = ({
     setIsEditingParent: setEditingCard,
     value: title,
   });
+
   const {
     colorDropdownBtnRef,
     isColorDropdownOpen,
@@ -40,6 +41,7 @@ const Title = ({
     closeColorDropdown,
     openColorDropdown,
   } = hooks.useColorDropdownHooks({ color });
+
   const {
     isOptionDropdownOpen,
     options,
@@ -71,7 +73,11 @@ const Title = ({
           value={titleValue ?? ''}
         />
       </div>
-      <button className='title-btn' onClick={openColorDropdown} ref={colorDropdownBtnRef}>
+      <button
+        className='title-btn'
+        onClick={openColorDropdown}
+        ref={colorDropdownBtnRef}
+      >
         <i className={'open-color-icon' + (isLightColor ? ' dark' : ' light')} />
       </button>
       <ColorDropdown

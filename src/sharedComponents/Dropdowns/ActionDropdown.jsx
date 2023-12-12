@@ -3,6 +3,16 @@ import React, { useRef } from 'react';
 import './ActionDropdown.scss';
 import useOutsideClick from '../../utils/useOutsideClick';
 
+/*
+  Each item in the items array should be similar to the following object:
+  {
+    title: 'Move to unsorted',
+    type: 'danger',
+    callback: () => dispatch(actions.unlinkCardFromView(cardId)),
+    icon: LibraryIcon,
+  },
+*/
+
 export const ActionDropdown = ({
   btnRef,
   isOpen,
@@ -16,18 +26,18 @@ export const ActionDropdown = ({
   if (!isOpen) return null;
 
   let itemsList = [];
-  items.forEach(item => {
+  items.forEach((item, index) => {
     if (Object.keys(item).length === 0) {
       itemsList = [
         ...itemsList,
-        <li className='break' />
+        <li className='break' key={'break' + index} />
       ];
     }
     else {
       const { title, type, callback, icon } = item;
       itemsList = [
         ...itemsList,
-        <li>
+        <li key={title + index}>
           <button
             className='item-btn'
             onClick={() => {

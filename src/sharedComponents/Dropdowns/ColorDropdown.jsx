@@ -28,6 +28,7 @@ export const ColorDropdown = ({
       ...colorList,
       <button
         className={className}
+        key={color}
         onClick={() => onUpdateColor(color)}
       />
     ];

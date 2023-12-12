@@ -3,8 +3,16 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-
   z-index: 999;
-
   text-align: center;
+}
+
+.backdrop {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 888;
+  background-color: #DBE2EB69;
 }

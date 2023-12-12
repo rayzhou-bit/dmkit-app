@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import './ViewSelect.scss';
 import * as actions from '../../store/actionIndex';
-import { useOutsideClick } from '../../shared/utilityFunctions';
+import useOutsideClick from '../../utils/useOutsideClick';
 import ViewTab from './ViewTab/ViewTab';
 
 import AddImg from '../../assets/icons/add-32.png';

@@ -49,7 +49,10 @@ export const fetchActiveCampaignId = () => {
             console.log("[fetchActiveCampaignId] success loading activeCampaignId", resp.data().activeCampaignId);
           } else dispatch(firstTimeSetup(userId));
         })
-        .catch(err => console.log("[fetchActiveCampaignId] error loading activeCampaignId:", err));
+        .catch(err => {
+          console.log("[fetchActiveCampaignId] error loading activeCampaignId:", err);
+          // TODO insert case when error is "Failed to get document because the client is offline."
+        });
     }
   };
 };

@@ -6,7 +6,7 @@ import * as actions from '../../store/actionIndex';
 import { LightColors } from '../../styles/colors';
 import LibraryIcon from '../../assets/icons/library-icon.png';
 import RedTrashIcon from '../../assets/icons/red-trash.png';
-import { PopupKeys } from '../../sharedComponents/Popup/PopupKey';
+import { PopupKeys } from '../Popup/PopupKey';
 
 export const useTitleHooks = ({
   color,
