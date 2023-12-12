@@ -7,6 +7,7 @@ import { convertToMsg } from '../../data/authCodes';
 import * as actions from '../../store/actionIndex';
 import * as fireactions from '../../store/firestoreIndex';
 import { store } from '../../index';
+import { PopupKeys } from '../Popup/PopupKey';
 
 export const useTitleHooks = ({
   saveNewValue,
@@ -132,16 +133,16 @@ export const useProjectHooks = () => {
         dispatch(fireactions.saveCampaignData(
           activeProjectId,
           projectData,
-          () => dispatch(fireactions.createCampaign())
+          () => dispatch(fireactions.createProject())
         ));
       } else {
-        dispatch(fireactions.createCampaign());
+        dispatch(fireactions.createProject());
       }
     },
   };
 };
 
-export const useProjectItemHooks = ({ closeProjectDropdown, id }) => {
+export const useProjectItemHooks = ({ closeProjectDropdown, id, name }) => {
   const dispatch = useDispatch();
   const activeProjectId = useSelector(state => state.sessionManager.activeCampaignId);
   const projectData = useSelector(state => state.campaignData.present);
@@ -160,10 +161,10 @@ export const useProjectItemHooks = ({ closeProjectDropdown, id }) => {
         dispatch(fireactions.saveCampaignData(
           activeProjectId,
           projectData,
-          dispatch(fireactions.switchCampaign(id)),
+          dispatch(fireactions.switchProject({ projectId: id })),
         ));
       } else {
-        dispatch(fireactions.switchCampaign(id));
+        dispatch(fireactions.switchProject({ projectId: id }));
       }
       closeProjectDropdown();
     },
@@ -173,31 +174,21 @@ export const useProjectItemHooks = ({ closeProjectDropdown, id }) => {
         dispatch(fireactions.saveCampaignData(
           activeProjectId,
           projectData,
-          dispatch(fireactions.copyCampaign(id)),
+          dispatch(fireactions.copyProject({ projectId: id })),
         ));
       } else {
-        dispatch(fireactions.copyCampaign(id));
+        dispatch(fireactions.copyProject({ projectId: id }));
       }
     },
-    deleteProject: (event) => {
+    confirmDeleteProject: (event) => {
       event.stopPropagation();
-      if (!confirmDelete) {
-        setConfirmDelete(true);
-      } else {
-        dispatch(fireactions.destroyCampaign(
-          id,
-          (
-            isActiveProject
-            ? () => {
-                dispatch(fireactions.switchCampaign(null));
-                dispatch(actions.unloadCampaignData());
-                console.log('huh')
-              }
-            : null
-          ),
-        ));
-      }
-    },
+      dispatch(actions.setPopup({
+        type: PopupKeys.CONFIRM_PROJECT_DELETE,
+        id,
+        name,
+        isActiveProject,
+      }));
+    }
   };
 };
 
@@ -298,7 +289,7 @@ export const useSignInHooks = () => {
   const dispatch = useDispatch();
   const userId = useSelector(state => state.userData.userId);
   const introCampaignEdit = useSelector(state => state.sessionManager.introCampaignEdit);
-  const campaignData = useSelector (state => state.campaignData.present);
+  const projectData = useSelector (state => state.campaignData.present);
   const [ showSignInDropdown, setShowSignInDropdown ] = useState(false);
   const [ email, setEmail ] = useState('');
   const [ emailError, setEmailError ] = useState('');
@@ -341,7 +332,7 @@ export const useSignInHooks = () => {
           email,
           password,
           callback: () => {
-            dispatch(fireactions.saveIntroCampaignData(campaignData));
+            dispatch(fireactions.saveIntroProjectData({ projectData }));
             setAuthError('');
           },
           errorCallback: (errorCode) => setAuthError(convertToMsg({ errorCode })),

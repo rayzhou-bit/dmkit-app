@@ -1,5 +1,5 @@
 
-.delete-confirmation {
+.card-delete-confirmation {
   margin: auto;
   padding: 36px 8px;
   
@@ -50,8 +50,8 @@
     height: 18px;
     background-color: #FFFFFF;
     border-color: #DBE2EB;
-    background-image: url('../../assets/icons/close-window.png');
-    &:hover { background-image: url('../../assets/icons/close-window-hover.png'); }
+    background-image: url('../../../assets/icons/close-window.png');
+    &:hover { background-image: url('../../../assets/icons/close-window-hover.png'); }
   }
 
   .btn {

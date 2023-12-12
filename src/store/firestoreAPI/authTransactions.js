@@ -27,7 +27,11 @@ const facebookProvider = new FacebookAuthProvider();
 
 const getUser = () => (auth.currentUser ? auth.currentUser : null);
 
-export const manageUser = ({ dispatch, introCampaignEdit, campaignData }) => {
+export const manageUser = ({
+  dispatch,
+  introCampaignEdit,
+  campaignData,
+}) => {
   onAuthStateChanged(auth, (user) => {
     console.log('[Status] loading. Triggered by auth listener.');
     dispatch(actions.setStatus('loading'));
@@ -45,9 +49,12 @@ export const manageUser = ({ dispatch, introCampaignEdit, campaignData }) => {
           dispatch(fireactions.fetchActiveCampaignId());
         } else {
           dispatch(
-            fireactions.saveIntroCampaignData(campaignData, () => {
-              dispatch(fireactions.fetchCampaignList());
-              dispatch(fireactions.fetchActiveCampaignId());
+            fireactions.saveIntroProjectData({
+              projectData: campaignData,
+              callback: () => {
+                dispatch(fireactions.fetchCampaignList());
+                dispatch(fireactions.fetchActiveCampaignId());
+              },
             })
           );
         }

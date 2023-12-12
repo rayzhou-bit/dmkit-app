@@ -4,8 +4,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import * as actions from '../../store/actionIndex';
 import { PopupKeys } from './PopupKey';
 
-import * as Card from '../Card/DeleteConfirmation';
-import SignUp from '../HeaderMenu/SignUp';
+import * as Card from '../Card/popups/DeleteConfirmation';
+import * as Project from '../HeaderMenu/popups/DeleteConfirmation';
+import SignUp from '../HeaderMenu/popups/SignUp';
 
 import './index.scss';
 
@@ -26,25 +27,26 @@ export const Popup = () => {
     return null;
   }
 
-  let display;
-  switch (popup.type) {
-    case PopupKeys.CONFIRM_CARD_DELETE:
-      display = <Card.DeleteConfirmation cardId={popup.id} />
-      break;
-    case PopupKeys.CONFIRM_TAB_DELETE:
-      // TODO
-      break;
-    case PopupKeys.SIGN_UP:
-      display = <SignUp />
-      break;
-    default:
-      return null;
-  }
+  const element = () =>{
+    switch (popup.type) {
+      case PopupKeys.CONFIRM_CARD_DELETE:
+        return <Card.DeleteConfirmation {...popup} />;
+      case PopupKeys.CONFIRM_TAB_DELETE:
+        // TODO
+        return null;
+      case PopupKeys.CONFIRM_PROJECT_DELETE:
+        return <Project.DeleteConfirmation {...popup} />;
+      case PopupKeys.SIGN_UP:
+        return <SignUp />;
+      default:
+        return null;
+    }
+  };
 
   return (
     <>
       <div className='popup-wrapper' ref={popupRef}>
-        {display}
+        {element()}
       </div>
       <div
         className='backdrop'

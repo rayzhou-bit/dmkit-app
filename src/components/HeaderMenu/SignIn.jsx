@@ -128,7 +128,7 @@ const SignIn = () => {
     );
   };
 
-  const display = () => {
+  const element = () => {
     switch (forgotPasswordScreen) {
       case 'submit': return forgotPasswordSubmitScreen();
       case 'success': return forgotPasswordSuccessScreen();
@@ -151,7 +151,7 @@ const SignIn = () => {
         ref={signInDropdownRef}
         style={{ display: showSignInDropdown ? 'block' : 'none'}}
       >
-        {display()}
+        {element()}
       </div>
     </div>
   );

@@ -13,8 +13,8 @@ const ProjectItem = ({ closeProjectDropdown, id, name }) => {
     isActiveProject,
     switchProject,
     copyProject,
-    deleteProject,
-  } = useProjectItemHooks({ closeProjectDropdown, id });
+    confirmDeleteProject,
+  } = useProjectItemHooks({ closeProjectDropdown, id, name });
 
   const [deleteDisplayIcon, setDeleteDisplayIcon] = React.useState(DeleteIcon);
 
@@ -31,7 +31,7 @@ const ProjectItem = ({ closeProjectDropdown, id, name }) => {
         <button
           className='delete'
           ref={deleteBtnRef}
-          onClick={deleteProject}
+          onClick={confirmDeleteProject}
           onMouseOver={e => setDeleteDisplayIcon(DeleteRedIcon)}
           onMouseOut={e => setDeleteDisplayIcon(DeleteIcon)}
         >

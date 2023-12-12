@@ -8,10 +8,8 @@ $border-radius: 0.5rem;
   right: 0;
   z-index: 100;
   height: $menu-height;
-
   border: 1px solid #F4F4F4;
   background: white;
-
   display: flex;
   flex-flow: row nowrap;
 }
@@ -23,7 +21,6 @@ $border-radius: 0.5rem;
   display: flex;
   align-items: center;
   justify-content: center;
-
   img {
     display: block;
     margin: auto;
@@ -35,9 +32,7 @@ $border-radius: 0.5rem;
   width: 100%;
   height: 100%;
   padding: 12px;
-
   text-align: center;
-  
   input {
     width: 100%;
     border: 0;
@@ -96,16 +91,13 @@ $border-radius: 0.5rem;
       width: 25px;
       height: 25px;
     }
+
     .spin {
       animation: spin 2.5s linear infinite;
     }
     @keyframes spin {
-      0% {
-        transform: rotate(0deg);
-      }
-      100% {
-        transform: rotate(360deg);
-      }
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
     }
   }
 }
@@ -175,27 +167,22 @@ $border-radius: 0.5rem;
   font-weight: 400;
   line-height: 30px; /* 250% */
   letter-spacing: 0.6px;
-
   .break {
     margin: 8px 19px;
     border: 1px solid #F4F4F4;
   }
-
   .username-wrapper {
     padding: 21px 10px 0 10px;
     .username {
       font-weight: 1000;
     }
   }
-
   .email-wrapper {
     padding: 0 10px 0 10px;
   }
-
   .change-name {
     padding: 0 10px 0 10px;
   }
-
   .log-out {
     padding: 0 10px 16px 10px;
   }
@@ -204,14 +191,12 @@ $border-radius: 0.5rem;
 .sign-in {
   margin: 7px;
   position: relative;
-
   .sign-in-btn {
     box-sizing: border-box;
     height: 100%;
     padding: 0 20px;
     background-color: transparent;
     span {
-      // padding: 0 0 2px 0;
       white-space: nowrap;
       color: #363B4E;
       font-weight: 600;
@@ -224,7 +209,6 @@ $border-radius: 0.5rem;
     }
   }
 
-
   form {
     padding: 15px;
     align-items: center;
@@ -235,14 +219,12 @@ $border-radius: 0.5rem;
     font-style: normal;
     display: flex;
     flex-flow: column nowrap;
-
     .form-title {
       font-size: 14px;
       font-weight: 700;
       line-height: 25px;
       letter-spacing: 0.7px;
     }
-
     .form-subtitle {
       padding: 10px 0;
       font-size: 10px;
@@ -250,7 +232,6 @@ $border-radius: 0.5rem;
       line-height: 14px;
       letter-spacing: 0.5px;
     }
-
     input {
       width: 85%;
       margin-top: 8px;
@@ -284,13 +265,10 @@ $border-radius: 0.5rem;
       border-color: #FFAB49;
     }
     .auth-error {
-      animation: error-blink .25s step-end 3 alternate,
-        shake .75s;
+      animation: error-blink .25s step-end 3 alternate, shake .75s;
     }
     @keyframes error-blink {
-      50% {
-        border: 2px solid #FFAB49;
-      }
+      50% { border: 2px solid #FFAB49; }
     }
     @keyframes shake {
       0% { transform: translateX(3px); }
@@ -309,7 +287,6 @@ $border-radius: 0.5rem;
     .forgot-password-email-input {
       margin-bottom: 20px;
     }
-
     .forgot-password {
       background-color: white;
       font-size: 10px;
@@ -348,8 +325,6 @@ $border-radius: 0.5rem;
     background: #E8F5FE;
     text-align: center;
     flex-flow: row nowrap;
-    &:hover { background: #C1E9FF; }
-
     span {
       padding: 5px 8px;
       color: #363B4E;
@@ -362,6 +337,7 @@ $border-radius: 0.5rem;
       line-height: 25px;
       letter-spacing: 0.6px;
     }
+    &:hover { background: #C1E9FF; }
   }
 
   .error-banner {
@@ -369,7 +345,6 @@ $border-radius: 0.5rem;
     padding: 7px 10px;
     background: #FFE8E0;
     text-align: center;
-
     label {
       color: #ED3131;
       text-align: center;
@@ -398,9 +373,7 @@ $border-radius: 0.5rem;
     font-weight: 600;
     letter-spacing: 0.24px;
   }
-  &:hover {
-    background: #FFF3C4;
-  }
+  &:hover { background: #FFF3C4; }
 }
 
 .header-menu-btn {
@@ -410,19 +383,15 @@ $border-radius: 0.5rem;
   background-color: transparent;
   display: flex;
   flex-flow: row nowrap;
-  &:hover > img {
-    transform: translateY(3px);
-    transition-duration: .5s;
-  }
-
   span {
     padding: 7px;
     white-space: nowrap;
   }
-
   img {
+    transition-duration: .5s;
     content: url('../../assets/icons/dropdown-arrow.svg');
   }
+  &:hover > img { transform: translateY(3px); }
 }
 
 .dropdown {
@@ -438,17 +407,14 @@ $border-radius: 0.5rem;
   ul {
     margin: 0;
     padding: 0;
-
     li {
       list-style: none;
-
       div {
         padding: 9px;
         display: grid;
         grid-template-columns: 1fr auto auto;
         gap: 5px;
         justify-content: end;
-
         span {
           padding: 0 10px;
           white-space: nowrap;
@@ -463,7 +429,6 @@ $border-radius: 0.5rem;
           line-height: 25px;
           letter-spacing: 0.6px;
         }
-
         button {
           height: 23px;
           width: 100%;
@@ -480,11 +445,8 @@ $border-radius: 0.5rem;
           font-weight: 400;
           line-height: 30px; /* 250% */
           letter-spacing: 0.6px;
+          img { margin: 4px; }
           &:hover { background-color: white; }
-
-          img {
-            margin: 4px;
-          }
         }
       }
     }

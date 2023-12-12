@@ -1,10 +1,10 @@
 import React from 'react';
 
-import { useSignUpHooks } from './hooks';
+import { useSignUpHooks } from '../hooks';
 
 import './SignUp.scss';
-import GoogleIcon from '../../assets/icons/google.png';
-import CloseIcon from '../../assets/icons/close.svg';
+import GoogleIcon from '../../../assets/icons/google.png';
+import CloseIcon from '../../../assets/icons/close.svg';
 
 const SignUp = () => {
   const {

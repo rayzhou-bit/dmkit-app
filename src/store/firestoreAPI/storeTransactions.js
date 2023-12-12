@@ -1,3 +1,5 @@
+// TODO replace campaign terminology with project terminology
+
 import {
   doc,
   addDoc,
@@ -162,7 +164,10 @@ export const saveCampaignData = (campaignId, campaignData, followUpHandler) => {
   }
 };
 
-export const saveIntroCampaignData = (campaignData, followUpHandler) => {
+export const saveIntroProjectData = ({
+  projectData,
+  callback,
+}) => {
   const user = getUser();
   return dispatch => {
     if (user) {
@@ -170,7 +175,7 @@ export const saveIntroCampaignData = (campaignData, followUpHandler) => {
       dispatch(actions.setStatus('saving'));
       const userId = user.uid;
       // CAMPAIGN data
-      let campaignPackage = {...campaignData};
+      let campaignPackage = {...projectData};
       delete campaignPackage.cards;
       delete campaignPackage.views;
       addDoc(collection(db, "users", userId, "campaigns"), campaignPackage)
@@ -179,17 +184,17 @@ export const saveIntroCampaignData = (campaignData, followUpHandler) => {
           if (campaignId) {
             const batch = writeBatch(db);
             // CARD data
-            for (let cardId in campaignData.cards) {
+            for (let cardId in projectData.cards) {
               batch.set(
                 doc(db, "users", userId, "campaigns", campaignId, "cards", cardId),
-                campaignData.cards[cardId]
+                projectData.cards[cardId]
               );
             }
             // VIEW data
-            for (let viewId in campaignData.views) {
+            for (let viewId in projectData.views) {
               batch.set(
                 doc(db, "users", userId, "campaigns", campaignId, "views", viewId),
-                campaignData.views[viewId]
+                projectData.views[viewId]
               );
             }
             batch.commit()
@@ -199,45 +204,54 @@ export const saveIntroCampaignData = (campaignData, followUpHandler) => {
                 })
                   .then(resp => {
                     dispatch(actions.setCampaignEdit(false));
-                    if (followUpHandler) followUpHandler();
-                    console.log("[saveIntroCampaignData] success saving intro campaign");
+                    if (callback) {
+                      callback();
+                    }
+                    console.log("[saveIntroProjectData] success saving intro campaign");
                   })
                   .catch(err => {
-                    console.log("[saveIntroCampaignData] error saving intro campaign (setting activeCampaignId):", err)
+                    console.log("[saveIntroProjectData] error saving intro campaign (setting activeCampaignId):", err)
                   });
               })
               .catch(err => {
-                console.log("[saveIntroCampaignData] error saving intro campaign (batching cards and views):", err)
+                console.log("[saveIntroProjectData] error saving intro campaign (batching cards and views):", err)
               });
           }
         })
         .catch(err => {
-          console.log("[saveIntroCampaignData] error saving intro campaign (creating new campaign):", err)
+          console.log("[saveIntroProjectData] error saving intro campaign (creating new campaign):", err)
         });
     }
   };
 };
 
-export const switchCampaign = (campaignId, followUpHandler) => {
+export const switchProject = ({
+  projectId,
+  callback,
+}) => {
   // Note: this does not save data to the server
   const user = getUser();
   return dispatch => {
     if (user) {
       const userId = user.uid;
       updateDoc(doc(db, "users", userId), {
-        activeCampaignId: campaignId,
+        activeCampaignId: projectId,
       })
         .then(resp => {
-          dispatch(actions.updActiveCampaignId(campaignId));
-          if (followUpHandler) followUpHandler();
-          console.log("[switchCampaign] success loading activeCampaignId", campaignId);
+          dispatch(actions.updActiveCampaignId(projectId));
+          if (callback) {
+            callback();
+          }
+          console.log("[switchProject] success loading activeCampaignId", projectId);
         })
-        .catch(err => console.log("[switchCampaign] error loading activeCampaignId:", err))
+        .catch(err => console.log("[switchProject] error loading activeCampaignId:", err))
     }
   };
 };
 
-export const createCampaign = (followUpHandler) => {
+export const createProject = ({
+  callback,
+}) => {
   const user = getUser();
   return dispatch => {
     if (user) {
@@ -278,28 +292,33 @@ export const createCampaign = (followUpHandler) => {
                 })
                   .then(resp => {
                     dispatch(actions.addCampaignToList(campaignId, "untitled campaign"));
-                    if (followUpHandler) followUpHandler();
-                    console.log("[createCampaign] added campaign:", campaignId);
+                    if (callback) {
+                      callback();
+                    }
+                    console.log("[createProject] added campaign:", campaignId);
                   })
-                  .catch(err => console.log("[createCampaign] error creating view:", err));
+                  .catch(err => console.log("[createProject] error creating view:", err));
               })
-              .catch(err => console.log("[createCampaign] error creating card:", err));
+              .catch(err => console.log("[createProject] error creating card:", err));
           }
         })
-        .catch(err => console.log("[createCampaign] error adding campaign:", err));
+        .catch(err => console.log("[createProject] error adding campaign:", err));
 
     }
   };
 };
 
-export const copyCampaign = (campaignId, followUpHandler) => {
+export const copyProject = ({
+  projectId,
+  callback,
+}) => {
   // should save before copy
   const user = getUser();
   return dispatch => {
     if (user) {
       const userId = user.uid;
       // fetch CAMPAIGN
-      getDoc(doc(db, "users", userId, "campaigns", campaignId))
+      getDoc(doc(db, "users", userId, "campaigns", projectId))
         .then(campaign => {
           if (campaign.exists) {
             let campaignData = campaign.data();
@@ -307,11 +326,11 @@ export const copyCampaign = (campaignId, followUpHandler) => {
             // copy CAMPAIGN
             addDoc(collection(db, "users", userId, "campaigns"), campaignData)
               .then(resp => {
-                console.log("[copyCampaign] copied campaign level info");
+                console.log("[copyProject] copied campaign level info");
                 const copiedCampaignId = resp.id;
                 if (copiedCampaignId) {
                   // fetch CARDS
-                  getDocs(collection(db, "users", userId, "campaigns", campaignId, "cards"))
+                  getDocs(collection(db, "users", userId, "campaigns", projectId, "cards"))
                     .then(cardSnapshot => {
                       // copy CARDS
                       const cardBatch = writeBatch(db);
@@ -323,9 +342,9 @@ export const copyCampaign = (campaignId, followUpHandler) => {
                       });
                       cardBatch.commit()
                         .then(resp => {
-                          console.log("[copyCampaign] copied cards");
+                          console.log("[copyProject] copied cards");
                           // fetch VIEWS
-                          getDocs(collection(db, "users", userId, "campaigns", campaignId, "views"))
+                          getDocs(collection(db, "users", userId, "campaigns", projectId, "views"))
                             .then(viewSnapshot => {
                               // copy VIEWS
                               const viewBatch = writeBatch(db);
@@ -337,40 +356,47 @@ export const copyCampaign = (campaignId, followUpHandler) => {
                               })
                               viewBatch.commit()
                                 .then(resp => {
-                                  console.log("[copyCampaign] copied views");
+                                  console.log("[copyProject] copied views");
                                   // CLEANUP
                                   dispatch(fetchCampaignList());
-                                  if (followUpHandler) followUpHandler();
+                                  if (callback) {
+                                    callback();
+                                  }
                                 })
-                                .catch(err => console.log("[copyCampaign] error copying view data"))
+                                .catch(err => console.log("[copyProject] error copying view data"))
                             })
-                            .catch(err => console.log("[copyCampaign] error fetching view data"));
+                            .catch(err => console.log("[copyProject] error fetching view data"));
                         })
-                        .catch(err => console.log("[copyCampaign] error copying card data"))
+                        .catch(err => console.log("[copyProject] error copying card data"))
                     })
-                    .catch(err => console.log("[copyCampaign] error fetching card data"))
+                    .catch(err => console.log("[copyProject] error fetching card data"))
                 }
               })
-              .catch(err => console.log("[copyCampaign] error copying campaign data"));
+              .catch(err => console.log("[copyProject] error copying campaign data"));
           }
         })
-        .catch(err => console.log("[copyCampaign] error fetching campaign data"));
+        .catch(err => console.log("[copyProject] error fetching campaign data"));
     }
   };
 };
 
-export const destroyCampaign = (campaignId, followUpHandler) => {
+export const destroyProject = ({
+  projectId,
+  callback,
+}) => {
   const user = getUser();
   return dispatch => {
-    if (user && campaignId) {
+    if (user && projectId) {
       const userId = user.uid;
-      deleteDoc(doc(db, "users", userId, "campaigns", campaignId))
+      deleteDoc(doc(db, "users", userId, "campaigns", projectId))
         .then(resp => {
-          dispatch(actions.removeCampaignFromList(campaignId));
-          if (followUpHandler) followUpHandler();
-          console.log("[destroyCampaign] success deleting campaign", campaignId);
+          dispatch(actions.removeCampaignFromList(projectId));
+          if (callback) {
+            callback();
+          }
+          console.log("[destroyProject] success deleting campaign", projectId);
         })
-        .catch(err => console.log("[destroyCampaign] error deleting campaign:", err));
+        .catch(err => console.log("[destroyProject] error deleting campaign:", err));
     }
   };
 };

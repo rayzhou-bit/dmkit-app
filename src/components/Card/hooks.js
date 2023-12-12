@@ -130,8 +130,8 @@ export const useOptionsDropdownHooks = ({
       title: 'Delete',
       type: 'danger',
       callback: () => dispatch(actions.setPopup({
-        id: cardId,
         type: PopupKeys.CONFIRM_CARD_DELETE,
+        id: cardId,
       })),
       icon: RedTrashIcon,
     },
