@@ -1,9 +1,7 @@
-import React, { useState, useRef } from 'react';
+import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import * as actions from '../../store/actionIndex';
-import * as fireactions from '../../store/firestoreIndex';
-import * as hooks from './hooks';
 import { PopupKeys } from '../Popup/PopupKey';
 
 import Title from './Title';
@@ -13,36 +11,20 @@ import UserOptions from './UserOptions';
 import SignIn from './SignIn';
 
 import './index.scss';
-import ExpandLeft from '../../assets/icons/expand-left.png';
-import ExpandRight from '../../assets/icons/expand-right.png';
+import ToggleLeft from '../../assets/icons/toggle-left.svg';
+import ToggleRight from '../../assets/icons/toggle-right.svg';
 
 const HeaderMenu = () => {
   const dispatch = useDispatch();
 
   const userId = useSelector(state => state.userData.userId);
 
-  // STATES
-  // const [showCampaignDropdown, setShowCampaignDropdown] = useState(false);
-  const [showUserDropdown, setShowUserDropdown] = useState(false);
-  const [showSignUp, setShowSignUp] = useState(false);
-
-  // STORE SELECTORS
-  // const userId = useSelector(state => state.userData.userId);
-  const displayName = useSelector(state => state.userData.displayName);
-  const email = useSelector(state => state.userData.email);
-
-  // REFS
-  // const campaignDropdownBtnRef = useRef();
-  // const campaignDropdownContentRef = useRef();
-  const authDropdownBtnRef = useRef();
-  const authDropdownContentRef = useRef();
-
   return (
     <>
       <div className='header-menu'>
         {/* expand toolbar button - TODO: the below is a placeholder until toolbar is redone */}
         <div className='expand'>
-          <img alt='expand left' src={ExpandLeft} />
+          <img alt='expand left' src={ToggleLeft} />
         </div>
         {/* title */}
         <Title saveValue={v => dispatch(actions.updCampaignTitle(v))} />
