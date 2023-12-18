@@ -22,7 +22,7 @@ const ProjectItem = ({ closeProjectDropdown, id, name }) => {
     <li key={id} className='project-li'>
       <div
         className={'project-container' + (isActiveProject ? ' active-proj' : '')}
-        onClick={switchProject}
+        onClick={!isActiveProject ? switchProject : null}
       >
         <span className='project-name'>{name}</span>
         <button className='copy' onClick={copyProject}>

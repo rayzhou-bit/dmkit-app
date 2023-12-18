@@ -78,7 +78,7 @@ export const fetchCampaignList = () => {
   };
 };
 
-export const fetchCampaignData = (campaignId, followUpHandler) => {
+export const fetchCampaignData = (campaignId, callback) => {
   const user = getUser();
   return dispatch => {
     if (user && campaignId) {
@@ -107,7 +107,7 @@ export const fetchCampaignData = (campaignId, followUpHandler) => {
                     campaignData = updateObject(campaignData, {views: viewCollection});
                     // LOAD DATA
                     dispatch(actions.loadCampaignData(campaignData));
-                    if (followUpHandler) followUpHandler();
+                    if (callback) callback();
                     console.log("[fetchCampaignData] success loading campaign");
                   })
                   .catch(err => console.log("[fetchCampaignData] error loading views:", err));
@@ -120,7 +120,7 @@ export const fetchCampaignData = (campaignId, followUpHandler) => {
   };
 };
 
-export const saveCampaignData = (campaignId, campaignData, followUpHandler) => {
+export const saveCampaignData = (campaignId, campaignData, callback) => {
   const user = getUser();
   return dispatch => {
     if (user && campaignId) {
@@ -154,7 +154,7 @@ export const saveCampaignData = (campaignId, campaignData, followUpHandler) => {
       batch.commit()
         .then(resp => {
           dispatch(actions.setCampaignEdit(false));
-          if (followUpHandler) followUpHandler();
+          if (callback) callback();
           console.log("[saveActiveCampaignData] success saving campaign");
         })
         .catch(err => {
@@ -249,9 +249,7 @@ export const switchProject = ({
   };
 };
 
-export const createProject = ({
-  callback,
-}) => {
+export const createProject = (callback) => {
   const user = getUser();
   return dispatch => {
     if (user) {
