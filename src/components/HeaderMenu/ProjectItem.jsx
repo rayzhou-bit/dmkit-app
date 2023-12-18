@@ -26,7 +26,8 @@ const ProjectItem = ({ closeProjectDropdown, id, name }) => {
       >
         <span className='project-name'>{name}</span>
         <button className='copy' onClick={copyProject}>
-          <img src={CopyIcon} />
+          <img alt='Copy' src={CopyIcon} />
+          <span className='tooltip'>Duplicate project</span>
         </button>
         <button
           className='delete'
@@ -35,7 +36,7 @@ const ProjectItem = ({ closeProjectDropdown, id, name }) => {
           onMouseOver={e => setDeleteDisplayIcon(DeleteRedIcon)}
           onMouseOut={e => setDeleteDisplayIcon(DeleteIcon)}
         >
-          <img src={deleteDisplayIcon} />
+          <img alt='Delete' src={deleteDisplayIcon} />
         </button>
         <div className={'back' + (isActiveProject ? ' active' : '')} />
       </div>

@@ -19,14 +19,16 @@ const Projects = () => {
     newProject,
   } = useProjectHooks();
 
-  let projectsList = [
-    <ProjectItem
-      id={activeProjectId}
-      key={activeProjectId}
-      name={projects[activeProjectId]}
-      closeProjectDropdown={closeProjectDropdown}
-    />,
-  ];
+  let projectsList = activeProjectId 
+  ? [
+      <ProjectItem
+        id={activeProjectId}
+        key={activeProjectId}
+        name={projects[activeProjectId]}
+        closeProjectDropdown={closeProjectDropdown}
+      />,
+    ]
+  : [];
   for (let id in projects) {
     if (id !== activeProjectId) {
       const name = projects[id];
@@ -57,19 +59,17 @@ const Projects = () => {
         ref={dropdownRef}
         style={{ display: showProjectDropdown ? 'block' : 'none' }}
       >
-        <ul>
+        <ul className='projects-ul'>
           {projectsList}
-          <li key='new'>
-            <div
-              className='new-project'
-              onClick={newProject}
-            >
-              <span>Create new project</span>
-              <div/>
-              <img src={NewProjectIcon} />
-            </div>
-          </li>
         </ul>
+        
+        <div
+          className='new-project'
+          onClick={newProject}
+        >
+          <span>Create new project</span>
+          <img src={NewProjectIcon} />
+        </div>
       </div>
     </div>
   );
