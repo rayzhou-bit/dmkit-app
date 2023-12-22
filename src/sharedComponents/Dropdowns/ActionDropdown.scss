@@ -1,4 +1,4 @@
-@use '../../components/Card/index.scss' as card;
+@use "../../components/Card/index.scss" as card;
 
 .action-dropdown {
   position: absolute;
@@ -6,11 +6,13 @@
   right: 5px;
 
   background: white;
-  border: 1px solid #F4F4F4;
-  box-shadow: 0px 0px 8px -3px #9B9B9B;
+  border: 1px solid #f4f4f4;
+  box-shadow: 0px 0px 8px -3px #9b9b9b;
   border-radius: 12px;
   padding: 13px;
-  
+
+  z-index: 800;
+
   ul {
     margin: 0;
     padding: 0;
@@ -35,13 +37,13 @@
     margin: 0;
     padding-right: 15px;
     text-align: left;
-    font-family: 'Roboto';
+    font-family: "Roboto";
     font-style: normal;
     font-weight: 400;
     font-size: 12px;
     line-height: 25px;
     letter-spacing: 0.05em;
-    font-feature-settings: 'kern' off;
+    font-feature-settings: "kern" off;
     background-color: white;
   }
   .btn-icon {
@@ -56,11 +58,11 @@
 
 .break {
   margin: 8px 0;
-  border: 1px solid #F4F4F4;
+  border: 1px solid #f4f4f4;
 }
 
 .danger {
   font-weight: 600 !important;
   line-height: 30px !important;
-  color: #ED5E31 !important;
+  color: #ed5e31 !important;
 }

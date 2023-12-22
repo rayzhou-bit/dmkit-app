@@ -3,39 +3,55 @@ $btn-divider-height: 8px;
 
 .library {
   position: fixed;
-  top: $menu-size; bottom: $menu-size;
+  top: $menu-size;
+  bottom: $menu-size;
   z-index: 80;
-  
-  -webkit-transition: .4s;
-  transition: .4s;
+
+  -webkit-transition: 0.4s;
+  transition: 0.4s;
 
   .library-search-container {
     height: 100%;
     border-left: 1px solid black;
     background-color: white;
-    
-    -webkit-transition: .4s;
-    transition: .4s;
+
+    -webkit-transition: 0.4s;
+    transition: 0.4s;
   }
-  
+
   .show-library {
     top: $btn-divider-height;
     height: 64px;
-    .tooltip { top: 20%; right: 130%; }
-    .tooltip::after { top: 50%; left: 100%; border-left-color: black; }
+    .tooltip {
+      top: 20%;
+      right: 130%;
+    }
+    .tooltip::after {
+      top: 50%;
+      left: 100%;
+      border-left-color: black;
+    }
   }
-  
+
   .expand-shrink {
     top: 3 * $btn-divider-height + 64px;
-    .tooltip { top: 18%; right: 130%; }
-    .tooltip::after { top: 50%; left: 100%; border-left-color: black; }
+    .tooltip {
+      top: 18%;
+      right: 130%;
+    }
+    .tooltip::after {
+      top: 50%;
+      left: 100%;
+      border-left-color: black;
+    }
   }
 }
 
 .library-menu-btn {
   position: absolute;
   left: -41px;
-  height: 32px; width: 32px;
+  height: 32px;
+  width: 32px;
   padding: 4px;
 
   background-color: lightgray;
