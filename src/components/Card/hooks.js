@@ -6,7 +6,7 @@ import * as actions from '../../store/actionIndex';
 import { LightColors } from '../../styles/colors';
 import LibraryIcon from '../../assets/icons/library-icon.png';
 import RedTrashIcon from '../../assets/icons/red-trash.png';
-import { PopupKeys } from '../../sharedComponents/Popup/PopupKey';
+import { PopupKeys } from '../Popup/PopupKey';
 
 export const useTitleHooks = ({
   color,
@@ -130,8 +130,8 @@ export const useOptionsDropdownHooks = ({
       title: 'Delete',
       type: 'danger',
       callback: () => dispatch(actions.setPopup({
-        id: cardId,
         type: PopupKeys.CONFIRM_CARD_DELETE,
+        id: cardId,
       })),
       icon: RedTrashIcon,
     },

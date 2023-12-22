@@ -27,7 +27,11 @@ const facebookProvider = new FacebookAuthProvider();
 
 const getUser = () => (auth.currentUser ? auth.currentUser : null);
 
-export const manageUser = ({ dispatch, introCampaignEdit, campaignData }) => {
+export const manageUser = ({
+  dispatch,
+  introCampaignEdit,
+  campaignData,
+}) => {
   onAuthStateChanged(auth, (user) => {
     console.log('[Status] loading. Triggered by auth listener.');
     dispatch(actions.setStatus('loading'));
@@ -45,9 +49,12 @@ export const manageUser = ({ dispatch, introCampaignEdit, campaignData }) => {
           dispatch(fireactions.fetchActiveCampaignId());
         } else {
           dispatch(
-            fireactions.saveIntroCampaignData(campaignData, () => {
-              dispatch(fireactions.fetchCampaignList());
-              dispatch(fireactions.fetchActiveCampaignId());
+            fireactions.saveIntroProjectData({
+              projectData: campaignData,
+              callback: () => {
+                dispatch(fireactions.fetchCampaignList());
+                dispatch(fireactions.fetchActiveCampaignId());
+              },
             })
           );
         }
@@ -83,38 +90,45 @@ export const updateDisplayName = (displayName) => {
   };
 };
 
-export const emailSignIn = (email, psw, followUpHandler) => {
-  return (dispatch) =>
-    signInWithEmailAndPassword(auth, email, psw)
-      .then((resp) => {
-        console.log('[emailSignIn] sign in successful');
-        dispatch(actions.unsetErrorEmailSignIn());
-        if (followUpHandler) followUpHandler();
-      })
-      .catch((err) => {
-        console.log('[emailSignIn] error:', err.message);
-        dispatch(actions.setErrorEmailSignIn(err.code));
-      });
+export const emailSignIn = ({
+  email,
+  password,
+  callback,
+  errorCallback,
+}) => (dispatch) => {
+  signInWithEmailAndPassword(auth, email, password)
+    .then((response) => {
+      console.log('[emailSignIn] sign in successful:', response);
+      // dispatch(actions.unsetErrorEmailSignIn());  // TODO REMOVE error handled in local state
+      if (callback) {
+        callback();
+      }
+    })
+    .catch((error) => {
+      console.log('[emailSignIn] error:', error.message);
+      // dispatch(actions.setErrorEmailSignIn(err.code));  // TODO REMOVE error handled in local state
+      if (errorCallback) {
+        errorCallback(error.code);
+      }
+    });
 };
 
 export const emailSignOut = () => {
-  return (dispatch) =>
-    signOut(auth)
-      .then(console.log('[emailSignout] sign out successful'))
-      .catch((err) => console.log('[emailSignOut] error:', err));
+  return (dispatch) =>  signOut(auth)
+    .then(console.log('[emailSignout] sign out successful'))
+    .catch((err) => console.log('[emailSignOut] error:', err));
 };
 
 export const googleSignIn = () => {
-  return (dispatch) =>
-    signInWithPopup(auth, googleProvider)
-      .then((resp) => {
-        console.log('[googleSignIn] sign in successful');
-        dispatch(actions.unsetErrorGoogleSignUp());
-      })
-      .catch((err) => {
-        console.log('[googleSignIn] error signing up with google:', err);
-        dispatch(actions.setErrorGoogleSignUp(err.code));
-      });
+  return (dispatch) => signInWithPopup(auth, googleProvider)
+    .then((resp) => {
+      console.log('[googleSignIn] sign in successful');
+      dispatch(actions.unsetErrorGoogleSignUp());
+    })
+    .catch((err) => {
+      console.log('[googleSignIn] error signing up with google:', err);
+      dispatch(actions.setErrorGoogleSignUp(err.code));
+    });
 };
 
 export const facebookSignIn = () => {
@@ -130,18 +144,28 @@ export const facebookSignIn = () => {
       });
 };
 
-export const emailSignUp = (email, psw) => {
-  return (dispatch) =>
-    createUserWithEmailAndPassword(auth, email, psw)
-      .then((resp) => {
-        console.log('[emailSignUp] sign up successful:', resp);
-        dispatch(actions.unsetErrorEmailSignUp());
-        sendVerificationToEmail();
-      })
-      .catch((err) => {
-        console.log('[emailSignUp] error:', err);
-        dispatch(actions.setErrorEmailSignUp(err.code));
-      });
+export const emailSignUp = ({
+  email,
+  password,
+  callback,
+  errorCallback,
+}) => {
+  return (dispatch) => createUserWithEmailAndPassword(auth, email, password)
+    .then((response) => {
+      console.log('[emailSignUp] sign up successful:', response);
+      // dispatch(actions.unsetErrorEmailSignUp());
+      sendVerificationToEmail();
+      if (callback) {
+        callback();
+      }
+    })
+    .catch((error) => {
+      console.log('[emailSignUp] error:', error);
+      // dispatch(actions.setErrorEmailSignUp(error.code));
+      if (errorCallback) {
+        errorCallback(error.code);
+      }
+    });
 };
 
 export const sendVerificationToEmail = () => {
@@ -153,20 +177,26 @@ export const sendVerificationToEmail = () => {
       .catch((err) => console.log('[sendVerificationToEmail] error:', err));
 };
 
-export const sendPasswordResetToEmail = (email) => {
-  return (dispatch) =>
-    sendPasswordResetEmail(auth, email)
-      .then((resp) => {
-        console.log(
-          '[sendPasswordResetToEmail] sent password reset email to:',
-          email
-        );
-        dispatch(actions.unsetErrorPasswordReset());
-      })
-      .catch((err) => {
-        console.log('[sendPasswordResetToEmail] error:', err);
-        dispatch(actions.setErrorPasswordReset(err.code));
-      });
+export const sendPasswordResetToEmail = ({
+  email,
+  callback,
+  errorCallback,
+}) => {
+  return (dispatch) => sendPasswordResetEmail(auth, email)
+    .then((response) => {
+      console.log('[sendPasswordResetToEmail] sent password reset email to:', email, '. ', response);
+      // dispatch(actions.unsetErrorPasswordReset());
+      if (callback) {
+        callback();
+      }
+    })
+    .catch((error) => {
+      console.log('[sendPasswordResetToEmail] error:', error);
+      // dispatch(actions.setErrorPasswordReset(err.code));
+      if (errorCallback) {
+        errorCallback(error.code);
+      }
+    });
 };
 
 export const emailActionHandler = () => {

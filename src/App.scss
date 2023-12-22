@@ -50,6 +50,7 @@ button {
 
   &:hover .tooltip {
     visibility: visible;
+    transition-delay: 0.5s;
   }
 
   .tooltip {
@@ -60,20 +61,29 @@ button {
     // top: 130%; right: 50%;       <-- tooltip is to the bottom
     // bottom: 150%; left: 25%;     <-- tooltip is to the top
     padding: 5px;
-    border-radius: 1px;
-    color: #fff;
-    background-color: black;
-    text-align: center;
-    font-size: medium;
+    border-radius: 12px;
+    background-color: #363B4E;
     visibility: hidden;
     z-index: 10000;
+    transition: 0s visibility;
+
+    color: white;
+    text-align: center;
+    font-kerning: none;
+    font-family: Roboto;
+    font-size: 11px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 25px;
+    letter-spacing: 0.55px;
   }
 
   .tooltip::after {
     // top, bottom, left, right need to be set for the arrow position
     // border-color needs to be changed to be black for the direction of the arrow
-    content: " ";
+    content: 'sd';
     position: absolute;
+    z-index: 10001;
     // left: 100%; top: 50%;        <-- tooltip is to the left
     // bottom: 100%; right: 50%;    <-- tooltip is to the bottom
     // top: 120%; right: 50%;       <-- tooltip is to the top
@@ -84,6 +94,7 @@ button {
     // border-left-color: black;    <-- tooltip is to the left
     // border-bottom-color: black;  <-- tooltip is to the bottom
     // border-top-color: black;     <-- tooltip is to the top
+    z-index: 1;
   }
 }
 

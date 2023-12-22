@@ -1,23 +1,22 @@
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
 import './DeleteConfirmation.scss';
-import { resetPopup, destroyCard } from '../../store/actionIndex';
+import * as actions from '../../../store/actionIndex';
 
 export const DeleteConfirmation = ({
+  id,
 }) => {
   const dispatch = useDispatch();
 
-  const cardId = useSelector(state => state.sessionManager.popup.id);
-
-  const cancelClick = () => dispatch(resetPopup());
+  const cancelClick = () => dispatch(actions.resetPopup());
   const confirmClick = () => {
-    dispatch(destroyCard(cardId));
-    dispatch(resetPopup());
+    dispatch(actions.destroyCard(id));
+    dispatch(actions.resetPopup());
   };
 
   return (
-    <div className='delete-confirmation'>
+    <div className='card-delete-confirmation'>
       <div className='x-btn' onClick={cancelClick} />
       <div className='row'>
         <h1 className='heading'>Game Master!</h1>

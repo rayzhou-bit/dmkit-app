@@ -17,10 +17,10 @@ export const useOutsideClick = (refs, condition, handler) => {
     };
 
     if (condition) {
-      document.addEventListener("mouseup", handleClickOutside);
+      document.addEventListener("mousedown", handleClickOutside);
     }
     return () => {
-      document.removeEventListener("mouseup", handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
 
     // adding refs and handler as dependencies below causes an issue with re-renders

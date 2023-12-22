@@ -1,0 +1,94 @@
+
+.project-delete-confirmation {
+  margin: auto;
+  padding: 20px;
+  max-width: 80%;
+  
+  background: white;
+  border: solid 1px #F4F4F4;
+  box-shadow: 0 5px 40px -3px #D4D4D4;
+  border-radius: 12px;
+
+  .row {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: center;
+    margin: 8px 36px;
+  }
+
+  .heading {
+    color: #353535;
+    text-align: center;
+    font-kerning: none;
+    font-family: Roboto;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 25px;
+    letter-spacing: 0.7px;
+  }
+
+  .message {
+    margin: 5px;
+    width: auto;
+    white-space: nowrap;
+    color: #000;
+    font-kerning: none;
+    font-family: Roboto;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 20px;
+    letter-spacing: 0.6px;
+  }
+
+  .project-name {
+    padding: 5px 10px;
+    width: 100%;
+    align-self: stretch;
+    border-radius: 12px;
+    background: #E5ECF5;
+    color: #000;
+    font-kerning: none;
+    font-family: Roboto;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 20px;
+    letter-spacing: 0.6px;
+  }
+
+  .btn {
+    width: 100px;
+    min-width: 80px;
+    height: 32px;
+    padding: 0px 5px;
+    margin: 10px;
+    justify-content: center;
+    align-items: center;
+    background-color: #FFFFFF;
+
+    color: #000;
+    text-align: center;
+    font-kerning: none;
+    font-family: Roboto;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 28px;
+    letter-spacing: 0.6px;
+  }
+
+  .cancel:hover { text-decoration: underline; }
+  
+  .confirm {
+    border-radius: 15px;
+    background-color: #363B4E;
+    box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.25);
+    color: #FFF;
+    font-weight: 500;
+    &:hover {
+      background-color: #4D5572;
+    }
+  }
+}

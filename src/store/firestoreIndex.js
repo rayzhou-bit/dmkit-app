@@ -16,7 +16,7 @@ export {
 
 export {
   fetchActiveCampaignId, fetchCampaignList,
-  fetchCampaignData, saveCampaignData, saveIntroCampaignData,
-  switchCampaign,
-  createCampaign, copyCampaign, destroyCampaign,
+  fetchCampaignData, saveCampaignData, saveIntroProjectData,
+  switchProject,
+  createProject, copyProject, destroyProject,
 } from './firestoreAPI/storeTransactions';

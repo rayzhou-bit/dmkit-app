@@ -118,7 +118,7 @@ export const Card = ({
       onResizeStop={resizeStopHandler}
     >
       <div
-        className={"card" + (isActive ? " active" : " not-active")}
+        className={"card" + (isActive ? " active" : " inactive")}
         onClick={cardClickHandler}
         onAnimationEnd={onAnimationEnd}
         ref={cardRef} 

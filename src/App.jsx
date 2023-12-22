@@ -1,20 +1,15 @@
 import React, { useRef } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 
 import './App.scss';
 import Loader from './components/Loader/Loader';
-import UserMenu from './components/UserMenu/UserMenu';
+import HeaderMenu from './components/HeaderMenu';
 import ToolMenu from './components/ToolMenu/ToolMenu';
 import Library from './components/Library/Library';
 import ViewSelect from './components/ViewSelect/ViewSelect';
 import Canvas from './containers/Canvas/Canvas';
-import Popup from './sharedComponents/Popup';
-import { resetPopup } from './store/actionIndex';
+import Popup from './components/Popup';
 
 const App = () => {
-  const dispatch = useDispatch();
-  const popup = useSelector((state) => state.sessionManager.popup);
-
   // REFS
   const toolMenuRef = useRef();
 
@@ -27,12 +22,12 @@ const App = () => {
   return (
     <div className='layout'>
       <Loader />
-      <UserMenu />
+      <HeaderMenu />
       <ToolMenu toolMenuRef={toolMenuRef} />
       <Library />
       <ViewSelect />
       <Canvas toolMenuRef={toolMenuRef} />
-      <Popup resetCallback={() => dispatch(resetPopup())} type={popup.type} />
+      <Popup />
     </div>
   );
 };

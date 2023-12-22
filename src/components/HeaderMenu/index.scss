@@ -1,0 +1,481 @@
+$menu-height: 48px;
+$border-radius: 0.5rem;
+
+.header-menu {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  height: $menu-height;
+  border: 1px solid #F4F4F4;
+  background: white;
+  display: flex;
+  flex-flow: row nowrap;
+}
+
+.expand {
+  position: relative;
+  width: 71px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  img {
+    display: block;
+    margin: auto;
+  }
+}
+
+.usermenu-title {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  padding: 12px;
+  text-align: center;
+  input {
+    width: 100%;
+    border: 0;
+    outline: none;
+    text-align: center;
+    font-family: Roboto;
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 300;
+    line-height: normal;
+    letter-spacing: 0.27px;
+    text-overflow: ellipsis;
+  }
+}
+
+.version-controls {
+  display: flex;
+  flex-flow: row nowrap;
+
+  button {
+    background-color: transparent;
+    padding: 12px;
+  }
+  .save {
+    display: flex;
+    flex-flow: row nowrap;
+    span {
+      margin-right: 5px;
+    }
+    img {
+      width: 25px;
+      height: 25px;
+    }
+
+    .spin {
+      animation: spin 2.5s linear infinite;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  }
+}
+
+$projects-height: 40px;
+.projects {
+  position: relative;
+
+  .projects-ul {
+    height: ($projects-height + 1) * 7;
+    overflow-y: scroll;
+    overflow-x: hidden;
+
+    .project-li {
+      height: $projects-height;
+  
+      .project-container {
+        position: relative;
+        height: 100%;
+        border-bottom: 1px solid #F4F4F4;
+  
+        .project-name {
+          z-index: 1;
+          font-weight: 600;
+          .tooltip { right: -20%; top: 115%; white-space: nowrap; }
+          .tooltip::after { bottom: 100%; right: 8%; border-bottom-color: black; }
+          &:hover ~ .back { background-color: #C1E9FF; }
+        }
+        .copy {
+          margin: auto;
+          z-index: 1;
+          .tooltip { right: -20%; top: 115%; white-space: nowrap; }
+          .tooltip::after { bottom: 100%; right: 8%; border-bottom-color: black; }
+          &:hover { background-color: #C1E9FF; }
+        }
+        .delete {
+          margin: auto;
+          z-index: 1;
+          color: red;
+          &:hover { background-color: #FFE8E0; }
+        }
+        .back {
+          position: absolute;
+          left: 0;
+          right: 0;
+          top: 0;
+          bottom: 0;
+          border: 0;
+          &:hover { background-color: #C1E9FF; }
+        }
+      }
+      
+      .active-proj {
+        .project-name { font-weight: 700; }
+        .project-name:hover ~ .back { background-color: #DBE2EB; }
+        .copy:hover { background-color: white; }
+        .back { background-color: #DBE2EB; }
+        .back:hover { background-color: #DBE2EB; }
+      }
+    }
+
+    &::-webkit-scrollbar {
+      width: 12px;
+    }
+    &::-webkit-scrollbar-track {
+      background-color: #00000000;
+    }
+    &::-webkit-scrollbar-thumb {
+      background-color: #363B4EA6;
+      border: 4px solid white;
+      border-radius: 12px;
+    }
+  }
+
+  .new-project {
+    padding: 9px;
+    font-weight: 600;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    span {
+      padding: 0 10px; 
+      font-weight: 600;
+    }
+    &:hover { background-color: #C1E9FF; }
+    img { margin: 4px; }
+  }
+}
+
+.user-options {
+  position: relative;
+  white-space: nowrap;
+  color: #353535;
+  font-kerning: none;
+  font-family: Roboto;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 30px;
+  letter-spacing: 0.6px;
+  li {
+    padding: 0px 20px;
+  }
+  .username {
+    padding-top: 20px;
+    font-weight: 800;
+    line-height: 20px;
+  }
+  .email {
+    padding-bottom: 10px;
+    border-bottom: 1px solid #F4F4F4;
+  }
+  .change-name-button { margin-top: 10px; }
+  .hover:hover { background-color: #C1E9FF; }
+  .change-name-input {
+    padding-bottom: 10px;
+    input {
+      width: 100%;
+      margin-top: 6px;
+      padding: 0 10px;
+      border-radius: 6px;
+      border: 3px solid #DBE2EB;
+      background: #DBE2EB;
+      color: #353535;
+      font-kerning: none;
+      font-family: Roboto;
+      font-size: 12px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 30px;
+      letter-spacing: 0.6px;
+      &:hover { border-color: #C1E9FF; }
+      &:focus { background-color: white; }
+    }
+  }
+  .change-name-description {
+    padding-bottom: 10px;
+    border-bottom: 1px solid #F4F4F4;
+    color: #667092;
+    font-weight: 600;
+  }
+  .log-out {
+    margin: 10px 0 15px 0;
+    background-color: transparent;
+    &:hover { background-color: #C1E9FF; }
+  }
+}
+
+.sign-in {
+  margin: 7px;
+  position: relative;
+  .sign-in-btn {
+    box-sizing: border-box;
+    height: 100%;
+    padding: 0 20px;
+    background-color: transparent;
+    span {
+      white-space: nowrap;
+      color: #363B4E;
+      font-weight: 600;
+      letter-spacing: 0.24px;
+      &:hover {
+        color: #667092;
+        padding: 0;
+        border-bottom: 2px solid #667092;
+      }
+    }
+  }
+
+  form {
+    padding: 15px 15px 20px 15px;
+    align-items: center;
+    text-align: center;
+    color: #353535;
+    font-kerning: none;
+    font-family: Roboto;
+    font-style: normal;
+    display: flex;
+    flex-flow: column nowrap;
+    .form-title {
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 25px;
+      letter-spacing: 0.7px;
+    }
+    .form-subtitle {
+      padding: 10px 0;
+      font-size: 10px;
+      font-weight: 400;
+      line-height: 14px;
+      letter-spacing: 0.5px;
+    }
+    input {
+      width: 85%;
+      margin-top: 8px;
+      height: 30px;
+      padding: 0 10px;
+      border-radius: 6px;
+      border: 2px solid #E9E9E9;
+      background: #FFF;
+      color: #000;
+      font-size: 12px;
+      font-weight: 400;
+      line-height: 30px;
+      letter-spacing: 0.6px;
+      &:hover {
+        box-shadow: 0 0 0 4px #FFEEB280;
+      }
+      &:focus {
+        border-color: #FFD749;
+        box-shadow: 0 0 0 4px #FFEEB280;
+      }
+      &:-webkit-autofill,
+      &:-webkit-autofill:hover, 
+      &:-webkit-autofill:focus, 
+      &:-webkit-autofill:active,
+      &:-webkit-autofill::first-line {
+        -webkit-box-shadow: 0 0 0 30px white inset !important;
+      }
+    }
+
+    .error {
+      border-color: #FFAB49;
+    }
+    .auth-error {
+      animation: error-blink .25s step-end 3 alternate, shake .75s;
+    }
+    @keyframes error-blink {
+      50% { border: 2px solid #FFAB49; }
+    }
+    @keyframes shake {
+      0% { transform: translateX(3px); }
+      10% { transform: translateX(-3px); }
+      20% { transform: translateX(3px); }
+      30% { transform: translateX(-3px); }
+      40% { transform: translateX(3px); }
+      50% { transform: translateX(-3px); }
+      60% { transform: translateX(3px); }
+      70% { transform: translateX(-3px); }
+      80% { transform: translateX(3px); }
+      90% { transform: translateX(-3px); }
+      100% { transform: translateX(3px); }
+    }
+
+    .forgot-password-email-input {
+      margin-bottom: 18px;
+    }
+    .forgot-password {
+      background-color: white;
+      font-size: 10px;
+      font-weight: 400;
+      line-height: 25px; /* 250% */
+      letter-spacing: 0.5px;
+      &:hover {
+        color: #667092;
+        text-decoration-line: underline;
+        cursor: pointer;
+      }
+      &:focus {
+        color: #667092;
+        text-decoration-line: underline;
+      }
+    }
+
+    .submit {
+      min-width: 30%;
+      padding: 0 15px;
+      border-radius: 15px;
+      background: #363B4E;
+      color: #FFF;
+      font-size: 12px;
+      font-weight: 400;
+      line-height: 28px; /* 233.333% */
+      letter-spacing: 0.6px;
+      white-space: nowrap;
+      &:hover { background: #4D5572; }
+      &:focus { background: #4D5572; }
+    }
+  }
+
+  .google {
+    width: 100%;
+    padding: 7px 10px;
+    background: #E8F5FE;
+    text-align: center;
+    flex-flow: row nowrap;
+    span {
+      padding: 5px 8px;
+      color: #363B4E;
+      text-align: center;
+      font-kerning: none;
+      font-family: Roboto;
+      font-size: 12px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 25px;
+      letter-spacing: 0.6px;
+    }
+    &:hover { background: #C1E9FF; }
+  }
+
+  .error-banner {
+    width: 100%;
+    padding: 7px 10px;
+    background: #FFE8E0;
+    text-align: center;
+    label {
+      color: #ED3131;
+      text-align: center;
+      font-kerning: none;
+      font-family: Roboto;
+      font-size: 12px;
+      font-style: normal;
+      font-weight: 500;
+      line-height: 25px;
+      letter-spacing: 0.6px;
+    }
+  }
+}
+
+.sign-up-btn {
+  box-sizing: border-box;
+  height: 70%;
+  margin: auto;
+  padding: 0 35px;
+  border-radius: 20px;
+  background-color: #FFDC5F;
+  span {
+    padding: 0 0 2px 0;
+    white-space: nowrap;
+    color: #363B4E;
+    font-weight: 600;
+    letter-spacing: 0.24px;
+  }
+  &:hover { background: #FFF3C4; }
+}
+
+.header-menu-btn {
+  box-sizing: border-box;
+  height: 100%;
+  padding: 12px;
+  background-color: transparent;
+  display: flex;
+  flex-flow: row nowrap;
+  span {
+    padding: 7px;
+    white-space: nowrap;
+  }
+  img {
+    transition-duration: .5s;
+    content: url('../../assets/icons/dropdown-arrow.svg');
+  }
+  &:hover > img { transform: translateY(3px); }
+}
+
+.dropdown {
+  position: absolute;
+  top: $menu-height;
+  right: 0;
+  width: 252px;
+  border-radius: 12px;
+  background-color: white;
+  box-shadow: 0px 5px 40px -3px #D4D4D4;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #353535;
+  font-kerning: none;
+  font-family: Roboto;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 25px;
+  letter-spacing: 0.6px;
+
+  ul {
+    margin: 0;
+    padding: 0;
+    li {
+      list-style: none;
+      div {
+        padding: 9px;
+        display: grid;
+        grid-template-columns: 1fr auto auto;
+        gap: 5px;
+        justify-content: end;
+        span {
+          padding: 0 10px;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+        button {
+          height: 23px;
+          width: 100%;
+          padding: 0;
+          margin: 0 1px;
+          border-radius: 5px;
+          background-color: transparent;
+          text-align: left;
+          line-height: 30px;
+          img { margin: 4px; }
+          &:hover { background-color: white; }
+        }
+      }
+    }
+  }
+}
