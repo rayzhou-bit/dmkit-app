@@ -1,6 +1,6 @@
 import React, { useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useOutsideClick } from "../../../../shared/utilityFunctions";
+import { useOutsideClick } from "../../../../utils/useOutsideClick";
 
 import "./LibraryCard.scss";
 import * as actions from "../../../../store/actionIndex";
