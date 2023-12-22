@@ -83,7 +83,8 @@ $projects-height: 40px;
 
   .projects-ul {
     height: ($projects-height + 1) * 7;
-    overflow-y: auto;
+    overflow-y: scroll;
+    overflow-x: hidden;
 
     .project-li {
       height: $projects-height;
@@ -96,6 +97,8 @@ $projects-height: 40px;
         .project-name {
           z-index: 1;
           font-weight: 600;
+          .tooltip { right: -20%; top: 115%; white-space: nowrap; }
+          .tooltip::after { bottom: 100%; right: 8%; border-bottom-color: black; }
           &:hover ~ .back { background-color: #C1E9FF; }
         }
         .copy {
@@ -167,26 +170,53 @@ $projects-height: 40px;
   font-size: 12px;
   font-style: normal;
   font-weight: 400;
-  line-height: 30px; /* 250% */
+  line-height: 30px;
   letter-spacing: 0.6px;
-  .break {
-    margin: 8px 19px;
-    border: 1px solid #F4F4F4;
+  li {
+    padding: 0px 20px;
   }
-  .username-wrapper {
-    padding: 21px 10px 0 10px;
-    .username {
-      font-weight: 1000;
+  .username {
+    padding-top: 20px;
+    font-weight: 800;
+    line-height: 20px;
+  }
+  .email {
+    padding-bottom: 10px;
+    border-bottom: 1px solid #F4F4F4;
+  }
+  .change-name-button { margin-top: 10px; }
+  .hover:hover { background-color: #C1E9FF; }
+  .change-name-input {
+    padding-bottom: 10px;
+    input {
+      width: 100%;
+      margin-top: 6px;
+      padding: 0 10px;
+      border-radius: 6px;
+      border: 3px solid #DBE2EB;
+      background: #DBE2EB;
+      color: #353535;
+      font-kerning: none;
+      font-family: Roboto;
+      font-size: 12px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 30px;
+      letter-spacing: 0.6px;
+      &:hover { border-color: #C1E9FF; }
+      &:focus { background-color: white; }
     }
   }
-  .email-wrapper {
-    padding: 0 10px 0 10px;
-  }
-  .change-name {
-    padding: 0 10px 0 10px;
+  .change-name-description {
+    padding-bottom: 10px;
+    border-bottom: 1px solid #F4F4F4;
+    color: #667092;
+    font-weight: 600;
   }
   .log-out {
-    padding: 0 10px 16px 10px;
+    margin: 10px 0 15px 0;
+    background-color: transparent;
+    &:hover { background-color: #C1E9FF; }
   }
 }
 
@@ -212,7 +242,7 @@ $projects-height: 40px;
   }
 
   form {
-    padding: 15px;
+    padding: 15px 15px 20px 15px;
     align-items: center;
     text-align: center;
     color: #353535;
@@ -287,7 +317,7 @@ $projects-height: 40px;
     }
 
     .forgot-password-email-input {
-      margin-bottom: 20px;
+      margin-bottom: 18px;
     }
     .forgot-password {
       background-color: white;
@@ -308,7 +338,8 @@ $projects-height: 40px;
 
     .submit {
       min-width: 30%;
-      border-radius: 6px;
+      padding: 0 15px;
+      border-radius: 15px;
       background: #363B4E;
       color: #FFF;
       font-size: 12px;

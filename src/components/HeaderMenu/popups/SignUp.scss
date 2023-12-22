@@ -14,14 +14,15 @@
     width: 100%;
     background-color: #FFE8E0;
     border-radius: 12px 12px 0 0;
-    padding: 22px 15px;
+    padding: 23px 15px;
     display: flex;
     flex-flow: row nowrap;
     gap: 15px;
     
-    label {
+    .error-msg {
       width: 95%;
       color: #ED3131;
+      text-align: left;
       font-kerning: none;
       font-family: Roboto;
       font-size: 12px;

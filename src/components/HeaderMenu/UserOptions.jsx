@@ -22,8 +22,6 @@ const UserOptions = () => {
     showDisplayNameInput,
     openDisplayNameInput,
     changeDisplayNameInput,
-    beginDisplayNameInputEdit,
-    endDisplayNameInputEdit,
     handleDisplayNameInputKeyPress,
   } = useDisplayNameHooks();
 
@@ -42,48 +40,42 @@ const UserOptions = () => {
         ref={dropdownRef}
         style={{ display: showUserOptionsDropdown ? 'block' : 'none' }}
       >
-        <ul>
-          <li key='username'>
-            <div className='username-wrapper'>
-              <span className='username'>{username}</span>
-            </div>
+        <ul className='user-options-ul'>
+          <li key='username' className='username'>
+            <span>{username}</span>
           </li>
-          <li key='email'>
-            <div className='email-wrapper'>
-              <span className='email'>{email}</span>
-            </div>
+          <li key='email' className='email'>
+            <span>{email}</span>
           </li>
-          <li className='break' key={'break-0'} />
-          <li key='change-name'>
-            <div>
-              <button
-                className='change-name'
-                onClick={openDisplayNameInput}
-                ref={inputRef}
-              >
-                Change display name
-              </button>
-              {
-                showDisplayNameInput
-                ? <input
-                    onChange={event => changeDisplayNameInput(event.target.value)}
-                    onKeyDown={event => handleDisplayNameInputKeyPress(event)}
-                    value={displayNameInput}
-                  />
-                : null
-              }
-            </div>
+          <li
+            key='change-name-button'
+            className={'change-name-button' + (!showDisplayNameInput ? ' hover' : '')}
+            onClick={openDisplayNameInput}
+            ref={inputRef}
+          >
+            <span>Change display name</span>
           </li>
-          <li className='break' key={'break-1'} />
-          <li key='logout'>
-            <div>
-              <button
-                className='log-out'
-                onClick={event => logOut(event)}
-              >
-                Log out
-              </button>
-            </div>
+          { 
+            showDisplayNameInput 
+            ? <li key='change-name-input' className='change-name-input'>
+                <input
+                  onChange={event => changeDisplayNameInput(event.target.value, event)}
+                  onKeyDown={event => handleDisplayNameInputKeyPress(event)}
+                  placeholder={username}
+                  value={displayNameInput}
+                />
+              </li>
+            : null
+          }
+          <li key='change-name-description' className='change-name-description'>
+            {
+              showDisplayNameInput
+              ? <span>Hit enter to save</span>
+              : null
+            }
+          </li>
+          <li key='logout' className='log-out' onClick={event => logOut(event)}>
+            <span>Log out</span>
           </li>
         </ul>
       </div>

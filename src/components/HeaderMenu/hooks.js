@@ -240,21 +240,14 @@ export const useDisplayNameHooks = () => {
   const username = useSelector(state => state.userData.displayName);
   const [ showDisplayNameInput, setShowDisplayInput ] = useState(false);
   const [ displayNameInput, setDisplayNameInput ] = useState('');
-  const [ isEditingDisplayNameInput, setIsEditingDisplayNameInput ] = useState(false);
   const inputRef = useRef();
 
-  useEffect(() => {
-    setDisplayNameInput(username);
-  }, [setDisplayNameInput, username]);
-
   const endDisplayNameInputEdit = () => {
-    if (isEditingDisplayNameInput) {
-      document.getSelection().removeAllRanges();
-      if (displayNameInput !== username) {
-        dispatch(actions.updUserDisplayname(displayNameInput));
-      }
-      setIsEditingDisplayNameInput(false);
+    document.getSelection().removeAllRanges();
+    if (displayNameInput !== username && displayNameInput !== '') {
+      dispatch(actions.updUserDisplayname(displayNameInput));
     }
+    setShowDisplayInput(false);
   };
 
   return {
@@ -263,23 +256,13 @@ export const useDisplayNameHooks = () => {
     displayNameInput,
     showDisplayNameInput,
     openDisplayNameInput: () => setShowDisplayInput(true),
-    changeDisplayNameInput: (newValue) => setDisplayNameInput(newValue),
-    beginDisplayNameInputEdit: () => {
-      if (!isEditingDisplayNameInput) {
-        setIsEditingDisplayNameInput(true);
-        inputRef.current.focus();
-        inputRef.current.setSelectionRange(
-          inputRef.current.value.length,
-          inputRef.current.value.length,
-        );
-      }
+    changeDisplayNameInput: (newValue, event) => {
+      console.log(event.key)
+      setDisplayNameInput(newValue)
     },
-    endDisplayNameInputEdit,
     handleDisplayNameInputKeyPress: (event) => {
-      if (isEditingDisplayNameInput) {
-        if (event.key === 'Enter') {
-          endDisplayNameInputEdit();
-        }
+      if (event.key === 'Enter') {
+        endDisplayNameInputEdit();
       }
     },
   };

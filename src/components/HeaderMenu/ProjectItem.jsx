@@ -24,7 +24,9 @@ const ProjectItem = ({ closeProjectDropdown, id, name }) => {
         className={'project-container' + (isActiveProject ? ' active-proj' : '')}
         onClick={!isActiveProject ? switchProject : null}
       >
-        <span className='project-name'>{name}</span>
+        <span className='project-name'>
+          {name}
+        </span>
         <button className='copy' onClick={copyProject}>
           <img alt='Copy' src={CopyIcon} />
           <span className='tooltip'>Duplicate project</span>
