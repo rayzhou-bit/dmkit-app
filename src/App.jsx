@@ -6,7 +6,7 @@ import HeaderMenu from './components/HeaderMenu';
 import ToolMenu from './components/ToolMenu/ToolMenu';
 import Library from './components/Library/Library';
 import ViewSelect from './components/ViewSelect/ViewSelect';
-import Canvas from './containers/Canvas/Canvas';
+import Canvas from './components/Canvas';
 import Popup from './components/Popup';
 
 const App = () => {

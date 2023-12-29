@@ -3,6 +3,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { CARD_FONT_SIZE } from '../../../shared/constants/fontSize';
 import { TEXT_COLOR_WHEN_BACKGROUND_IS, CARD_TITLEBAR_EDIT_COLORS } from '../../../shared/constants/colors';
 
+// TODO delete/change
 // Creates a title text with an edit button
 // css is fully controlled by props
 

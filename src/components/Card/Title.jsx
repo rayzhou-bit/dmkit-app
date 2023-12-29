@@ -4,8 +4,8 @@ import { useDispatch } from 'react-redux';
 import * as actions from '../../store/actionIndex';
 import * as hooks from './hooks';
 
-import ColorDropdown from '../../sharedComponents/Dropdowns/ColorDropdown';
-import ActionDropdown from '../../sharedComponents/Dropdowns/ActionDropdown';
+import ColorDropdown from '../../components-shared/Dropdowns/ColorDropdown';
+import ActionDropdown from '../../components-shared/Dropdowns/ActionDropdown';
 
 import './index.scss';
 import '../../styles/colors.scss';
