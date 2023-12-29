@@ -34,7 +34,7 @@ const Title = ({
   } = hooks.useTitleHooks({
     color,
     saveNewValue: (value) => dispatch(actions.updCardTitle(cardId, value)),
-    setIsEditingParent: setEditingCard,
+    setEditingCard,
     value: title,
   });
 

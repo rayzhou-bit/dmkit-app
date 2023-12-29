@@ -11,7 +11,7 @@ import { PopupKeys } from '../Popup/PopupKey';
 export const useTitleHooks = ({
   color,
   saveNewValue,
-  setIsEditingParent,
+  setEditingCard,
   value,
 }) => {
   const [ titleValue, setTitleValue ] = useState('');
@@ -29,8 +29,8 @@ export const useTitleHooks = ({
         saveNewValue(titleValue);
       }
       setIsEditing(false);
-      if (setIsEditingParent) {
-        setIsEditingParent(false);
+      if (setEditingCard) {
+        setEditingCard(false);
       }
     }
   };
@@ -44,8 +44,8 @@ export const useTitleHooks = ({
     beginTitleEdit: () => {
       if (!isEditing) {
         setIsEditing(true);
-        if(setIsEditingParent) {
-          setIsEditingParent(true);
+        if(setEditingCard) {
+          setEditingCard(true);
         }
         titleRef.current.focus();
         titleRef.current.setSelectionRange(

@@ -64,17 +64,18 @@ $title-height: 32px;
 
   button {
     padding: 0;
-    background-color: transparent;
     justify-content: center;
     display: flex;
   }
 
   .color-btn {
+    background-color: transparent;
     img { padding-top: 2px; }
     &:hover > img { content: url('../../assets/icons/rounded-square-hover.svg'); }
   }
 
   .dropdown-btn {
+    background-color: transparent;
     img { transition-duration: .5s; }
     &:hover > img { transform: translateY(3px); }
   }
