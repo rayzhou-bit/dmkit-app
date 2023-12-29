@@ -35,19 +35,11 @@ export const useTitleHooks = ({
     }
   };
 
-  let inputClassName = '';
-  if (isEditing) {
-    inputClassName += 'editing';
-    if (color === 'cotton_blue') {
-      inputClassName += '-2';
-    }
-  }
-
   return {
     titleRef,
     titleValue,
     readOnly: !isEditing,
-    inputClassName,
+    inputClassName: isEditing ? 'editing' : '',
     changeTitleValue: (newValue) => setTitleValue(newValue),
     beginTitleEdit: () => {
       if (!isEditing) {

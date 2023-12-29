@@ -1,14 +1,18 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
 
-import './index.scss';
-import '../../styles/colors.scss';
-
 import * as actions from '../../store/actionIndex';
 import * as hooks from './hooks';
 
 import ColorDropdown from '../../sharedComponents/Dropdowns/ColorDropdown';
 import ActionDropdown from '../../sharedComponents/Dropdowns/ActionDropdown';
+
+import './index.scss';
+import '../../styles/colors.scss';
+import OpenColorBlackIcon from '../../assets/icons/rounded-square.svg';
+import OpenColorWhiteIcon from '../../assets/icons/rounded-square-white.svg';
+import DropdownArrowBlackIcon from '../../assets/icons/dropdown-arrow.svg';
+import DropdownArrowWhiteIcon from '../../assets/icons/dropdown-arrow-white.svg';
 
 const Title = ({
   cardId,
@@ -74,11 +78,11 @@ const Title = ({
         />
       </div>
       <button
-        className='title-btn'
+        className='color-btn'
         onClick={openColorDropdown}
         ref={colorDropdownBtnRef}
       >
-        <i className={'open-color-icon' + (isLightColor ? ' dark' : ' light')} />
+        <img src={isLightColor ? OpenColorBlackIcon : OpenColorWhiteIcon} />
       </button>
       <ColorDropdown
         btnRef={colorDropdownBtnRef}
@@ -88,11 +92,11 @@ const Title = ({
         onUpdateColor={(color) => dispatch(actions.updCardColor(cardId, color))}
       />
       <button
-        className='title-btn'
+        className='dropdown-btn'
         ref={optionDropdownBtnRef}
         onClick={openOptionsDropdown}
       >
-        <i className={'open-dropdown-icon' + (isLightColor ? ' dark' : ' light')} />
+        <img src={isLightColor ? DropdownArrowBlackIcon : DropdownArrowWhiteIcon} />
       </button>
       <ActionDropdown
         btnRef={optionDropdownBtnRef}

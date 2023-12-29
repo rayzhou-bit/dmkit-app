@@ -5,7 +5,6 @@ import ProjectItem from './ProjectItem';
 
 import './index.scss';
 import NewProjectIcon from '../../assets/icons/new-project.svg';
-import DropdownArrowIcon from '../../assets/icons/dropdown-arrow.svg';
 
 const Projects = () => {
   const {
