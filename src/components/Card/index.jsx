@@ -104,8 +104,8 @@ export const Card = ({
       onDragStop={dragStopHandler}
       // size
       size={cardSize}
-      minWidth={GRID.size*10} 
-      minHeight={GRID.size*12}
+      minWidth={GRID.size*12} 
+      minHeight={GRID.size*10}
       scale={activeViewScale}
       // resize
       enableResizing={{

@@ -1,72 +1,40 @@
-// card config
+// config
 $round-radius: 12px;
-
-// title config
 $title-height: 32px;
-$btn-width: 26px;
 
-.active {
-  margin: 0px;
-  border: 3px solid #C1E9FF;
-}
-.inactive {
-  margin: 2px;
-  border: 1px solid #F4F4F4;
-}
 .card {
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  box-shadow: 2px 2px 8px -3px #d7d6d6;
   border-radius: $round-radius;
 
   display: grid;
   grid-template-rows: $title-height auto;
-
-  &:hover {
-    margin: 0px;
-    border: 3px solid #c1e9ff;
-  }
 }
-
-@keyframes card-blink {
-  50% {
-    border: 3px solid red;
-    margin: 0px;
-  }
-}
+.active { box-shadow: 0 0 0 6px #DBE2EB, 2px 2px 8px -3px #D7D6D6; }
+.inactive { box-shadow: 0 0 0 1px #F0F0F0, 2px 2px 8px -3px #D7D6D6; }
+.card:hover { box-shadow: 0 0 0 6px #DBE2EB, 2px 2px 8px -3px #D7D6D6; }
+@keyframes card-blink { 50% { box-shadow: 0 0 0 6px #5BC5FF, 2px 2px 8px -3px #D7D6D6; } }
 
 .title {
-  border-radius: ($round-radius)-3px ($round-radius)-3px 0 0;
+  padding: 0 9px;
+  border-radius: $round-radius $round-radius 0 0;
 
   display: grid;
-  grid-template-columns: auto $btn-width $btn-width;
-  padding: 0 ($round-radius)-6px;
+  grid-template-columns: auto 18px 12px;
+  gap: 12px;
 
-  .dark {
-    color: black;
-  }
-  .light {
-    color: white;
-  }
+  .dark { color: black; }
+  .light { color: white; }
   .input-div {
     width: 100%;
+    padding: 0 3px;
     border-radius: $round-radius 0 0 0;
     background-color: transparent;
 
     .editing {
-      background-color: #c1e9ff;
-      color: #363b4e;
-      user-select: default;
-      -moz-user-select: default;
-      -webkit-user-select: default;
-      cursor: text;
-    }
-    .editing-2 {
-      background-color: #5bc5ff;
-      color: #363b4e;
       user-select: default;
       -moz-user-select: default;
       -webkit-user-select: default;
@@ -84,7 +52,7 @@ $btn-width: 26px;
       font-weight: 600;
       font-size: 13px;
       line-height: 25px;
-      text-align: center;
+      text-align: left;
       letter-spacing: 0.05em;
       font-feature-settings: "kern" off;
       color: inherit;
@@ -94,57 +62,26 @@ $btn-width: 26px;
     }
   }
 
-  .title-btn {
+  button {
+    padding: 0;
     background-color: transparent;
-
-    i {
-      display: inline-block;
-      border-style: solid;
-    }
-    &:hover i {
-      border-color: #5bc5ff;
-    }
-
-    .dark {
-      border-color: black;
-    }
-    .light {
-      border-color: white;
-    }
-    .open-color-icon {
-      width: 16px;
-      height: 16px;
-      border-width: 1px;
-      border-radius: 2px;
-    }
-    .open-dropdown-icon {
-      width: 9px;
-      height: 9px;
-      margin-bottom: 3px;
-      border-width: 0 2px 2px 0;
-      transform: rotate(45deg);
-    }
-
-    // .tooltip { top: 130%; right: 0; white-space: nowrap; }
-    // .tooltip::after { bottom: 100%; right: 10%; border-bottom-color: black; }
+    justify-content: center;
+    display: flex;
   }
 
-  .open-dropdown-btn {
-    &:hover {
-      animation-name: bounce;
-      animation-duration: 0.5s;
-      animation-fill-mode: both;
-    }
-    @keyframes bounce {
-      50% {
-        transform: translateY(2px);
-      }
-    }
+  .color-btn {
+    img { padding-top: 2px; }
+    &:hover > img { content: url('../../assets/icons/rounded-square-hover.svg'); }
+  }
+
+  .dropdown-btn {
+    img { transition-duration: .5s; }
+    &:hover > img { transform: translateY(3px); }
   }
 }
 
 .content {
-  border-radius: 0 0 ($round-radius)-2px ($round-radius)-2px;
+  border-radius: 0 0 $round-radius $round-radius;
 
   .text {
     box-sizing: border-box;
