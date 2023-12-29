@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 
 import { CARD_FONT_SIZE } from "../../../shared/constants/fontSize";
 
+// TODO delete/change
 // Creates a title text with an edit button
 // css is fully controlled by props
 

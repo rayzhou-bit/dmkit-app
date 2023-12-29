@@ -7,7 +7,6 @@ import * as actions from '../../store/actionIndex';
 import * as fireactions from '../../store/firestoreIndex';
 import { auth } from '../../store/firestoreAPI/firebase';
 import Backdrop from '../UI/Backdrop/Backdrop';
-import Spinner from '../UI/Spinner/Spinner';
 import { manageUser } from '../../store/firestoreAPI/authTransactions';
 
 // Manages loading, saving and campaignData edit flag
@@ -88,8 +87,7 @@ const Loader = props => {
       ? <>
           <Backdrop show={true} />
           <div className="loading-box">
-            <Spinner />
-            Loading...
+            <div className="spinner">Loading...</div>
           </div>
         </>
       : null

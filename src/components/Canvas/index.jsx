@@ -2,10 +2,10 @@ import React, { useState, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Rnd } from 'react-rnd';
 
-import './Canvas.scss';
+import './index.scss';
 import * as actions from '../../store/actionIndex';
 import { GRID } from '../../shared/constants/grid';
-import Card from '../../components/Card';
+import Card from '../Card';
 
 // Canvas is the main portion the user is looking at. This is located in the center of the screen.
 
