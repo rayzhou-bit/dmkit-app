@@ -2,14 +2,14 @@ import React, { useState, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Rnd } from 'react-rnd';
 
-import './index.scss';
-import { GRID } from '../../shared/constants/grid';
-
 import useOutsideClick from '../../utils/useOutsideClick';
 import * as actions from '../../store/actionIndex';
 
 import Title from './Title';
 import Content from './Content';
+
+import './index.scss';
+import { GRID } from '../../shared/constants/grid';
 
 export const Card = ({
   cardId,
@@ -17,6 +17,7 @@ export const Card = ({
   cardAnimation,
   setCardAnimation,
 }) => {
+  // TODO move logic into hooks.js file
   const dispatch = useDispatch();
 
   // STATES
@@ -32,6 +33,7 @@ export const Card = ({
   const cardSize = useSelector(state => state.campaignData.present.cards[cardId].views[activeViewId].size);
   const cardColor = useSelector(state => state.campaignData.present.cards[cardId].color);
   const cardTitle = useSelector(state => state.campaignData.present.cards[cardId].title);
+  const cardText = useSelector(state => state.campaignData.present.cards[cardId].content.text);
 
   // REFS
   const cardRef = useRef();
@@ -130,7 +132,11 @@ export const Card = ({
           setEditingCard={setEditingCard}
           title={cardTitle}
         />
-        <Content cardId={cardId} setEditingCard={setEditingCard} />
+        <Content
+          cardId={cardId}
+          setEditingCard={setEditingCard}
+          text={cardText}
+        />
       </div>
     </Rnd>
   );
