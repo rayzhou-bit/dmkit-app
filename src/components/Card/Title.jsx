@@ -32,9 +32,8 @@ const Title = ({
     endTitleEdit,
     handleTitleKeyPress,
   } = hooks.useTitleHooks({
-    color,
     saveNewValue: (value) => dispatch(actions.updCardTitle(cardId, value)),
-    setIsEditingParent: setEditingCard,
+    setEditingCard,
     value: title,
   });
 
@@ -70,11 +69,9 @@ const Title = ({
           onKeyDown={handleTitleKeyPress}
           readOnly={readOnly}
           ref={titleRef}
-          required
-          size=''
           title={titleValue}
           type='text'
-          value={titleValue ?? ''}
+          value={titleValue}
         />
       </div>
       <button

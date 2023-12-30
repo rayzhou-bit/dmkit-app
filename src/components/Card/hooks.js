@@ -9,9 +9,8 @@ import RedTrashIcon from '../../assets/icons/red-trash.png';
 import { PopupKeys } from '../Popup/PopupKey';
 
 export const useTitleHooks = ({
-  color,
   saveNewValue,
-  setIsEditingParent,
+  setEditingCard,
   value,
 }) => {
   const [ titleValue, setTitleValue ] = useState('');
@@ -20,18 +19,32 @@ export const useTitleHooks = ({
 
   useEffect(() => {
     setTitleValue(value);
-  }, [setTitleValue, value]);
+  }, [value]);
 
-  const endEdit = () => {
+  const beginTitleEdit = () => {
+    if (!isEditing) {
+      setIsEditing(true);
+      setEditingCard(true);
+      titleRef.current.focus();
+      titleRef.current.setSelectionRange(
+        titleRef.current.value.length,
+        titleRef.current.value.length,
+      );
+    }
+  };
+
+  const endTitleEdit = () => {
     if (isEditing) {
       document.getSelection().removeAllRanges();
-      if (titleValue !== value) {
-        saveNewValue(titleValue);
-      }
+      saveNewValue(titleValue);
       setIsEditing(false);
-      if (setIsEditingParent) {
-        setIsEditingParent(false);
-      }
+      setEditingCard(false);
+    }
+  };
+
+  const handleTitleKeyPress = (event) => {
+    if(event.key === 'Enter' || event.key === 'Tab') {
+      endTitleEdit();
     }
   };
 
@@ -41,27 +54,9 @@ export const useTitleHooks = ({
     readOnly: !isEditing,
     inputClassName: isEditing ? 'editing' : '',
     changeTitleValue: (newValue) => setTitleValue(newValue),
-    beginTitleEdit: () => {
-      if (!isEditing) {
-        setIsEditing(true);
-        if(setIsEditingParent) {
-          setIsEditingParent(true);
-        }
-        titleRef.current.focus();
-        titleRef.current.setSelectionRange(
-          titleRef.current.value.length,
-          titleRef.current.value.length,
-        );
-      }
-    },
-    endTitleEdit: endEdit,
-    handleTitleKeyPress: (event) => {
-      if (isEditing) {
-        if(event.key === 'Enter' || event.key === 'Tab') {
-          endEdit();
-        }
-      }
-    },
+    beginTitleEdit,
+    endTitleEdit,
+    handleTitleKeyPress,
   };
 };
 
@@ -135,5 +130,49 @@ export const useOptionsDropdownHooks = ({
     options,
     openOptionsDropdown: () => setIsOptionDropdownOpen(!isOptionDropdownOpen),
     closeOptionsDropdown: () => setIsOptionDropdownOpen(false),
+  };
+};
+
+export const useContentHooks = ({
+  saveNewValue,
+  setEditingCard,
+  value,
+}) => {
+  const [ contentValue, setContentValue ] = useState('');
+  const [ isEditing, setIsEditing ] = useState(false);
+  const contentRef = useRef();
+
+  useEffect(() => {
+    setContentValue(value);
+  }, [value]);
+
+  const beginContentEdit = () => {
+    if (!isEditing) {
+      setIsEditing(true);
+      setEditingCard(true);
+      contentRef.current.focus();
+      contentRef.current.setSelectionRange(
+        contentRef.current.value.length,
+        contentRef.current.value.length,
+      );
+    }
+  };
+
+  const endContentEdit = () => {
+    if (isEditing) {
+      document.getSelection().removeAllRanges();
+      saveNewValue(contentValue);
+      setIsEditing(false);
+      setEditingCard(false);
+    }
+  };
+
+  return {
+    contentRef,
+    contentValue,
+    readOnly: !isEditing,
+    changeContentValue: (newValue) => setContentValue(newValue),
+    beginContentEdit,
+    endContentEdit,
   };
 };
