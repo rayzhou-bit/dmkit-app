@@ -30,7 +30,7 @@ const ToolMenu = props => {
   const activeCampaignId = useSelector(state => state.sessionManager.activeCampaignId);
   const activeCardId = useSelector(state => state.sessionManager.activeCardId);
   const activeViewId = useSelector(state => state.campaignData.present.activeViewId);
-  const activeViewLock = useSelector(state => activeViewId ? state.campaignData.present.views[activeViewId].lock : null);
+  const activeViewLock = useSelector(state => activeViewId ? state.campaignData.present.views[activeViewId]?.lock : null);
   const campaignData = useSelector(state => state.campaignData.present);
   const pastCampaignData = useSelector(state => state.campaignData.past);
   const futureCampaignData = useSelector(state => state.campaignData.future);

@@ -81,7 +81,7 @@ button {
   .tooltip::after {
     // top, bottom, left, right need to be set for the arrow position
     // border-color needs to be changed to be black for the direction of the arrow
-    content: 'sd';
+    content: '';
     position: absolute;
     z-index: 10001;
     // left: 100%; top: 50%;        <-- tooltip is to the left

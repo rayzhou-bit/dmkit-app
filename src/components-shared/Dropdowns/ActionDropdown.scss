@@ -1,9 +1,9 @@
-@use "../../components/Card/index.scss" as card;
+$y: 38px;
 
 .action-dropdown {
   position: absolute;
-  top: card.$title-height + 5px;
-  right: 5px;
+  top: $y;
+  right: 0;
 
   background: white;
   border: 1px solid #f4f4f4;
@@ -20,6 +20,10 @@
       list-style: none;
     }
   }
+}
+.dropup-variant {
+  top: auto !important;
+  bottom: $y !important;
 }
 
 .item-btn {

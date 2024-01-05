@@ -13,29 +13,29 @@ const Projects = () => {
     showProjectDropdown,
     openProjectDropdown,
     closeProjectDropdown,
-    activeProjectId,
+    activeProject,
     projects,
     newProject,
   } = useProjectHooks();
 
-  let projectsList = activeProjectId 
-  ? [
-      <ProjectItem
-        id={activeProjectId}
-        key={activeProjectId}
-        name={projects[activeProjectId]}
-        closeProjectDropdown={closeProjectDropdown}
-      />,
-    ]
-  : [];
-  for (let id in projects) {
-    if (id !== activeProjectId) {
-      const name = projects[id];
+  let projectsList = activeProject
+    ? [
+        <ProjectItem
+          id={activeProject}
+          key={activeProject}
+          name={projects[activeProject]}
+          closeProjectDropdown={closeProjectDropdown}
+        />,
+      ]
+    : [];
+  for (let project in projects) {
+    if (project !== activeProject) {
+      const name = projects[project];
       projectsList = [
         ...projectsList,
         <ProjectItem
-          id={id}
-          key={id}
+          id={project}
+          key={project}
           name={name}
           closeProjectDropdown={closeProjectDropdown}
         />,
@@ -54,14 +54,13 @@ const Projects = () => {
         <img />
       </button>
       <div
-        className='dropdown'
+        className='header-dropdown'
         ref={dropdownRef}
         style={{ display: showProjectDropdown ? 'block' : 'none' }}
       >
         <ul className='projects-ul'>
           {projectsList}
         </ul>
-        
         <div
           className='new-project'
           onClick={newProject}

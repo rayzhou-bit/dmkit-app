@@ -13,8 +13,8 @@ $title-height: 32px;
   display: grid;
   grid-template-rows: $title-height auto;
 }
-.active { box-shadow: 0 0 0 6px #DBE2EB, 2px 2px 8px -3px #D7D6D6; }
-.inactive { box-shadow: 0 0 0 1px #F0F0F0, 2px 2px 8px -3px #D7D6D6; }
+.active-card { box-shadow: 0 0 0 6px #DBE2EB, 2px 2px 8px -3px #D7D6D6; }
+.inactive-card { box-shadow: 0 0 0 1px #F0F0F0, 2px 2px 8px -3px #D7D6D6; }
 .card:hover { box-shadow: 0 0 0 6px #DBE2EB, 2px 2px 8px -3px #D7D6D6; }
 @keyframes card-blink { 50% { box-shadow: 0 0 0 6px #5BC5FF, 2px 2px 8px -3px #D7D6D6; } }
 

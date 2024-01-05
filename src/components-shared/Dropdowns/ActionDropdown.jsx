@@ -18,6 +18,7 @@ export const ActionDropdown = ({
   isOpen,
   items,
   onClose,
+  variant,
 }) => {
   const dropdownRef = useRef();
   
@@ -55,7 +56,10 @@ export const ActionDropdown = ({
 
   return (
     <div
-      className='action-dropdown'
+      className={
+        'action-dropdown'
+        + (variant === 'dropup' ? ' dropup-variant' : '')
+      }
       ref={dropdownRef}
     >
       <ul>

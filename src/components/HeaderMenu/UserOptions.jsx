@@ -36,7 +36,7 @@ const UserOptions = () => {
         <img />
       </button>
       <div
-        className='dropdown'
+        className='header-dropdown'
         ref={dropdownRef}
         style={{ display: showUserOptionsDropdown ? 'block' : 'none' }}
       >
