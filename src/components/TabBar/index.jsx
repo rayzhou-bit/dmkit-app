@@ -17,6 +17,8 @@ const TabBar = () => {
     scrollRight,
     scrollTo,
     onWheel,
+    isInactiveLeft,
+    isInactiveRight,
   } = useTabBarHooks();
 
   const tabList = tabs.map(tab => <Tab id={tab} />);
@@ -38,13 +40,13 @@ const TabBar = () => {
       </div>
       <div className='tab-scroll'>
         <button
-          className='scroll'
+          className={'scroll' + (isInactiveLeft ? ' inactive' : '')}
           onClick={scrollLeft}
         >
           <img src={ScrollLeftIcon} />
         </button>
         <button
-          className='scroll'
+          className={'scroll' + (isInactiveRight ? ' inactive' : '')}
           onClick={scrollRight}
         >
           <img src={ScrollRightIcon} />

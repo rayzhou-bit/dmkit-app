@@ -1,4 +1,4 @@
-$menu-height: 42px;
+$menu-height: 43px;
 
 // follow viewscreen example. use position absolute
 
@@ -8,10 +8,9 @@ $menu-height: 42px;
   height: $menu-height;
   z-index: 90;
   background-color: #363B4E;
-  border-top: 1px solid #F4F4F4;
 
   display: grid;
-  grid-template-columns: 76px auto 80px;
+  grid-template-columns: 70px auto 94px;
   gap: 3px;
 }
 
@@ -52,7 +51,7 @@ $menu-height: 42px;
     font-family: Roboto;
     font-size: 12px;
     font-style: normal;
-    font-weight: 400;
+    font-weight: 600;
     line-height: 25px;
     letter-spacing: 0.6px;
 
@@ -73,7 +72,7 @@ $menu-height: 42px;
             overflow: hidden;
             text-overflow: ellipsis;
           }
-          &:hover { background-color: #C1E9FF; }
+          &:hover { background-color: #DBE2EB; }
         }
       }
     }
@@ -119,7 +118,7 @@ $menu-height: 42px;
   .tab {
     position: relative;
     padding: 7px 10px;
-    border-radius: 0px 0px 12px 12px;
+    border-radius: 0px 0px 16px 16px;
     background: #667092;
     display: grid;
     grid-template-columns: auto 24px;
@@ -181,11 +180,11 @@ $menu-height: 42px;
     }
   }
   .active { background: #FFF; }
-  .dragging { box-shadow: 0 3px #5BC5FF; }
+  // .dragging { box-shadow: 0 3px #5BC5FF; }
 }
 
 .tab-scroll {
-  padding: 4px;
+  padding: 5px 12px 8px 12px;
   background-color: #363B4E;
   z-index: 10;
   display: flex;

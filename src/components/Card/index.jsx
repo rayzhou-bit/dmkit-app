@@ -28,9 +28,9 @@ export const Card = ({
   // STORE SELECTORS
   const activeCardId = useSelector(state => state.sessionManager.activeCardId);
   const activeViewId = useSelector(state => state.campaignData.present.activeViewId);
-  const activeViewScale = useSelector(state => activeViewId ? state.campaignData.present.views[activeViewId].scale : null);
-  const cardPos = useSelector(state => state.campaignData.present.cards[cardId].views[activeViewId].pos);
-  const cardSize = useSelector(state => state.campaignData.present.cards[cardId].views[activeViewId].size);
+  const activeViewScale = useSelector(state => activeViewId ? state.campaignData.present.views[activeViewId]?.scale : null);
+  const cardPos = useSelector(state => state.campaignData.present.cards[cardId].views[activeViewId]?.pos);
+  const cardSize = useSelector(state => state.campaignData.present.cards[cardId].views[activeViewId]?.size);
   const cardColor = useSelector(state => state.campaignData.present.cards[cardId].color);
   const cardTitle = useSelector(state => state.campaignData.present.cards[cardId].title);
   const cardText = useSelector(state => state.campaignData.present.cards[cardId].content.text);

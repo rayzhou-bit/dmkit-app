@@ -22,29 +22,16 @@ const TabControls = ({
     switchTab,
   } = useTabControlsHooks({ scrollTo });
 
-  let tabList = tabs.map(tab => {
-    if (tab !== activeTab) {
-      const name = tabData[tab]?.title || 'Unnamed Tab';
-      return (
-        <li key={tab}>
-          <div onClick={() => switchTab(tab)} title={name}>
-            <span>{name}</span>
-          </div>
-        </li>
-      );
-    }
-  });
-  if (activeTab) {
-    const name = tabData[activeTab]?.title || 'Unnamed Tab';
-    tabList = [
-      ...tabList,
-      <li key={activeTab}>
-        <div className='active' title={name}>
+  let tabList = [...tabs].reverse().map(tab => {
+    const name = tabData[tab]?.title || 'Unnamed Tab';
+    return (
+      <li key={tab}>
+        <div onClick={() => switchTab(tab)} title={name}>
           <span>{name}</span>
         </div>
-      </li>,
-    ];
-  }
+      </li>
+    );
+  });
 
   return (
     <div className='tab-controls'>
