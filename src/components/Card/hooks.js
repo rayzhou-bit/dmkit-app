@@ -2,11 +2,11 @@ import { useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 
 import * as actions from '../../store/actionIndex';
-
 import { LightColors } from '../../styles/colors';
+import { PopupKeys } from '../Popup/PopupKey';
+
 import LibraryIcon from '../../assets/icons/library-icon.png';
 import RedTrashIcon from '../../assets/icons/red-trash.png';
-import { PopupKeys } from '../Popup/PopupKey';
 
 export const useTitleHooks = ({
   saveNewValue,
@@ -17,6 +17,7 @@ export const useTitleHooks = ({
   const [ isEditing, setIsEditing ] = useState(false);
   const titleRef = useRef();
 
+  // Initialize title value
   useEffect(() => {
     setTitleValue(value);
   }, [value]);
@@ -116,11 +117,11 @@ export const useOptionsDropdownHooks = ({
     {
       title: 'Delete',
       type: 'danger',
+      icon: RedTrashIcon,
       callback: () => dispatch(actions.setPopup({
         type: PopupKeys.CONFIRM_CARD_DELETE,
         id: cardId,
       })),
-      icon: RedTrashIcon,
     },
   ];
 
@@ -142,6 +143,7 @@ export const useContentHooks = ({
   const [ isEditing, setIsEditing ] = useState(false);
   const contentRef = useRef();
 
+  // Initialize content value
   useEffect(() => {
     setContentValue(value);
   }, [value]);

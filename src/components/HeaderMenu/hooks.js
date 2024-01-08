@@ -12,11 +12,12 @@ import { PopupKeys } from '../Popup/PopupKey';
 export const useTitleHooks = ({
   saveNewValue,
 }) => {
-  const value = useSelector(state => state.campaignData.present.title);
+  const value = useSelector(state => state.campaignData.present.title || '');
   const [ titleValue, setTitleValue ] = useState('');
   const [ isEditing, setIsEditing ] = useState(false);
   const titleRef = useRef();
 
+  // Initialize title value
   useEffect(() => {
     setTitleValue(value);
   }, [setTitleValue, value]);
@@ -60,12 +61,12 @@ export const useTitleHooks = ({
 
 export const useVersionControlHooks = () => {
   const dispatch = useDispatch();
-  const userId = useSelector(state => state.userData.userId);
-  const status = useSelector(state => state.sessionManager.status);
-  const activeCampaignId = useSelector(state => state.sessionManager.activeCampaignId);
-  const campaignData = useSelector(state => state.campaignData.present);
-  const pastCampaignData = useSelector(state => state.campaignData.past);
-  const futureCampaignData = useSelector(state => state.campaignData.future);
+  const userId = useSelector(state => state.userData.userId || '');
+  const status = useSelector(state => state.sessionManager.status || 'idle');
+  const activeCampaignId = useSelector(state => state.sessionManager.activeCampaignId || '');
+  const campaignData = useSelector(state => state.campaignData.present || {});
+  const pastCampaignData = useSelector(state => state.campaignData.past || {});
+  const futureCampaignData = useSelector(state => state.campaignData.future || {});
   const [ saveCompleted, setSaveCompleted ] = useState(false);
 
   let saveStatus = 'enabled';
@@ -101,9 +102,9 @@ export const useVersionControlHooks = () => {
 
 export const useProjectHooks = () => {
   const dispatch = useDispatch();
-  const activeProjectId = useSelector(state => state.sessionManager.activeCampaignId);
-  const projects = useSelector(state => state.sessionManager.campaignList);
-  const projectData = useSelector(state => state.campaignData.present);
+  const activeProject = useSelector(state => state.sessionManager.activeCampaignId || '');
+  const projects = useSelector(state => state.sessionManager.campaignList || []);
+  const projectData = useSelector(state => state.campaignData.present || {});
   const [ showProjectDropdown, setShowProjectDropdown ] = useState(false);
   const btnRef = useRef();
   const dropdownRef = useRef();
@@ -126,12 +127,12 @@ export const useProjectHooks = () => {
     showProjectDropdown,
     openProjectDropdown: () => setShowProjectDropdown(true),
     closeProjectDropdown: () => setShowProjectDropdown(false),
-    activeProjectId,
+    activeProject,
     projects: sortedProjects,
     newProject: () => {
-      if (activeProjectId) {
+      if (activeProject) {
         dispatch(fireactions.saveCampaignData(
-          activeProjectId,
+          activeProject,
           projectData,
           () => dispatch(fireactions.createProject())
         ));
@@ -144,8 +145,8 @@ export const useProjectHooks = () => {
 
 export const useProjectItemHooks = ({ closeProjectDropdown, id, name }) => {
   const dispatch = useDispatch();
-  const activeProjectId = useSelector(state => state.sessionManager.activeCampaignId);
-  const projectData = useSelector(state => state.campaignData.present);
+  const activeProjectId = useSelector(state => state.sessionManager.activeCampaignId || '');
+  const projectData = useSelector(state => state.campaignData.present || {});
   const [ confirmDelete, setConfirmDelete ] = useState(false);
   const deleteBtnRef = useRef();
 
@@ -194,9 +195,9 @@ export const useProjectItemHooks = ({ closeProjectDropdown, id, name }) => {
 
 export const useUserOptionsHooks = () => {
   const dispatch = useDispatch();
-  const email = useSelector(state => state.userData.email);
-  const campaignData = useSelector (state => state.campaignData.present);
-  const activeCampaign = useSelector(state => state.sessionManager.activeCampaignId);
+  const email = useSelector(state => state.userData.email || '');
+  const campaignData = useSelector (state => state.campaignData.present || {});
+  const activeCampaign = useSelector(state => state.sessionManager.activeCampaignId || '');
   const [ showUserOptionsDropdown, setShowUserOptionsDropdown ] = useState(false);
   const btnRef = useRef();
   const dropdownRef = useRef();
@@ -237,7 +238,7 @@ export const useUserOptionsHooks = () => {
 
 export const useDisplayNameHooks = () => {
   const dispatch = useDispatch();
-  const username = useSelector(state => state.userData.displayName);
+  const username = useSelector(state => state.userData.displayName || '');
   const [ showDisplayNameInput, setShowDisplayInput ] = useState(false);
   const [ displayNameInput, setDisplayNameInput ] = useState('');
   const inputRef = useRef();
@@ -270,9 +271,9 @@ export const useDisplayNameHooks = () => {
 
 export const useSignInHooks = () => {
   const dispatch = useDispatch();
-  const userId = useSelector(state => state.userData.userId);
-  const introCampaignEdit = useSelector(state => state.sessionManager.introCampaignEdit);
-  const projectData = useSelector (state => state.campaignData.present);
+  const userId = useSelector(state => state.userData.userId || '');
+  const introCampaignEdit = useSelector(state => state.sessionManager.introCampaignEdit || false);
+  const projectData = useSelector (state => state.campaignData.present || {});
   const [ showSignInDropdown, setShowSignInDropdown ] = useState(false);
   const [ email, setEmail ] = useState('');
   const [ emailError, setEmailError ] = useState('');
@@ -283,13 +284,14 @@ export const useSignInHooks = () => {
   const signInBtnRef = useRef();
   const signInDropdownRef = useRef();
 
+  // Initialize sign in form
   useEffect(() => {
     if (!!userId) {
       setShowSignInDropdown(false);
       setEmail('');
       setPassword('');
     }
-  }, [userId, setEmail, setPassword, setShowSignInDropdown]);
+  }, [userId]);
 
   useOutsideClick(
     [signInBtnRef, signInDropdownRef],
@@ -405,7 +407,7 @@ export const useSignInHooks = () => {
 
 export const useSignUpHooks = () => {
   const dispatch = useDispatch();
-  const userId = useSelector(state => state.userData.userId);
+  const userId = useSelector(state => state.userData.userId || '');
   const [ showSignUpDropdown, setShowSignUpDropdown ] = useState(false);
   const [ email, setEmail ] = useState('');
   const [ emailError, setEmailError ] = useState('');
@@ -415,13 +417,14 @@ export const useSignUpHooks = () => {
   const signUpBtnRef = useRef();
   const signUpDropdownRef = useRef();
 
+  // Initialize sign up form
   useEffect(() => {
     if (!!userId) {
       setShowSignUpDropdown(false);
       setEmail('');
       setPassword("");
     }
-  }, [userId, setEmail, setPassword, setShowSignUpDropdown]);
+  }, [userId]);
 
   useOutsideClick(
     [signUpBtnRef, signUpDropdownRef],

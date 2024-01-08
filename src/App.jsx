@@ -5,7 +5,7 @@ import Loader from './components/Loader/Loader';
 import HeaderMenu from './components/HeaderMenu';
 import ToolMenu from './components/ToolMenu/ToolMenu';
 import Library from './components/Library/Library';
-import ViewSelect from './components/ViewSelect/ViewSelect';
+import TabBar from './components/TabBar';
 import Canvas from './components/Canvas';
 import Popup from './components/Popup';
 
@@ -25,7 +25,7 @@ const App = () => {
       <HeaderMenu />
       <ToolMenu toolMenuRef={toolMenuRef} />
       <Library />
-      <ViewSelect />
+      <TabBar />
       <Canvas toolMenuRef={toolMenuRef} />
       <Popup />
     </div>

@@ -1,0 +1,204 @@
+$menu-height: 42px;
+
+// follow viewscreen example. use position absolute
+
+.tab-bar {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  height: $menu-height;
+  z-index: 90;
+  background-color: #363B4E;
+  border-top: 1px solid #F4F4F4;
+
+  display: grid;
+  grid-template-columns: 76px auto 80px;
+  gap: 3px;
+}
+
+.tab-controls {
+  position: relative;
+  background-color: #363B4E;
+  z-index: 10;
+  display: flex;
+  flex-flow: row nowrap;
+
+  button {
+    height: 100%;
+    background-color: transparent;
+  }
+  .add-button {
+    .tooltip { bottom: 115%; left: 15%; white-space: nowrap; }
+    .tooltip::after { top: 115%; left: 15%; border-top-color: #363B4E; }
+  }
+  .overview-button {
+    .tooltip { bottom: 115%; left: 0%; white-space: nowrap; }
+    .tooltip::after { top: 115%; left: 15%; border-top-color: #363B4E; }
+  }
+  .tab-dropup {
+    position: absolute;
+    bottom: $menu-height + 3px;
+    left: 36px;
+    min-width: 200px;
+    max-width: 300px;
+    max-height: 50vh;
+    padding: 9px 6px 9px 9px;
+    border-radius: 12px;
+    border: 1px solid #F4F4F4;
+    background-color: white;
+    box-shadow: 2px 2px 8px -3px #D7D6D6;
+    overflow-y: scroll;
+    color: #353535;
+    font-kerning: none;
+    font-family: Roboto;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 25px;
+    letter-spacing: 0.6px;
+
+    ul {
+      margin: 0;
+      padding: 0;
+      li {
+        list-style: none;
+        width: 100%;
+        div {
+          padding: 9px;
+          border-radius: 5px;
+          span {
+            display: block;
+            width: 100%;
+            padding: 0 9px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+          &:hover { background-color: #C1E9FF; }
+        }
+      }
+    }
+    .active { background-color: #DBE2EB; }
+
+    &::-webkit-scrollbar { width: 19px; }
+    &::-webkit-scrollbar-track { -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1); }
+    &::-webkit-scrollbar-thumb {
+      background-color: darkgrey;
+      border: 5px solid white;
+      border-radius: 12px;
+    }
+
+    // copied from project scrollbar in case we want to use this instead
+    // &::-webkit-scrollbar { width: 12px; }
+    // &::-webkit-scrollbar-track { background-color: #00000000; }
+    // &::-webkit-scrollbar-thumb {
+    //   background-color: #363B4EA6;
+    //   border: 4px solid white;
+    //   border-radius: 12px;
+    // }
+  }
+}
+
+.tab-container {
+  position: relative;
+  background-color: transparent;
+  white-space: nowrap;
+  z-index: 0;
+  overflow-x: visible;
+  overflow-y: visible;
+  &::-webkit-scrollbar { display: none; }
+
+  display: flex;
+  flex-flow: row nowrap;
+  gap: 2px;
+
+  .tab-scroll-container {
+    position: absolute;
+    transition: left 0.8s;
+  }
+
+  .tab {
+    position: relative;
+    padding: 7px 10px;
+    border-radius: 0px 0px 12px 12px;
+    background: #667092;
+    display: grid;
+    grid-template-columns: auto 24px;
+  
+    .input-div {
+      .editing {
+        user-select: default;
+        -moz-user-select: default;
+        -webkit-user-select: default;
+        cursor: text;
+      }
+      input {
+        width: 100%;
+        border: 0;
+        background-color: transparent;
+        color: #FFF;
+        text-align: center;
+        font-family: Roboto;
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 300;
+        line-height: normal;
+        letter-spacing: 0.21px;
+        text-overflow: ellipsis;
+        cursor: grab;
+      }
+      .active { color: black; }
+    }
+  
+    .tab-dropup-btn {
+      width: 24px;
+      height: 18px;
+      padding: 0;
+      border-radius: 6px;
+      background: #DBE2EB;
+    }
+  
+    .tab-dropup-menu {
+      position: absolute;
+      bottom: $menu-height + 3px;
+      right: 0;
+      min-width: 200px;
+      max-width: 300px;
+      max-height: 50vh;
+      padding: 9px 6px 9px 9px;
+      border-radius: 12px;
+      border: 1px solid #F4F4F4;
+      background-color: white;
+      box-shadow: 2px 2px 8px -3px #D7D6D6;
+      overflow-y: scroll;
+      color: #353535;
+      font-kerning: none;
+      font-family: Roboto;
+      font-size: 12px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 25px;
+      letter-spacing: 0.6px;
+    }
+  }
+  .active { background: #FFF; }
+  .dragging { box-shadow: 0 3px #5BC5FF; }
+}
+
+.tab-scroll {
+  padding: 4px;
+  background-color: #363B4E;
+  z-index: 10;
+  display: flex;
+  flex-flow: row nowrap;
+  gap: 8px;
+
+  .scroll {
+    width: 30px;
+    height: 30px;
+    border-radius: 5px;
+    background: #4A5883;
+  }
+  .inactive {
+    background: #DBE2EB !important;
+  }
+}

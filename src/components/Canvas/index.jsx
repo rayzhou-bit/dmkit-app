@@ -24,13 +24,13 @@ const Canvas = ({ toolMenuRef }) => {
     (state) => state.campaignData.present.activeViewId
   );
   const activeViewLock = useSelector((state) =>
-    activeViewId ? state.campaignData.present.views[activeViewId].lock : null
+    activeViewId ? state.campaignData.present.views[activeViewId]?.lock : null
   );
   const activeViewPos = useSelector((state) =>
-    activeViewId ? state.campaignData.present.views[activeViewId].pos : null
+    activeViewId ? state.campaignData.present.views[activeViewId]?.pos : null
   );
   const activeViewScale = useSelector((state) =>
-    activeViewId ? state.campaignData.present.views[activeViewId].scale : 1
+    activeViewId ? state.campaignData.present.views[activeViewId]?.scale : 1
   );
   const cardCollection = useSelector(
     (state) => state.campaignData.present.cards

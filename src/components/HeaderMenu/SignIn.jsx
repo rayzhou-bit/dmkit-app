@@ -147,7 +147,7 @@ const SignIn = () => {
         <span>Sign In</span>
       </button>
       <div
-        className='dropdown'
+        className='header-dropdown'
         ref={signInDropdownRef}
         style={{ display: showSignInDropdown ? 'block' : 'none'}}
       >
