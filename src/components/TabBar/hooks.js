@@ -5,9 +5,11 @@ import useOutsideClick from '../../utils/useOutsideClick';
 import * as actions from '../../store/actionIndex';
 
 import RedTrashIcon from '../../assets/icons/red-trash.png';
+import { PopupKeys } from '../Popup/PopupKey';
 
 // TAB_WIDTH handles both the styling and drag movement for tabs.
 export const TAB_WIDTH = 200;
+export const SCROLL_RATIO = 1.75;
 
 export const useTabBarHooks = () => {
   const tabs = useSelector(state => state.campaignData.present.viewOrder || []);
@@ -15,6 +17,7 @@ export const useTabBarHooks = () => {
   const [ lockScroll, setLockScroll ] = useState(false);
   const containerRef = useRef();
   const totalTabWidth = tabs.length * (TAB_WIDTH + 1);
+  const rightBoundary = 3*(TAB_WIDTH + 1) - totalTabWidth;
   const containerWidth = () => containerRef.current.getBoundingClientRect().width;
 
   const checkLock = () => {
@@ -43,9 +46,9 @@ export const useTabBarHooks = () => {
 
   const scrollLeft = () => {
     if (!lockScroll) {
-      const newPosition = position + TAB_WIDTH*0.9;
+      const newPosition = position + (TAB_WIDTH + 1)*SCROLL_RATIO;
       if (newPosition < 0) {
-        setPosition(position+TAB_WIDTH * 0.9);
+        setPosition(position + (TAB_WIDTH + 1)*SCROLL_RATIO);
       } else {
         setPosition(0);
       }
@@ -53,9 +56,11 @@ export const useTabBarHooks = () => {
   };
   const scrollRight = () => {
     if (!lockScroll) {
-      const newPosition = position - TAB_WIDTH*0.9;
-      if (newPosition > (TAB_WIDTH - totalTabWidth)) {
-        setPosition(position-TAB_WIDTH * 0.9);
+      const newPosition = position - (TAB_WIDTH + 1)*SCROLL_RATIO;
+      if (newPosition > rightBoundary) {
+        setPosition(position - (TAB_WIDTH + 1)*SCROLL_RATIO);
+      } else {
+        setPosition(rightBoundary);
       }
     }
   };
@@ -90,6 +95,8 @@ export const useTabBarHooks = () => {
         }
       }
     },
+    isInactiveLeft: lockScroll || position === 0,
+    isInactiveRight: lockScroll || position === rightBoundary,
   };
 };
 
@@ -196,7 +203,10 @@ export const useTabHooks = ({
       title: 'Delete',
       type: 'danger',
       // icon: RedTrashIcon,
-      callback: () => dispatch(actions.destroyView(id)),
+      callback: () => dispatch(actions.setPopup({
+        type: PopupKeys.CONFIRM_TAB_DELETE,
+        id,
+      })),
     },
     {},
     {

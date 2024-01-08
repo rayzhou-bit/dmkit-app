@@ -49,7 +49,10 @@ const Tab = ({
       size={{ width: TAB_WIDTH, height: 32 }}
       style={{ zIndex: isDragging ? 100 : 0 }}
     >
-      <div className={'tab' + (isActiveTab ? ' active' : '') + (isDragging ? ' dragging' : '')}>
+      <div
+        className={'tab' + (isActiveTab ? ' active' : '') + (isDragging ? ' dragging' : '')}
+        key={id}
+      >
         <div className='input-div'>
           <input
             className={inputClassName + (isActiveTab ? ' active' : '')}

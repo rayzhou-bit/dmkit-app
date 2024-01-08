@@ -60,7 +60,7 @@ button {
     // top: 50%; right: 125%;       <-- tooltip is to the left
     // top: 130%; right: 50%;       <-- tooltip is to the bottom
     // bottom: 150%; left: 25%;     <-- tooltip is to the top
-    padding: 5px;
+    padding: 3px 8px;
     border-radius: 12px;
     background-color: #363B4E;
     visibility: hidden;
@@ -74,7 +74,7 @@ button {
     font-size: 11px;
     font-style: normal;
     font-weight: 400;
-    line-height: 25px;
+    line-height: 20px;
     letter-spacing: 0.55px;
   }
 

@@ -308,7 +308,7 @@ const updCardText = (state, cardId, text) => {
 
 // VIEW
 const createView = (state) => {
-  const newViewId = "untitled"+state.viewCreateCnt;
+  const newViewId = "tab"+state.viewCreateCnt;
   let updatedViewOrder = [...state.viewOrder];
   const pos = state.activeViewId ? updatedViewOrder.indexOf(state.activeViewId) + 1 : 0;
   updatedViewOrder.splice(pos, 0, newViewId);
@@ -333,8 +333,17 @@ const destroyView = (state, viewId) => {
   let updatedViews = {...state.views};
   delete updatedViews[viewId];
   const updatedViewOrder = [...state.viewOrder].filter(id => id !== viewId);
+  let updatedActiveViewId = state.activeViewId;
+  if (viewId === updatedActiveViewId) {
+    const viewIndex = state.viewOrder.indexOf(viewId)
+    if (viewIndex === 0) {
+      updatedActiveViewId = state.viewOrder[1];
+    } else {
+      updatedActiveViewId = state.viewOrder[viewIndex - 1];
+    }
+  }
   return updateObject(state, {
-    activeViewId: viewId === state.activeViewId ? null : state.activeViewId,
+    activeViewId: updatedActiveViewId,
     viewOrder: updatedViewOrder,
     views: updatedViews,
   });
