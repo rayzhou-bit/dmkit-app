@@ -53,23 +53,29 @@ $round-radius: 12px;
   display: flex;
   flex-flow: column nowrap;
 
+  textarea {
+    cursor: auto;
+  }
   .library-card-textarea {
-    flex: 1 1 auto;
-    box-sizing: border-box;
-    width: 100%;
+    display: block; /* Fallback for non-webkit */
+    display: -webkit-box;
+
+    max-width: 100%;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
 
     margin: 0;
-    padding: 15px 0px 15px 15px;
+    padding: 15px 8px 15px 15px;
     border: 0;
     border-radius: $round-radius;
-    overflow-y: auto;
     resize: none;
 
     background-color: white;
 
     font-family: "Roboto";
 
-    &::-webkit-scrollbar {
+    sc &::-webkit-scrollbar {
       width: 19px;
     }
     &::-webkit-scrollbar-track {
@@ -81,6 +87,13 @@ $round-radius: 12px;
       border: 5px solid white;
       border-radius: $round-radius;
     }
+  }
+
+  .library-card-textarea.selected {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    -webkit-line-clamp: inherit;
+    background-color: pink;
   }
 }
 
