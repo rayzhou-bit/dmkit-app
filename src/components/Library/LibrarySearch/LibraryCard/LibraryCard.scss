@@ -61,6 +61,7 @@ $round-radius: 12px;
     display: -webkit-box;
 
     max-width: 100%;
+    margin: 0 auto;
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
@@ -75,7 +76,7 @@ $round-radius: 12px;
 
     font-family: "Roboto";
 
-    sc &::-webkit-scrollbar {
+    &::-webkit-scrollbar {
       width: 19px;
     }
     &::-webkit-scrollbar-track {
@@ -93,7 +94,6 @@ $round-radius: 12px;
     flex: 1 1 auto;
     overflow-y: auto;
     -webkit-line-clamp: inherit;
-    background-color: pink;
   }
 }
 

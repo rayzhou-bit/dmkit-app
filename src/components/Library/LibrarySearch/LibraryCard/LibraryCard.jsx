@@ -132,7 +132,7 @@ const LibraryCard = (props) => {
           style={contentContainerStyle}
         >
           <ContentTextarea
-            className={`library-card-textarea ${isSelected}? "selected" : ""`}
+            className={`library-card-textarea ${isSelected ? "selected" : ""}`}
             value={cardText}
             saveValue={(v) => dispatch(actions.updCardText(cardId, v))}
             setEditingParent={setEditingCard}
