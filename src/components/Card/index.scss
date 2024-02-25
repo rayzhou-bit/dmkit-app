@@ -70,7 +70,6 @@ $title-height: 32px;
 
   .color-btn {
     background-color: transparent;
-    img { padding-top: 2px; }
     &:hover > img { content: url('../../assets/icons/rounded-square-hover.svg'); }
   }
 
@@ -88,7 +87,7 @@ $title-height: 32px;
     box-sizing: border-box;
     height: 100%;
     width: 100%;
-    padding: 18px 24px;
+    padding: 7px 14px;
     margin: 0;
     border: 0;
     border-radius: inherit;

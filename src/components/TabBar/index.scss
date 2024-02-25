@@ -11,7 +11,7 @@ $menu-height: 43px;
 
   display: grid;
   grid-template-columns: 70px auto 94px;
-  gap: 3px;
+  gap: 6px;
 }
 
 .tab-controls {
@@ -110,77 +110,97 @@ $menu-height: 43px;
   flex-flow: row nowrap;
   gap: 2px;
 
-  .tab-scroll-container {
+  .tab-list-container {
     position: absolute;
     transition: left 0.8s;
+    z-index: 100;
+
+    .tab {
+      position: relative;
+      padding: 7px 10px;
+      border-radius: 0px 0px 16px 16px;
+      background: #667092;
+      display: grid;
+      grid-template-columns: auto 24px;
+    
+      .input-div {
+        .editing {
+          user-select: default;
+          -moz-user-select: default;
+          -webkit-user-select: default;
+          cursor: text;
+        }
+        input {
+          width: 100%;
+          border: 0;
+          background-color: transparent;
+          color: #FFF;
+          text-align: center;
+          font-family: Roboto;
+          font-size: 14px;
+          font-style: normal;
+          font-weight: 300;
+          line-height: normal;
+          letter-spacing: 0.21px;
+          text-overflow: ellipsis;
+          cursor: grab;
+        }
+        .active { color: black; }
+      }
+    
+      .tab-dropup-btn {
+        width: 24px;
+        height: 18px;
+        padding: 0;
+        border-radius: 6px;
+        background: #DBE2EB;
+      }
+    
+      .tab-dropup-menu {
+        position: absolute;
+        bottom: $menu-height + 3px;
+        right: 0;
+        min-width: 200px;
+        max-width: 300px;
+        max-height: 50vh;
+        padding: 9px 6px 9px 9px;
+        border-radius: 12px;
+        border: 1px solid #F4F4F4;
+        background-color: white;
+        box-shadow: 2px 2px 8px -3px #D7D6D6;
+        overflow-y: scroll;
+        color: #353535;
+        font-kerning: none;
+        font-family: Roboto;
+        font-size: 12px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 25px;
+        letter-spacing: 0.6px;
+      }
+    }
+    .active { background: #FFF; }
+    // .dragging { box-shadow: 0 3px #5BC5FF; }
   }
 
-  .tab {
-    position: relative;
-    padding: 7px 10px;
-    border-radius: 0px 0px 16px 16px;
-    background: #667092;
-    display: grid;
-    grid-template-columns: auto 24px;
-  
-    .input-div {
-      .editing {
-        user-select: default;
-        -moz-user-select: default;
-        -webkit-user-select: default;
-        cursor: text;
-      }
-      input {
-        width: 100%;
-        border: 0;
-        background-color: transparent;
-        color: #FFF;
-        text-align: center;
-        font-family: Roboto;
-        font-size: 14px;
-        font-style: normal;
-        font-weight: 300;
-        line-height: normal;
-        letter-spacing: 0.21px;
-        text-overflow: ellipsis;
-        cursor: grab;
-      }
-      .active { color: black; }
+  .tab-indicator-container {
+    position: absolute;
+    z-index: -5;
+    display: flex;;
+    flex-flow: row nowrap;
+
+    .tab-shadow {
+      padding: 7px 10px;
+      border-radius: 0px 0px 16px 16px;
+      background: #4C526A;
+      display: grid;
+      grid-template-columns: auto 24px;
     }
-  
-    .tab-dropup-btn {
-      width: 24px;
-      height: 18px;
-      padding: 0;
-      border-radius: 6px;
-      background: #DBE2EB;
-    }
-  
-    .tab-dropup-menu {
-      position: absolute;
-      bottom: $menu-height + 3px;
-      right: 0;
-      min-width: 200px;
-      max-width: 300px;
-      max-height: 50vh;
-      padding: 9px 6px 9px 9px;
-      border-radius: 12px;
-      border: 1px solid #F4F4F4;
-      background-color: white;
-      box-shadow: 2px 2px 8px -3px #D7D6D6;
-      overflow-y: scroll;
-      color: #353535;
-      font-kerning: none;
-      font-family: Roboto;
-      font-size: 12px;
-      font-style: normal;
-      font-weight: 400;
-      line-height: 25px;
-      letter-spacing: 0.6px;
+    .drop-indicator {
+      border-radius: 0 0 5px 5px;
+      background: #5BC5FF;
     }
   }
-  .active { background: #FFF; }
-  // .dragging { box-shadow: 0 3px #5BC5FF; }
 }
 
 .tab-scroll {

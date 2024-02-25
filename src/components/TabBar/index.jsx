@@ -3,6 +3,7 @@ import React from 'react';
 import { useTabBarHooks } from './hooks';
 import TabControls from './TabControls';
 import Tab from './Tab';
+import TabIndicators from './TabIndicators';
 
 import './index.scss';
 import ScrollLeftIcon from '../../assets/icons/scroll-left.svg';
@@ -13,6 +14,8 @@ const TabBar = () => {
     tabs,
     containerRef,
     position,
+    dropIndicatorIndex,
+    setDropIndicatorIndex,
     scrollLeft,
     scrollRight,
     scrollTo,
@@ -21,10 +24,10 @@ const TabBar = () => {
     isInactiveRight,
   } = useTabBarHooks();
 
-  const tabList = tabs.map(tab => <Tab id={tab} />);
+  const tabList = tabs.map(tab => <Tab id={tab} setDropIndicatorIndex={setDropIndicatorIndex} />);
 
   return (
-    <div className="tab-bar">
+    <div className='tab-bar'>
       <TabControls scrollTo={scrollTo} />
       <div
         className='tab-container'
@@ -32,10 +35,11 @@ const TabBar = () => {
         ref={containerRef}
       >
         <div
-          className='tab-scroll-container'
+          className='tab-list-container'
           style={{ left: position }}
         >
           {tabList}
+          <TabIndicators dropIndicatorIndex={dropIndicatorIndex} tabCount={tabs.length} />
         </div>
       </div>
       <div className='tab-scroll'>

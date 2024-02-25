@@ -4,20 +4,22 @@ import useOutsideClick from '../../utils/useOutsideClick';
 
 import * as actions from '../../store/actionIndex';
 
-import RedTrashIcon from '../../assets/icons/red-trash.png';
 import { PopupKeys } from '../Popup/PopupKey';
 
 // TAB_WIDTH handles both the styling and drag movement for tabs.
+export const TAB_HEIGHT = 32;
 export const TAB_WIDTH = 200;
+export const POSITION_INCREMENT = TAB_WIDTH + 6;
 export const SCROLL_RATIO = 1.75;
 
 export const useTabBarHooks = () => {
   const tabs = useSelector(state => state.campaignData.present.viewOrder || []);
   const [ position, setPosition ] = useState(0);
+  const [ dropIndicatorIndex, setDropIndicatorIndex ] = useState(null);
   const [ lockScroll, setLockScroll ] = useState(false);
   const containerRef = useRef();
-  const totalTabWidth = tabs.length * (TAB_WIDTH + 1);
-  const rightBoundary = 3*(TAB_WIDTH + 1) - totalTabWidth;
+  const totalTabWidth = tabs.length * POSITION_INCREMENT;
+  const rightBoundary = (3 * POSITION_INCREMENT) - totalTabWidth;
   const containerWidth = () => containerRef.current.getBoundingClientRect().width;
 
   const checkLock = () => {
@@ -46,9 +48,9 @@ export const useTabBarHooks = () => {
 
   const scrollLeft = () => {
     if (!lockScroll) {
-      const newPosition = position + (TAB_WIDTH + 1)*SCROLL_RATIO;
+      const newPosition = position + POSITION_INCREMENT * SCROLL_RATIO;
       if (newPosition < 0) {
-        setPosition(position + (TAB_WIDTH + 1)*SCROLL_RATIO);
+        setPosition(position + POSITION_INCREMENT * SCROLL_RATIO);
       } else {
         setPosition(0);
       }
@@ -56,9 +58,9 @@ export const useTabBarHooks = () => {
   };
   const scrollRight = () => {
     if (!lockScroll) {
-      const newPosition = position - (TAB_WIDTH + 1)*SCROLL_RATIO;
+      const newPosition = position - POSITION_INCREMENT * SCROLL_RATIO;
       if (newPosition > rightBoundary) {
-        setPosition(position - (TAB_WIDTH + 1)*SCROLL_RATIO);
+        setPosition(position - POSITION_INCREMENT * SCROLL_RATIO);
       } else {
         setPosition(rightBoundary);
       }
@@ -66,10 +68,10 @@ export const useTabBarHooks = () => {
   };
   const scrollTo = (tabId) => {
     if (!lockScroll) {
-      const tabPosition = tabs.indexOf(tabId) * (TAB_WIDTH + 1);
+      const tabPosition = tabs.indexOf(tabId) * POSITION_INCREMENT;
       const [ leftBound, rightBound ] = [
         -tabPosition,
-        containerWidth() - (TAB_WIDTH + 1) - tabPosition,
+        containerWidth() - POSITION_INCREMENT - tabPosition,
       ];
       if (position < leftBound) {
         setPosition(leftBound);
@@ -83,6 +85,8 @@ export const useTabBarHooks = () => {
     tabs,
     containerRef,
     position,
+    dropIndicatorIndex,
+    setDropIndicatorIndex,
     scrollLeft,
     scrollRight,
     scrollTo,
@@ -144,6 +148,7 @@ export const useTabControlsHooks = ({
 
 export const useTabHooks = ({
   id,
+  setDropIndicatorIndex,
 }) => {
   const dispatch = useDispatch();
   const [ isDragging, setIsDragging ] = useState(false);
@@ -168,7 +173,7 @@ export const useTabHooks = ({
   // Set visual position of tab when tabOrder changes
   useEffect(() => {
     rndRef.updatePosition({
-      x: tabIndex * (TAB_WIDTH + 1),
+      x: tabIndex * POSITION_INCREMENT,
       y: 0,
     });
   }, [tabOrder]);
@@ -241,10 +246,20 @@ export const useTabHooks = ({
     isActiveTab,
     switchTab: () => dispatch(actions.updActiveViewId(id)),
     isDragging,
+    onDrag: (event, data) => {
+      const initialX = tabIndex * POSITION_INCREMENT;
+      if (initialX - data.x > POSITION_INCREMENT / 2) {
+        setDropIndicatorIndex(Math.round(data.x / POSITION_INCREMENT));
+      } else if (initialX - data.x < -POSITION_INCREMENT / 2) {
+        setDropIndicatorIndex(Math.round(data.x / POSITION_INCREMENT) + 1);
+      } else {
+        setDropIndicatorIndex(null);
+      }
+    },
     onDragStart: () => setIsDragging(true),
     onDragStop: (event, data) => {
-      const initialX = tabIndex * (TAB_WIDTH + 1);
-      const deltaIndex = Math.round((data.x - initialX) / TAB_WIDTH);
+      const initialX = tabIndex * POSITION_INCREMENT;
+      const deltaIndex = Math.round((data.x - initialX) / POSITION_INCREMENT);
       if (deltaIndex !== 0) {
         dispatch(actions.shiftViewInViewOrder(id, deltaIndex));
       } else {
@@ -254,6 +269,7 @@ export const useTabHooks = ({
         });
       }
       setIsDragging(false);
+      setDropIndicatorIndex(null);
     },
     
     titleRef,

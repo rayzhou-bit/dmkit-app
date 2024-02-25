@@ -27,7 +27,7 @@ const Content = ({
   });
 
   return (
-    <div className="content">
+    <div className='content'>
       <textarea
         className='text'
         onBlur={endContentEdit}
@@ -35,7 +35,7 @@ const Content = ({
         onClick={beginContentEdit}
         onDragOver={(e) => e.preventDefault()}
         onWheel={(e) => e.stopPropagation()}
-        placeholder="Fill me in!"
+        placeholder='Fill me in!'
         readOnly={readOnly}
         ref={contentRef}
         value={contentValue}
