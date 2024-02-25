@@ -2,7 +2,7 @@ import React from 'react';
 import { Rnd } from "react-rnd";
 
 import "./index.scss";
-import { TAB_WIDTH, useTabHooks } from './hooks';
+import { TAB_HEIGHT, TAB_WIDTH, useTabHooks } from './hooks';
 import ActionDropdown from '../../components-shared/Dropdowns/ActionDropdown';
 
 import './index.scss';
@@ -10,12 +10,14 @@ import DropdownArrowIcon from '../../assets/icons/dropdown-arrow.svg';
 
 const Tab = ({
   id,
+  setDropIndicatorIndex,
 }) => {
   const {
     setRndRef,
     isActiveTab,
     switchTab,
     isDragging,
+    onDrag,
     onDragStart,
     onDragStop,
     
@@ -33,7 +35,7 @@ const Tab = ({
     openTabMenuDropup,
     closeTabMenuDropup,
     dropUpOptions,
-  } = useTabHooks({ id });
+  } = useTabHooks({ id, setDropIndicatorIndex });
 
   return (
     <Rnd
@@ -42,11 +44,12 @@ const Tab = ({
       dragAxis='x'
       dragHandleClassName='input-div'
       enableResizing={false}
+      onDrag={onDrag}
       onDragStart={onDragStart}
       onDragStop={onDragStop}
       onClick={switchTab}
       ref={node => setRndRef(node)}
-      size={{ width: TAB_WIDTH, height: 32 }}
+      size={{ width: TAB_WIDTH, height: TAB_HEIGHT }}
       style={{ zIndex: isDragging ? 100 : 0 }}
     >
       <div
