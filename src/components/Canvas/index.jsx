@@ -23,9 +23,6 @@ const Canvas = ({ toolMenuRef }) => {
   const activeViewId = useSelector(
     (state) => state.campaignData.present.activeViewId
   );
-  const activeViewLock = useSelector((state) =>
-    activeViewId ? state.campaignData.present.views[activeViewId]?.lock : null
-  );
   const activeViewPos = useSelector((state) =>
     activeViewId ? state.campaignData.present.views[activeViewId]?.pos : null
   );
@@ -51,13 +48,11 @@ const Canvas = ({ toolMenuRef }) => {
   };
 
   const wheelHandler = (event) => {
-    if (activeViewLock === false) {
-      let newScale = activeViewScale ? activeViewScale : 1;
-      newScale += event.deltaY * -0.001;
-      newScale = Math.round(newScale * 10) / 10;
-      newScale = Math.min(Math.max(GRID.scaleMin, newScale), GRID.scaleMax);
-      dispatch(actions.updActiveViewScale(newScale));
-    }
+    let newScale = activeViewScale ? activeViewScale : 1;
+    newScale += event.deltaY * -0.001;
+    newScale = Math.round(newScale * 10) / 10;
+    newScale = Math.min(Math.max(GRID.scaleMin, newScale), GRID.scaleMax);
+    dispatch(actions.updActiveViewScale(newScale));
   };
 
   const cardDropHandler = (event) => {
@@ -130,9 +125,6 @@ const Canvas = ({ toolMenuRef }) => {
             // position
             position={activeViewPos ? activeViewPos : { x: 0, y: 0 }}
             // drag
-            disableDragging={
-              activeViewLock === undefined ? true : activeViewLock
-            }
             dragHandleClassName='drag-view'
             allowAnyClick={true}
             onDragStop={dragStopHandler}

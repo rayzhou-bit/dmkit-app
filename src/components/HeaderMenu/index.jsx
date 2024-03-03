@@ -14,21 +14,20 @@ import './index.scss';
 import ToggleLeft from '../../assets/icons/toggle-left.svg';
 import ToggleRight from '../../assets/icons/toggle-right.svg';
 
-const HeaderMenu = () => {
+const HeaderMenu = ({
+  isToolMenuOpen,
+  toggleToolMenu,
+}) => {
   const dispatch = useDispatch();
-
   const userId = useSelector(state => state.userData.userId);
 
   return (
     <>
       <div className='header-menu'>
-        {/* expand toolbar button - TODO: the below is a placeholder until toolbar is redone */}
-        <div className='expand'>
-          <img alt='expand left' src={ToggleLeft} />
-        </div>
-        {/* title */}
+        <button className='expand' onClick={toggleToolMenu}>
+          <img alt='expand left' src={isToolMenuOpen ? ToggleRight : ToggleLeft} />
+        </button>
         <Title saveValue={v => dispatch(actions.updCampaignTitle(v))} />
-        {/* undo/redo/save buttons - TODO different states*/}
         <VersionControls />
         {/* projects */}
         {

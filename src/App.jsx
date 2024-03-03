@@ -1,16 +1,16 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 
 import './App.scss';
 import Loader from './components/Loader/Loader';
 import HeaderMenu from './components/HeaderMenu';
-import ToolMenu from './components/ToolMenu/ToolMenu';
+import ToolMenu from './components/ToolMenu';
 import Library from './components/Library/Library';
 import TabBar from './components/TabBar';
 import Canvas from './components/Canvas';
 import Popup from './components/Popup';
 
 const App = () => {
-  // REFS
+  const [ isToolMenuOpen, setIsToolMenuOpen ] = useState(true);
   const toolMenuRef = useRef();
 
   // Disable scrolling
@@ -22,8 +22,8 @@ const App = () => {
   return (
     <div className='layout'>
       <Loader />
-      <HeaderMenu />
-      <ToolMenu toolMenuRef={toolMenuRef} />
+      <HeaderMenu isToolMenuOpen={isToolMenuOpen} toggleToolMenu={() => setIsToolMenuOpen(!isToolMenuOpen)} />
+      <ToolMenu toolMenuRef={toolMenuRef} isOpen={isToolMenuOpen} />
       <Library />
       <TabBar />
       <Canvas toolMenuRef={toolMenuRef} />
