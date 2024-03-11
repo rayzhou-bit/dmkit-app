@@ -11,9 +11,17 @@ export const useToolMenuHooks = () => {
   const disableCopyCard = !activeCard || !activeCard;
 
   return {
-    onClickNewCard: () => !disableNewCard ?? dispatch(actions.createCard()),
+    onClickNewCard: () => {
+      if (!disableNewCard) {
+        dispatch(actions.createCard());
+      }
+    },
     disableNewCard,
-    onClickCopyCard: () => dispatch(actions.copyCard(activeCard)),
+    onClickCopyCard: () => {
+      if (!disableCopyCard) {
+        dispatch(actions.copyCard(activeCard));
+      }
+    },
     disableCopyCard,
   };
 };

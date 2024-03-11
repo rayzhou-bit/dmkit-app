@@ -7,7 +7,7 @@ import { convertToMsg } from '../../data/authCodes';
 import * as actions from '../../store/actionIndex';
 import * as fireactions from '../../store/firestoreIndex';
 import { store } from '../../index';
-import { PopupKeys } from '../Popup/PopupKey';
+import { POPUP_KEYS } from '../Popup/PopupKey';
 
 export const useTitleHooks = ({
   saveNewValue,
@@ -202,7 +202,7 @@ export const useProjectItemHooks = ({ closeProjectDropdown, id, name }) => {
     confirmDeleteProject: (event) => {
       event.stopPropagation();
       dispatch(actions.setPopup({
-        type: PopupKeys.CONFIRM_PROJECT_DELETE,
+        type: POPUP_KEYS.confirmProjectDelete,
         id,
         name,
         isActiveProject,

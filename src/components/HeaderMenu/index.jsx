@@ -2,7 +2,7 @@ import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import * as actions from '../../store/actionIndex';
-import { PopupKeys } from '../Popup/PopupKey';
+import { POPUP_KEYS } from '../Popup/PopupKey';
 
 import Title from './Title';
 import VersionControls from './VersionControls';
@@ -44,7 +44,7 @@ const HeaderMenu = ({
               <button
                 className='sign-up-btn'
                 onClick={() => dispatch(actions.setPopup({
-                  type: PopupKeys.SIGN_UP,
+                  type: POPUP_KEYS.signUp,
                 }))}
               >
                 <span>Sign Up</span>

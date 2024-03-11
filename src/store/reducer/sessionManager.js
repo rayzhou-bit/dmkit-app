@@ -15,6 +15,7 @@ const initialState = {
 
   status: 'loading',  // idle, loading or saving
   campaignEdit: false,  // flag for any unsaved changes
+  introCampaignEdit: false,
 
   errorPasswordReset: '',
   errorEmailSignIn: '',

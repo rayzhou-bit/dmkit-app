@@ -2,7 +2,7 @@ import React, { useRef } from 'react';
 
 import './ColorDropdown.scss';
 import '../../styles/colors.scss'
-import { CardColorKeys } from '../../styles/colors';
+import { CARD_COLOR_KEYS } from '../../styles/colors';
 import useOutsideClick from '../../utils/useOutsideClick';
 
 export const ColorDropdown = ({
@@ -19,7 +19,7 @@ export const ColorDropdown = ({
   if (!isOpen) return null;
 
   let colorList = [];
-  Object.values(CardColorKeys).forEach(color => {
+  Object.values(CARD_COLOR_KEYS).forEach(color => {
     let className = 'item ' + color;
     if (cardColor === color) {
       className += ' selected';

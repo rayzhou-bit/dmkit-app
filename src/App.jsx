@@ -1,7 +1,7 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import { useSelector } from 'react-redux';
 
 import './App.scss';
-import Loader from './components/Loader/Loader';
 import HeaderMenu from './components/HeaderMenu';
 import ToolMenu from './components/ToolMenu';
 import Library from './components/Library/Library';
@@ -10,8 +10,13 @@ import Canvas from './components/Canvas';
 import Popup from './components/Popup';
 
 const App = () => {
-  const [ isToolMenuOpen, setIsToolMenuOpen ] = useState(true);
+  const activeProject = useSelector(state => state.sessionManager.activeCampaignId || '');
+  const [ isToolMenuOpen, setIsToolMenuOpen ] = useState(!!activeProject);
   const toolMenuRef = useRef();
+
+  useEffect(() => {
+    setIsToolMenuOpen(!!activeProject);
+  }, [activeProject]);
 
   // Disable scrolling
   document.body.scroll = 'no';
@@ -19,10 +24,17 @@ const App = () => {
   document.body.style.overflow = 'hidden';
   document.height = window.innerHeight;
 
+  // TODO create initialize function and move login stuff into it from Canvas.jsx
+
   return (
     <div className='layout'>
-      <Loader />
-      <HeaderMenu isToolMenuOpen={isToolMenuOpen} toggleToolMenu={() => setIsToolMenuOpen(!isToolMenuOpen)} />
+      <HeaderMenu
+        isToolMenuOpen={isToolMenuOpen}
+        toggleToolMenu={() => {
+          if (activeProject) {
+            setIsToolMenuOpen(!isToolMenuOpen);
+          }
+         }} />
       <ToolMenu toolMenuRef={toolMenuRef} isOpen={isToolMenuOpen} />
       <Library />
       <TabBar />

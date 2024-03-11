@@ -2,7 +2,7 @@ import React, { useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import * as actions from '../../store/actionIndex';
-import { PopupKeys } from './PopupKey';
+import { POPUP_KEYS } from './PopupKey';
 
 import * as Card from '../Card/popups/DeleteConfirmation';
 import * as Tab from '../TabBar/popups/DeleteConfirmation';
@@ -30,13 +30,13 @@ export const Popup = () => {
 
   const element = () =>{
     switch (popup.type) {
-      case PopupKeys.CONFIRM_CARD_DELETE:
+      case POPUP_KEYS.confirmCardDelete:
         return <Card.DeleteConfirmation {...popup} />;
-      case PopupKeys.CONFIRM_TAB_DELETE:
+      case POPUP_KEYS.confirmTabDelete:
         return <Tab.DeleteConfirmation {...popup} />;
-      case PopupKeys.CONFIRM_PROJECT_DELETE:
+      case POPUP_KEYS.confirmProjectDelete:
         return <Project.DeleteConfirmation {...popup} />;
-      case PopupKeys.SIGN_UP:
+      case POPUP_KEYS.signUp:
         return <SignUp />;
       default:
         return null;
