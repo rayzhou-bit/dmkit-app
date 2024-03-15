@@ -136,19 +136,20 @@ export const useCanvasHooks = () => {
       };
     }
   }
+  console.log(activeTab, activeTabPosition)
 
   return {
     canvasState,
-    canvasPosition: activeTabPosition ?? { x: 0, y: 0 },
+    canvasPosition: activeTabPosition ?? { x: 80, y: 48 },
     canvasScale: activeTabScale,
     cardArgs,
     dragStopHandler: (event, data) => {
       if (activeTabPosition) {
         if (activeTabPosition.x !== data.x || activeTabPosition.y !== data.y) {
           dispatch(actions.updActiveViewPos({ x: data.x, y: data.y }));
-        } else {
-          dispatch(actions.updActiveViewPos({ x: data.x, y: data.y }));
         }
+      } else {
+        dispatch(actions.updActiveViewPos({ x: data.x, y: data.y }));
       }
     },
     wheelHandler: (event) => {

@@ -14,28 +14,27 @@ import './index.scss';
 import ToggleLeft from '../../assets/icons/toggle-left.svg';
 import ToggleRight from '../../assets/icons/toggle-right.svg';
 
+const ToolMenuButton = ({ isToolMenuOpen, toggleToolMenu }) => (
+  <button className='expand' onClick={toggleToolMenu}>
+    <img alt='expand left' src={isToolMenuOpen ? ToggleRight : ToggleLeft} />
+  </button>
+);
+
 const HeaderMenu = ({
   isToolMenuOpen,
   toggleToolMenu,
 }) => {
   const dispatch = useDispatch();
   const userId = useSelector(state => state.userData.userId);
+  const activeProject = useSelector(state => state.sessionManager.activeCampaignId || '');
 
   return (
     <>
       <div className='header-menu'>
-        <button className='expand' onClick={toggleToolMenu}>
-          <img alt='expand left' src={isToolMenuOpen ? ToggleRight : ToggleLeft} />
-        </button>
-        <Title saveValue={v => dispatch(actions.updCampaignTitle(v))} />
+        { !!activeProject ? ToolMenuButton({isToolMenuOpen, toggleToolMenu}) : null }
+        <Title />
         <VersionControls />
-        {/* projects */}
-        {
-          !!userId
-          ? <Projects />
-          : null
-        }
-        {/* user options */}
+        { !!userId ? <Projects /> : null }
         {
           !!userId
           ? <UserOptions />

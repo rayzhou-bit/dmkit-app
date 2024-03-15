@@ -14,9 +14,12 @@ import PlusIcon from '../../assets/icons/plus.svg'
 const Empty = (createNewProject) => (
   <div className='empty'>
     <img src={LibraryIcon} />
-    <div className='text-container'>
+    <div className='container1'>
       <span className='header'>No projects open</span>
-      <span className='text'>Please click below to get started or select an existing project from the top menu</span>
+      <div className='container2'>
+        <span className='text'>Please click below to get started or select</span>
+        <span className='text'>an existing project from the top menu</span>
+      </div>
     </div>
     <button className='button' onClick={createNewProject}>
       <span>Create new</span>
