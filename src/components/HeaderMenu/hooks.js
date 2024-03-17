@@ -276,7 +276,6 @@ export const useDisplayNameHooks = () => {
     showDisplayNameInput,
     openDisplayNameInput: () => setShowDisplayInput(true),
     changeDisplayNameInput: (newValue, event) => {
-      console.log(event.key)
       setDisplayNameInput(newValue)
     },
     handleDisplayNameInputKeyPress: (event) => {

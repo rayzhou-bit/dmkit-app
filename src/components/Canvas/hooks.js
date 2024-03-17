@@ -136,7 +136,6 @@ export const useCanvasHooks = () => {
       };
     }
   }
-  console.log(activeTab, activeTabPosition)
 
   return {
     canvasState,
