@@ -14,9 +14,7 @@ const TabControls = ({
     btnRef,
     dropupRef,
     showOverviewDropup,
-    openOverviewDropup,
-    closeOverviewDropup,
-    activeTab,
+    toggleOverviewDropup,
     tabs,
     tabData,
     switchTab,
@@ -41,7 +39,7 @@ const TabControls = ({
       </button>
       <button
         className='overview-button'
-        onClick={showOverviewDropup ? closeOverviewDropup : openOverviewDropup}
+        onClick={toggleOverviewDropup}
         ref={btnRef}
       >
         <img src={MenuIcon} />

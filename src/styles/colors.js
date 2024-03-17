@@ -1,30 +1,30 @@
-export const CardColorKeys = {
-  CLOUD: 'cloud',
-  GRAY: 'gray',
-  PINK: 'pink',
-  LICHEN_GREEN: 'lichen_green',
-  COTTON_BLUE: 'cotton_blue',
+export const CARD_COLOR_KEYS = {
+  cloud: 'cloud',
+  gray: 'gray',
+  pink: 'pink',
+  lichen_green: 'lichen_green',
+  cotton_blue: 'cotton_blue',
 
-  BUTTER: 'butter',
-  SAGE: 'sage',
-  LILAC: 'lilac',
-  ORANGE: 'orange',
-  CORN: 'corn',
+  butter: 'butter',
+  sage: 'sage',
+  lilac: 'lilac',
+  orange: 'orange',
+  corn: 'corn',
 
-  CARROT: 'carrot',
-  RED: 'red',
-  LAVENDER: 'lavender',
-  COBALT: 'cobalt',
-  CHESTNUT: 'chestnut',
+  carrot: 'carrot',
+  red: 'red',
+  lavender: 'lavender',
+  cobalt: 'cobalt',
+  chestnut: 'chestnut',
 
-  EGGPLANT: 'eggplant',
-  JUNGLE: 'jungle',
-  FOREST: 'forest',
-  SHADOW: 'shadow',
-  BLACK: 'black',
+  eggplant: 'eggplant',
+  jungle: 'jungle',
+  forest: 'forest',
+  shadow: 'shadow',
+  black: 'black',
 };
 
-export const LightColors = [
+export const LIGHT_COLORS = [
   'cloud',
   'gray',
   'pink',
@@ -38,7 +38,7 @@ export const LightColors = [
   'corn',
 ];
 
-export const DarkColors = [
+export const DARK_COLORS = [
   'carrot',
   'red',
   'lavender',

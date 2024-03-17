@@ -1,26 +1,111 @@
 import { useEffect, useRef, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import useOutsideClick from '../../utils/useOutsideClick';
 
 import * as actions from '../../store/actionIndex';
-import { LightColors } from '../../styles/colors';
-import { PopupKeys } from '../Popup/PopupKey';
+import { CARD_COLOR_KEYS, LIGHT_COLORS } from '../../styles/colors';
+import { POPUP_KEYS } from '../Popup/PopupKey';
+import { ACTION_TYPE } from '../../components-shared/Dropdowns/ActionDropdown';
 
 import LibraryIcon from '../../assets/icons/library-icon.png';
 import RedTrashIcon from '../../assets/icons/red-trash.png';
 
-export const useTitleHooks = ({
-  saveNewValue,
-  setEditingCard,
-  value,
+export const useCardHooks = ({
+  cardId,
+  toolMenuRef,
+  cardAnimation,
+  setCardAnimation,
 }) => {
+  const dispatch = useDispatch();
+
+  const activeCard = useSelector(state => state.sessionManager.activeCardId);
+  const activeTab = useSelector(state => state.campaignData.present.activeViewId);
+  const activeTabScale = useSelector(state => activeTab ? state.campaignData.present.views[activeTab]?.scale : null);
+  const cardPosition = useSelector(state => state.campaignData.present.cards[cardId].views[activeTab]?.pos);
+  const cardSize = useSelector(state => state.campaignData.present.cards[cardId].views[activeTab]?.size);
+  
+  const [isDragging, setIsDragging] = useState(false);
+  const [isSelected, setIsSelected] = useState(false);
+  const [editingCard, setEditingCard] = useState(false);
+
+  const cardRef = useRef();
+
+  const isActive = cardId === activeCard;
+
+  useOutsideClick([cardRef, toolMenuRef], isSelected, 
+    () => {
+      if (isActive) dispatch(actions.updActiveCardId(null));
+      setIsSelected(false);
+    }
+  );
+
+  let zIndex = (100 * cardPosition.y) + cardPosition.x + 10;
+  if (isDragging) {
+    zIndex = 20000 * (cardPosition.y + cardPosition.x + 10);
+  } else if (isActive) {
+    zIndex = 10000 * (cardPosition.y + cardPosition.x + 10);
+  }
+
+  return {
+    cardRef,
+    isActive,
+    activeTabScale,
+    size: cardSize,
+    position: cardPosition,
+    rndStyle: { zIndex },
+    animationStyle: { animation: cardAnimation ? cardAnimation[cardId] : null },
+    editingCard,
+    setEditingCard,
+    onDragStart: () => setIsDragging(true),
+    onDragStop: (event, data) => {
+      setIsDragging(false);
+      if (cardPosition) {
+        if (cardPosition.x !== data.x || cardPosition.y !== data.y) {
+          dispatch(actions.updCardPos(cardId, {x: data.x, y: data.y}));
+        }
+      } else {
+        dispatch(actions.updCardPos(cardId, { x: data.x, y: data.y }));
+      }
+    },
+    onResizeStop: (event, direction, ref, delta, position) => {
+      if (delta.width !== 0 || delta.height !== 0) {
+        dispatch(actions.updCardSize(cardId, {width: ref.style.width, height: ref.style.height}));
+        if (["top", "left", "topRight", "bottomLeft", "topLeft"].indexOf(direction) !== -1) {
+          dispatch(actions.updCardPos(cardId, { x: position.x, y: position.y }));
+        }
+      }
+    },
+    onClick: () => {
+      if (!isSelected) {
+        if (!isActive) dispatch(actions.updActiveCardId(cardId));
+        setIsSelected(true);
+      }
+    },
+    onAnimationEnd: () => {
+      setCardAnimation({
+        ...cardAnimation,
+        [cardId]: null,
+      })
+    },
+  };
+};
+
+export const useTitleHooks = ({
+  cardId,
+  setEditingCard,
+}) => {
+  const dispatch = useDispatch();
+
+  const title = useSelector(state => state.campaignData.present.cards[cardId].title);
+
   const [ titleValue, setTitleValue ] = useState('');
   const [ isEditing, setIsEditing ] = useState(false);
   const titleRef = useRef();
 
   // Initialize title value
   useEffect(() => {
-    setTitleValue(value);
-  }, [value]);
+    setTitleValue(title);
+  }, [title]);
 
   const beginTitleEdit = () => {
     if (!isEditing) {
@@ -28,8 +113,8 @@ export const useTitleHooks = ({
       setEditingCard(true);
       titleRef.current.focus();
       titleRef.current.setSelectionRange(
-        titleRef.current.value.length,
-        titleRef.current.value.length,
+        titleRef.current.title.length,
+        titleRef.current.title.length,
       );
     }
   };
@@ -37,7 +122,7 @@ export const useTitleHooks = ({
   const endTitleEdit = () => {
     if (isEditing) {
       document.getSelection().removeAllRanges();
-      saveNewValue(titleValue);
+      dispatch(actions.updCardTitle(cardId, titleValue));
       setIsEditing(false);
       setEditingCard(false);
     }
@@ -50,10 +135,10 @@ export const useTitleHooks = ({
   };
 
   return {
+    inputClassName: isEditing ? 'editing' : '',
+    readOnly: !isEditing,
     titleRef,
     titleValue,
-    readOnly: !isEditing,
-    inputClassName: isEditing ? 'editing' : '',
     changeTitleValue: (newValue) => setTitleValue(newValue),
     beginTitleEdit,
     endTitleEdit,
@@ -62,17 +147,22 @@ export const useTitleHooks = ({
 };
 
 export const useColorDropdownHooks = ({
-  color,
+  cardId,
 }) => {
+  const dispatch = useDispatch();
+  let color = useSelector(state => state.campaignData.present.cards[cardId].color);
+  color = CARD_COLOR_KEYS[color] ?? CARD_COLOR_KEYS.gray;
   const [ isColorDropdownOpen, setIsColorDropdownOpen ] = useState(false);
   const colorDropdownBtnRef = useRef();
 
   return {
+    color,
     colorDropdownBtnRef,
     isColorDropdownOpen,
-    isLightColor: LightColors.includes(color),
+    isLightColor: LIGHT_COLORS.includes(color),
     openColorDropdown: () => setIsColorDropdownOpen(!isColorDropdownOpen),
     closeColorDropdown: () => setIsColorDropdownOpen(false),
+    updateColor: (newColor) => dispatch(actions.updCardColor(cardId, newColor)),
   };
 };
 
@@ -116,10 +206,10 @@ export const useOptionsDropdownHooks = ({
     {},
     {
       title: 'Delete',
-      type: 'danger',
+      type: ACTION_TYPE.danger,
       icon: RedTrashIcon,
       callback: () => dispatch(actions.setPopup({
-        type: PopupKeys.CONFIRM_CARD_DELETE,
+        type: POPUP_KEYS.confirmCardDelete,
         id: cardId,
       })),
     },
@@ -135,18 +225,20 @@ export const useOptionsDropdownHooks = ({
 };
 
 export const useContentHooks = ({
-  saveNewValue,
+  cardId,
   setEditingCard,
-  value,
 }) => {
+  const dispatch = useDispatch();
+  const text = useSelector(state => state.campaignData.present.cards[cardId].content.text);
+
   const [ contentValue, setContentValue ] = useState('');
   const [ isEditing, setIsEditing ] = useState(false);
   const contentRef = useRef();
 
   // Initialize content value
   useEffect(() => {
-    setContentValue(value);
-  }, [value]);
+    setContentValue(text);
+  }, [text]);
 
   const beginContentEdit = () => {
     if (!isEditing) {
@@ -154,8 +246,8 @@ export const useContentHooks = ({
       setEditingCard(true);
       contentRef.current.focus();
       contentRef.current.setSelectionRange(
-        contentRef.current.value.length,
-        contentRef.current.value.length,
+        contentRef.current.text.length,
+        contentRef.current.text.length,
       );
     }
   };
@@ -163,7 +255,7 @@ export const useContentHooks = ({
   const endContentEdit = () => {
     if (isEditing) {
       document.getSelection().removeAllRanges();
-      saveNewValue(contentValue);
+      dispatch(actions.updCardText(cardId, contentValue));
       setIsEditing(false);
       setEditingCard(false);
     }

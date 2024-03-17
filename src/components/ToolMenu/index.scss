@@ -4,22 +4,59 @@ $border-radius: 5px;
 
 .tool-menu {
   position: fixed;
-  left: 0; top: $menu-size; bottom: $menu-size;
+  left: 0; top: 48px; bottom: 43px;
+  width: 80px;
   z-index: 50;
-
-  width: $menu-size;
+  padding: 18px;
+  background: white;
+  border-right: 1px solid #F4F4F4;
+  text-align: center;
+  
+  transition-duration: .5s;
 
   display: flex;
   flex-flow: column nowrap;
+  gap: 15px;
+
+  .tool-btn {
+    padding: 0;
+    background-color: transparent;
+    
+    &:disabled > .btn-highlight { background-color: transparent !important; }
+    &:hover > .btn-highlight { background-color: #DBE2EB; }
+
+    .btn-highlight {
+      border-radius: 5px;
+      padding: 6px 6px;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      // img {
+      //   width: 29px;
+      //   height: 32px;
+      // }
+    }
+
+    span {
+      color: #363B4E;
+      font-kerning: none;
+      font-family: Roboto;
+      font-size: 12px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 11px;
+    }
+  }
 
   .toolmenu-item {
-    position: absolute;
-    place-items: center;
+    position: relative;
 
-    border: 1px solid black;
+    // border: 1px solid black;
     border-left: 0px;
     border-top-right-radius: $border-radius;
     border-bottom-right-radius: $border-radius;
+
+    place-items: center;
 
     .tooltip { left: 130%; top: 15%; white-space: nowrap; }
     .tooltip::after { right: 100%; top: 50%; border-right-color: black; }
@@ -29,12 +66,8 @@ $border-radius: 5px;
     &:disabled:hover { background-color: gray; cursor: not-allowed; }
   }
 
-  .create-card { top: 0.5 *$btn-size; }
-  .copy-card { top: 1.5 *$btn-size; }
-  .undo { bottom: 6.5 *$btn-size; }
-  .redo { bottom: 5.5 *$btn-size; }
-  .reset-view { bottom: 4 *$btn-size; }
-  .lock-view { bottom: 3 *$btn-size; }
+  // .create-card { top: 0.5 *$btn-size; }
+  // .copy-card { top: 1.5 *$btn-size; }
 
   .save-indicator {
     bottom: 1.6 *$btn-size;

@@ -1,8 +1,6 @@
 import React from 'react';
-import { useDispatch } from 'react-redux';
 
-import * as actions from '../../store/actionIndex';
-import * as hooks from './hooks';
+import { useTitleHooks, useColorDropdownHooks, useOptionsDropdownHooks } from './hooks';
 
 import ColorDropdown from '../../components-shared/Dropdowns/ColorDropdown';
 import ActionDropdown from '../../components-shared/Dropdowns/ActionDropdown';
@@ -16,11 +14,8 @@ import DropdownArrowWhiteIcon from '../../assets/icons/dropdown-arrow-white.svg'
 
 const Title = ({
   cardId,
-  color,
   setEditingCard,
-  title,
 }) => {
-  const dispatch = useDispatch();
 
   const {
     inputClassName,
@@ -31,19 +26,20 @@ const Title = ({
     beginTitleEdit,
     endTitleEdit,
     handleTitleKeyPress,
-  } = hooks.useTitleHooks({
-    saveNewValue: (value) => dispatch(actions.updCardTitle(cardId, value)),
+  } = useTitleHooks({
+    cardId,
     setEditingCard,
-    value: title,
   });
 
   const {
+    color,
     colorDropdownBtnRef,
     isColorDropdownOpen,
     isLightColor,
     closeColorDropdown,
     openColorDropdown,
-  } = hooks.useColorDropdownHooks({ color });
+    updateColor,
+  } = useColorDropdownHooks({ cardId });
 
   const {
     isOptionDropdownOpen,
@@ -51,7 +47,7 @@ const Title = ({
     optionDropdownBtnRef,
     closeOptionsDropdown,
     openOptionsDropdown,
-  } = hooks.useOptionsDropdownHooks({
+  } = useOptionsDropdownHooks({
     beginTitleEdit,
     cardId,
   });
@@ -82,11 +78,12 @@ const Title = ({
         <img src={isLightColor ? OpenColorBlackIcon : OpenColorWhiteIcon} />
       </button>
       <ColorDropdown
+        cardId={cardId}
         btnRef={colorDropdownBtnRef}
         cardColor={color}
         isOpen={isColorDropdownOpen}
         onClose={closeColorDropdown}
-        onUpdateColor={(color) => dispatch(actions.updCardColor(cardId, color))}
+        onUpdateColor={updateColor}
       />
       <button
         className='dropdown-btn'
