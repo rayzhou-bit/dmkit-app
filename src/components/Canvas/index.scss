@@ -7,9 +7,9 @@ $spinner-base-measurement: 10em;
   transform: translate(-50%, -50%);
   padding: 60px 50px 40px 50px;
   border-radius: 20px;
-
   background-color: #FAFCFF;
   text-align: center;
+
   display: flex;
   flex-flow: column nowrap;
   gap: 30px;
@@ -109,7 +109,7 @@ $spinner-base-measurement: 10em;
       background: white;
       background-image: radial-gradient(#FFD749 0.75px, transparent 0);
       background-size: 12px 12px;
-      background-position: -2px -2px;
+      background-position: 6px 6px;
     }
   }
 
@@ -119,6 +119,7 @@ $spinner-base-measurement: 10em;
     position: absolute;
     inset: 0px;
     z-index: 1;
+    box-shadow: 0px 4px 4px 0px #00000040;
   }
 }
 
