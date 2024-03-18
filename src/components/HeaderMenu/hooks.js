@@ -7,7 +7,7 @@ import { convertToMsg } from '../../data/authCodes';
 import * as actions from '../../store/actionIndex';
 import * as fireactions from '../../store/firestoreIndex';
 import { store } from '../../index';
-import { PopupKeys } from '../Popup/PopupKey';
+import { POPUP_KEYS } from '../Popup/PopupKey';
 
 export const useTitleHooks = ({
   saveNewValue,
@@ -63,16 +63,16 @@ export const useVersionControlHooks = () => {
   const dispatch = useDispatch();
   const userId = useSelector(state => state.userData.userId || '');
   const status = useSelector(state => state.sessionManager.status || 'idle');
-  const activeCampaignId = useSelector(state => state.sessionManager.activeCampaignId || '');
-  const campaignData = useSelector(state => state.campaignData.present || {});
-  const pastCampaignData = useSelector(state => state.campaignData.past || {});
-  const futureCampaignData = useSelector(state => state.campaignData.future || {});
+  const activeProject = useSelector(state => state.sessionManager.activeCampaignId || '');
+  const projectData = useSelector(state => state.campaignData.present || {});
+  const pastProjectData = useSelector(state => state.campaignData.past || {});
+  const futureProjectData = useSelector(state => state.campaignData.future || {});
   const [ saveCompleted, setSaveCompleted ] = useState(false);
 
   let saveStatus = 'enabled';
   if (status === 'saving') {
     saveStatus = 'saving';
-  } else if (!((status === 'idle') && userId && activeCampaignId)) {
+  } else if (!((status === 'idle') && userId && activeProject)) {
     saveStatus = 'disabled';
   // } else if (pending) {
   //   saveStatus = 'pending';  // (there are multiple changes since last save; currently not implemented)
@@ -82,13 +82,13 @@ export const useVersionControlHooks = () => {
 
   return {
     undo: () => store.dispatch(ActionCreators.undo()),
-    disableUndo: pastCampaignData.length === 0,
+    disableUndo: pastProjectData.length === 0,
     redo: () => store.dispatch(ActionCreators.redo()),
-    disableRedo: futureCampaignData.length === 0,
+    disableRedo: futureProjectData.length === 0,
     save: () => {
       console.log("[Status] saving. Triggered by manual save.");
       dispatch(actions.setStatus('saving'));
-      dispatch(fireactions.saveCampaignData(activeCampaignId, campaignData,
+      dispatch(fireactions.saveCampaignData(activeProject, projectData,
         () => {
           console.log("[Status] idle. Triggered by manual save completion.");
           dispatch(actions.setStatus('idle'))
@@ -131,10 +131,16 @@ export const useProjectHooks = () => {
     projects: sortedProjects,
     newProject: () => {
       if (activeProject) {
+        console.log("[Status] saving. Triggered by new project.");
+        dispatch(actions.setStatus('saving'));
         dispatch(fireactions.saveCampaignData(
           activeProject,
           projectData,
-          () => dispatch(fireactions.createProject())
+          () => {
+            dispatch(fireactions.createProject());
+            console.log("[Status] idle. Triggered by new project save completion.");
+            dispatch(actions.setStatus('idle'));
+          },
         ));
       } else {
         dispatch(fireactions.createProject());
@@ -145,12 +151,12 @@ export const useProjectHooks = () => {
 
 export const useProjectItemHooks = ({ closeProjectDropdown, id, name }) => {
   const dispatch = useDispatch();
-  const activeProjectId = useSelector(state => state.sessionManager.activeCampaignId || '');
+  const activeProject = useSelector(state => state.sessionManager.activeCampaignId || '');
   const projectData = useSelector(state => state.campaignData.present || {});
   const [ confirmDelete, setConfirmDelete ] = useState(false);
   const deleteBtnRef = useRef();
 
-  const isActiveProject = id === activeProjectId;
+  const isActiveProject = id === activeProject;
 
   useOutsideClick([deleteBtnRef], confirmDelete, setConfirmDelete, false);
 
@@ -158,11 +164,17 @@ export const useProjectItemHooks = ({ closeProjectDropdown, id, name }) => {
     deleteBtnRef,
     isActiveProject,
     switchProject: () => {
-      if (activeProjectId) {
+      if (activeProject) {
+        console.log("[Status] saving. Triggered by switching project.");
+        dispatch(actions.setStatus('saving'));
         dispatch(fireactions.saveCampaignData(
-          activeProjectId,
+          activeProject,
           projectData,
-          dispatch(fireactions.switchProject({ projectId: id })),
+          () => {
+            dispatch(fireactions.switchProject({ projectId: id }));
+            console.log("[Status] idle. Triggered by switching project save completion.");
+            dispatch(actions.setStatus('idle'));
+          },
         ));
       } else {
         dispatch(fireactions.switchProject({ projectId: id }));
@@ -172,10 +184,16 @@ export const useProjectItemHooks = ({ closeProjectDropdown, id, name }) => {
     copyProject: (event) => {
       event.stopPropagation();
       if (isActiveProject) {
+        console.log("[Status] saving. Triggered by copying project.");
+        dispatch(actions.setStatus('saving'));
         dispatch(fireactions.saveCampaignData(
-          activeProjectId,
+          activeProject,
           projectData,
-          dispatch(fireactions.copyProject({ projectId: id })),
+          () => {
+            dispatch(fireactions.copyProject({ projectId: id }));
+            console.log("[Status] idle. Triggered by copying project save completion.");
+            dispatch(actions.setStatus('idle'));
+          },
         ));
       } else {
         dispatch(fireactions.copyProject({ projectId: id }));
@@ -184,7 +202,7 @@ export const useProjectItemHooks = ({ closeProjectDropdown, id, name }) => {
     confirmDeleteProject: (event) => {
       event.stopPropagation();
       dispatch(actions.setPopup({
-        type: PopupKeys.CONFIRM_PROJECT_DELETE,
+        type: POPUP_KEYS.confirmProjectDelete,
         id,
         name,
         isActiveProject,
@@ -196,8 +214,8 @@ export const useProjectItemHooks = ({ closeProjectDropdown, id, name }) => {
 export const useUserOptionsHooks = () => {
   const dispatch = useDispatch();
   const email = useSelector(state => state.userData.email || '');
-  const campaignData = useSelector (state => state.campaignData.present || {});
-  const activeCampaign = useSelector(state => state.sessionManager.activeCampaignId || '');
+  const projectData = useSelector (state => state.campaignData.present || {});
+  const activeProject = useSelector(state => state.sessionManager.activeCampaignId || '');
   const [ showUserOptionsDropdown, setShowUserOptionsDropdown ] = useState(false);
   const btnRef = useRef();
   const dropdownRef = useRef();
@@ -217,12 +235,12 @@ export const useUserOptionsHooks = () => {
     email,
     logOut: (event) => {
       event.preventDefault();
-      if (!!activeCampaign) {
+      if (!!activeProject) {
         console.log("[Status] saving. Triggered by manual log out.");
         dispatch(actions.setStatus('saving'));
         dispatch(fireactions.saveCampaignData(
-          activeCampaign,
-          campaignData,
+          activeProject,
+          projectData,
           () => {
             console.log("[Status] idle. Triggered by sign out completion.");
             dispatch(actions.setStatus('idle'));
@@ -258,7 +276,6 @@ export const useDisplayNameHooks = () => {
     showDisplayNameInput,
     openDisplayNameInput: () => setShowDisplayInput(true),
     changeDisplayNameInput: (newValue, event) => {
-      console.log(event.key)
       setDisplayNameInput(newValue)
     },
     handleDisplayNameInputKeyPress: (event) => {
@@ -272,7 +289,7 @@ export const useDisplayNameHooks = () => {
 export const useSignInHooks = () => {
   const dispatch = useDispatch();
   const userId = useSelector(state => state.userData.userId || '');
-  const introCampaignEdit = useSelector(state => state.sessionManager.introCampaignEdit || false);
+  const introProjectEdit = useSelector(state => state.sessionManager.introCampaignEdit || false);
   const projectData = useSelector (state => state.campaignData.present || {});
   const [ showSignInDropdown, setShowSignInDropdown ] = useState(false);
   const [ email, setEmail ] = useState('');
@@ -310,8 +327,8 @@ export const useSignInHooks = () => {
     setEmailError('');
     setPasswordError('');
     setAuthError('');
-    if (introCampaignEdit) {
-      let save = window.confirm("Would you like to save your work as a new campaign?");
+    if (introProjectEdit) {
+      let save = window.confirm("Would you like to save your work as a new project?");
       if (save) {
         dispatch(fireactions.emailSignIn({
           email,

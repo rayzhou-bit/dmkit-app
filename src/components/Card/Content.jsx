@@ -1,18 +1,13 @@
 import React from 'react';
-import { useDispatch } from 'react-redux';
 
-import * as actions from '../../store/actionIndex';
-import * as hooks from './hooks';
+import { useContentHooks } from './hooks';
 
 import './index.scss';
 
 const Content = ({
   cardId,
   setEditingCard,
-  text,
 }) => {
-  const dispatch = useDispatch();
-
   const {
     readOnly,
     contentRef,
@@ -20,10 +15,9 @@ const Content = ({
     changeContentValue,
     beginContentEdit,
     endContentEdit,
-  } = hooks.useContentHooks({
-    saveNewValue: (value) => dispatch(actions.updCardText(cardId, value)),
+  } = useContentHooks({
+    cardId,
     setEditingCard,
-    value: text,
   });
 
   return (

@@ -7,11 +7,16 @@ import useOutsideClick from '../../utils/useOutsideClick';
   Each item in the items array should be similar to the following object:
   {
     title: 'Move to unsorted',
-    type: 'danger',
+    type: ACTION_TYPE.danger,
     callback: () => dispatch(actions.unlinkCardFromView(cardId)),
     icon: LibraryIcon,
   },
 */
+
+export const ACTION_TYPE = {
+  danger: 'danger',
+  disabled: 'disabled',
+};
 
 export const ActionDropdown = ({
   btnRef,

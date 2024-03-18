@@ -4,7 +4,8 @@ import useOutsideClick from '../../utils/useOutsideClick';
 
 import * as actions from '../../store/actionIndex';
 
-import { PopupKeys } from '../Popup/PopupKey';
+import { POPUP_KEYS } from '../Popup/PopupKey';
+import { ACTION_TYPE } from '../../components-shared/Dropdowns/ActionDropdown';
 
 // TAB_WIDTH handles both the styling and drag movement for tabs.
 export const TAB_HEIGHT = 32;
@@ -109,7 +110,7 @@ export const useTabControlsHooks = ({
 }) => {
   const dispatch = useDispatch();
   const [ showOverviewDropup, setShowOverviewDropup ] = useState(false);
-  const activeTab = useSelector(state => state.campaignData.present.activeViewId || '');
+  const activeProject = useSelector(state => state.sessionManager.activeCampaignId || '');
   const tabs = useSelector(state => state.campaignData.present.viewOrder || []);
   const tabData = useSelector(state => state.campaignData.present.views || {});
   const btnRef = useRef();
@@ -129,13 +130,25 @@ export const useTabControlsHooks = ({
   );
 
   return {
-    newTab: () => dispatch(actions.createView()),
+    newTab: () => {
+      if (!!activeProject) {
+        dispatch(actions.createView());
+      }
+    },
     btnRef,
     dropupRef,
     showOverviewDropup,
-    openOverviewDropup: () => setShowOverviewDropup(true),
-    closeOverviewDropup: () => setShowOverviewDropup(false),
-    activeTab,
+    toggleOverviewDropup: () => {
+      if (!!activeProject) {
+        if (showOverviewDropup) {
+          setShowOverviewDropup(false);
+        } else {
+          setShowOverviewDropup(true);
+        }
+      } else {
+        setShowOverviewDropup(false);
+      }
+    },
     tabs,
     tabData,
     switchTab: (id) => {
@@ -163,6 +176,7 @@ export const useTabHooks = ({
   const dropUpBtnRef = useRef();
 
   const isActiveTab = id === activeTab;
+  const isOnlyTab = tabOrder.length === 1;
   const tabIndex = tabOrder.indexOf(id);
 
   // Initialize title value
@@ -206,16 +220,18 @@ export const useTabHooks = ({
   const dropUpOptions = [
     {
       title: 'Delete',
-      type: 'danger',
+      type: isOnlyTab ? ACTION_TYPE.disabled : ACTION_TYPE.danger,
       // icon: RedTrashIcon,
-      callback: () => dispatch(actions.setPopup({
-        type: PopupKeys.CONFIRM_TAB_DELETE,
-        id,
-      })),
+      callback: () => {
+        if (!isOnlyTab) {
+          dispatch(actions.setPopup({ type: POPUP_KEYS.confirmTabDelete, id }));
+        }
+      },
     },
     {},
     {
       title: 'Move left',
+      type: tabIndex === 0 ? ACTION_TYPE.disabled : null,
       callback: () => {
         if (tabIndex > 0) {
           dispatch(actions.shiftViewInViewOrder(id, -1));
@@ -224,6 +240,7 @@ export const useTabHooks = ({
     },
     {
       title: 'Move right',
+      type: tabIndex === tabOrder.length-1 ? ACTION_TYPE.disabled : null,
       callback: () => {
         if (tabIndex < tabOrder.length-1) {
           dispatch(actions.shiftViewInViewOrder(id, 1));

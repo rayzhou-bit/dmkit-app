@@ -32,7 +32,11 @@ export const DeleteConfirmation = ({
         <h1 className='heading'>Delete Project</h1>
       </div>
       <div className='row'>
-        <p className='message'>Are you sure you want to delete this project?</p>
+        <p className='message'>
+          Are you sure you want to delete this project?
+          <br/>
+          All your library cards will also be deleted.
+        </p>
       </div>
       <div className='row'>
         <span className='project-name'>{name}</span>
