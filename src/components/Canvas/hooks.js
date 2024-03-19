@@ -6,7 +6,8 @@ import * as actions from '../../store/actionIndex';
 import * as fireactions from '../../store/firestoreIndex';
 import { manageUser } from "../../store/firestoreAPI/authTransactions";
 
-import { GRID } from '../../shared/constants/grid';
+import { GRID } from '../../shared/constants';
+import { ANIMATION } from '../Card/hooks';
 
 // TODO separate out the network code into functions data/request or something
 //    link the authlistener and app status management to App.js
@@ -173,7 +174,7 @@ export const useCanvasHooks = () => {
         } else {
           setCardAnimation({
             ...cardAnimation,
-            [droppedCard]: 'card-blink .25s step-end 3 alternate',
+            [droppedCard]: ANIMATION.cardBlink,
           });
         }
       }

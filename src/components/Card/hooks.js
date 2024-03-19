@@ -10,6 +10,11 @@ import { ACTION_TYPE } from '../../components-shared/Dropdowns/ActionDropdown';
 import LibraryIcon from '../../assets/icons/library-icon.png';
 import RedTrashIcon from '../../assets/icons/red-trash.png';
 
+export const ANIMATION = {
+  cardBlink: 'card-blink .25s step-end 3 alternate',
+  libraryCardBlink: 'library-card-blink .25s step-end 3 alternate',
+};
+
 export const useCardHooks = ({
   cardId,
   toolMenuRef,
@@ -26,7 +31,7 @@ export const useCardHooks = ({
   
   const [isDragging, setIsDragging] = useState(false);
   const [isSelected, setIsSelected] = useState(false);
-  const [editingCard, setEditingCard] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
 
   const cardRef = useRef();
 
@@ -54,8 +59,8 @@ export const useCardHooks = ({
     position: cardPosition,
     rndStyle: { zIndex },
     animationStyle: { animation: cardAnimation ? cardAnimation[cardId] : null },
-    editingCard,
-    setEditingCard,
+    isEditing,
+    setIsEditing,
     onDragStart: () => setIsDragging(true),
     onDragStop: (event, data) => {
       setIsDragging(false);
@@ -81,11 +86,62 @@ export const useCardHooks = ({
         setIsSelected(true);
       }
     },
-    onAnimationEnd: () => {
-      setCardAnimation({
-        ...cardAnimation,
-        [cardId]: null,
-      })
+    onAnimationEnd: () => setCardAnimation({
+      ...cardAnimation,
+      [cardId]: null,
+    }),
+  };
+};
+
+export const useLibraryCardHooks = ({
+  cardId,
+}) => {
+  const dispatch = useDispatch();
+
+  const activeCard = useSelector(state => state.sessionManager.activeCardId);
+  const activeTab = useSelector(state => state.campaignData.present.activeViewId);
+  const cardTabs = useSelector(state => state.campaignData.present.cards[cardId].views);
+
+  const [isSelected, setIsSelected] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [cardAnimation, setCardAnimation] = useState({});
+
+  const libraryCardRef = useRef();
+
+  const isActive = cardId === activeCard;
+
+  useOutsideClick([libraryCardRef], isSelected, 
+    () => {
+      if (isActive) dispatch(actions.updActiveCardId(null));
+      setIsSelected(false);
+    }
+  );
+
+  return {
+    libraryCardRef,
+    isActive,
+    isSelected,
+    isEditing,
+    cardAnimation: { animation: cardAnimation[cardId] },
+    setIsEditing,
+    onDragStart: (event) => event.dataTransfer.setData('text', cardId),
+    onDragEnd: () => {
+      if (cardTabs[activeTab]) {
+        setCardAnimation({
+          ...cardAnimation,
+          [cardId]: ANIMATION.libraryCardBlink,
+        });
+      }
+    },
+    onAnimationEnd: () => setCardAnimation({
+      ...cardAnimation,
+      [cardId]: null,
+    }),
+    onClick: () => {
+      if (!isSelected) {
+        if (cardId !== activeCard) dispatch(actions.updActiveCardId(cardId));
+        setIsSelected(true);
+      }
     },
   };
 };

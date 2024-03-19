@@ -54,7 +54,7 @@ $horizontal-divide: 0.4rem;
 
 .library-search-results-container {
   flex: 1 1 auto;
-  padding: 0.2rem 0.6rem 0.2rem 0.2rem;
+  padding: 10px 5px;
 
   align-items: center;
   text-align: center;
@@ -64,4 +64,5 @@ $horizontal-divide: 0.4rem;
 
   display: flex;
   flex-flow: column nowrap;
+  gap: 20px;
 }

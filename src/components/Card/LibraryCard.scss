@@ -1,5 +1,4 @@
-// card config
-$title-bar-height: 2rem;
+// config
 $round-radius: 12px;
 
 .library-card {
@@ -9,72 +8,38 @@ $round-radius: 12px;
   height: auto;
   border-radius: $round-radius;
   box-shadow: 2px 8px 3px #d7d6d6;
-
-  .library-border {
-    border-radius: $round-radius;
-    box-shadow: 0 0 0 2px #f4f4f4;
-  }
-
-  &:hover .library-border {
-    box-shadow: 0 0 0 3px #c1e9ff;
-  }
-
-  .color-select {
-    position: absolute;
-    right: -1px;
-    top: 32px;
-    border-top: 1px solid black;
-    border-right: 1px solid black;
-    z-index: 100;
-
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: repeat(3, 1fr);
-
-    button {
-      grid-column: span 1;
-      grid-row: span 1;
-      width: 31px;
-      height: 31px;
-      border: 0;
-      border-left: 1px solid black;
-      border-bottom: 1px solid black;
-      outline: none;
-    }
-  }
 }
+.active-card { box-shadow: 0 0 0 6px #DBE2EB, 2px 2px 8px -3px #D7D6D6; }
+.inactive-card { box-shadow: 0 0 0 1px #F0F0F0, 2px 2px 8px -3px #D7D6D6; }
+.library-card:hover { box-shadow: 0 0 0 6px #DBE2EB, 2px 2px 8px -3px #D7D6D6; }
+@keyframes library-card-blink { 50% { box-shadow: 0 0 0 6px #5BC5FF, 2px 2px 8px -3px #D7D6D6; } }
 
 .library-card-content-container {
+  border-radius: 0 0 $round-radius $round-radius;
   position: relative;
-
   -webkit-transition: 0.4s;
   transition: 0.4s;
 
   display: flex;
   flex-flow: column nowrap;
 
-  textarea {
-    cursor: auto;
-  }
   .library-card-textarea {
     display: block; /* Fallback for non-webkit */
     display: -webkit-box;
-
     max-width: 100%;
     margin: 0 auto;
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
-
     margin: 0;
     padding: 15px 8px 15px 15px;
     border: 0;
     border-radius: $round-radius;
     resize: none;
-
     background-color: white;
-
     font-family: "Roboto";
+
+    cursor: auto;
 
     &::-webkit-scrollbar {
       width: 19px;
@@ -94,13 +59,5 @@ $round-radius: 12px;
     flex: 1 1 auto;
     overflow-y: auto;
     -webkit-line-clamp: inherit;
-  }
-}
-
-@keyframes library-card-blink {
-  50% {
-    border: 3px solid red;
-    margin: 0px;
-    margin-bottom: 8px;
   }
 }

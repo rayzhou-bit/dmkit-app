@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 
 import './LibrarySearch.scss';
-import LibraryCard from './LibraryCard/LibraryCard';
+import LibraryCard from '../Card/LibraryCard';
 
-import SearchImg from '../../../assets/icons/search2.png';
+import SearchImg from '../../assets/icons/search2.png';
 
 const LibrarySearch = props => {
   // STATES

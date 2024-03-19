@@ -15,7 +15,7 @@ import {
 import { auth, db } from './firebase';
 import * as actions from '../actionIndex';
 import { updateObject } from '../../shared/utilityFunctions';
-import { GRID } from '../../shared/constants/grid';
+import { GRID } from '../../shared/constants';
 
 // User contains uid, email, emailVerified (check firebase for more)
 const getUser = () => auth.currentUser ? auth.currentUser : null;
