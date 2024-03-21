@@ -11,8 +11,8 @@ import LibraryIcon from '../../assets/icons/library-icon.png';
 import RedTrashIcon from '../../assets/icons/red-trash.png';
 
 export const ANIMATION = {
-  cardBlink: 'card-blink .25s step-end 3 alternate',
-  libraryCardBlink: 'library-card-blink .25s step-end 3 alternate',
+  cardBlink: 'card-blink .25s step-end 4 alternate',
+  libraryCardBlink: 'library-card-blink .25s step-end 4 alternate',
 };
 
 export const useCardHooks = ({
