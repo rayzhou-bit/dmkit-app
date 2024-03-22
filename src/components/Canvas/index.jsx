@@ -2,9 +2,9 @@ import React from 'react';
 import { Rnd } from 'react-rnd';
 
 import { CANVAS_STATES, CANVAS_DIMENSIONS, useCanvasHooks } from './hooks';
-import Card from '../Card';
+import Card from '../Card/Card';
 
-import { GRID } from '../../shared/constants/grid';
+import { GRID } from '../../shared/constants';
 import './index.scss';
 import LibraryIcon from '../../assets/icons/library.svg';
 import PlusIcon from '../../assets/icons/plus.svg'

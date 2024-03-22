@@ -2,10 +2,11 @@ import React from 'react';
 
 import { useContentHooks } from './hooks';
 
-import './Card.scss';
+import './LibraryCard.scss';
 
-const Content = ({
+const LibraryContent = ({
   cardId,
+  isSelected,
   setEditingCard,
 }) => {
   const {
@@ -20,10 +21,25 @@ const Content = ({
     setEditingCard,
   });
 
+  const condensedStyle = {
+    minHeight: '60px',
+    maxHeight: '80px',
+    height: '80px',
+  };
+
+  const expandedStyle = {
+    minHeight: '80px',
+    maxHeight: '50vh',
+    height: '35vh',
+  };
+
   return (
-    <div className='content'>
+    <div
+      className='library-card-content-container'
+      style={isSelected ? expandedStyle : condensedStyle}
+    >
       <textarea
-        className='text'
+        className={`library-card-textarea ${isSelected ? "selected" : ""}`}
         onBlur={endContentEdit}
         onChange={(e) => changeContentValue(e.target.value)}
         onClick={beginContentEdit}
@@ -38,4 +54,4 @@ const Content = ({
   );
 };
 
-export default Content;
+export default LibraryContent;

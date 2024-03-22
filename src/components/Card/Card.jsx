@@ -6,8 +6,8 @@ import { useCardHooks } from './hooks';
 import Title from './Title';
 import Content from './Content';
 
-import './index.scss';
-import { GRID } from '../../shared/constants/grid';
+import './Card.scss';
+import { GRID } from '../../shared/constants';
 
 export const Card = ({
   cardId,
@@ -23,8 +23,8 @@ export const Card = ({
     position,
     rndStyle,
     animationStyle,
-    editingCard,
-    setEditingCard,
+    isEditing,
+    setIsEditing,
     onDragStart,
     onDragStop,
     onResizeStop,
@@ -43,7 +43,7 @@ export const Card = ({
       // position
       position={position}
       // drag
-      disableDragging={editingCard}
+      disableDragging={isEditing}
       dragHandleClassName="input-div"
       // dragGrid={[GRID.size, GRID.size]}
       onDragStart={onDragStart}
@@ -72,11 +72,11 @@ export const Card = ({
       >
         <Title
           cardId={cardId}
-          setEditingCard={setEditingCard}
+          setEditingCard={setIsEditing}
         />
         <Content
           cardId={cardId}
-          setEditingCard={setEditingCard}
+          setEditingCard={setIsEditing}
         />
       </div>
     </Rnd>

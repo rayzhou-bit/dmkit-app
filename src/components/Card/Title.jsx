@@ -5,7 +5,7 @@ import { useTitleHooks, useColorDropdownHooks, useOptionsDropdownHooks } from '.
 import ColorDropdown from '../../components-shared/Dropdowns/ColorDropdown';
 import ActionDropdown from '../../components-shared/Dropdowns/ActionDropdown';
 
-import './index.scss';
+import './Card.scss';
 import '../../styles/colors.scss';
 import OpenColorBlackIcon from '../../assets/icons/rounded-square.svg';
 import OpenColorWhiteIcon from '../../assets/icons/rounded-square-white.svg';

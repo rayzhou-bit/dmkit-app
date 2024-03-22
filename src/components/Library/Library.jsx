@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
 import './Library.scss';
-import LibrarySearch from './LibrarySearch/LibrarySearch';
+import LibrarySearch from './LibrarySearch';
 
 import LibBtnImg from '../../assets/icons/library.png';
 import ExpandImg from '../../assets/icons/left-arrow-32.png';

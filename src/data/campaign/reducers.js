@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { GRID } from '../../shared/constants/grid';
+import { GRID } from '../../shared/constants';
 
 // The campaignData reducer mirrors the campaign data structure on firebase
 
