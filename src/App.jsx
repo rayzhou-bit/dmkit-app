@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import './App.scss';
 import HeaderMenu from './components/HeaderMenu';
 import ToolMenu from './components/ToolMenu';
-import Library from './components/Library/Library';
+import Library from './components/Library';
 import TabBar from './components/TabBar';
 import Canvas from './components/Canvas';
 import Popup from './components/Popup';

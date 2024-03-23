@@ -19,7 +19,21 @@ import {
 import { auth } from './firebase';
 import * as actions from '../actionIndex';
 import * as fireactions from '../firestoreIndex';
-import { getParameterByName } from '../../shared/utilityFunctions';
+
+export const getParameterByName = (name) => {
+  // Sample action handle URL:
+  // https://example.com/usermgmt?mode=resetPassword&oobCode=ABC123&apiKey=AIzaSy...&lang=fr
+
+  let value = window.location.href;
+  if (value) {
+    value = value.split(name+"=")[1];
+  }
+  if (value) {
+    value = value.split('&')[0];
+  }
+
+  return value;
+};
 
 // const auth = getAuth();
 const googleProvider = new GoogleAuthProvider();
