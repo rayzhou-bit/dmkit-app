@@ -6,7 +6,7 @@ import * as actions from '../../store/actionIndex';
 import * as fireactions from '../../store/firestoreIndex';
 import { manageUser } from "../../store/firestoreAPI/authTransactions";
 
-import { GRID } from '../../shared/constants';
+import { GRID } from '../../styles/constants';
 import { ANIMATION } from '../Card/hooks';
 
 // TODO separate out the network code into functions data/request or something

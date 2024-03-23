@@ -1,6 +1,6 @@
 import * as actionTypes from '../actionTypes';
-import { GRID } from '../../shared/constants';
-import { updateObject } from '../../shared/utilityFunctions';
+import { GRID } from '../../styles/constants';
+import { updateObject } from '../../utils/updateObject';
 
 // The campaignData reducer mirrors the campaign data structure on firebase
 

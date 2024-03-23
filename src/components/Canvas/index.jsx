@@ -4,16 +4,16 @@ import { Rnd } from 'react-rnd';
 import { CANVAS_STATES, CANVAS_DIMENSIONS, useCanvasHooks } from './hooks';
 import Card from '../Card/Card';
 
-import { GRID } from '../../shared/constants';
+import { GRID } from '../../styles/constants';
 import './index.scss';
-import LibraryIcon from '../../assets/icons/library.svg';
+import BookIcon from '../../assets/icons/book.svg';
 import PlusIcon from '../../assets/icons/plus.svg'
 
 // Canvas is the main portion the user is looking at. This is located in the center of the screen.
 
 const Empty = (createNewProject) => (
   <div className='empty'>
-    <img src={LibraryIcon} />
+    <img src={BookIcon} />
     <div className='container1'>
       <span className='header'>No projects open</span>
       <div className='container2'>

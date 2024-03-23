@@ -1,0 +1,54 @@
+$library-width: 35vw;
+
+.open { right: 0 }
+.close { right: -$library-width }
+.library {
+  position: fixed;
+  top: 48px;
+  bottom: 43px;
+  z-index: 80;
+
+  -webkit-transition: 0.4s;
+  transition: 0.4s;
+}
+
+.library-panel {
+  height: 100%;
+  width: $library-width;
+  background-color: #FFFFFF;
+  border: 1px solid #F4F4F4;
+  padding: 25px;
+
+  display: flex;
+  flex-flow: column nowrap;
+  gap: 13px;
+}
+
+.libary-card-container {
+  display: flex;
+  flex-flow: column nowrap;
+  gap: 20px;
+}
+
+.library-btn {
+  position: absolute;
+  top: 3%;
+  right: 102%;
+  height: 50px;
+  width: 50px;
+  padding: 4px;
+  background-color: #FFFFFF;
+  border: 1px solid #F4F4F4;
+  border-radius: 12px;
+  box-shadow: 2px 2px 8px -3px #D7D6D6;
+
+  .tooltip {
+    top: 30%;
+    right: 115%;
+  }
+  .tooltip::after {
+    top: 50%;
+    left: 100%;
+    border-left-color: #363B4E;
+  }
+}

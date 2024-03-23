@@ -7,7 +7,7 @@ import Title from './Title';
 import Content from './Content';
 
 import './Card.scss';
-import { GRID } from '../../shared/constants';
+import { GRID } from '../../styles/constants';
 
 export const Card = ({
   cardId,

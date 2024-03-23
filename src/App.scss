@@ -27,20 +27,6 @@ button:focus {
   outline: none;
 }
 
-.btn-24 {
-  // button for an img of 24px x 24px
-  height: 24px;
-  width: 24px;
-  padding: 3px;
-}
-
-.btn-32 {
-  // button for an img of 32px x 32px
-  height: 32px;
-  width: 32px;
-  padding: 4px;
-}
-
 button {
   box-sizing: content-box;
   position: relative;
@@ -62,7 +48,7 @@ button {
     // top: 130%; right: 50%;       <-- tooltip is to the bottom
     // bottom: 150%; left: 25%;     <-- tooltip is to the top
     padding: 3px 8px;
-    border-radius: 12px;
+    border-radius: 6px;
     background-color: #363B4E;
     visibility: hidden;
     z-index: 10000;
@@ -102,5 +88,5 @@ button {
 @font-face {
   font-family: "Roboto";
   src: local("Roboto-Regular"),
-    url("./fonts/Roboto-Regular.ttf") format("truetype");
+    url("./assets/fonts/Roboto-Regular.ttf") format("truetype");
 }
