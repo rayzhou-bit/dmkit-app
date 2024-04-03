@@ -1,4 +1,4 @@
-const convertToMsg = ({ errorCode }) => {
+export const convertToMsg = ({ errorCode }) => {
   switch(errorCode) {
     // config
     case ('auth/auth-domain-config-required'): return 'missing authorization configuration';
@@ -22,8 +22,4 @@ const convertToMsg = ({ errorCode }) => {
 
     default: return 'error code: ' + errorCode;
   }
-};
-
-export {
-  convertToMsg
 };

@@ -17,7 +17,7 @@ import {
 } from '@firebase/auth';
 
 import { auth } from './firebase';
-import * as actions from '../actionIndex';
+import { actions, clearHistory } from '../../data/redux';
 import * as fireactions from '../firestoreIndex';
 
 export const getParameterByName = (name) => {
@@ -48,11 +48,11 @@ export const manageUser = ({
 }) => {
   onAuthStateChanged(auth, (user) => {
     console.log('[Status] loading. Triggered by auth listener.');
-    dispatch(actions.setStatus('loading'));
+    dispatch(actions.session.setStatus('loading'));
     if (user && user.uid) {
       // Signed in
       console.log('[authListener] signed in user:', user.uid);
-      dispatch(actions.loadUser(user));
+      dispatch(actions.user.loadUser({ user }));
       // prompt user to save intro campaign
       if (introCampaignEdit) {
         let save = window.confirm(
@@ -79,10 +79,10 @@ export const manageUser = ({
     } else {
       // Signed out
       console.log('[authListener] signed out');
-      dispatch(actions.unloadUser());
-      dispatch(actions.resetSessionManager());
-      dispatch(actions.loadIntroCampaign());
-      dispatch(ActionCreators.clearHistory());
+      dispatch(actions.user.initialize());
+      dispatch(actions.session.initialize());
+      dispatch(actions.project.loadIntroProject());
+      clearHistory();  //TODO does this work? see redux/index.js
     }
   });
 };
@@ -95,7 +95,7 @@ export const updateDisplayName = (displayName) => {
         .updateProfile({ displayName: displayName })
         .then((resp) => {
           console.log('[updateDisplayName] updated displayName:', resp);
-          dispatch(actions.updUserDisplayname(displayName));
+          dispatch(actions.user.updUserDisplayname({ displayName }));
         })
         .catch((err) =>
           console.log('[updateDisplayName] error updating displayName:', err)
@@ -113,14 +113,12 @@ export const emailSignIn = ({
   signInWithEmailAndPassword(auth, email, password)
     .then((response) => {
       console.log('[emailSignIn] sign in successful:', response);
-      // dispatch(actions.unsetErrorEmailSignIn());  // TODO REMOVE error handled in local state
       if (callback) {
         callback();
       }
     })
     .catch((error) => {
       console.log('[emailSignIn] error:', error.message);
-      // dispatch(actions.setErrorEmailSignIn(err.code));  // TODO REMOVE error handled in local state
       if (errorCallback) {
         errorCallback(error.code);
       }
@@ -137,11 +135,9 @@ export const googleSignIn = () => {
   return (dispatch) => signInWithPopup(auth, googleProvider)
     .then((resp) => {
       console.log('[googleSignIn] sign in successful');
-      dispatch(actions.unsetErrorGoogleSignUp());
     })
     .catch((err) => {
       console.log('[googleSignIn] error signing up with google:', err);
-      dispatch(actions.setErrorGoogleSignUp(err.code));
     });
 };
 
@@ -150,11 +146,9 @@ export const facebookSignIn = () => {
     signInWithPopup(auth, facebookProvider)
       .then((resp) => {
         console.log('[facebookSignIn] sign in successful');
-        dispatch(actions.unsetErrorFacebookSignUp());
       })
       .catch((err) => {
         console.log('[facebookSignIn] error signing up with google:', err);
-        dispatch(actions.setErrorFacebookSignUp(err.code));
       });
 };
 
@@ -167,7 +161,6 @@ export const emailSignUp = ({
   return (dispatch) => createUserWithEmailAndPassword(auth, email, password)
     .then((response) => {
       console.log('[emailSignUp] sign up successful:', response);
-      // dispatch(actions.unsetErrorEmailSignUp());
       sendVerificationToEmail();
       if (callback) {
         callback();
@@ -175,7 +168,6 @@ export const emailSignUp = ({
     })
     .catch((error) => {
       console.log('[emailSignUp] error:', error);
-      // dispatch(actions.setErrorEmailSignUp(error.code));
       if (errorCallback) {
         errorCallback(error.code);
       }
@@ -199,14 +191,12 @@ export const sendPasswordResetToEmail = ({
   return (dispatch) => sendPasswordResetEmail(auth, email)
     .then((response) => {
       console.log('[sendPasswordResetToEmail] sent password reset email to:', email, '. ', response);
-      // dispatch(actions.unsetErrorPasswordReset());
       if (callback) {
         callback();
       }
     })
     .catch((error) => {
       console.log('[sendPasswordResetToEmail] error:', error);
-      // dispatch(actions.setErrorPasswordReset(err.code));
       if (errorCallback) {
         errorCallback(error.code);
       }

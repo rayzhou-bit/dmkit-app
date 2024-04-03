@@ -21,9 +21,9 @@ export const VIEW_OPTIONS = {
 };
 
 export const useLibraryHooks = () => {
-  const activeTab = useSelector(state => state.campaignData.present.activeViewId);
-  const tabOrder = useSelector(state => state.campaignData.present.viewOrder);
-  const cardCollection = useSelector(state => state.campaignData.present.cards);
+  const activeTab = useSelector(state => state.project.present.activeViewId);
+  const tabOrder = useSelector(state => state.project.present.viewOrder);
+  const cardCollection = useSelector(state => state.project.present.cards);
 
   const [isOpen, setIsOpen] = useState(false);
   const [searchString, setSearchString] = useState('');

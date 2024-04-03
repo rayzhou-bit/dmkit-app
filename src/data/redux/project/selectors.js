@@ -9,8 +9,6 @@ export const simpleSelectors = {
   activeCardId: mkSimpleSelector(campaignData => campaignData.activeCardId),
   activeViewId: mkSimpleSelector(campaignData => campaignData.activeViewId),
   viewOrder: mkSimpleSelector(campaignData => campaignData.viewOrder),
-  cardCreateCnt: mkSimpleSelector(campaignData => campaignData.cardCreateCnt),
-  viewCreateCnt: mkSimpleSelector(campaignData => campaignData.viewCreateCnt),
   cards: mkSimpleSelector(campaignData => campaignData.cards),
   views: mkSimpleSelector(campaignData => campaignData.views),
 };

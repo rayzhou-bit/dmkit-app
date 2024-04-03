@@ -1,8 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-// TODO make the following name changes
-//   userId -> uid
-
 const initialState = {
   userId: null,
   displayName: null,
@@ -17,8 +14,8 @@ const user = createSlice({
   name: 'user',
   initialState,
   reducers: {
-    resetUser: () => ({ ...initialState }),
-    loadUser: (state, { user }) => {
+    initialize: () => ({ ...initialState }),
+    loadUser: (state, { payload }) => {
       const {
         uid,
         displayName,
@@ -26,7 +23,7 @@ const user = createSlice({
         emailVerified,
         providerId,
         providerData,
-      } = user;
+      } = payload.user;
       const emailVerificationRequired = providerData
         .map((provider) => provider.providerId)
         .includes('password');
@@ -41,6 +38,10 @@ const user = createSlice({
         providerData,
       };
     },
+    updUserDisplayname: (state, { payload }) => ({
+      ...state,
+      displayName: payload.displayName,
+    }),
   },
 });
 

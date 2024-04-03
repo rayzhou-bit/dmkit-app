@@ -10,7 +10,7 @@ import Canvas from './components/Canvas';
 import Popup from './components/Popup';
 
 const App = () => {
-  const activeProject = useSelector(state => state.sessionManager.activeCampaignId || '');
+  const activeProject = useSelector(state => state.session.activeCampaignId || '');
   const [ isToolMenuOpen, setIsToolMenuOpen ] = useState(!!activeProject);
   const toolMenuRef = useRef();
 

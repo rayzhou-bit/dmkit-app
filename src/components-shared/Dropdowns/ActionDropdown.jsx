@@ -8,7 +8,7 @@ import useOutsideClick from '../../utils/useOutsideClick';
   {
     title: 'Move to unsorted',
     type: ACTION_TYPE.danger,
-    callback: () => dispatch(actions.unlinkCardFromView(cardId)),
+    callback: () => dispatch(actions.project.unlinkCardFromView({ id: cardId })),
     icon: LibraryIcon,
   },
 */

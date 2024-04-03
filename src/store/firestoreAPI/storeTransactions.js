@@ -13,7 +13,7 @@ import {
 } from '@firebase/firestore';
 
 import { auth, db } from './firebase';
-import * as actions from '../actionIndex';
+import { actions } from '../../data/redux';
 import { updateObject } from '../../utils/updateObject';
 import { GRID } from '../../styles/constants';
 
@@ -27,7 +27,7 @@ const firstTimeSetup = (userId) => {
         .then(resp => {
           console.log("[firstTimeSetup] success performing first time setup");
           console.log("[Status] idle. Triggered by first time setup completion.");
-          dispatch(actions.setStatus('idle'));
+          dispatch(actions.session.setStatus('idle'));
         })
         .catch(err => console.log("[firstTimeSetup] error performing first time setup:", err));
     }
@@ -42,11 +42,11 @@ export const fetchActiveCampaignId = () => {
       getDoc(doc(db, "users", userId))
         .then(resp => {
           if (resp.exists) {
-            dispatch(actions.updActiveCampaignId(resp.data().activeCampaignId));
+            dispatch(actions.session.updateActiveProject(resp.data().activeCampaignId));
             if (!resp.data().activeCampaignId) {
-              dispatch(actions.unloadCampaignData());
+              dispatch(actions.project.initialize());
               console.log("[Status] idle. Triggered by lack of server side activeCampaignId.");
-              dispatch(actions.setStatus('idle'));
+              dispatch(actions.session.setStatus('idle'));
             };
             console.log("[fetchActiveCampaignId] success loading activeCampaignId", resp.data().activeCampaignId);
           } else dispatch(firstTimeSetup(userId));
@@ -66,11 +66,15 @@ export const fetchCampaignList = () => {
       const userId = user.uid;
       getDocs(collection(db, "users", userId, "campaigns"))
         .then(campaignSnapshot => {
-          let campaignList = {};
+          // let campaignList = {};
           campaignSnapshot.forEach(campaign => {
-            campaignList = updateObject(campaignList, {[campaign.id]: campaign.data().title});
+            dispatch(actions.session.addProject({
+              id: campaign.id,
+              title: campaign.data().title ?? '',
+            }));
+            // campaignList = updateObject(campaignList, {[campaign.id]: campaign.data().title});
           });
-          dispatch(actions.loadCampaignList(campaignList));
+          // dispatch(actions.session.loadCampaignList(campaignList));
           console.log("[loadCampaignList] success loading campaignList");
         })
         .catch(err => console.log("[loadCampaignList] error loading campaignList:", err));
@@ -106,7 +110,8 @@ export const fetchCampaignData = (campaignId, callback) => {
                     });
                     campaignData = updateObject(campaignData, {views: viewCollection});
                     // LOAD DATA
-                    dispatch(actions.loadCampaignData(campaignData));
+                    console.log(campaignData)
+                    dispatch(actions.project.loadProject(campaignData));
                     if (callback) callback();
                     console.log("[fetchCampaignData] success loading campaign");
                   })
@@ -125,7 +130,7 @@ export const saveCampaignData = (campaignId, campaignData, callback) => {
   return dispatch => {
     if (user && campaignId) {
       console.log("[Status] saving. Triggered by save.");
-      dispatch(actions.setStatus('saving'));
+      dispatch(actions.session.setStatus('saving'));
       const userId = user.uid;
       const batch = writeBatch(db);
       // CAMPAIGN data
@@ -153,7 +158,7 @@ export const saveCampaignData = (campaignId, campaignData, callback) => {
       // SAVE DATA (BATCH COMMIT)
       batch.commit()
         .then(resp => {
-          dispatch(actions.setCampaignEdit(false));
+          dispatch(actions.session.setProjectEdit(false));
           if (callback) callback();
           console.log("[saveActiveCampaignData] success saving campaign");
         })
@@ -172,7 +177,7 @@ export const saveIntroProjectData = ({
   return dispatch => {
     if (user) {
       console.log("[Status] saving. Triggered by intro campaign save.");
-      dispatch(actions.setStatus('saving'));
+      dispatch(actions.session.setStatus('saving'));
       const userId = user.uid;
       // CAMPAIGN data
       let campaignPackage = {...projectData};
@@ -203,7 +208,7 @@ export const saveIntroProjectData = ({
                   activeCampaignId: campaignId,
                 })
                   .then(resp => {
-                    dispatch(actions.setCampaignEdit(false));
+                    dispatch(actions.session.setProjectEdit(false));
                     if (callback) {
                       callback();
                     }
@@ -238,7 +243,7 @@ export const switchProject = ({
         activeCampaignId: projectId,
       })
         .then(resp => {
-          dispatch(actions.updActiveCampaignId(projectId));
+          dispatch(actions.session.updateActiveProject(projectId));
           if (callback) {
             callback();
           }
@@ -289,7 +294,10 @@ export const createProject = (callback) => {
                   merge: true
                 })
                   .then(resp => {
-                    dispatch(actions.addCampaignToList(campaignId, "untitled campaign"));
+                    dispatch(actions.session.addProject({
+                      id: campaignId,
+                      title: "untitled campaign",
+                    }));
                     if (callback) {
                       callback();
                     }
@@ -388,7 +396,6 @@ export const destroyProject = ({
       const userId = user.uid;
       deleteDoc(doc(db, "users", userId, "campaigns", projectId))
         .then(resp => {
-          dispatch(actions.removeCampaignFromList(projectId));
           if (callback) {
             callback();
           }

@@ -1,14 +1,10 @@
 import React from 'react';
-import { useDispatch } from 'react-redux';
 
-import * as actions from '../../store/actionIndex';
 import { useTitleHooks } from './hooks';
 
 import './index.scss';
 
 const Title = () => {
-  const dispatch = useDispatch();
-
   const {
     inputClassName,
     readOnly,
@@ -18,9 +14,7 @@ const Title = () => {
     beginTitleEdit,
     endTitleEdit,
     handleTitleKeyPress,
-  } = useTitleHooks({
-    saveNewValue: (value) => dispatch(actions.updCampaignTitle(value)),
-  });
+  } = useTitleHooks();
 
   return (
     <div className='usermenu-title'>

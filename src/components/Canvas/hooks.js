@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { ActionCreators } from "redux-undo";
 
-import * as actions from '../../store/actionIndex';
+import { actions } from '../../data/redux';
 import * as fireactions from '../../store/firestoreIndex';
 import { manageUser } from "../../store/firestoreAPI/authTransactions";
 
@@ -31,17 +31,17 @@ export const CANVAS_DIMENSIONS = {
 
 export const useCanvasHooks = () => {
   const dispatch = useDispatch();
-  const userId = useSelector((state) => state.userData.userId);
-  const status = useSelector(state => state.sessionManager.status || NETWORK_STATUS.idle);
-  const activeProject = useSelector(state => state.sessionManager.activeCampaignId || '');
-  const isProjectEdited = useSelector(state => state.sessionManager.campaignEdit);
-  const isIntroCampaignEdited = useSelector(state => state.sessionManager.introCampaignEdit);
-  const activeTab = useSelector(state => state.campaignData.present.activeViewId || '');
-  const activeTabPosition = useSelector(state => activeTab ? state.campaignData.present.views[activeTab].pos : null);
-  const activeTabScale = useSelector(state => activeTab ? state.campaignData.present.views[activeTab].scale : 1);
-  const projectData = useSelector(state => state.campaignData.present);
-  const cardCollection = useSelector(state => state.campaignData.present.cards);
-  const latestUnfiltered = useSelector(state => state.campaignData._latestUnfiltered);
+  const userId = useSelector((state) => state.user.userId);
+  const status = useSelector(state => state.session.status || NETWORK_STATUS.idle);
+  const activeProject = useSelector(state => state.session.activeCampaignId || '');
+  const isProjectEdited = useSelector(state => state.session.campaignEdit);
+  const isIntroCampaignEdited = useSelector(state => state.session.introCampaignEdit);
+  const activeTab = useSelector(state => state.project.present.activeViewId || '');
+  const activeTabPosition = useSelector(state => activeTab ? state.project.present.views[activeTab].pos : null);
+  const activeTabScale = useSelector(state => activeTab ? state.project.present.views[activeTab].scale : 1);
+  const projectData = useSelector(state => state.project.present);
+  const cardCollection = useSelector(state => state.project.present.cards);
+  const latestUnfiltered = useSelector(state => state.project._latestUnfiltered);
 
   const [ canvasState, setCanvasState ] = useState(CANVAS_STATES.empty);
   const [ cardAnimation, setCardAnimation ] = useState({});
@@ -79,7 +79,7 @@ export const useCanvasHooks = () => {
         ));
       } else {
         console.log("[Status] idle. Triggered by activeCampaignId change.");
-        dispatch(actions.setStatus(NETWORK_STATUS.idle));
+        dispatch(actions.session.setStatus(NETWORK_STATUS.idle));
       }
     }
   }, [dispatch, activeProject]);
@@ -89,20 +89,20 @@ export const useCanvasHooks = () => {
     if (isLoggedIn) {
       if ((status === NETWORK_STATUS.idle) && !!projectData && (Object.keys(projectData).length !== 0)) {
         if (!isProjectEdited) {
-          dispatch(actions.setCampaignEdit(true));
+          dispatch(actions.session.setProjectEdit(true));
         }
       } else {
         console.log("[Status] idle. Triggered by post-load.");
-        dispatch(actions.setStatus(NETWORK_STATUS.idle));
+        dispatch(actions.session.setStatus(NETWORK_STATUS.idle));
       }
     } else {
       if ((status === NETWORK_STATUS.idle) && !!projectData && (Object.keys(projectData).length !== 0)) {
         if (!isIntroCampaignEdited) {
-          dispatch(actions.setIntroCampaignEdit(true));
+          dispatch(actions.session.setIntroProjectEdit(true));
         }
       } else {
         console.log("[Status] idle. Triggered by post-load.");
-        dispatch(actions.setStatus(NETWORK_STATUS.idle));
+        dispatch(actions.session.setStatus(NETWORK_STATUS.idle));
       }
     }
   }, [dispatch, latestUnfiltered])
@@ -112,13 +112,13 @@ export const useCanvasHooks = () => {
     const autoSave = setInterval(() => {
       if ((status === NETWORK_STATUS.idle) && isLoggedIn && activeProject && isProjectEdited) {
         console.log("[Status] saving. Triggered by autosave.");
-        dispatch(actions.setStatus(NETWORK_STATUS.saving));
+        dispatch(actions.session.setStatus(NETWORK_STATUS.saving));
         dispatch(fireactions.saveCampaignData(
           activeProject,
           projectData,
           () => {
             console.log("[Status] idle. Triggered by autosave completion.");
-            dispatch(actions.setStatus(NETWORK_STATUS.idle));
+            dispatch(actions.session.setStatus(NETWORK_STATUS.idle));
           }
         ));
       }
@@ -146,10 +146,14 @@ export const useCanvasHooks = () => {
     dragStopHandler: (event, data) => {
       if (activeTabPosition) {
         if (activeTabPosition.x !== data.x || activeTabPosition.y !== data.y) {
-          dispatch(actions.updActiveViewPos({ x: data.x, y: data.y }));
+          dispatch(actions.project.updateActiveTabPosition({
+            position: { x: data.x, y: data.y },
+          }));
         }
       } else {
-        dispatch(actions.updActiveViewPos({ x: data.x, y: data.y }));
+        dispatch(actions.project.updateActiveTabPosition({
+          position: { x: data.x, y: data.y },
+        }));
       }
     },
     wheelHandler: (event) => {
@@ -157,7 +161,7 @@ export const useCanvasHooks = () => {
       newScale += event.deltaY * -0.001;
       newScale = Math.round(newScale * 10) / 10;
       newScale = Math.min(Math.max(GRID.scaleMin, newScale), GRID.scaleMax);
-      dispatch(actions.updActiveViewScale(newScale));
+      dispatch(actions.project.updateActiveTabScale({ scale: newScale }));
     },
     cardDropHandler: (event) => {
       event.preventDefault();
@@ -170,7 +174,7 @@ export const useCanvasHooks = () => {
           x = (x < 0) ? 0 : x;
           y = (y < 0) ? 0 : y;
           const position = { x, y };
-          dispatch(actions.linkCardToView(droppedCard, position));
+          dispatch(actions.project.linkCardToView({ id: droppedCard, position}));
         } else {
           setCardAnimation({
             ...cardAnimation,
