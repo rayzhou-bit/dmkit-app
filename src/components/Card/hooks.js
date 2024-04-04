@@ -23,8 +23,10 @@ export const useCardHooks = ({
 }) => {
   const dispatch = useDispatch();
 
-  const activeCard = useSelector(state => state.session.activeCardId);
-  const activeTab = useSelector(state => state.project.present.activeViewId);
+  const {
+    activeCardId: activeCard,
+    activeViewId: activeTab,
+  } = useSelector(state => state.project.present);
   const activeTabScale = useSelector(state => activeTab ? state.project.present.views[activeTab]?.scale : null);
   const {
     pos: cardPosition,
@@ -113,8 +115,10 @@ export const useLibraryCardHooks = ({
 }) => {
   const dispatch = useDispatch();
 
-  const activeCard = useSelector(state => state.session.activeCardId);
-  const activeTab = useSelector(state => state.project.present.activeViewId);
+  const {
+    activeCardId: activeCard,
+    activeViewId: activeTab,
+  } = useSelector(state => state.project.present);
   const cardTabs = useSelector(state => state.project.present.cards[cardId].views);
 
   const [isSelected, setIsSelected] = useState(false);
