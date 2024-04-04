@@ -32,7 +32,7 @@ const TabIndicators = ({
     if (i === tabCount - 1) {
       tabIndicators = [
         ...tabIndicators,
-        dropIndicator(i === dropIndicatorIndex, i + 1),
+        dropIndicator(i === dropIndicatorIndex - 1, i + 1),
       ];
     }
   }

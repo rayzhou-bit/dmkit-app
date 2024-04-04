@@ -18,29 +18,23 @@ const modules = {
   user,
 };
 
-const undoableActions = project.actions;
+let undoableActions = Object.keys(project.actions);
+const actionsToRemove = [
+  'initialize',
+  'loadProject',
+  'loadIntroProject',
+  'updateActiveCard',
+  'updateActiveTab',
+  'updateActiveTabScale',
+];
+undoableActions = undoableActions.filter(action => !actionsToRemove.includes(action));
+undoableActions = undoableActions.map(action => 'project/' + action);
 
 const rootReducer = combineReducers({
   project: undoable(
     project.reducer,
     {
-      filter: includeAction([
-        'updCampaignTitle',
-        'shiftViewInViewOrder',
-        'createCard',
-        'copyCard',
-        'destroyCard',
-        'linkCardToView',
-        'unlinkCardToView',
-        'updCardPos',
-        'updCardSize',
-        'updCardColor',
-        'updCardTitle',
-        'updCardText',
-        'createView',
-        'destroyView',
-        'updViewTitle',
-      ]),
+      filter: includeAction(undoableActions),
       limit: 10,
     }
   ),
@@ -59,12 +53,10 @@ const moduleProps = (propName) => Object.keys(modules).reduce(
 );
 const actions = moduleProps('actions');
 const selectors = moduleProps('selectors');
-console.log('TODOcreate list of undoableActions', undoableActions)
-console.log(actions)
 
-const undo = store.dispatch(ActionCreators.undo());
-const redo = store.dispatch(ActionCreators.redo());
-const clearHistory = store.dispatch(ActionCreators.clearHistory());
+const undo = () => store.dispatch(ActionCreators.undo());
+const redo = () => store.dispatch(ActionCreators.redo());
+const clearHistory = () => store.dispatch(ActionCreators.clearHistory());
 
 export { actions, selectors };
 export { undo, redo, clearHistory };

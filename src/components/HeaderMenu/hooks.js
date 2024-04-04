@@ -79,9 +79,9 @@ export const useVersionControlHooks = () => {
   }
 
   return {
-    undo: () => undo,
+    undo,
     disableUndo: pastProjectData.length === 0,
-    redo: () => redo,
+    redo,
     disableRedo: futureProjectData.length === 0,
     save: () => {
       console.log("[Status] saving. Triggered by manual save.");

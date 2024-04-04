@@ -28,12 +28,15 @@ const project = createSlice({
   name: 'project',
   initialState,
   reducers: {
+    // Actions below do not affect undo/redo.
     initialize: () => ({ ...initialState }),
     loadProject: (state, { payload }) => ({ ...payload }),
     loadIntroProject: () => ({ ...INTRO_PROJECT }),
-    updateProjectTitle: (state, { payload }) => ({ ...state, title: payload.title }),
     updateActiveCard: (state, { payload }) => ({ ...state, activeCardId: payload.id }),
     updateActiveTab: (state, { payload }) => ({ ...state, activeViewId: payload.id }),
+    // Actions above do not affect undo/redo.
+
+    updateProjectTitle: (state, { payload }) => ({ ...state, title: payload.title }),
     shiftTabBy: (state, { payload }) => {
       const { id, position } = payload;
       let newViewOrder = [ ...state.viewOrder ];
@@ -280,6 +283,7 @@ const project = createSlice({
       };
     },
     updateActiveTabScale: (state, { payload }) => {
+      // does not affect undo/redo
       if (!state.activeViewId) return state;
       return {
         ...state,
