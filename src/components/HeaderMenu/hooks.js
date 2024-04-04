@@ -24,7 +24,7 @@ export const useTitleHooks = () => {
     if (isEditing) {
       document.getSelection().removeAllRanges();
       if (titleValue !== value) {
-        dispatch(actions.project.updProjectTitle({ title: titleValue }));
+        dispatch(actions.project.updateProjectTitle({ title: titleValue }));
       }
       setIsEditing(false);
     }

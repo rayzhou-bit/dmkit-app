@@ -52,7 +52,15 @@ export const manageUser = ({
     if (user && user.uid) {
       // Signed in
       console.log('[authListener] signed in user:', user.uid);
-      dispatch(actions.user.loadUser({ user }));
+      const userData = {
+        userId: user.uid,
+        displayName: user.displayName,
+        email: user.email,
+        emailVerified: user.emailVerified,
+        providerId: user.providerId,
+        providerData: user.providerData,
+      };
+      dispatch(actions.user.loadUser({ ...userData }));
       // prompt user to save intro campaign
       if (introCampaignEdit) {
         let save = window.confirm(

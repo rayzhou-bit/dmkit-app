@@ -26,8 +26,11 @@ export const useCardHooks = ({
   const activeCard = useSelector(state => state.session.activeCardId);
   const activeTab = useSelector(state => state.project.present.activeViewId);
   const activeTabScale = useSelector(state => activeTab ? state.project.present.views[activeTab]?.scale : null);
-  const cardPosition = useSelector(state => state.project.present.cards[cardId].views[activeTab]?.pos);
-  const cardSize = useSelector(state => state.project.present.cards[cardId].views[activeTab]?.size);
+  const {
+    pos: cardPosition,
+    size: cardSize,
+  } = useSelector( state => state.project.present.cards[cardId].views[activeTab]);
+
   
   const [isDragging, setIsDragging] = useState(false);
   const [isSelected, setIsSelected] = useState(false);
@@ -39,7 +42,7 @@ export const useCardHooks = ({
 
   useOutsideClick([cardRef, toolMenuRef], isSelected, 
     () => {
-      if (isActive) dispatch(actions.project.updActiveCardId(null));
+      if (isActive) dispatch(actions.project.updateActiveCard({ id: null }));
       setIsSelected(false);
     }
   );
@@ -48,7 +51,7 @@ export const useCardHooks = ({
   if (isDragging) {
     zIndex = 20000 * (cardPosition.y + cardPosition.x + 10);
   } else if (isActive) {
-    zIndex = 10000 * (cardPosition.y + cardPosition.x + 10);
+    zIndex = 20000 * (cardPosition.y + cardPosition.x + 10);
   }
 
   return {
@@ -94,7 +97,7 @@ export const useCardHooks = ({
     },
     onClick: () => {
       if (!isSelected) {
-        if (!isActive) dispatch(actions.project.updActiveCardId(cardId));
+        if (!isActive) dispatch(actions.project.updateActiveCard({ id: cardId }));
         setIsSelected(true);
       }
     },
@@ -124,7 +127,7 @@ export const useLibraryCardHooks = ({
 
   useOutsideClick([libraryCardRef], isSelected, 
     () => {
-      if (isActive) dispatch(actions.project.updActiveCardId(null));
+      if (isActive) dispatch(actions.project.updateActiveCard({ id: null }));
       setIsSelected(false);
     }
   );
@@ -151,7 +154,7 @@ export const useLibraryCardHooks = ({
     }),
     onClick: () => {
       if (!isSelected) {
-        if (cardId !== activeCard) dispatch(actions.project.updActiveCardId(cardId));
+        if (cardId !== activeCard) dispatch(actions.project.updateActiveCard({ id: cardId }));
         setIsSelected(true);
       }
     },
@@ -181,8 +184,8 @@ export const useTitleHooks = ({
       setEditingCard(true);
       titleRef.current.focus();
       titleRef.current.setSelectionRange(
-        titleRef.current.title.length,
-        titleRef.current.title.length,
+        titleRef.current.value.length,
+        titleRef.current.value.length,
       );
     }
   };
@@ -320,8 +323,8 @@ export const useContentHooks = ({
       setEditingCard(true);
       contentRef.current.focus();
       contentRef.current.setSelectionRange(
-        contentRef.current.text.length,
-        contentRef.current.text.length,
+        contentRef.current.value.length,
+        contentRef.current.value.length,
       );
     }
   };

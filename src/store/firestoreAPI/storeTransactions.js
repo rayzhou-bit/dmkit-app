@@ -110,7 +110,6 @@ export const fetchCampaignData = (campaignId, callback) => {
                     });
                     campaignData = updateObject(campaignData, {views: viewCollection});
                     // LOAD DATA
-                    console.log(campaignData)
                     dispatch(actions.project.loadProject(campaignData));
                     if (callback) callback();
                     console.log("[fetchCampaignData] success loading campaign");

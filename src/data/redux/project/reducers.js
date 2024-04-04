@@ -1,5 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import {
+  DEFAULT_CARD_POSITION,
   DEFAULT_CARD_SIZE,
   DEFAULT_CARD,
   DEFAULT_TAB,
@@ -29,18 +30,16 @@ const project = createSlice({
   reducers: {
     initialize: () => ({ ...initialState }),
     loadProject: (state, { payload }) => ({ ...payload }),
-    // loadProject: (state, { payload }) => {
-    //   console.log(payload)
-    //   return { ...payload }},
     loadIntroProject: () => ({ ...INTRO_PROJECT }),
-    updProjectTitle: (state, { payload }) => ({ ...state, title: payload.title }),
-    updActiveTab: (state, { payload }) => ({ ...state, activeViewId: payload.id }),
+    updateProjectTitle: (state, { payload }) => ({ ...state, title: payload.title }),
+    updateActiveCard: (state, { payload }) => ({ ...state, activeCardId: payload.id }),
+    updateActiveTab: (state, { payload }) => ({ ...state, activeViewId: payload.id }),
     shiftTabBy: (state, { payload }) => {
       const { id, position } = payload;
       let newViewOrder = [ ...state.viewOrder ];
       const newPosition = newViewOrder.indexOf(id) + position;
       newViewOrder = newViewOrder.filter(tabId => tabId !== id);
-      newViewOrder = newViewOrder.splice(newPosition, 0, id);
+      newViewOrder.splice(newPosition, 0, id);
       return { ...state, viewOrder: newViewOrder };
     },
 
@@ -52,7 +51,15 @@ const project = createSlice({
         activeCardId: newCardId,
         cards: {
           ...state.cards,
-          [newCardId]: DEFAULT_CARD,
+          [newCardId]: {
+            ...DEFAULT_CARD,
+            views: {
+              [state.activeViewId]: {
+                pos: DEFAULT_CARD_POSITION,
+                size: DEFAULT_CARD_SIZE,
+              }
+            }
+          },
         },
       };
     },

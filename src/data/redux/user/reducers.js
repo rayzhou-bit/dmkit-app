@@ -17,19 +17,19 @@ const user = createSlice({
     initialize: () => ({ ...initialState }),
     loadUser: (state, { payload }) => {
       const {
-        uid,
+        userId,
         displayName,
         email,
         emailVerified,
         providerId,
         providerData,
-      } = payload.user;
+      } = payload;
       const emailVerificationRequired = providerData
         .map((provider) => provider.providerId)
         .includes('password');
       return {
         ...state,
-        userId: uid,
+        userId,
         displayName,
         email,
         emailVerified,

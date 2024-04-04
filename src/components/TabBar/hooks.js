@@ -153,7 +153,7 @@ export const useTabControlsHooks = ({
     tabData,
     switchTab: (id) => {
       scrollTo(id);
-      dispatch(actions.project.updActiveTab({ id }));
+      dispatch(actions.project.updateActiveTab({ id }));
       setShowOverviewDropup(false);
     },
   };
@@ -261,7 +261,7 @@ export const useTabHooks = ({
   return {
     setRndRef: node => rndRef = node,
     isActiveTab,
-    switchTab: () => dispatch(actions.project.updActiveTab({ id })),
+    switchTab: () => dispatch(actions.project.updateActiveTab({ id })),
     isDragging,
     onDrag: (event, data) => {
       const initialX = tabIndex * POSITION_INCREMENT;
