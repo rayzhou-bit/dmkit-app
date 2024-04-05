@@ -8,15 +8,10 @@ import { manageUser } from "../../store/firestoreAPI/authTransactions";
 
 import { GRID } from '../../styles/constants';
 import { ANIMATION } from '../Card/hooks';
+import { NETWORK_STATUS } from '../../data/redux/session/reducers';
 
 // TODO separate out the network code into functions data/request or something
 //    link the authlistener and app status management to App.js
-
-export const NETWORK_STATUS = {
-  idle: 'idle',
-  saving: 'saving',
-  loading: 'loading',
-};
 
 export const CANVAS_STATES = {
   empty: 'empty',
@@ -78,8 +73,10 @@ export const useCanvasHooks = () => {
           () => dispatch(ActionCreators.clearHistory()),
         ));
       } else {
-        console.log("[Status] idle. Triggered by activeCampaignId change.");
-        dispatch(actions.session.setStatus(NETWORK_STATUS.idle));
+        dispatch(actions.session.setStatus({
+          status: NETWORK_STATUS.idle,
+          trigger: 'activeCampaignId update',
+        }));
       }
     }
   }, [dispatch, activeProject]);
@@ -92,8 +89,10 @@ export const useCanvasHooks = () => {
           dispatch(actions.session.setProjectEdit(true));
         }
       } else {
-        console.log("[Status] idle. Triggered by post-load.");
-        dispatch(actions.session.setStatus(NETWORK_STATUS.idle));
+        dispatch(actions.session.setStatus({ 
+          status: NETWORK_STATUS.idle,
+          trigger: 'post-load',
+        }));
       }
     } else {
       if ((status === NETWORK_STATUS.idle) && !!projectData && (Object.keys(projectData).length !== 0)) {
@@ -101,8 +100,10 @@ export const useCanvasHooks = () => {
           dispatch(actions.session.setIntroProjectEdit(true));
         }
       } else {
-        console.log("[Status] idle. Triggered by post-load.");
-        dispatch(actions.session.setStatus(NETWORK_STATUS.idle));
+        dispatch(actions.session.setStatus({ 
+          status: NETWORK_STATUS.idle,
+          trigger: 'post-load',
+        }));
       }
     }
   }, [dispatch, latestUnfiltered])
@@ -111,14 +112,18 @@ export const useCanvasHooks = () => {
   useEffect(() => {
     const autoSave = setInterval(() => {
       if ((status === NETWORK_STATUS.idle) && isLoggedIn && activeProject && isProjectEdited) {
-        console.log("[Status] saving. Triggered by autosave.");
-        dispatch(actions.session.setStatus(NETWORK_STATUS.saving));
+        dispatch(actions.session.setStatus({
+          status: NETWORK_STATUS.saving,
+          trigger: 'autosave',
+        }));
         dispatch(fireactions.saveCampaignData(
           activeProject,
           projectData,
           () => {
-            console.log("[Status] idle. Triggered by autosave completion.");
-            dispatch(actions.session.setStatus(NETWORK_STATUS.idle));
+            dispatch(actions.session.setStatus({
+              status: NETWORK_STATUS.idle,
+              trigger: 'autosave completion',
+            }));
           }
         ));
       }
@@ -146,12 +151,12 @@ export const useCanvasHooks = () => {
     dragStopHandler: (event, data) => {
       if (activeTabPosition) {
         if (activeTabPosition.x !== data.x || activeTabPosition.y !== data.y) {
-          dispatch(actions.project.updateActiveTabPosition({
+          dispatch(actions.project.setActiveTabPosition({
             position: { x: data.x, y: data.y },
           }));
         }
       } else {
-        dispatch(actions.project.updateActiveTabPosition({
+        dispatch(actions.project.setActiveTabPosition({
           position: { x: data.x, y: data.y },
         }));
       }
@@ -161,7 +166,7 @@ export const useCanvasHooks = () => {
       newScale += event.deltaY * -0.001;
       newScale = Math.round(newScale * 10) / 10;
       newScale = Math.min(Math.max(GRID.scaleMin, newScale), GRID.scaleMax);
-      dispatch(actions.project.updateActiveTabScale({ scale: newScale }));
+      dispatch(actions.project.setActiveTabScale({ scale: newScale }));
     },
     cardDropHandler: (event) => {
       event.preventDefault();

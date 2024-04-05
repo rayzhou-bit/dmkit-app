@@ -19,6 +19,7 @@ import {
 import { auth } from './firebase';
 import { actions, clearHistory } from '../../data/redux';
 import * as fireactions from '../firestoreIndex';
+import { NETWORK_STATUS } from '../../data/redux/session/reducers';
 
 export const getParameterByName = (name) => {
   // Sample action handle URL:
@@ -47,8 +48,10 @@ export const manageUser = ({
   campaignData,
 }) => {
   onAuthStateChanged(auth, (user) => {
-    console.log('[Status] loading. Triggered by auth listener.');
-    dispatch(actions.session.setStatus('loading'));
+    dispatch(actions.session.setStatus({
+      status: NETWORK_STATUS.loading,
+      trigger: 'auth listener',
+    }));
     if (user && user.uid) {
       // Signed in
       console.log('[authListener] signed in user:', user.uid);

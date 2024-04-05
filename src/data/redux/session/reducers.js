@@ -1,7 +1,13 @@
 import { createSlice } from '@reduxjs/toolkit';
 
+export const NETWORK_STATUS = {
+  idle: 'idle',
+  saving: 'saving',
+  loading: 'loading',
+};
+
 const initialState = {
-  status: 'loading',  // idle, loading or saving
+  status: NETWORK_STATUS.loading,
   popup: {
     id: null,
     type: null,
@@ -11,7 +17,10 @@ const initialState = {
     // campaignId: campaignTitle,
   },
   activeCampaignId: null,
-  campaignEdit: false,  // flag for any unsaved changes
+  activeCardId: null,
+
+  // flags for any unsaved changes
+  campaignEdit: false,
   introCampaignEdit: false,
 };
 
@@ -21,7 +30,11 @@ const session = createSlice({
   reducers: {
     initialize: () => ({ ...initialState }),
 
-    setStatus: (state, { payload }) => ({ ...state, status: payload }),
+    setStatus: (state, { payload }) => {
+      const { status, trigger } = payload;
+      console.log(`[Status: ${status}]`, trigger);
+      return ({ ...state, status });
+    },
 
     setPopup: (state, { payload }) => ({ ...state, popup: { ...payload } }),
     resetPopup: (state) => ({ ...state, popup: { id: null, type: null } }),
@@ -49,7 +62,9 @@ const session = createSlice({
         [payload.id]: payload.title,
       },
     }),
-    updateActiveProject: (state, { payload }) => ({ ...state, activeCampaignId: payload }),
+    setActiveProject: (state, { payload }) => ({ ...state, activeCampaignId: payload.id }),
+    setActiveCard: (state, { payload }) => ({ ...state, activeCardId: payload.id }),
+
     setProjectEdit: (state, { payload }) => ({ ...state, campaignEdit: payload }),
     setIntroProjectEdit: (state, { payload }) => ({ ...state, introCampaignEdit: payload }),
   },

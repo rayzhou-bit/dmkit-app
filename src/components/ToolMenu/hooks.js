@@ -4,7 +4,7 @@ import { actions } from '../../data/redux';
 
 export const useToolMenuHooks = () => {
   const dispatch = useDispatch();
-  const activeCard = useSelector(state => state.project.activeCardId);
+  const activeCard = useSelector(state => state.session.activeCardId);
   const activeTab = useSelector(state => state.project.present.activeViewId);
 
   const disableNewCard = !activeTab;

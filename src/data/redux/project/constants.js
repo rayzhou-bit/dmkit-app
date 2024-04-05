@@ -1,7 +1,5 @@
 import { GRID } from '../../../styles/constants';
 
-// TODO future name refactor
-
 export const DEFAULT_CARD_POSITION = {
   x: 3 * GRID.size,
   y: 3 * GRID.size,
@@ -13,7 +11,7 @@ export const DEFAULT_CARD_SIZE = {
 };
 
 export const DEFAULT_CARD = {
-  title: 'Title',
+  title: 'untitled',
   color: 'gray',
   content: { text: '' },
   views: {},
@@ -27,7 +25,7 @@ export const DEFAULT_TAB_POSITION = {
 };
 
 export const DEFAULT_TAB = {
-  title: 'Title',
+  title: 'untitled',
   pos: DEFAULT_TAB_POSITION,
   scale: 1,
   createdOn: Date.now(),
@@ -35,7 +33,7 @@ export const DEFAULT_TAB = {
 };
 
 export const INTRO_CARDS = {
-  card0: {
+  'card0': {
     title: 'Greetings Traveler!',
     color: 'jungle',
     content: {
@@ -48,40 +46,40 @@ export const INTRO_CARDS = {
       },
     },
   },
-  card1: {
+  'card1': {
     title: 'Tools',
     color: 'cotton_blue',
     content: {
       text: 'Use the buttons to build your project. You can add cards, copy cards, reset the board position. You can also save your progress, but you must first create an account.',
     },
     views: {
-      tab1: {
+      'tab1': {
         pos: {x: 0, y: 0},
         size: {width: 8*GRID.size, height: 9*GRID.size},
       },
     },
   },
-  card2: {
+  'card2': {
     title: 'Tabs',
     color: 'cobalt',
     content: {
       text: 'Use the buttons below to add tabs and switch between them.',
     },
     views: {
-      tab1: {
+      'tab1': {
         pos: {x: 4*GRID.size, y: 20*GRID.size},
         size: {width: 10*GRID.size, height: 5*GRID.size},
       },
     },
   },
-  card3: {
+  'card3': {
     title: 'Library',
     color: 'lavender',
     content: {
       text: 'All the cards you create are stored in the library, which you can access by clicking the book to the right. The same card can be placed in multiple views and edited from multiple places.',
     },
     views: {
-      tab1: {
+      'tab1': {
         pos: {x: 25*GRID.size, y: 3*GRID.size},
         size: {width: 10*GRID.size, height: 10*GRID.size},
       },
@@ -107,8 +105,22 @@ export const INTRO_TABS = {
 export const INTRO_PROJECT = {
   title: 'DM Kit',
   viewOrder: ['tab0', 'tab1'],
-  activeCardId: [],
   activeViewId: 'tab0',
   cards: INTRO_CARDS,
   views: INTRO_TABS,
+};
+
+export const BLANK_PROJECT = {
+  title: 'Title',
+  viewOrder: ['tab0'],
+  activeViewId: 'tab0',
+  cards: {},
+  views: { 
+    'tab0': { 
+      title: 'Title',
+      pos: { x: 0, y: 0 },
+      scale: 1,
+      cards: [],
+    },
+  },
 };

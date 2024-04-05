@@ -7,9 +7,12 @@ import { actions } from '../../data/redux';
 import * as fireactions from '../../store/firestoreIndex';
 import { undo, redo } from '../../data/redux';
 import { POPUP_KEYS } from '../Popup/PopupKey';
+import { NETWORK_STATUS } from '../../data/redux/session/reducers';
 
 export const useTitleHooks = () => {
   const dispatch = useDispatch();
+
+  const id = useSelector(state => state.session.activeCampaignId);
   const value = useSelector(state => state.project.present.title || '');
   const [ titleValue, setTitleValue ] = useState('');
   const [ isEditing, setIsEditing ] = useState(false);
@@ -25,6 +28,7 @@ export const useTitleHooks = () => {
       document.getSelection().removeAllRanges();
       if (titleValue !== value) {
         dispatch(actions.project.updateProjectTitle({ title: titleValue }));
+        dispatch(actions.session.updateProjectTitle({ id, title: titleValue }));
       }
       setIsEditing(false);
     }
@@ -84,12 +88,16 @@ export const useVersionControlHooks = () => {
     redo,
     disableRedo: futureProjectData.length === 0,
     save: () => {
-      console.log("[Status] saving. Triggered by manual save.");
-      dispatch(actions.session.setStatus('saving'));
+      dispatch(actions.session.setStatus({
+        status: NETWORK_STATUS.saving,
+        trigger: 'manual save',
+      }));
       dispatch(fireactions.saveCampaignData(activeProject, projectData,
         () => {
-          console.log("[Status] idle. Triggered by manual save completion.");
-          dispatch(actions.session.setStatus('idle'))
+          dispatch(actions.session.setStatus({
+            status: NETWORK_STATUS.idle,
+            trigger: 'manual save completion',
+          }));
         }
       ));
       setSaveCompleted(true);
@@ -129,15 +137,19 @@ export const useProjectHooks = () => {
     projects: sortedProjects,
     newProject: () => {
       if (activeProject) {
-        console.log("[Status] saving. Triggered by new project.");
-        dispatch(actions.session.setStatus('saving'));
+        dispatch(actions.session.setStatus({
+          status: NETWORK_STATUS.saving,
+          trigger: 'new project',
+        }));
         dispatch(fireactions.saveCampaignData(
           activeProject,
           projectData,
           () => {
             dispatch(fireactions.createProject());
-            console.log("[Status] idle. Triggered by new project save completion.");
-            dispatch(actions.session.setStatus('idle'));
+            dispatch(actions.session.setStatus({
+              status: NETWORK_STATUS.idle,
+              trigger: 'new project save completion',
+            }));
           },
         ));
       } else {
@@ -163,15 +175,19 @@ export const useProjectItemHooks = ({ closeProjectDropdown, id, name }) => {
     isActiveProject,
     switchProject: () => {
       if (activeProject) {
-        console.log("[Status] saving. Triggered by switching project.");
-        dispatch(actions.session.setStatus('saving'));
+        dispatch(actions.session.setStatus({
+          status: NETWORK_STATUS.saving,
+          trigger: 'switching project',
+        }));
         dispatch(fireactions.saveCampaignData(
           activeProject,
           projectData,
           () => {
             dispatch(fireactions.switchProject({ projectId: id }));
-            console.log("[Status] idle. Triggered by switching project save completion.");
-            dispatch(actions.session.setStatus('idle'));
+            dispatch(actions.session.setStatus({
+              status: NETWORK_STATUS.idle,
+              trigger: 'switching project save completion',
+            }));
           },
         ));
       } else {
@@ -182,15 +198,19 @@ export const useProjectItemHooks = ({ closeProjectDropdown, id, name }) => {
     copyProject: (event) => {
       event.stopPropagation();
       if (isActiveProject) {
-        console.log("[Status] saving. Triggered by copying project.");
-        dispatch(actions.session.setStatus('saving'));
+        dispatch(actions.session.setStatus({
+          status: NETWORK_STATUS.saving,
+          trigger: 'copying project',
+        }));
         dispatch(fireactions.saveCampaignData(
           activeProject,
           projectData,
           () => {
             dispatch(fireactions.copyProject({ projectId: id }));
-            console.log("[Status] idle. Triggered by copying project save completion.");
-            dispatch(actions.session.setStatus('idle'));
+            dispatch(actions.session.setStatus({
+              status: NETWORK_STATUS.idle,
+              trigger: 'copying project save completion',
+            }));
           },
         ));
       } else {
@@ -234,14 +254,18 @@ export const useUserOptionsHooks = () => {
     logOut: (event) => {
       event.preventDefault();
       if (!!activeProject) {
-        console.log("[Status] saving. Triggered by manual log out.");
-        dispatch(actions.session.setStatus('saving'));
+        dispatch(actions.session.setStatus({
+          status: NETWORK_STATUS.saving,
+          trigger: 'manual log out',
+        }));
         dispatch(fireactions.saveCampaignData(
           activeProject,
           projectData,
           () => {
-            console.log("[Status] idle. Triggered by sign out completion.");
-            dispatch(actions.session.setStatus('idle'));
+            dispatch(actions.session.setStatus({
+              status: NETWORK_STATUS.idle,
+              trigger: 'manual log out completion',
+            }));
             dispatch(fireactions.emailSignOut());
           }
         ));

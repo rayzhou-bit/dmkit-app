@@ -23,10 +23,8 @@ export const useCardHooks = ({
 }) => {
   const dispatch = useDispatch();
 
-  const {
-    activeCardId: activeCard,
-    activeViewId: activeTab,
-  } = useSelector(state => state.project.present);
+  const activeCard = useSelector(state => state.session.activeCardId);
+  const activeTab = useSelector(state => state.project.present.activeViewId);
   const activeTabScale = useSelector(state => activeTab ? state.project.present.views[activeTab]?.scale : null);
   const {
     pos: cardPosition,
@@ -44,7 +42,7 @@ export const useCardHooks = ({
 
   useOutsideClick([cardRef, toolMenuRef], isSelected, 
     () => {
-      if (isActive) dispatch(actions.project.updateActiveCard({ id: null }));
+      if (isActive) dispatch(actions.session.setActiveCard({ id: null }));
       setIsSelected(false);
     }
   );
@@ -99,7 +97,7 @@ export const useCardHooks = ({
     },
     onClick: () => {
       if (!isSelected) {
-        if (!isActive) dispatch(actions.project.updateActiveCard({ id: cardId }));
+        if (!isActive) dispatch(actions.session.setActiveCard({ id: cardId }));
         setIsSelected(true);
       }
     },
@@ -115,10 +113,8 @@ export const useLibraryCardHooks = ({
 }) => {
   const dispatch = useDispatch();
 
-  const {
-    activeCardId: activeCard,
-    activeViewId: activeTab,
-  } = useSelector(state => state.project.present);
+  const activeCard = useSelector(state => state.session.activeCardId);
+  const activeTab = useSelector(state => state.project.present.activeViewId);
   const cardTabs = useSelector(state => state.project.present.cards[cardId].views);
 
   const [isSelected, setIsSelected] = useState(false);
@@ -131,7 +127,7 @@ export const useLibraryCardHooks = ({
 
   useOutsideClick([libraryCardRef], isSelected, 
     () => {
-      if (isActive) dispatch(actions.project.updateActiveCard({ id: null }));
+      if (isActive) dispatch(actions.session.setActiveCard({ id: null }));
       setIsSelected(false);
     }
   );
@@ -158,7 +154,7 @@ export const useLibraryCardHooks = ({
     }),
     onClick: () => {
       if (!isSelected) {
-        if (cardId !== activeCard) dispatch(actions.project.updateActiveCard({ id: cardId }));
+        if (cardId !== activeCard) dispatch(actions.session.setActiveCard({ id: cardId }));
         setIsSelected(true);
       }
     },

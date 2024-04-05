@@ -23,9 +23,12 @@ const actionsToRemove = [
   'initialize',
   'loadProject',
   'loadIntroProject',
-  'updateActiveCard',
-  'updateActiveTab',
-  'updateActiveTabScale',
+  'loadCards',
+  'loadTabs',
+  'loadTabOrder',
+  'setActiveCard',
+  'setActiveTab',
+  'setActiveTabScale',
 ];
 undoableActions = undoableActions.filter(action => !actionsToRemove.includes(action));
 undoableActions = undoableActions.map(action => 'project/' + action);

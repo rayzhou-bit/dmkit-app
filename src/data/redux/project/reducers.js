@@ -16,7 +16,6 @@ import { v4 as uuidv4 } from 'uuid';
 const initialState = {
   title: '',
   viewOrder: [],
-  activeCardId: null,
   activeViewId: null,
   cards: {},
   tabs: {},
@@ -30,10 +29,11 @@ const project = createSlice({
   reducers: {
     // Actions below do not affect undo/redo.
     initialize: () => ({ ...initialState }),
-    loadProject: (state, { payload }) => ({ ...payload }),
+    loadProject: (state, { payload }) => ({ ...state, ...payload.project }),
     loadIntroProject: () => ({ ...INTRO_PROJECT }),
-    updateActiveCard: (state, { payload }) => ({ ...state, activeCardId: payload.id }),
-    updateActiveTab: (state, { payload }) => ({ ...state, activeViewId: payload.id }),
+    loadCards: (state, { payload }) => ({ ...state, cards: payload.cards }),
+    loadTabs: (state, { payload }) => ({ ...state, tabs: payload.tabs }),
+    setActiveTab: (state, { payload }) => ({ ...state, activeViewId: payload.id }),
     // Actions above do not affect undo/redo.
 
     updateProjectTitle: (state, { payload }) => ({ ...state, title: payload.title }),
@@ -76,12 +76,13 @@ const project = createSlice({
           ...state.cards,
           [newCardId]: {
             ...state.cards[payload.id],
+            title: state.cards[payload.id].title + ' (copy)',
             views: {
               [state.activeViewId]: {
                 ...state.cards[payload.id].views[state.activeViewId],
                 pos: {
-                  x: state.cards[payload.id].views[state.activeViewId].pos.x + GRID.size,
-                  y: state.cards[payload.id].views[state.activeViewId].pos.y + GRID.size,
+                  x: state.cards[payload.id].views[state.activeViewId].pos.x + 3*GRID.size,
+                  y: state.cards[payload.id].views[state.activeViewId].pos.y + 3*GRID.size,
                 },
               },
             },
@@ -94,7 +95,6 @@ const project = createSlice({
       delete newCards[payload.id];
       return {
         ...state,
-        activeCardId: (payload.id === state.activeCardId) ? null : state.activeCardId,
         cards: newCards,
       };
     },
@@ -269,7 +269,7 @@ const project = createSlice({
         },
       };
     },
-    updateActiveTabPosition: (state, { payload }) => {
+    setActiveTabPosition: (state, { payload }) => {
       if (!state.activeViewId) return state;
       return {
         ...state,
@@ -282,7 +282,7 @@ const project = createSlice({
         },
       };
     },
-    updateActiveTabScale: (state, { payload }) => {
+    setActiveTabScale: (state, { payload }) => {
       // does not affect undo/redo
       if (!state.activeViewId) return state;
       return {
