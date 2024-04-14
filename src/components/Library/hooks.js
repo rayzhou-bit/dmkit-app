@@ -31,26 +31,30 @@ export const useLibraryHooks = () => {
   const [sortOption, setSortOption] = useState(SORT_OPTIONS.abc);
   const [viewOption, setViewOption] = useState(VIEW_OPTIONS.condensed);
 
-  let libraryCards = [];
+  let libraryCards = {
+    active:[], 
+    all: (cardCollection? Object.keys(cardCollection).length : "")
+  };
   const search = searchString.toLowerCase();
   for (let id in cardCollection) {
+    
     const title = cardCollection[id].title ?? '';
     const text = cardCollection[id].content?.text ?? '';
     if (title.toLowerCase().includes(search) || text.toLowerCase().includes(search)) {
       switch (filterOption) {
         case FILTER_OPTIONS.all:
-          libraryCards = [ ...libraryCards, id ];
+          libraryCards.active = [ ...libraryCards.active, id ];
           break;
         case FILTER_OPTIONS.thisTab:
           if (cardCollection[id].views?.[activeTab]) {
-            libraryCards = [ ...libraryCards, id ];
+            libraryCards.active = [ ...libraryCards.active, id ];
           }
           break;
         case FILTER_OPTIONS.unsorted:
           const tabsOfCard = Object.keys(cardCollection[id].views);
           const intersection = tabOrder.filter(tab => tabsOfCard.includes(tab))
           if (intersection.length === 0) {
-            libraryCards = [ ...libraryCards, id ];
+            libraryCards.active = [ ...libraryCards.active, id ];
           }
           break;
       }

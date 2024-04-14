@@ -1,8 +1,7 @@
 import './LibrarySearch.scss';
 import SearchImg from '../../assets/icons/search.png';
 
-const SearchBar = ( {searchString, setSearchString, searchCount }) => {
-
+const SearchBar = ( {searchString, setSearchString, libraryCards }) => {
     return(
         <div className="new-library-search-bar-container">   
             <div className="search-bar">    
@@ -11,10 +10,9 @@ const SearchBar = ( {searchString, setSearchString, searchCount }) => {
                 type="search" placeholder="Search Library"
                 value={searchString} onChange={e => setSearchString(e.target.value)}
                 />
-                <div>{searchCount.length}</div>
-                {/* <div className="search-count">
-                {(cardList.length) + "/" + (cardCollection ? Object.keys(cardCollection).length : "")}
-                </div> */}
+                <div className="search-count">
+                {(libraryCards.active.length) + "/" + (libraryCards.all)}
+                </div>
             </div>
         </div>
     )
