@@ -60,6 +60,7 @@ export const useLibraryHooks = () => {
   return {
     isOpen,
     toggleLibrary: () => setIsOpen(!isOpen),
+    searchString,
     setSearchString,
     setFilterOption,
     setSortOption,

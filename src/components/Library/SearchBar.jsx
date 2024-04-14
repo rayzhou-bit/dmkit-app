@@ -1,10 +1,7 @@
-import React, { useState } from "react";
-
 import './LibrarySearch.scss';
 import SearchImg from '../../assets/icons/search.png';
 
-const SearchBar = ( setSearchString ) => {
-    const [enteredSearch, setEnteredSearch] = useState('');
+const SearchBar = ( {searchString, setSearchString, searchCount }) => {
 
     return(
         <div className="new-library-search-bar-container">   
@@ -12,8 +9,9 @@ const SearchBar = ( setSearchString ) => {
                 <img src={SearchImg} alt="Search" />
                 <input className="search-input"
                 type="search" placeholder="Search Library"
-                value={enteredSearch} onChange={e => setEnteredSearch(e.target.value)}
+                value={searchString} onChange={e => setSearchString(e.target.value)}
                 />
+                <div>{searchCount.length}</div>
                 {/* <div className="search-count">
                 {(cardList.length) + "/" + (cardCollection ? Object.keys(cardCollection).length : "")}
                 </div> */}
