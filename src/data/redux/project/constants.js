@@ -20,14 +20,16 @@ export const DEFAULT_CARD = {
 };
 
 export const DEFAULT_TAB_POSITION = {
-  x: 0,
-  y: 0,
+  x: 80,
+  y: 50,
 };
+
+export const DEFAULT_TAB_SCALE = 1;
 
 export const DEFAULT_TAB = {
   title: 'untitled',
   pos: DEFAULT_TAB_POSITION,
-  scale: 1,
+  scale: DEFAULT_TAB_SCALE,
   createdOn: Date.now(),
   editedOn: Date.now(),
 };
@@ -90,13 +92,13 @@ export const INTRO_CARDS = {
 export const INTRO_TABS = {
   tab0: {
     title: 'Welcome!',
-    pos: { x: 0, y: 0 },
+    pos: DEFAULT_TAB_POSITION,
     scale: 1,
     cards: ['card0'],
   },
   tab1: {
     title: 'READ ME',
-    pos: { x: 0, y: 0 },
+    pos: DEFAULT_TAB_POSITION,
     scale: 1,
     cards: ['card1', 'card2', 'card3'],
   },
@@ -108,6 +110,8 @@ export const INTRO_PROJECT = {
   activeViewId: 'tab0',
   cards: INTRO_CARDS,
   views: INTRO_TABS,
+  createdOn: Date.now(),
+  editedOn: Date.now(),
 };
 
 export const BLANK_PROJECT = {
@@ -118,9 +122,11 @@ export const BLANK_PROJECT = {
   views: { 
     'tab0': { 
       title: 'Title',
-      pos: { x: 0, y: 0 },
+      pos: DEFAULT_TAB_POSITION,
       scale: 1,
       cards: [],
     },
   },
+  createdOn: Date.now(),
+  editedOn: Date.now(),
 };

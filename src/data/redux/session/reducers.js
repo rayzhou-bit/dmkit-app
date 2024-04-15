@@ -1,27 +1,18 @@
 import { createSlice } from '@reduxjs/toolkit';
-
-export const NETWORK_STATUS = {
-  idle: 'idle',
-  saving: 'saving',
-  loading: 'loading',
-};
+import { NETWORK_STATUS, DEFAULT_PROJECT } from './constants';
 
 const initialState = {
-  status: NETWORK_STATUS.loading,
+  status: NETWORK_STATUS.idle,
   popup: {
     id: null,
     type: null,
   },
 
-  campaignList: {
-    // campaignId: campaignTitle,
-  },
+  campaignList: {},     // campaignId: campaignTitle
   activeCampaignId: null,
   activeCardId: null,
 
-  // flags for any unsaved changes
-  campaignEdit: false,
-  introCampaignEdit: false,
+  isProjectEdited: false, // flag for unsaved changes
 };
 
 const session = createSlice({
@@ -29,16 +20,27 @@ const session = createSlice({
   initialState,
   reducers: {
     initialize: () => ({ ...initialState }),
+    loadIntro: () => ({
+      ...initialState,
+      campaignList: {
+        'intro_project_id': DEFAULT_PROJECT.intro_project_id,
+      },
+      activeCampaignId: 'intro_project_id',
+    }),
 
     setStatus: (state, { payload }) => {
-      const { status, trigger } = payload;
-      console.log(`[Status: ${status}]`, trigger);
+      const { status, logging } = payload;
+      console.log(`[Status: ${status}]`, logging);
       return ({ ...state, status });
     },
 
     setPopup: (state, { payload }) => ({ ...state, popup: { ...payload } }),
     resetPopup: (state) => ({ ...state, popup: { id: null, type: null } }),
 
+    loadProjects: (state, { payload }) => ({
+      ...state,
+      campaignList: payload.projects,
+    }),
     addProject: (state, { payload }) => ({
       ...state,
       campaignList: {
@@ -65,8 +67,7 @@ const session = createSlice({
     setActiveProject: (state, { payload }) => ({ ...state, activeCampaignId: payload.id }),
     setActiveCard: (state, { payload }) => ({ ...state, activeCardId: payload.id }),
 
-    setProjectEdit: (state, { payload }) => ({ ...state, campaignEdit: payload }),
-    setIntroProjectEdit: (state, { payload }) => ({ ...state, introCampaignEdit: payload }),
+    setIsProjectEdited: (state, { payload }) => ({ ...state, isProjectEdited: payload }),
   },
 });
 

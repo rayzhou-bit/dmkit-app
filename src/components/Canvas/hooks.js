@@ -1,17 +1,13 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { ActionCreators } from "redux-undo";
 
 import { actions } from '../../data/redux';
-import * as fireactions from '../../store/firestoreIndex';
-import { manageUser } from "../../store/firestoreAPI/authTransactions";
+import * as api from '../../data/api/database';
 
+import { NETWORK_STATUS } from '../../data/redux/session/constants';
 import { GRID } from '../../styles/constants';
 import { ANIMATION } from '../Card/hooks';
-import { NETWORK_STATUS } from '../../data/redux/session/reducers';
-
-// TODO separate out the network code into functions data/request or something
-//    link the authlistener and app status management to App.js
+import { DEFAULT_TAB_POSITION, DEFAULT_TAB_SCALE } from '../../data/redux/project/constants';
 
 export const CANVAS_STATES = {
   empty: 'empty',
@@ -29,107 +25,24 @@ export const useCanvasHooks = () => {
   const userId = useSelector((state) => state.user.userId);
   const status = useSelector(state => state.session.status || NETWORK_STATUS.idle);
   const activeProject = useSelector(state => state.session.activeCampaignId || '');
-  const isProjectEdited = useSelector(state => state.session.campaignEdit);
-  const isIntroCampaignEdited = useSelector(state => state.session.introCampaignEdit);
   const activeTab = useSelector(state => state.project.present.activeViewId || '');
-  const activeTabPosition = useSelector(state => activeTab ? state.project.present.views[activeTab].pos : null);
-  const activeTabScale = useSelector(state => activeTab ? state.project.present.views[activeTab].scale : 1);
-  const projectData = useSelector(state => state.project.present);
+  const activeTabPosition = useSelector(state => activeTab ? state.project.present.views[activeTab]?.pos : DEFAULT_TAB_POSITION);
+  const activeTabScale = useSelector(state => activeTab ? state.project.present.views[activeTab]?.scale : DEFAULT_TAB_SCALE);
   const cardCollection = useSelector(state => state.project.present.cards);
-  const latestUnfiltered = useSelector(state => state.project._latestUnfiltered);
 
   const [ canvasState, setCanvasState ] = useState(CANVAS_STATES.empty);
   const [ cardAnimation, setCardAnimation ] = useState({});
-
-  const isLoggedIn = !!userId;
   
   // set canvas state
   useEffect(() => {
     if (status === NETWORK_STATUS.loading) {
       setCanvasState(CANVAS_STATES.loading);
-    } else if (!!userId && !!activeProject && !!activeTab) {
+    } else if (!!activeProject && !!activeTab) {
       setCanvasState(CANVAS_STATES.loaded);
     } else {
       setCanvasState(CANVAS_STATES.empty);
     }
   }, [status, userId, activeProject, activeTab]);
-
-  // auth listener
-  useEffect(() => {
-    const authListener = manageUser({
-      dispatch,
-      introCampaignEdit: isIntroCampaignEdited,
-      campaignData: projectData,
-    });
-    return () => authListener();
-  }, [dispatch]);
-
-  // load data for active project
-  useEffect(() => {
-    if (isLoggedIn) {
-      if (activeProject) {
-        dispatch(fireactions.fetchCampaignData(
-          activeProject,
-          () => dispatch(ActionCreators.clearHistory()),
-        ));
-      } else {
-        dispatch(actions.session.setStatus({
-          status: NETWORK_STATUS.idle,
-          trigger: 'activeCampaignId update',
-        }));
-      }
-    }
-  }, [dispatch, activeProject]);
-
-  // when project data changes, set edited flag
-  useEffect(() => {
-    if (isLoggedIn) {
-      if ((status === NETWORK_STATUS.idle) && !!projectData && (Object.keys(projectData).length !== 0)) {
-        if (!isProjectEdited) {
-          dispatch(actions.session.setProjectEdit(true));
-        }
-      } else {
-        dispatch(actions.session.setStatus({ 
-          status: NETWORK_STATUS.idle,
-          trigger: 'post-load',
-        }));
-      }
-    } else {
-      if ((status === NETWORK_STATUS.idle) && !!projectData && (Object.keys(projectData).length !== 0)) {
-        if (!isIntroCampaignEdited) {
-          dispatch(actions.session.setIntroProjectEdit(true));
-        }
-      } else {
-        dispatch(actions.session.setStatus({ 
-          status: NETWORK_STATUS.idle,
-          trigger: 'post-load',
-        }));
-      }
-    }
-  }, [dispatch, latestUnfiltered])
-
-  // auto-save every minute
-  useEffect(() => {
-    const autoSave = setInterval(() => {
-      if ((status === NETWORK_STATUS.idle) && isLoggedIn && activeProject && isProjectEdited) {
-        dispatch(actions.session.setStatus({
-          status: NETWORK_STATUS.saving,
-          trigger: 'autosave',
-        }));
-        dispatch(fireactions.saveCampaignData(
-          activeProject,
-          projectData,
-          () => {
-            dispatch(actions.session.setStatus({
-              status: NETWORK_STATUS.idle,
-              trigger: 'autosave completion',
-            }));
-          }
-        ));
-      }
-    }, 60000);
-    return () => clearInterval(autoSave);
-  }, [dispatch, status, userId, activeProject, isProjectEdited, projectData]);
 
   let cardArgs = {};
   for (let card in cardCollection) {
@@ -188,6 +101,6 @@ export const useCanvasHooks = () => {
         }
       }
     },
-    createNewProject: () => dispatch(fireactions.createProject()),
+    createNewProject: () => dispatch(api.createAndSwitchToEmptyProject()),
   };
 };

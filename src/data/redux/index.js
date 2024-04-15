@@ -6,12 +6,6 @@ import * as project from './project';
 import * as session from './session';
 import * as user from './user';
 
-/* TODO: redux refactor
-    Files under /data will be the future store for dmkit.
-    Get these files to work with the app.
-    Files under /store to be removed.
-*/
-
 const modules = {
   project,
   session,
@@ -21,8 +15,10 @@ const modules = {
 let undoableActions = Object.keys(project.actions);
 const actionsToRemove = [
   'initialize',
+  'unloadProject',
   'loadProject',
   'loadIntroProject',
+  'loadBlankProject',
   'loadCards',
   'loadTabs',
   'loadTabOrder',

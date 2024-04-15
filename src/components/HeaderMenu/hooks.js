@@ -4,10 +4,12 @@ import useOutsideClick from '../../utils/useOutsideClick';
 import { convertToMsg } from '../../data/api/authCodes';
 
 import { actions } from '../../data/redux';
-import * as fireactions from '../../store/firestoreIndex';
 import { undo, redo } from '../../data/redux';
+import * as api from  '../../data/api/database';
+import * as authApi from '../../data/api/auth';
+import * as userApi from '../../data/api/user';
+
 import { POPUP_KEYS } from '../Popup/PopupKey';
-import { NETWORK_STATUS } from '../../data/redux/session/reducers';
 
 export const useTitleHooks = () => {
   const dispatch = useDispatch();
@@ -88,19 +90,9 @@ export const useVersionControlHooks = () => {
     redo,
     disableRedo: futureProjectData.length === 0,
     save: () => {
-      dispatch(actions.session.setStatus({
-        status: NETWORK_STATUS.saving,
-        trigger: 'manual save',
+      dispatch(api.save(activeProject, projectData, () => {
+        setSaveCompleted(true);
       }));
-      dispatch(fireactions.saveCampaignData(activeProject, projectData,
-        () => {
-          dispatch(actions.session.setStatus({
-            status: NETWORK_STATUS.idle,
-            trigger: 'manual save completion',
-          }));
-        }
-      ));
-      setSaveCompleted(true);
     },
     saveStatus,
   };
@@ -136,24 +128,12 @@ export const useProjectHooks = () => {
     activeProject,
     projects: sortedProjects,
     newProject: () => {
-      if (activeProject) {
-        dispatch(actions.session.setStatus({
-          status: NETWORK_STATUS.saving,
-          trigger: 'new project',
+      if (!!activeProject) {
+        dispatch(api.save(activeProject, projectData, () => {
+          dispatch(api.createAndSwitchToEmptyProject());
         }));
-        dispatch(fireactions.saveCampaignData(
-          activeProject,
-          projectData,
-          () => {
-            dispatch(fireactions.createProject());
-            dispatch(actions.session.setStatus({
-              status: NETWORK_STATUS.idle,
-              trigger: 'new project save completion',
-            }));
-          },
-        ));
       } else {
-        dispatch(fireactions.createProject());
+        dispatch(api.createAndSwitchToEmptyProject());
       }
     },
   };
@@ -174,48 +154,20 @@ export const useProjectItemHooks = ({ closeProjectDropdown, id, name }) => {
     deleteBtnRef,
     isActiveProject,
     switchProject: () => {
-      if (activeProject) {
-        dispatch(actions.session.setStatus({
-          status: NETWORK_STATUS.saving,
-          trigger: 'switching project',
+      if (!!activeProject) {
+        dispatch(api.save(activeProject, projectData, () => {
+          dispatch(api.switchProject(id));
         }));
-        dispatch(fireactions.saveCampaignData(
-          activeProject,
-          projectData,
-          () => {
-            dispatch(fireactions.switchProject({ projectId: id }));
-            dispatch(actions.session.setStatus({
-              status: NETWORK_STATUS.idle,
-              trigger: 'switching project save completion',
-            }));
-          },
-        ));
       } else {
-        dispatch(fireactions.switchProject({ projectId: id }));
+        dispatch(api.switchProject(id));
       }
       closeProjectDropdown();
     },
     copyProject: (event) => {
       event.stopPropagation();
-      if (isActiveProject) {
-        dispatch(actions.session.setStatus({
-          status: NETWORK_STATUS.saving,
-          trigger: 'copying project',
-        }));
-        dispatch(fireactions.saveCampaignData(
-          activeProject,
-          projectData,
-          () => {
-            dispatch(fireactions.copyProject({ projectId: id }));
-            dispatch(actions.session.setStatus({
-              status: NETWORK_STATUS.idle,
-              trigger: 'copying project save completion',
-            }));
-          },
-        ));
-      } else {
-        dispatch(fireactions.copyProject({ projectId: id }));
-      }
+      dispatch(api.copyProject(id, () => {
+        dispatch(api.fetchProjects());
+      }));
     },
     confirmDeleteProject: (event) => {
       event.stopPropagation();
@@ -254,23 +206,11 @@ export const useUserOptionsHooks = () => {
     logOut: (event) => {
       event.preventDefault();
       if (!!activeProject) {
-        dispatch(actions.session.setStatus({
-          status: NETWORK_STATUS.saving,
-          trigger: 'manual log out',
+        dispatch(api.save(activeProject, projectData, () => {
+          dispatch(authApi.emailSignOut());
         }));
-        dispatch(fireactions.saveCampaignData(
-          activeProject,
-          projectData,
-          () => {
-            dispatch(actions.session.setStatus({
-              status: NETWORK_STATUS.idle,
-              trigger: 'manual log out completion',
-            }));
-            dispatch(fireactions.emailSignOut());
-          }
-        ));
       } else {
-        dispatch(fireactions.emailSignOut());
+        dispatch(authApi.emailSignOut());
       }
     },
   };
@@ -287,6 +227,7 @@ export const useDisplayNameHooks = () => {
     document.getSelection().removeAllRanges();
     if (displayNameInput !== username && displayNameInput !== '') {
       dispatch(actions.user.updUserDisplayname({ displayName: displayNameInput }));
+      dispatch(userApi.updateDisplayName(displayNameInput));
     }
     setShowDisplayInput(false);
   };
@@ -311,8 +252,6 @@ export const useDisplayNameHooks = () => {
 export const useSignInHooks = () => {
   const dispatch = useDispatch();
   const userId = useSelector(state => state.user.userId || '');
-  const introProjectEdit = useSelector(state => state.session.introCampaignEdit || false);
-  const projectData = useSelector (state => state.project.present || {});
   const [ showSignInDropdown, setShowSignInDropdown ] = useState(false);
   const [ email, setEmail ] = useState('');
   const [ emailError, setEmailError ] = useState('');
@@ -337,9 +276,9 @@ export const useSignInHooks = () => {
     showSignInDropdown,
     () => {
       setShowSignInDropdown(false);
-      setEmailError(false);
-      setPasswordError(false);
-      setAuthError(false);
+      setEmailError('');
+      setPasswordError('');
+      setAuthError('');
       setForgotPasswordScreen(null);
     },
   );
@@ -349,35 +288,12 @@ export const useSignInHooks = () => {
     setEmailError('');
     setPasswordError('');
     setAuthError('');
-    if (introProjectEdit) {
-      let save = window.confirm("Would you like to save your work as a new project?");
-      if (save) {
-        dispatch(fireactions.emailSignIn({
-          email,
-          password,
-          callback: () => {
-            dispatch(fireactions.saveIntroProjectData({ projectData }));
-            setAuthError('');
-          },
-          errorCallback: (errorCode) => setAuthError(convertToMsg({ errorCode })),
-        }));
-      } else {
-        dispatch(fireactions.emailSignIn({
-          email,
-          password,
-          callback: () => setAuthError(''),
-          errorCallback: (errorCode) => setAuthError(convertToMsg({ errorCode })),
-        }));
-      }
-      dispatch(actions.session.setIntroProjectEdit(false));
-    } else {
-      dispatch(fireactions.emailSignIn({
-        email,
-        password,
-        callback: () => setAuthError(''),
-        errorCallback: (errorCode) => setAuthError(convertToMsg({ errorCode })),
-      }));
-    }
+    dispatch(authApi.emailSignIn({
+      email,
+      password,
+      callback: () => setAuthError(''),
+      errorCallback: errorCode => setAuthError(convertToMsg({ errorCode })),
+    }));
   };
 
   return {
@@ -427,7 +343,7 @@ export const useSignInHooks = () => {
     },
     sendPasswordReset: (event) => {
       event.preventDefault();
-      dispatch(fireactions.sendPasswordResetToEmail({
+      dispatch(authApi.sendPasswordResetToEmail({
         email,
         callback: () => setForgotPasswordScreen('success'),
         errorCallback: () => setForgotPasswordScreen('failure'),
@@ -437,7 +353,7 @@ export const useSignInHooks = () => {
     signInViaEmail,
     signInViaGoogle: (event) => {
       event.preventDefault();
-      dispatch(fireactions.googleSignIn());
+      dispatch(authApi.googleSignIn());
     },
     authError,
     clearAuthError: () => setAuthError(''),
@@ -476,11 +392,11 @@ export const useSignUpHooks = () => {
     setEmailError('');
     setPasswordError('');
     setAuthError('');
-    dispatch(fireactions.emailSignUp({
+    dispatch(authApi.emailSignUp({
       email,
       password,
       callback: () => setAuthError(''),
-      errorCallback: (errorCode) => setAuthError(convertToMsg({ errorCode })),
+      errorCallback: errorCode => setAuthError(convertToMsg({ errorCode })),
     }));
   };
 
@@ -518,7 +434,7 @@ export const useSignUpHooks = () => {
     signUpViaEmail,
     signUpViaGoogle: (event) => {
       event.preventDefault();
-      dispatch(fireactions.googleSignIn());
+      dispatch(authApi.googleSignIn());
     },
     authError,
     clearAuthError: () => setAuthError(''),

@@ -2,7 +2,7 @@ import React from 'react';
 import { useDispatch } from 'react-redux';
 
 import { actions } from '../../../data/redux';
-import * as fireactions from '../../../store/firestoreIndex';
+import * as api from '../../../data/api/database';
 
 import './DeleteConfirmation.scss';
 
@@ -15,15 +15,12 @@ export const DeleteConfirmation = ({
 
   const cancelClick = () => dispatch(actions.session.resetPopup());
   const confirmClick = () => {
-    dispatch(fireactions.destroyProject({
-      projectId: id,
-      callback: () => {
-        dispatch(actions.session.removeProject({ id }));
-        if (isActiveProject) {
-          dispatch(fireactions.switchProject({ projectId: null }));
-          dispatch(actions.project.initialize());
-        }
-      },
+    dispatch(api.destroyProject(id, () => {
+      dispatch(actions.session.removeProject({ id }));
+      if (isActiveProject) {
+        dispatch(actions.session.setActiveProject({ id: null }));
+        dispatch(actions.project.unloadProject());
+      }
     }));
     dispatch(actions.session.resetPopup());
   };

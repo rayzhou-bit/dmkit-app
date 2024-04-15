@@ -5,11 +5,12 @@ import {
   DEFAULT_CARD,
   DEFAULT_TAB,
   INTRO_PROJECT,
+  BLANK_PROJECT,
 } from './constants';
 import { GRID } from '../../../styles/constants';
 import { v4 as uuidv4 } from 'uuid';
 
-// TODO future name refactor
+// TODO name refactor
 //  view -> tab
 //  pos -> position
 
@@ -18,7 +19,7 @@ const initialState = {
   viewOrder: [],
   activeViewId: null,
   cards: {},
-  tabs: {},
+  views: {},
 };
 
 const generateUID = (prefix) => (prefix + uuidv4().slice(0, 8));
@@ -29,10 +30,12 @@ const project = createSlice({
   reducers: {
     // Actions below do not affect undo/redo.
     initialize: () => ({ ...initialState }),
+    unloadProject: () => ({ ...initialState }),
     loadProject: (state, { payload }) => ({ ...state, ...payload.project }),
     loadIntroProject: () => ({ ...INTRO_PROJECT }),
+    loadBlankProject: () => ({ ...BLANK_PROJECT }),
     loadCards: (state, { payload }) => ({ ...state, cards: payload.cards }),
-    loadTabs: (state, { payload }) => ({ ...state, tabs: payload.tabs }),
+    loadTabs: (state, { payload }) => ({ ...state, views: payload.tabs }),
     setActiveTab: (state, { payload }) => ({ ...state, activeViewId: payload.id }),
     // Actions above do not affect undo/redo.
 
@@ -61,9 +64,19 @@ const project = createSlice({
                 pos: DEFAULT_CARD_POSITION,
                 size: DEFAULT_CARD_SIZE,
               }
-            }
+            },
           },
         },
+        // views: {
+        //   ...state.views,
+        //   [state.activeViewId]: {
+        //     ...state.views[state.activeViewId],
+        //     cards: [
+        //       ...state.views[state.activeViewId].cards,
+        //       newCardId,
+        //     ],
+        //   },
+        // },
       };
     },
     copyCard: (state, { payload }) => {
@@ -86,8 +99,20 @@ const project = createSlice({
                 },
               },
             },
+            createdOn: Date.now(),
+            editedOn: Date.now(),
           },
         },
+        // views: {
+        //   ...state.views,
+        //   [state.activeViewId]: {
+        //     ...state.views[state.activeViewId],
+        //     cards: [
+        //       ...state.views[state.activeViewId].cards,
+        //       newCardId,
+        //     ],
+        //   },
+        // },
       };
     },
     destroyCard: (state, { payload }) => {
@@ -117,6 +142,16 @@ const project = createSlice({
             },
           },
         },
+        // views: {
+        //   ...state.views,
+        //   [state.activeViewId]: {
+        //     ...state.views[state.activeViewId],
+        //     cards: [
+        //       ...state.views[state.activeViewId].cards,
+        //       newCardId,
+        //     ],
+        //   },
+        // },
       };
     },
     unlinkCardFromView: (state, { payload }) => {
