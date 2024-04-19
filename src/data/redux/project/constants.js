@@ -4,12 +4,10 @@ export const DEFAULT_CARD_POSITION = {
   x: 3 * GRID.size,
   y: 3 * GRID.size,
 };
-
 export const DEFAULT_CARD_SIZE = {
   width: 8 * GRID.size,
   height: 10 * GRID.size,
 };
-
 export const DEFAULT_CARD = {
   title: 'untitled',
   color: 'gray',
@@ -23,9 +21,7 @@ export const DEFAULT_TAB_POSITION = {
   x: 80,
   y: 50,
 };
-
 export const DEFAULT_TAB_SCALE = 1;
-
 export const DEFAULT_TAB = {
   title: 'untitled',
   pos: DEFAULT_TAB_POSITION,
@@ -42,9 +38,9 @@ export const INTRO_CARDS = {
       text: 'Welcome to DM Kit, a tool to help plan your next adventure. Take a look at the READ ME tab for more information on functions. If you would like to save your work, please create an account!',
     },
     views: {
-      tab0: {
+      'tab0': {
         pos: {x: 5*GRID.size, y: 7*GRID.size},
-        size: {width: 16*GRID.size, height: 10*GRID.size},
+        size: {width: 32*GRID.size, height: 20*GRID.size},
       },
     },
   },
@@ -56,8 +52,8 @@ export const INTRO_CARDS = {
     },
     views: {
       'tab1': {
-        pos: {x: 0, y: 0},
-        size: {width: 8*GRID.size, height: 9*GRID.size},
+        pos: {x: 5*GRID.size, y: 7*GRID.size},
+        size: {width: 16*GRID.size, height: 18*GRID.size},
       },
     },
   },
@@ -69,8 +65,8 @@ export const INTRO_CARDS = {
     },
     views: {
       'tab1': {
-        pos: {x: 4*GRID.size, y: 20*GRID.size},
-        size: {width: 10*GRID.size, height: 5*GRID.size},
+        pos: {x: 8*GRID.size, y: 40*GRID.size},
+        size: {width: 20*GRID.size, height: 10*GRID.size},
       },
     },
   },
@@ -82,28 +78,26 @@ export const INTRO_CARDS = {
     },
     views: {
       'tab1': {
-        pos: {x: 25*GRID.size, y: 3*GRID.size},
-        size: {width: 10*GRID.size, height: 10*GRID.size},
+        pos: {x: 50*GRID.size, y: 6*GRID.size},
+        size: {width: 20*GRID.size, height: 20*GRID.size},
       },
     },
   },
 };
-
 export const INTRO_TABS = {
-  tab0: {
+  'tab0': {
     title: 'Welcome!',
     pos: DEFAULT_TAB_POSITION,
     scale: 1,
     cards: ['card0'],
   },
-  tab1: {
+  'tab1': {
     title: 'READ ME',
     pos: DEFAULT_TAB_POSITION,
     scale: 1,
     cards: ['card1', 'card2', 'card3'],
   },
 };
-
 export const INTRO_PROJECT = {
   title: 'DM Kit',
   viewOrder: ['tab0', 'tab1'],

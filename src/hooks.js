@@ -51,6 +51,7 @@ export const useListenerHooks = () => {
   useEffect(() => {
     const autoSave = setInterval(() => {
       if ((status === NETWORK_STATUS.idle) && isLoggedIn && !!activeProject && isProjectEdited) {
+        console.log('[auto-save] triggered');
         dispatch(api.save(activeProject, projectData));
       }
     }, 60000);

@@ -6,12 +6,9 @@ import './index.scss';
 
 const Title = () => {
   const {
-    inputClassName,
-    readOnly,
     titleRef,
     titleValue,
     changeTitleValue,
-    beginTitleEdit,
     endTitleEdit,
     handleTitleKeyPress,
   } = useTitleHooks();
@@ -19,14 +16,11 @@ const Title = () => {
   return (
     <div className='usermenu-title'>
       <input
-        className={inputClassName}
         maxLength='300'
         onBlur={endTitleEdit}
         onChange={e => changeTitleValue(e.target.value)}
-        onDoubleClick={beginTitleEdit}
         onDragOver={e => e.preventDefault()}
         onKeyDown={handleTitleKeyPress}
-        readOnly={readOnly}
         ref={titleRef}
         required
         size=''

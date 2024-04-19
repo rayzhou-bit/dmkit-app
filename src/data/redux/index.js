@@ -24,6 +24,7 @@ const actionsToRemove = [
   'loadTabOrder',
   'setActiveCard',
   'setActiveTab',
+  'setActiveTabPosition',
   'setActiveTabScale',
 ];
 undoableActions = undoableActions.filter(action => !actionsToRemove.includes(action));

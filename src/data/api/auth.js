@@ -33,7 +33,7 @@ export const authListener = ({
 }) => {
   onAuthStateChanged(auth, user => {
     if (user) {   // User is signed in
-      console.log('[authListener] signed in', user.uid);
+      console.log('[authListener] signed in user:', user.uid);
       const userData = {
         userId: user.uid,
         displayName: user.displayName,
@@ -86,21 +86,35 @@ export const emailSignIn = ({
 
 export const emailSignOut = () => {
   signOut(auth)
-    .then(response => console.log('[emailSignout] success', response))
+    .then(response => console.log('[emailSignout] success'))
     .catch(error => console.log('[emailSignOut] error', error));
 };
 
-export const googleSignIn = () => dispatch => {
+export const googleSignIn = ({
+  callback,
+  errorCallback,
+}) => dispatch => {
+  console.log(callback)
   signInWithPopup(auth, googleProvider)
-    .then(response => console.log('[googleSignIn] success', response))
-    .catch(error => console.log('[googleSignIn] error', error));
+    .then(response => {
+      console.log('[googleSignIn] success');
+      if (callback) {
+        callback();
+      }
+    })
+    .catch(error => {
+      console.log('[googleSignIn] error', error);
+      if (errorCallback) {
+        errorCallback(error.code);
+      }
+    });
 };
 
-export const facebookSignIn = () => dispatch => {
-  signInWithPopup(auth, facebookProvider)
-    .then(response => console.log('[facebookSignIn] success', response))
-    .catch(error => console.log('[facebookSignIn] error', error));
-};
+// export const facebookSignIn = () => dispatch => {
+//   signInWithPopup(auth, facebookProvider)
+//     .then(response => console.log('[facebookSignIn] success'))
+//     .catch(error => console.log('[facebookSignIn] error', error));
+// };
 
 export const emailSignUp = ({
   email,

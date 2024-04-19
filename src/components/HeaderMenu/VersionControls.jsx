@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { useVersionControlHooks } from './hooks';
+import { useVersionControlHooks, SAVE_BUTTON } from './hooks';
 
 import './index.scss';
 import UndoDisabledIcon from '../../assets/icons/undo-disabled.svg';
@@ -20,21 +20,21 @@ const VersionControls = () => {
     redo,
     disableRedo,
     save,
-    saveStatus,
+    saveButtonStatus,
   } = useVersionControlHooks();
 
   let saveIcon = SaveEnabledIcon;
-  switch (saveStatus) {
-    case 'disabled':
+  switch (saveButtonStatus) {
+    case SAVE_BUTTON.disabled:
       saveIcon = SaveDisabledIcon;
       break;
-    case 'pending':
+    case SAVE_BUTTON.pending:
       saveIcon = SavePendingIcon;
       break;
-    case 'saving':
+    case SAVE_BUTTON.saving:
       saveIcon = SaveSpinnerIcon;
       break;
-    case 'completed':
+    case SAVE_BUTTON.completed:
       saveIcon = SaveCompletedIcon;
       break;
   }
@@ -57,13 +57,13 @@ const VersionControls = () => {
       </button>
       <button
         className='save'
-        disabled={saveStatus === 'disabled'}
+        disabled={saveButtonStatus === SAVE_BUTTON.disabled}
         onClick={save}
       >
         <span>Save</span>
         <img
           alt='save'
-          className={saveStatus === 'saving' ? 'spin' : null}
+          className={saveButtonStatus === SAVE_BUTTON.saving ? 'spin' : null}
           draggable='false'
           src={saveIcon}
         />

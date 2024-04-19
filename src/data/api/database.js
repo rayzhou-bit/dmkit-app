@@ -1,5 +1,3 @@
-// TODO replace campaign terminology with project terminology
-
 import {
   doc,
   addDoc,
@@ -19,6 +17,8 @@ import { actions } from '../redux';
 import { NETWORK_STATUS, DEFAULT_PROJECT } from '../redux/session/constants';
 import { BLANK_PROJECT } from '../redux/project/constants';
 
+// TODO replace campaign terminology with project terminology
+
 const userDoc = () => doc(db, 'users', getUserId());
 const projectDoc = (project) => doc(db, 'users', getUserId(), 'campaigns', project);
 const cardDoc = (project, card) => doc(db, 'users', getUserId(), 'campaigns', project, 'cards', card);
@@ -36,7 +36,7 @@ const status = {
 export const fetchActiveProjectId = () => dispatch => {
   getDoc(userDoc())
     .then(userSnapshot => {
-      console.log('[fetchActiveProjectId] success', userSnapshot.data());
+      console.log('[fetchActiveProjectId] success:', userSnapshot.data());
       const activeProjectId = userSnapshot.data().activeCampaignId ?? null;
       if (activeProjectId) {
         dispatch(actions.session.setActiveProject({ id: activeProjectId }));
@@ -48,7 +48,7 @@ export const fetchActiveProjectId = () => dispatch => {
 export const fetchProjects = () => dispatch => {
   getDocs(projectCollection())
     .then(projectsSnapshot => {
-      console.log('[fetchProjects] success', projectsSnapshot.docs);
+      console.log(`[fetchProjects] success: ${projectsSnapshot.docs?.length} project titles fetched`);
       let projects = {};
       projectsSnapshot.forEach(project => {
         projects = { ...projects, [project.id]: project.data().title ?? '' };
@@ -61,7 +61,7 @@ export const fetchProjects = () => dispatch => {
 const fetchCards = (project) => dispatch => {
   getDocs(cardCollection(project))
     .then(cardsSnapshot => {
-      console.log('[fetchCards] success', cardsSnapshot.docs);
+      console.log(`[fetchCards] success: ${cardsSnapshot.docs?.length} cards fetched`);
       let cards = {};
       cardsSnapshot.forEach(cardSnapshot => {
         cards = { ...cards, [cardSnapshot.id]: cardSnapshot.data() };
@@ -74,7 +74,7 @@ const fetchCards = (project) => dispatch => {
 const fetchTabs = (project) => dispatch => {
   getDocs(tabCollection(project))
     .then(tabsSnapshot => {
-      console.log('[fetchTabs] success', tabsSnapshot.docs);
+      console.log(`[fetchTabs] success: ${tabsSnapshot.docs?.length} tabs fetched`);
       let tabs = {};
       tabsSnapshot.forEach(tabSnapshot => {
         tabs = { ...tabs, [tabSnapshot.id]: tabSnapshot.data() };
@@ -85,14 +85,14 @@ const fetchTabs = (project) => dispatch => {
 };
 
 export const fetchProjectData = (id, callback) => dispatch => {
-  status.loading('fetch project');
+  dispatch(status.loading('fetch project'));
   getDoc(projectDoc(id))
     .then(projectSnapshot => {
-      console.log('[fetchProjectData] success', projectSnapshot.data());
+      console.log(`[fetchProjectData] success: project "${projectSnapshot.data()?.title}" fetched`);
       dispatch(actions.project.loadProject({ project: projectSnapshot.data() }));
       dispatch(fetchCards(id));
       dispatch(fetchTabs(id));
-      status.idle('finished fetching project')
+      dispatch(status.idle('finished fetching project'));
       if (callback) {
         callback();
       }
@@ -109,7 +109,7 @@ export const firstTimeSetup = () => dispatch => {
 const saveActiveProjectId = (id, callback) => dispatch => {
   updateDoc(userDoc(), { activeCampaignId: id })
     .then(response => {
-      console.log('[saveActiveProjectId] success', response);
+      console.log('[saveActiveProjectId] success');
       if (callback) {
         callback();
       }
@@ -118,9 +118,9 @@ const saveActiveProjectId = (id, callback) => dispatch => {
 };
 
 export const switchProject = (projectId) => dispatch => {
-  saveActiveProjectId(projectId, () => {
-    dispatch(actions.session.setActiveProject({ id }));
-  });
+  dispatch(saveActiveProjectId(projectId, () => {
+    dispatch(actions.session.setActiveProject({ id: projectId }));
+  }));
 };
 
 const saveExistingProject = (id, data, callback) => dispatch => {
@@ -137,7 +137,7 @@ const saveExistingProject = (id, data, callback) => dispatch => {
   }
   batch.commit()
     .then(response => {
-      console.log('[saveExistingProject] success', response);
+      console.log('[saveExistingProject] success');
       if (callback) {
         callback();
       }
@@ -155,22 +155,22 @@ const saveNewProject = (data, callback) => dispatch => {
 };
 
 export const save = (projectId, projectData, callback) => dispatch => {
-  status.saving('saving project');
+  dispatch(status.saving('saving project'));
   if (DEFAULT_PROJECT[projectId]) {
     dispatch(saveNewProject(projectData, () => {
+      dispatch(actions.session.setIsProjectEdited(false));
       if (callback) {
-        dispatch(actions.session.setIsProjectEdited(false));
         callback();
       }
-      status.idle('finished saving new project');
+      dispatch(status.idle('finished saving new project'));
     }));
   } else {
     dispatch(saveExistingProject(projectId, projectData, () => {
+      dispatch(actions.session.setIsProjectEdited(false));
       if (callback) {
-        dispatch(actions.session.setIsProjectEdited(false));
         callback();
       }
-      status.idle('finished saving existing project');
+      dispatch(status.idle('finished saving existing project'));
     }));
   }
 };
@@ -178,12 +178,14 @@ export const save = (projectId, projectData, callback) => dispatch => {
 export const createAndSwitchToEmptyProject = (callback) => dispatch => {
   addDoc(projectCollection(), { ...BLANK_PROJECT })
     .then(response => {
-      console.log('[createAndSwitchToEmptyProject] success', response);
+      console.log(`[createAndSwitchToEmptyProject] success: created project ${response?.id}`);
       dispatch(actions.session.addProject({
         id: response.id,
         title: BLANK_PROJECT.title,
       }));
-      dispatch(saveActiveProjectId(response.id, callback));
+      dispatch(saveActiveProjectId(response.id, () => {
+        dispatch(actions.session.setActiveProject({ id: response.id }));
+      }));
     })
     .catch(error => console.log('[createAndSwitchToEmptyProject] error', error));
 };
@@ -195,7 +197,7 @@ export const copyProject = (id, callback) => dispatch => {
       projectData = projectSnapshot.data();
       projectData = {
         ...projectData,
-        title: projectData + ' (copy)',
+        title: projectData.title + ' (copy)',
         createdOn: Date.now(),
         lastSavedOn: Date.now(),
       };

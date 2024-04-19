@@ -38,7 +38,7 @@ const user = createSlice({
         providerData,
       };
     },
-    updUserDisplayname: (state, { payload }) => ({
+    updateUserDisplayName: (state, { payload }) => ({
       ...state,
       displayName: payload.displayName,
     }),

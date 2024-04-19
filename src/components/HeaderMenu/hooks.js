@@ -9,7 +9,16 @@ import * as api from  '../../data/api/database';
 import * as authApi from '../../data/api/auth';
 import * as userApi from '../../data/api/user';
 
+import { NETWORK_STATUS } from '../../data/redux/session/constants';
 import { POPUP_KEYS } from '../Popup/PopupKey';
+
+export const SAVE_BUTTON = {
+  enabled: 'enabled',
+  disabled: 'disabled',
+  pending: 'pending',
+  saving: 'saving',
+  completed: 'completed',
+};
 
 export const useTitleHooks = () => {
   const dispatch = useDispatch();
@@ -17,7 +26,6 @@ export const useTitleHooks = () => {
   const id = useSelector(state => state.session.activeCampaignId);
   const value = useSelector(state => state.project.present.title || '');
   const [ titleValue, setTitleValue ] = useState('');
-  const [ isEditing, setIsEditing ] = useState(false);
   const titleRef = useRef();
 
   // Initialize title value
@@ -26,38 +34,21 @@ export const useTitleHooks = () => {
   }, [setTitleValue, value]);
 
   const endEdit = () => {
-    if (isEditing) {
-      document.getSelection().removeAllRanges();
-      if (titleValue !== value) {
-        dispatch(actions.project.updateProjectTitle({ title: titleValue }));
-        dispatch(actions.session.updateProjectTitle({ id, title: titleValue }));
-      }
-      setIsEditing(false);
+    document.getSelection().removeAllRanges();
+    if (titleValue !== value) {
+      dispatch(actions.project.updateProjectTitle({ title: titleValue }));
+      dispatch(actions.session.updateProjectTitle({ id, title: titleValue }));
     }
   };
 
   return {
     titleRef,
     titleValue,
-    readOnly: !isEditing,
-    inputClassName: isEditing ? 'editing' : '',
     changeTitleValue: (newValue) => setTitleValue(newValue),
-    beginTitleEdit: () => {
-      if (!isEditing) {
-        setIsEditing(true);
-        titleRef.current.focus();
-        titleRef.current.setSelectionRange(
-          titleRef.current.value.length,
-          titleRef.current.value.length,
-        );
-      }
-    },
     endTitleEdit: endEdit,
     handleTitleKeyPress: (event) => {
-      if (isEditing) {
-        if(event.key === 'Enter' || event.key === 'Tab') {
-          endEdit();
-        }
+      if(event.key === 'Enter' || event.key === 'Tab') {
+        endEdit();
       }
     },
   };
@@ -66,22 +57,22 @@ export const useTitleHooks = () => {
 export const useVersionControlHooks = () => {
   const dispatch = useDispatch();
   const userId = useSelector(state => state.user.userId || '');
-  const status = useSelector(state => state.session.status || 'idle');
+  const status = useSelector(state => state.session.status || NETWORK_STATUS.idle);
   const activeProject = useSelector(state => state.session.activeCampaignId || '');
   const projectData = useSelector(state => state.project.present || {});
   const pastProjectData = useSelector(state => state.project.past || {});
   const futureProjectData = useSelector(state => state.project.future || {});
   const [ saveCompleted, setSaveCompleted ] = useState(false);
 
-  let saveStatus = 'enabled';
-  if (status === 'saving') {
-    saveStatus = 'saving';
-  } else if (!((status === 'idle') && userId && activeProject)) {
-    saveStatus = 'disabled';
-  // } else if (pending) {
-  //   saveStatus = 'pending';  // (there are multiple changes since last save; currently not implemented)
+  let saveButtonStatus = SAVE_BUTTON.enabled;
+  if (status === NETWORK_STATUS.saving) {
+    saveButtonStatus = SAVE_BUTTON.saving;
+  } else if (!((status === NETWORK_STATUS.idle) && userId && activeProject)) {
+    saveButtonStatus = SAVE_BUTTON.disabled;
+  // } else if (pending??) {
+  //   saveButtonStatus = SAVE_BUTTON.pending;  // (there are multiple changes since last save; currently not implemented)
   } else if (saveCompleted) {
-    saveStatus = 'completed';
+    saveButtonStatus = SAVE_BUTTON.completed;
   }
 
   return {
@@ -94,7 +85,7 @@ export const useVersionControlHooks = () => {
         setSaveCompleted(true);
       }));
     },
-    saveStatus,
+    saveButtonStatus,
   };
 };
 
@@ -226,7 +217,7 @@ export const useDisplayNameHooks = () => {
   const endDisplayNameInputEdit = () => {
     document.getSelection().removeAllRanges();
     if (displayNameInput !== username && displayNameInput !== '') {
-      dispatch(actions.user.updUserDisplayname({ displayName: displayNameInput }));
+      dispatch(actions.user.updateUserDisplayName({ displayName: displayNameInput }));
       dispatch(userApi.updateDisplayName(displayNameInput));
     }
     setShowDisplayInput(false);
@@ -353,7 +344,7 @@ export const useSignInHooks = () => {
     signInViaEmail,
     signInViaGoogle: (event) => {
       event.preventDefault();
-      dispatch(authApi.googleSignIn());
+      dispatch(authApi.googleSignIn({}));
     },
     authError,
     clearAuthError: () => setAuthError(''),
@@ -363,39 +354,42 @@ export const useSignInHooks = () => {
 export const useSignUpHooks = () => {
   const dispatch = useDispatch();
   const userId = useSelector(state => state.user.userId || '');
-  const [ showSignUpDropdown, setShowSignUpDropdown ] = useState(false);
   const [ email, setEmail ] = useState('');
-  const [ emailError, setEmailError ] = useState('');
   const [ password, setPassword ] = useState('');
+  const [ emailError, setEmailError ] = useState('');
   const [ passwordError, setPasswordError ] = useState('');
   const [ authError, setAuthError ] = useState('');
-  const signUpBtnRef = useRef();
-  const signUpDropdownRef = useRef();
 
   // Initialize sign up form
   useEffect(() => {
     if (!!userId) {
-      setShowSignUpDropdown(false);
       setEmail('');
-      setPassword("");
+      setPassword('');
     }
   }, [userId]);
 
-  useOutsideClick(
-    [signUpBtnRef, signUpDropdownRef],
-    showSignUpDropdown,
-    () => setShowSignUpDropdown(false),
-  );
-
-  const signUpViaEmail = (event) => {
-    event.preventDefault();
+  const clearErrors = () => {
     setEmailError('');
     setPasswordError('');
     setAuthError('');
+  };
+
+  const signUpViaEmail = (event) => {
+    event.preventDefault();
+    clearErrors();
     dispatch(authApi.emailSignUp({
       email,
       password,
-      callback: () => setAuthError(''),
+      callback: () => clearErrors(),
+      errorCallback: errorCode => setAuthError(convertToMsg({ errorCode })),
+    }));
+  };
+
+  const signUpViaGoogle = (event) => {
+    event.preventDefault();
+    clearErrors();
+    dispatch(authApi.googleSignIn({
+      callback: () => dispatch(actions.session.resetPopup()),
       errorCallback: errorCode => setAuthError(convertToMsg({ errorCode })),
     }));
   };
@@ -432,10 +426,7 @@ export const useSignUpHooks = () => {
     },
 
     signUpViaEmail,
-    signUpViaGoogle: (event) => {
-      event.preventDefault();
-      dispatch(authApi.googleSignIn());
-    },
+    signUpViaGoogle,
     authError,
     clearAuthError: () => setAuthError(''),
   };
