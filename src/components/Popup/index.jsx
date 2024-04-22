@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import * as actions from '../../store/actionIndex';
+import { actions } from '../../data/redux';
 import { POPUP_KEYS } from './PopupKey';
 
 import * as Card from '../Card/popups/DeleteConfirmation';
@@ -21,7 +21,7 @@ import './index.scss';
 
 export const Popup = () => {
   const dispatch = useDispatch();
-  const popup = useSelector(state => state.sessionManager.popup);
+  const popup = useSelector(state => state.session.popup);
   const popupRef = useRef();
 
   if (!popup || !popup.type) {
@@ -52,7 +52,7 @@ export const Popup = () => {
         className='backdrop'
         onClick={(event) => {
           event.preventDefault();
-          dispatch(actions.resetPopup());
+          dispatch(actions.session.resetPopup());
         }}
       />
     </>

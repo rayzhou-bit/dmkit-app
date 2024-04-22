@@ -13,7 +13,8 @@
     "react-dom": "^16.14.0",
     "react-rnd": "^10.4.1",
     "redux-undo": "^1.0.1",
-    "sass": "^1.62.1"
+    "sass": "^1.62.1",
+    "uuid": "^9.0.1"
   },
   "scripts": {
     "start": "vite",

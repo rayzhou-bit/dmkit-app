@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import useOutsideClick from '../../utils/useOutsideClick';
 
-import * as actions from '../../store/actionIndex';
+import { actions } from '../../data/redux';
 
 import { POPUP_KEYS } from '../Popup/PopupKey';
 import { ACTION_TYPE } from '../../components-shared/Dropdowns/ActionDropdown';
@@ -14,7 +14,7 @@ export const POSITION_INCREMENT = TAB_WIDTH + 6;
 export const SCROLL_RATIO = 1.75;
 
 export const useTabBarHooks = () => {
-  const tabs = useSelector(state => state.campaignData.present.viewOrder || []);
+  const tabs = useSelector(state => state.project.present.viewOrder || []);
   const [ position, setPosition ] = useState(0);
   const [ dropIndicatorIndex, setDropIndicatorIndex ] = useState(null);
   const [ lockScroll, setLockScroll ] = useState(false);
@@ -110,9 +110,9 @@ export const useTabControlsHooks = ({
 }) => {
   const dispatch = useDispatch();
   const [ showOverviewDropup, setShowOverviewDropup ] = useState(false);
-  const activeProject = useSelector(state => state.sessionManager.activeCampaignId || '');
-  const tabs = useSelector(state => state.campaignData.present.viewOrder || []);
-  const tabData = useSelector(state => state.campaignData.present.views || {});
+  const activeProject = useSelector(state => state.session.activeCampaignId || '');
+  const tabs = useSelector(state => state.project.present.viewOrder || []);
+  const tabData = useSelector(state => state.project.present.views || {});
   const btnRef = useRef();
   const dropupRef = useRef();
 
@@ -132,7 +132,7 @@ export const useTabControlsHooks = ({
   return {
     newTab: () => {
       if (!!activeProject) {
-        dispatch(actions.createView());
+        dispatch(actions.project.createTab());
       }
     },
     btnRef,
@@ -153,7 +153,7 @@ export const useTabControlsHooks = ({
     tabData,
     switchTab: (id) => {
       scrollTo(id);
-      dispatch(actions.updActiveViewId(id));
+      dispatch(actions.project.setActiveTab({ id }));
       setShowOverviewDropup(false);
     },
   };
@@ -168,9 +168,9 @@ export const useTabHooks = ({
   const [ titleValue, setTitleValue ] = useState('');
   const [ isEditing, setIsEditing ] = useState(false);
   const [ showTabMenuDropup, setShowTabMenuDropup ] = useState(false);
-  const activeTab = useSelector(state => state.campaignData.present.activeViewId || '');
-  const tabOrder = useSelector(state => state.campaignData.present.viewOrder || []);
-  const tab = useSelector(state => state.campaignData.present.views[id] || {});
+  const activeTab = useSelector(state => state.project.present.activeViewId || '');
+  const tabOrder = useSelector(state => state.project.present.viewOrder || []);
+  const tab = useSelector(state => state.project.present.views[id] || {});
   let rndRef = useRef();
   const titleRef = useRef();
   const dropUpBtnRef = useRef();
@@ -206,7 +206,7 @@ export const useTabHooks = ({
   const endTitleEdit = () => {
     if (isEditing) {
       document.getSelection().removeAllRanges();
-      dispatch(actions.updViewTitle(id, titleValue));
+      dispatch(actions.project.updateTabTitle({ id, title: titleValue }));
       setIsEditing(false);
     }
   };
@@ -224,7 +224,7 @@ export const useTabHooks = ({
       // icon: RedTrashIcon,
       callback: () => {
         if (!isOnlyTab) {
-          dispatch(actions.setPopup({ type: POPUP_KEYS.confirmTabDelete, id }));
+          dispatch(actions.session.setPopup({ type: POPUP_KEYS.confirmTabDelete, id }));
         }
       },
     },
@@ -234,7 +234,7 @@ export const useTabHooks = ({
       type: tabIndex === 0 ? ACTION_TYPE.disabled : null,
       callback: () => {
         if (tabIndex > 0) {
-          dispatch(actions.shiftViewInViewOrder(id, -1));
+          dispatch(actions.project.shiftTabBy({ id, position: -1 }));
         }
       },
     },
@@ -243,7 +243,7 @@ export const useTabHooks = ({
       type: tabIndex === tabOrder.length-1 ? ACTION_TYPE.disabled : null,
       callback: () => {
         if (tabIndex < tabOrder.length-1) {
-          dispatch(actions.shiftViewInViewOrder(id, 1));
+          dispatch(actions.project.shiftTabBy({ id, position: 1 }));
         }
       }
     },
@@ -261,7 +261,7 @@ export const useTabHooks = ({
   return {
     setRndRef: node => rndRef = node,
     isActiveTab,
-    switchTab: () => dispatch(actions.updActiveViewId(id)),
+    switchTab: () => dispatch(actions.project.setActiveTab({ id })),
     isDragging,
     onDrag: (event, data) => {
       const initialX = tabIndex * POSITION_INCREMENT;
@@ -278,7 +278,7 @@ export const useTabHooks = ({
       const initialX = tabIndex * POSITION_INCREMENT;
       const deltaIndex = Math.round((data.x - initialX) / POSITION_INCREMENT);
       if (deltaIndex !== 0) {
-        dispatch(actions.shiftViewInViewOrder(id, deltaIndex));
+        dispatch(actions.project.shiftTabBy({ id, position: deltaIndex }));
       } else {
         rndRef.updatePosition({
           x: initialX,

@@ -1,18 +1,19 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
 
+import { actions } from '../../../data/redux';
+
 import './DeleteConfirmation.scss';
-import * as actions from '../../../store/actionIndex';
 
 export const DeleteConfirmation = ({
   id,
 }) => {
   const dispatch = useDispatch();
 
-  const cancelClick = () => dispatch(actions.resetPopup());
+  const cancelClick = () => dispatch(actions.session.resetPopup());
   const confirmClick = () => {
-    dispatch(actions.destroyCard(id));
-    dispatch(actions.resetPopup());
+    dispatch(actions.project.destroyCard({ id }));
+    dispatch(actions.session.resetPopup());
   };
 
   return (

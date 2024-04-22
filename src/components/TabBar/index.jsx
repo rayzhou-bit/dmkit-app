@@ -24,7 +24,7 @@ const TabBar = () => {
     isInactiveRight,
   } = useTabBarHooks();
 
-  const tabList = tabs.map(tab => <Tab id={tab} setDropIndicatorIndex={setDropIndicatorIndex} />);
+  const tabList = tabs.map(tab => <Tab key={tab} id={tab} setDropIndicatorIndex={setDropIndicatorIndex} />);
 
   return (
     <div className='tab-bar'>

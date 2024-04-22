@@ -43,7 +43,6 @@ export const ColorDropdown = ({
       <div className='container'>
         { colorList }
       </div>
-      {/* TODO add recent colors */}
     </div>
   );
 };
