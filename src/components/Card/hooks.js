@@ -9,6 +9,7 @@ import { ACTION_TYPE } from '../../components-shared/Dropdowns/ActionDropdown';
 
 import LibraryIcon from '../../assets/icons/library-icon.png';
 import RedTrashIcon from '../../assets/icons/red-trash.png';
+import { DEFAULT_CARD_POSITION } from '../../data/redux/project/constants';
 
 export const ANIMATION = {
   cardBlink: 'card-blink .25s step-end 4 alternate',
@@ -120,6 +121,7 @@ export const useLibraryCardHooks = ({
   const [isSelected, setIsSelected] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [cardAnimation, setCardAnimation] = useState({});
+  const [useAnimation, setUseAnimation] = useState(false);
 
   const libraryCardRef = useRef();
 
@@ -139,13 +141,19 @@ export const useLibraryCardHooks = ({
     isEditing,
     cardAnimation: { animation: cardAnimation[cardId] },
     setIsEditing,
-    onDragStart: (event) => event.dataTransfer.setData('text', cardId),
-    onDragEnd: () => {
+    onDragStart: (event) => {
+      event.dataTransfer.setData('text', cardId);
       if (cardTabs[activeTab]) {
+        setUseAnimation(true);
+      }
+    },
+    onDragEnd: () => {
+      if (useAnimation)  {
         setCardAnimation({
           ...cardAnimation,
           [cardId]: ANIMATION.libraryCardBlink,
         });
+        setUseAnimation(false);
       }
     },
     onAnimationEnd: () => setCardAnimation({
@@ -253,10 +261,6 @@ export const useOptionsDropdownHooks = ({
   const optionDropdownBtnRef = useRef();
 
   const options = [
-    // {
-    //   title: 'Insert image',
-    //   callback: () => {},
-    // },
     {
       title: 'Duplicate card',
       callback: () => dispatch(actions.project.copyCard({ id: cardId })),
@@ -276,9 +280,61 @@ export const useOptionsDropdownHooks = ({
     //   callback: () => {},
     // },
     {
-      title: 'Move to unsorted',
+      title: 'Remove from tab',
       callback: () => dispatch(actions.project.unlinkCardFromView({ id: cardId })),
       icon: LibraryIcon,
+    },
+    {},
+    {
+      title: 'Delete',
+      type: ACTION_TYPE.danger,
+      icon: RedTrashIcon,
+      callback: () => dispatch(actions.session.setPopup({
+        type: POPUP_KEYS.confirmCardDelete,
+        id: cardId,
+      })),
+    },
+  ];
+
+  return {
+    optionDropdownBtnRef,
+    isOptionDropdownOpen,
+    options,
+    openOptionsDropdown: () => setIsOptionDropdownOpen(!isOptionDropdownOpen),
+    closeOptionsDropdown: () => setIsOptionDropdownOpen(false),
+  };
+};
+
+export const useOptionsDropdownLibraryHooks = ({
+  beginTitleEdit,
+  cardId,
+}) => {
+  const dispatch = useDispatch();
+
+  const activeTab = useSelector(state => state.project.present.activeViewId);
+  const cardTabs = useSelector(state => state.project.present.cards[cardId].views);
+  const [ isOptionDropdownOpen, setIsOptionDropdownOpen ] = useState(false);
+  const optionDropdownBtnRef = useRef();
+
+  const options = [
+    {
+      title: 'Add to tab',
+      type: cardTabs[activeTab] ? ACTION_TYPE.disabled : null,
+      callback: () => dispatch(actions.project.linkCardToView({ id: cardId, position: DEFAULT_CARD_POSITION })),
+    },
+    {
+      title: 'Remove from tab',
+      type: cardTabs[activeTab] ? null : ACTION_TYPE.disabled,
+      callback: () => dispatch(actions.project.unlinkCardFromView({ id: cardId })),
+    },
+    // {
+    //   title: 'Duplicate card',
+    //   callback: () => dispatch(actions.project.copyCard({ id: cardId })),
+    // },
+    {},
+    {
+      title: 'Rename',
+      callback: () => beginTitleEdit(),
     },
     {},
     {

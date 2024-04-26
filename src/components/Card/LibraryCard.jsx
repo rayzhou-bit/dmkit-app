@@ -2,7 +2,7 @@ import React from 'react';
 
 import { useLibraryCardHooks } from './hooks';
 
-import Title from './Title';
+import LibraryTitle from './LibraryTitle';
 import LibraryContent from './LibraryContent';
 
 import './LibraryCard.scss';
@@ -35,7 +35,7 @@ const LibraryCard = ({ cardId }) => {
       style={cardAnimation}
     >
       {/* <div className="library-border"> */}
-        <Title
+        <LibraryTitle
           cardId={cardId}
           setEditingCard={setIsEditing}
         />
