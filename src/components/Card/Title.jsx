@@ -78,12 +78,11 @@ const Title = ({
         <img src={isLightColor ? OpenColorBlackIcon : OpenColorWhiteIcon} />
       </button>
       <ColorDropdown
-        cardId={cardId}
         btnRef={colorDropdownBtnRef}
-        cardColor={color}
         isOpen={isColorDropdownOpen}
         onClose={closeColorDropdown}
         onUpdateColor={updateColor}
+        selectedColor={color}
       />
       <button
         className='dropdown-btn'
