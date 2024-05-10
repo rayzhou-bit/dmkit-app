@@ -265,7 +265,6 @@ export const useOptionsDropdownHooks = ({
       title: 'Duplicate card',
       callback: () => dispatch(actions.project.copyCard({ id: cardId })),
     },
-    {},
     {
       title: 'Rename',
       callback: () => beginTitleEdit(),
@@ -280,7 +279,8 @@ export const useOptionsDropdownHooks = ({
     //   callback: () => {},
     // },
     {
-      title: 'Remove from tab',
+      title: 'Move to the library',
+      type: ACTION_TYPE.bold,
       callback: () => dispatch(actions.project.unlinkCardFromView({ id: cardId })),
       icon: LibraryIcon,
     },

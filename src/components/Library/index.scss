@@ -45,6 +45,7 @@ $library-width: 35vw;
   .tooltip {
     top: 30%;
     right: 115%;
+    white-space: nowrap;
   }
   .tooltip::after {
     top: 50%;
@@ -108,6 +109,12 @@ $library-width: 35vw;
       .color-dropdown {
         right: 0;
       }
+    }
+
+    .divider {
+      height: 25px;
+      margin: auto 10px;
+      border: 1px solid black;
     }
   }
 }

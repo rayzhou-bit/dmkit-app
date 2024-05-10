@@ -47,11 +47,11 @@ const Library = () => {
           {cardComponents}
         </div>
 
-        <LibrarySearch />
+        {/* <LibrarySearch /> */}
       </div>
       <button className='library-btn' onClick={toggleLibrary}>
         <img src={LibraryIcon} alt='Library' />
-        <span className='tooltip'>Library</span>
+        <span className='tooltip'>Library of cards</span>
       </button>
     </div>
   );

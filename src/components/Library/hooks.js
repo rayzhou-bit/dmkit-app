@@ -87,7 +87,7 @@ export const useLibraryHooks = () => {
   const [ isOpen, setIsOpen ] = useState(false);
   const [ searchString, setSearchString ] = useState('');
   const [ filterOption, setFilterOption ] = useState(FILTER_OPTIONS.all);
-  const [ filterColor, setFilterColor ] = useState(null);
+  const [ filterColor, setFilterColor ] = useState('');
   const [ sortOption, setSortOption ] = useState(SORT_OPTIONS.abc);
   const [ viewOption, setViewOption ] = useState(VIEW_OPTIONS.condensed);
 
