@@ -2,10 +2,11 @@ import React from 'react';
 
 import FilterBar from './FilterBar';
 import SortBar from './SortBar';
+import ViewBar from './ViewBar';
 import LibraryCard from '../Card/LibraryCard';
 import LibrarySearch from './LibrarySearch';
 
-import { useLibraryHooks } from './hooks';
+import { VIEW_OPTIONS, useLibraryHooks } from './hooks';
 
 import './index.scss';
 import LibraryIcon from '../../assets/icons/library.svg';
@@ -15,10 +16,12 @@ const Library = () => {
     isOpen,
     toggleLibrary,
     setSearchString,
-    filterOption,
-    setFilterOption,
-    filterColor,
-    setFilterColor,
+    isColorFiltered,
+    setIsColorFiltered,
+    filterColorOption,
+    setFilterColorOption,
+    filterTabOption,
+    setFilterTabOption,
     sortOption,
     setSortOption,
     viewOption,
@@ -26,7 +29,9 @@ const Library = () => {
     libraryCards,
   } = useLibraryHooks();
 
-  const cardComponents = libraryCards.map(id => <LibraryCard key={id} cardId={id} />);
+  const cardComponents = libraryCards.map(id =>
+    <LibraryCard key={id} cardId={id} isExpanded={viewOption === VIEW_OPTIONS.expanded} />
+  );
 
   return (
     <div className={`library ${isOpen ? 'open': 'close'}`}>
@@ -38,11 +43,12 @@ const Library = () => {
         */}
         {/* <SearchBar setSearchString={setSearchString} /> */}
         <FilterBar
-          filterOption={filterOption} setFilterOption={setFilterOption}
-          filterColor={filterColor} setFilterColor={setFilterColor}
+          isColorFiltered={isColorFiltered} setIsColorFiltered={setIsColorFiltered}
+          filterColorOption={filterColorOption} setFilterColorOption={setFilterColorOption}
+          filterTabOption={filterTabOption} setFilterTabOption={setFilterTabOption}
         />
         <SortBar sortOption={sortOption} setSortOption={setSortOption} />
-        {/* <ViewBar viewOption={viewOption} setViewOption={setViewOption} /> */}
+        <ViewBar viewOption={viewOption} setViewOption={setViewOption} />
         <div className='library-card-container'>
           {cardComponents}
         </div>

@@ -24,12 +24,6 @@ $library-width: 35vw;
   gap: 13px;
 }
 
-.libary-card-container {
-  display: flex;
-  flex-flow: column nowrap;
-  gap: 20px;
-}
-
 .library-btn {
   position: absolute;
   top: 3%;
@@ -119,8 +113,48 @@ $library-width: 35vw;
   }
 }
 
+.option-row {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: right;
+  gap: 2px;
+
+  .horizontal-bar {
+    margin: auto 0;
+    height: 0;
+    border: 1px solid #D7D6D6;
+    flex: 1;
+  }
+
+  .option {
+    background-color: white;
+    border-radius: 8px;
+    padding: 5px;
+    &:hover { background-color: #DBE2EB;}
+  }
+}
+
+$shift-right: 16px;
+$scrollbar-width: 8px;
+$scrollbar-border: calc(($shift-right - $scrollbar-width) / 2);
+$scrollbar-radius: 6px + $scrollbar-border;
+
 .library-card-container {
   display: flex;
   flex-flow: column nowrap;
   gap: 20px;
+  overflow-y: scroll;
+  padding: 5px;
+  margin-right: -$shift-right;
+
+  &::-webkit-scrollbar {
+    position: absolute;
+    left: 0;
+    width: $shift-right;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: #E5E5E5;
+    border: $scrollbar-border solid white;
+    border-radius: $scrollbar-radius;
+  }
 }

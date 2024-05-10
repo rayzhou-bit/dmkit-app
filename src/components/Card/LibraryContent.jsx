@@ -6,6 +6,7 @@ import './LibraryCard.scss';
 
 const LibraryContent = ({
   cardId,
+  isExpanded,
   isSelected,
   setEditingCard,
 }) => {
@@ -36,10 +37,10 @@ const LibraryContent = ({
   return (
     <div
       className='library-card-content-container'
-      style={isSelected ? expandedStyle : condensedStyle}
+      style={(isSelected || isExpanded) ? expandedStyle : condensedStyle}
     >
       <textarea
-        className={`library-card-textarea ${isSelected ? "selected" : ""}`}
+        className={`library-card-textarea ${(isSelected || isExpanded) ? "selected" : ""}`}
         onBlur={endContentEdit}
         onChange={(e) => changeContentValue(e.target.value)}
         onClick={beginContentEdit}

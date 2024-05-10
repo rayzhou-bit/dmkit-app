@@ -6,7 +6,7 @@ import useOutsideClick from '../../utils/useOutsideClick';
 /*
   Each item in the items array should be similar to the following object:
   {
-    title: 'Move to unsorted',
+    title: 'Move to library',
     type: ACTION_TYPE.danger,
     callback: () => dispatch(actions.project.unlinkCardFromView({ id: cardId })),
     icon: LibraryIcon,

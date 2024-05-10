@@ -3,10 +3,9 @@ import { useSelector } from 'react-redux';
 import { CARD_COLOR_KEYS } from '../../styles/colors';
 
 export const FILTER_OPTIONS = {
-  all: 'all',
-  color: 'color',
+  allTab: 'allTab',
+  noTab: 'noTab',
   thisTab: 'thisTab',
-  unsorted: 'unsorted',
 };
 
 export const SORT_OPTIONS = {
@@ -33,15 +32,20 @@ const hasSearch = (card, search) => {
   return false;
 };
 
-const hasFilter = (card, filter, color, tab, allTabs) => {
+const hasColor = (card, isFiltered, color) => {
+  if (isFiltered) {
+    return CARD_COLOR_KEYS[color] === card?.color;
+  }
+  return true;
+};
+
+const hasTab = (card, filter, tab, allTabs) => {
   switch(filter) {
     case FILTER_OPTIONS.thisTab:
       return !!card?.views?.[tab];
-    case FILTER_OPTIONS.all:
+    case FILTER_OPTIONS.allTab:
       return true;
-    case FILTER_OPTIONS.color:
-      return CARD_COLOR_KEYS[color] === card?.color;
-    case FILTER_OPTIONS.unsorted:
+    case FILTER_OPTIONS.noTab:
       const cardTabs = Object.keys(card?.views);
       const intersection = allTabs.filter(tab => cardTabs.includes(tab));
       return intersection.length === 0;
@@ -86,15 +90,19 @@ export const useLibraryHooks = () => {
 
   const [ isOpen, setIsOpen ] = useState(false);
   const [ searchString, setSearchString ] = useState('');
-  const [ filterOption, setFilterOption ] = useState(FILTER_OPTIONS.all);
-  const [ filterColor, setFilterColor ] = useState('');
+  const [ isColorFiltered, setIsColorFiltered ] = useState(false);
+  const [ filterColorOption, setFilterColorOption ] = useState(CARD_COLOR_KEYS.gray);
+  const [ filterTabOption, setFilterTabOption ] = useState(FILTER_OPTIONS.allTab);
   const [ sortOption, setSortOption ] = useState(SORT_OPTIONS.abc);
   const [ viewOption, setViewOption ] = useState(VIEW_OPTIONS.condensed);
 
   let libraryCards = [];
   for (let id in cardCollection) {
     const card = cardCollection[id];
-    if (hasSearch(card, searchString) && hasFilter(card, filterOption, filterColor, activeTab, tabOrder)) {
+    if (hasSearch(card, searchString)
+      && hasColor(card, isColorFiltered, filterColorOption)
+      && hasTab(card, filterTabOption, activeTab, tabOrder)
+    ) {
       libraryCards = [ ...libraryCards, id ];
     }
   }
@@ -104,10 +112,12 @@ export const useLibraryHooks = () => {
     isOpen,
     toggleLibrary: () => setIsOpen(!isOpen),
     setSearchString,
-    filterOption,
-    setFilterOption,
-    filterColor,
-    setFilterColor,
+    isColorFiltered,
+    setIsColorFiltered,
+    filterColorOption,
+    setFilterColorOption,
+    filterTabOption,
+    setFilterTabOption,
     sortOption,
     setSortOption,
     viewOption,
@@ -123,7 +133,10 @@ export const useColorDropdownHooks = () => {
   return {
     colorDropdownBtnRef,
     isColorDropdownOpen,
-    openColorDropdown: () => setIsColorDropdownOpen(!isColorDropdownOpen),
+    openColorDropdown: (event) => {
+      event.stopPropagation();
+      setIsColorDropdownOpen(!isColorDropdownOpen);
+    },
     closeColorDropdown: () => setIsColorDropdownOpen(false),
   };
 };
