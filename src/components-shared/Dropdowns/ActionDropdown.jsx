@@ -15,6 +15,7 @@ import useOutsideClick from '../../utils/useOutsideClick';
 
 export const ACTION_TYPE = {
   danger: 'danger',
+  bold: 'bold',
   disabled: 'disabled',
 };
 

@@ -80,6 +80,7 @@ const LibraryTitle = ({
       <ColorDropdown
         btnRef={colorDropdownBtnRef}
         isOpen={isColorDropdownOpen}
+        message="Select card-top color"
         onClose={closeColorDropdown}
         onUpdateColor={updateColor}
         selectedColor={color}

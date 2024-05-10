@@ -8,6 +8,7 @@ import useOutsideClick from '../../utils/useOutsideClick';
 export const ColorDropdown = ({
   btnRef,
   isOpen,
+  message,
   onClose,
   onUpdateColor,
   selectedColor,
@@ -39,7 +40,7 @@ export const ColorDropdown = ({
       className='color-dropdown'
       ref={dropdownRef}
     >
-      <div className='select-text'>Select card top color</div>
+      <div className='select-text'>{message}</div>
       <div className='container'>
         { colorList }
       </div>

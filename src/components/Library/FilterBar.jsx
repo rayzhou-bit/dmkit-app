@@ -24,18 +24,6 @@ const FilterBar = ({
         <span>Filter</span>
       </div>
       <div className='selections'>
-        <button
-          className={`option ${filterOption === FILTER_OPTIONS.thisTab ? 'selected' : null}`}
-          onClick={() => setFilterOption(FILTER_OPTIONS.thisTab)}
-        >
-          <span>Cards in this Tab</span>
-        </button>
-        <button
-          className={`option ${filterOption === FILTER_OPTIONS.all ? 'selected' : null}`}
-          onClick={() => setFilterOption(FILTER_OPTIONS.all)}
-        >
-          <span>All Cards</span>
-        </button>
         <div className='color-selection'>
           <button
             className={`option ${filterOption === FILTER_OPTIONS.color ? 'selected' : null}`}
@@ -46,17 +34,31 @@ const FilterBar = ({
           </button>
           <ColorDropdown
             btnRef={colorDropdownBtnRef}
-            selectedColor={filterColor}
             isOpen={isColorDropdownOpen}
+            message="Filter by card color"
             onClose={closeColorDropdown}
             onUpdateColor={setFilterColor}
+            selectedColor={filterColor}
           />
         </div>
+        <div className='divider' />
+        <button
+          className={`option ${filterOption === FILTER_OPTIONS.thisTab ? 'selected' : null}`}
+          onClick={() => setFilterOption(FILTER_OPTIONS.thisTab)}
+        >
+          <span>In this tab</span>
+        </button>
+        <button
+          className={`option ${filterOption === FILTER_OPTIONS.all ? 'selected' : null}`}
+          onClick={() => setFilterOption(FILTER_OPTIONS.all)}
+        >
+          <span>In all tabs</span>
+        </button>
         <button
           className={`option ${filterOption === FILTER_OPTIONS.unsorted ? 'selected' : null}`}
           onClick={() => setFilterOption(FILTER_OPTIONS.unsorted)}
         >
-          <span>Unsorted</span>
+          <span>In no tabs</span>
         </button>
       </div>
     </div>
