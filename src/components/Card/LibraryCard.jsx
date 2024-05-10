@@ -7,7 +7,10 @@ import LibraryContent from './LibraryContent';
 
 import './LibraryCard.scss';
 
-const LibraryCard = ({ cardId }) => {
+const LibraryCard = ({
+  cardId,
+  isExpanded,
+}) => {
   const {
     libraryCardRef,
     isActive,
@@ -20,7 +23,7 @@ const LibraryCard = ({ cardId }) => {
     onAnimationEnd,
     onClick,
   } = useLibraryCardHooks({
-    cardId
+    cardId,
   });
 
   return (
@@ -42,6 +45,7 @@ const LibraryCard = ({ cardId }) => {
         <LibraryContent
           cardId={cardId}
           setEditingCard={setIsEditing}
+          isExpanded={isExpanded}
           isSelected={isSelected}
         />
       {/* </div> */}
