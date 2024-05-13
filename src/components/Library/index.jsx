@@ -9,7 +9,8 @@ import LibrarySearch from './LibrarySearch';
 import { VIEW_OPTIONS, useLibraryHooks } from './hooks';
 
 import './index.scss';
-import LibraryIcon from '../../assets/icons/library.svg';
+import ClosedLibraryIcon from '../../assets/icons/library-closed.svg';
+import OpenLibraryIcon from '../../assets/icons/library-open.svg';
 
 const Library = () => {
   const {
@@ -56,7 +57,7 @@ const Library = () => {
         {/* <LibrarySearch /> */}
       </div>
       <button className='library-btn' onClick={toggleLibrary}>
-        <img src={LibraryIcon} alt='Library' />
+        <img src={isOpen ? OpenLibraryIcon : ClosedLibraryIcon} alt='Library' />
         <span className='tooltip'>Library of cards</span>
       </button>
     </div>

@@ -37,8 +37,8 @@ $library-width: 35vw;
   box-shadow: 2px 2px 8px -3px #D7D6D6;
 
   .tooltip {
-    top: 30%;
-    right: 115%;
+    top: 27%;
+    right: 120%;
     white-space: nowrap;
   }
   .tooltip::after {
@@ -46,6 +46,8 @@ $library-width: 35vw;
     left: 100%;
     border-left-color: #363B4E;
   }
+
+  &:hover { box-shadow: 0 0 0 3px #DBE2EB; }
 }
 
 .selection-row {
