@@ -87,7 +87,6 @@ export const useLibraryHooks = () => {
   const activeTab = useSelector(state => state.project.present.activeViewId);
   const tabOrder = useSelector(state => state.project.present.viewOrder);
   const cardCollection = useSelector(state => state.project.present.cards);
-  const totalCardCount = cardCollection ? Object.keys(cardCollection).length : 0;
 
   const [ isOpen, setIsOpen ] = useState(false);
   const [ searchString, setSearchString ] = useState('');
@@ -112,7 +111,7 @@ export const useLibraryHooks = () => {
   return {
     isOpen,
     toggleLibrary: () => setIsOpen(!isOpen),
-    totalCardCount,
+    countDisplay: (libraryCards?.length ?? 0) + '/' + (cardCollection ? Object.keys(cardCollection).length : 0),
     searchString,
     setSearchString,
     isColorFiltered,

@@ -50,6 +50,87 @@ $library-width: 35vw;
   &:hover { box-shadow: 0 0 0 3px #DBE2EB; }
 }
 
+$search-height: 32px;
+$search-img-height: 19px;
+$search-img-offset: calc(($search-height - $search-img-height) / 2);
+$search-clear-height: 10px;
+$search-clear-offset: calc(($search-height - $search-clear-height) / 2);
+$search-count-height: 16px;
+$search-count-top: calc(($search-height - $search-count-height) / 2);
+$search-count-offset: $search-clear-height + $search-clear-offset + $search-clear-offset;
+$search-text-left-offset: $search-img-height + $search-img-offset*2;
+$search-text-right-offset: $search-count-offset + 80px;
+.search-row {
+  height: $search-height;
+  position: relative;
+
+  .search-img {
+    height: $search-img-height;
+    position: absolute;
+    left: $search-img-offset;
+    top: $search-img-offset;
+    content: url('../../assets/icons/magnifying-glass.svg')
+  }
+
+  .search-input {
+    width: 100%;
+    height: $search-height;
+    border: 1px solid #F4F4F4;
+    border-radius: 8px;
+    padding: 0 $search-text-right-offset 0 $search-text-left-offset;
+    background: #F4F4F4;
+
+    font-family: Roboto;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 16.41px;
+    letter-spacing: 0.05em;
+    text-align: left;
+
+    &::placeholder {
+      color: #353535;
+    }
+
+    &:focus { 
+      border: 1px solid #7E849A;
+      box-shadow: 0 0 0 4px #DBE2EB;
+    }
+    &:focus::placeholder { color: gray; }
+  }
+  &:hover > .search-input { box-shadow: 0 0 0 4px #DBE2EB; }
+
+  .search-count {
+    height: $search-count-height;
+    position: absolute;
+    top: $search-count-top;
+    right: $search-count-offset;
+    color: #7E849A9C;
+  }
+
+  .search-clear {
+    height: $search-clear-height;
+    position: absolute;
+    top: $search-clear-offset;
+    right: $search-clear-offset;
+    content: url('../../assets/icons/search-clear-black.svg');
+    &:hover { content: url('../../assets/icons/search-clear-faded.svg'); }
+  }
+
+  /* Hide the clear button */
+  input::-ms-clear { display: none; }
+  input::-webkit-search-cancel-button { display: none; }
+  input[type="search"]::-webkit-search-decoration,
+  input[type="search"]::-webkit-search-cancel-button,
+  input[type="search"]::-webkit-search-results-button,
+  input[type="search"]::-webkit-search-results-decoration { display: none; }
+  input[type="search"]::-webkit-search-cancel-button {
+    -webkit-appearance: none;
+    appearance: none;
+    display: none;
+  }
+  input[type="search"]::-ms-clear { display: none; }
+}
+
 .selection-row {
   font-family: Roboto;
 
@@ -140,7 +221,6 @@ $shift-right: 16px;
 $scrollbar-width: 8px;
 $scrollbar-border: calc(($shift-right - $scrollbar-width) / 2);
 $scrollbar-radius: 6px + $scrollbar-border;
-
 .library-card-container {
   display: flex;
   flex-flow: column nowrap;
