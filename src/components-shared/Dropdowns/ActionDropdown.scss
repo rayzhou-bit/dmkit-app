@@ -27,6 +27,7 @@ $y: 38px;
 }
 
 .item-btn {
+  height: 30px;
   width: 100%;
   margin: 0;
   padding: 0;
@@ -65,11 +66,16 @@ $y: 38px;
   border: 1px solid #f4f4f4;
 }
 
+
+// ACTION_TYPES
 .danger {
   font-weight: 600 !important;
   color: #ed5e31 !important;
 }
-
+.bold {
+  font-weight: 700 !important;
+  color: #353535 !important;
+}
 .disabled {
   color: #C4C4C4 !important;
 }

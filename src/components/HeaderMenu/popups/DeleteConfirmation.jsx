@@ -1,9 +1,10 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
 
+import { actions } from '../../../data/redux';
+import * as api from '../../../data/api/database';
+
 import './DeleteConfirmation.scss';
-import * as actions from '../../../store/actionIndex';
-import * as fireactions from '../../../store/firestoreIndex';
 
 export const DeleteConfirmation = ({
   id,
@@ -12,18 +13,16 @@ export const DeleteConfirmation = ({
 }) => {
   const dispatch = useDispatch();
 
-  const cancelClick = () => dispatch(actions.resetPopup());
+  const cancelClick = () => dispatch(actions.session.resetPopup());
   const confirmClick = () => {
-    dispatch(fireactions.destroyProject({
-      projectId: id,
-      callback: isActiveProject
-        ? () => {
-          dispatch(fireactions.switchProject({ projectId: null }));
-          dispatch(actions.unloadCampaignData());
-        }
-        : null,
+    dispatch(api.destroyProject(id, () => {
+      dispatch(actions.session.removeProject({ id }));
+      if (isActiveProject) {
+        dispatch(actions.session.setActiveProject({ id: null }));
+        dispatch(actions.project.unloadProject());
+      }
     }));
-    dispatch(actions.resetPopup());
+    dispatch(actions.session.resetPopup());
   };
 
   return (

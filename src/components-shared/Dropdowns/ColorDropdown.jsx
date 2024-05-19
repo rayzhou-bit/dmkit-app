@@ -7,10 +7,11 @@ import useOutsideClick from '../../utils/useOutsideClick';
 
 export const ColorDropdown = ({
   btnRef,
-  cardColor,
   isOpen,
+  message,
   onClose,
   onUpdateColor,
+  selectedColor,
 }) => {
   const dropdownRef = useRef();
   
@@ -21,7 +22,7 @@ export const ColorDropdown = ({
   let colorList = [];
   Object.values(CARD_COLOR_KEYS).forEach(color => {
     let className = 'item ' + color;
-    if (cardColor === color) {
+    if (selectedColor === color) {
       className += ' selected';
     }
     colorList = [
@@ -39,11 +40,10 @@ export const ColorDropdown = ({
       className='color-dropdown'
       ref={dropdownRef}
     >
-      <div className='select-text'>Select card top color</div>
+      <div className='select-text'>{message}</div>
       <div className='container'>
         { colorList }
       </div>
-      {/* TODO add recent colors */}
     </div>
   );
 };

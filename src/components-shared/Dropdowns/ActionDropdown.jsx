@@ -6,15 +6,16 @@ import useOutsideClick from '../../utils/useOutsideClick';
 /*
   Each item in the items array should be similar to the following object:
   {
-    title: 'Move to unsorted',
+    title: 'Move to library',
     type: ACTION_TYPE.danger,
-    callback: () => dispatch(actions.unlinkCardFromView(cardId)),
+    callback: () => dispatch(actions.project.unlinkCardFromView({ id: cardId })),
     icon: LibraryIcon,
   },
 */
 
 export const ACTION_TYPE = {
   danger: 'danger',
+  bold: 'bold',
   disabled: 'disabled',
 };
 

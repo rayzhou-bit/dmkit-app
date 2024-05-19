@@ -1,7 +1,7 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import * as actions from '../../store/actionIndex';
+import { actions } from '../../data/redux';
 import { POPUP_KEYS } from '../Popup/PopupKey';
 
 import Title from './Title';
@@ -25,8 +25,8 @@ const HeaderMenu = ({
   toggleToolMenu,
 }) => {
   const dispatch = useDispatch();
-  const userId = useSelector(state => state.userData.userId);
-  const activeProject = useSelector(state => state.sessionManager.activeCampaignId || '');
+  const userId = useSelector(state => state.user.userId);
+  const activeProject = useSelector(state => state.session.activeCampaignId || '');
 
   return (
     <>
@@ -42,7 +42,7 @@ const HeaderMenu = ({
               <SignIn />
               <button
                 className='sign-up-btn'
-                onClick={() => dispatch(actions.setPopup({
+                onClick={() => dispatch(actions.session.setPopup({
                   type: POPUP_KEYS.signUp,
                 }))}
               >

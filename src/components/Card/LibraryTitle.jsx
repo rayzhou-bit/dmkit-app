@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { useTitleHooks, useColorDropdownHooks, useOptionsDropdownHooks } from './hooks';
+import { useTitleHooks, useColorDropdownHooks, useOptionsDropdownLibraryHooks } from './hooks';
 
 import ColorDropdown from '../../components-shared/Dropdowns/ColorDropdown';
 import ActionDropdown from '../../components-shared/Dropdowns/ActionDropdown';
@@ -12,7 +12,7 @@ import OpenColorWhiteIcon from '../../assets/icons/rounded-square-white.svg';
 import DropdownArrowBlackIcon from '../../assets/icons/dropdown-arrow.svg';
 import DropdownArrowWhiteIcon from '../../assets/icons/dropdown-arrow-white.svg';
 
-const Title = ({
+const LibraryTitle = ({
   cardId,
   setEditingCard,
 }) => {
@@ -47,7 +47,7 @@ const Title = ({
     optionDropdownBtnRef,
     closeOptionsDropdown,
     openOptionsDropdown,
-  } = useOptionsDropdownHooks({
+  } = useOptionsDropdownLibraryHooks({
     beginTitleEdit,
     cardId,
   });
@@ -102,4 +102,4 @@ const Title = ({
   );
 };
 
-export default Title;
+export default LibraryTitle;

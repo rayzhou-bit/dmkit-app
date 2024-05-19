@@ -2,13 +2,14 @@ import { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import useOutsideClick from '../../utils/useOutsideClick';
 
-import * as actions from '../../store/actionIndex';
+import { actions } from '../../data/redux';
 import { CARD_COLOR_KEYS, LIGHT_COLORS } from '../../styles/colors';
 import { POPUP_KEYS } from '../Popup/PopupKey';
 import { ACTION_TYPE } from '../../components-shared/Dropdowns/ActionDropdown';
 
 import LibraryIcon from '../../assets/icons/library-icon.png';
 import RedTrashIcon from '../../assets/icons/red-trash.png';
+import { DEFAULT_CARD_POSITION } from '../../data/redux/project/constants';
 
 export const ANIMATION = {
   cardBlink: 'card-blink .25s step-end 4 alternate',
@@ -23,11 +24,14 @@ export const useCardHooks = ({
 }) => {
   const dispatch = useDispatch();
 
-  const activeCard = useSelector(state => state.sessionManager.activeCardId);
-  const activeTab = useSelector(state => state.campaignData.present.activeViewId);
-  const activeTabScale = useSelector(state => activeTab ? state.campaignData.present.views[activeTab]?.scale : null);
-  const cardPosition = useSelector(state => state.campaignData.present.cards[cardId].views[activeTab]?.pos);
-  const cardSize = useSelector(state => state.campaignData.present.cards[cardId].views[activeTab]?.size);
+  const activeCard = useSelector(state => state.session.activeCardId);
+  const activeTab = useSelector(state => state.project.present.activeViewId);
+  const activeTabScale = useSelector(state => activeTab ? state.project.present.views[activeTab]?.scale : null);
+  const {
+    pos: cardPosition,
+    size: cardSize,
+  } = useSelector( state => state.project.present.cards[cardId].views[activeTab]);
+
   
   const [isDragging, setIsDragging] = useState(false);
   const [isSelected, setIsSelected] = useState(false);
@@ -39,7 +43,7 @@ export const useCardHooks = ({
 
   useOutsideClick([cardRef, toolMenuRef], isSelected, 
     () => {
-      if (isActive) dispatch(actions.updActiveCardId(null));
+      if (isActive) dispatch(actions.session.setActiveCard({ id: null }));
       setIsSelected(false);
     }
   );
@@ -48,7 +52,7 @@ export const useCardHooks = ({
   if (isDragging) {
     zIndex = 20000 * (cardPosition.y + cardPosition.x + 10);
   } else if (isActive) {
-    zIndex = 10000 * (cardPosition.y + cardPosition.x + 10);
+    zIndex = 20000 * (cardPosition.y + cardPosition.x + 10);
   }
 
   return {
@@ -66,23 +70,35 @@ export const useCardHooks = ({
       setIsDragging(false);
       if (cardPosition) {
         if (cardPosition.x !== data.x || cardPosition.y !== data.y) {
-          dispatch(actions.updCardPos(cardId, {x: data.x, y: data.y}));
+          dispatch(actions.project.updateCardPosition({
+            id: cardId,
+            position: { x: data.x, y: data.y },
+          }));
         }
       } else {
-        dispatch(actions.updCardPos(cardId, { x: data.x, y: data.y }));
+        dispatch(actions.project.updateCardPosition({
+          id: cardId,
+          position: { x: data.x, y: data.y },
+        }));
       }
     },
     onResizeStop: (event, direction, ref, delta, position) => {
       if (delta.width !== 0 || delta.height !== 0) {
-        dispatch(actions.updCardSize(cardId, {width: ref.style.width, height: ref.style.height}));
+        dispatch(actions.project.updateCardSize({
+          id: cardId,
+          size: { width: ref.style.width, height: ref.style.height },
+        }));
         if (["top", "left", "topRight", "bottomLeft", "topLeft"].indexOf(direction) !== -1) {
-          dispatch(actions.updCardPos(cardId, { x: position.x, y: position.y }));
+          dispatch(actions.project.updateCardPosition({
+            id: cardId,
+            position: { x: position.x, y: position.y },
+          }));
         }
       }
     },
     onClick: () => {
       if (!isSelected) {
-        if (!isActive) dispatch(actions.updActiveCardId(cardId));
+        if (!isActive) dispatch(actions.session.setActiveCard({ id: cardId }));
         setIsSelected(true);
       }
     },
@@ -98,13 +114,14 @@ export const useLibraryCardHooks = ({
 }) => {
   const dispatch = useDispatch();
 
-  const activeCard = useSelector(state => state.sessionManager.activeCardId);
-  const activeTab = useSelector(state => state.campaignData.present.activeViewId);
-  const cardTabs = useSelector(state => state.campaignData.present.cards[cardId].views);
+  const activeCard = useSelector(state => state.session.activeCardId);
+  const activeTab = useSelector(state => state.project.present.activeViewId);
+  const cardTabs = useSelector(state => state.project.present.cards[cardId].views);
 
   const [isSelected, setIsSelected] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [cardAnimation, setCardAnimation] = useState({});
+  const [useAnimation, setUseAnimation] = useState(false);
 
   const libraryCardRef = useRef();
 
@@ -112,7 +129,7 @@ export const useLibraryCardHooks = ({
 
   useOutsideClick([libraryCardRef], isSelected, 
     () => {
-      if (isActive) dispatch(actions.updActiveCardId(null));
+      if (isActive) dispatch(actions.session.setActiveCard({ id: null }));
       setIsSelected(false);
     }
   );
@@ -124,13 +141,19 @@ export const useLibraryCardHooks = ({
     isEditing,
     cardAnimation: { animation: cardAnimation[cardId] },
     setIsEditing,
-    onDragStart: (event) => event.dataTransfer.setData('text', cardId),
-    onDragEnd: () => {
+    onDragStart: (event) => {
+      event.dataTransfer.setData('text', cardId);
       if (cardTabs[activeTab]) {
+        setUseAnimation(true);
+      }
+    },
+    onDragEnd: () => {
+      if (useAnimation)  {
         setCardAnimation({
           ...cardAnimation,
           [cardId]: ANIMATION.libraryCardBlink,
         });
+        setUseAnimation(false);
       }
     },
     onAnimationEnd: () => setCardAnimation({
@@ -139,7 +162,7 @@ export const useLibraryCardHooks = ({
     }),
     onClick: () => {
       if (!isSelected) {
-        if (cardId !== activeCard) dispatch(actions.updActiveCardId(cardId));
+        if (cardId !== activeCard) dispatch(actions.session.setActiveCard({ id: cardId }));
         setIsSelected(true);
       }
     },
@@ -152,7 +175,7 @@ export const useTitleHooks = ({
 }) => {
   const dispatch = useDispatch();
 
-  const title = useSelector(state => state.campaignData.present.cards[cardId].title);
+  const title = useSelector(state => state.project.present.cards[cardId].title);
 
   const [ titleValue, setTitleValue ] = useState('');
   const [ isEditing, setIsEditing ] = useState(false);
@@ -169,8 +192,8 @@ export const useTitleHooks = ({
       setEditingCard(true);
       titleRef.current.focus();
       titleRef.current.setSelectionRange(
-        titleRef.current.title.length,
-        titleRef.current.title.length,
+        titleRef.current.value.length,
+        titleRef.current.value.length,
       );
     }
   };
@@ -178,7 +201,10 @@ export const useTitleHooks = ({
   const endTitleEdit = () => {
     if (isEditing) {
       document.getSelection().removeAllRanges();
-      dispatch(actions.updCardTitle(cardId, titleValue));
+      dispatch(actions.project.updateCardTitle({
+        id: cardId,
+        title: titleValue,
+      }));
       setIsEditing(false);
       setEditingCard(false);
     }
@@ -206,7 +232,7 @@ export const useColorDropdownHooks = ({
   cardId,
 }) => {
   const dispatch = useDispatch();
-  let color = useSelector(state => state.campaignData.present.cards[cardId].color);
+  let color = useSelector(state => state.project.present.cards[cardId].color);
   color = CARD_COLOR_KEYS[color] ?? CARD_COLOR_KEYS.gray;
   const [ isColorDropdownOpen, setIsColorDropdownOpen ] = useState(false);
   const colorDropdownBtnRef = useRef();
@@ -218,7 +244,10 @@ export const useColorDropdownHooks = ({
     isLightColor: LIGHT_COLORS.includes(color),
     openColorDropdown: () => setIsColorDropdownOpen(!isColorDropdownOpen),
     closeColorDropdown: () => setIsColorDropdownOpen(false),
-    updateColor: (newColor) => dispatch(actions.updCardColor(cardId, newColor)),
+    updateColor: (newColor) => dispatch(actions.project.updateCardColor({
+      id: cardId,
+      color: newColor,
+    })),
   };
 };
 
@@ -232,15 +261,10 @@ export const useOptionsDropdownHooks = ({
   const optionDropdownBtnRef = useRef();
 
   const options = [
-    // {
-    //   title: 'Insert image',
-    //   callback: () => {},
-    // },
     {
       title: 'Duplicate card',
-      callback: () => dispatch(actions.copyCard(cardId)),
+      callback: () => dispatch(actions.project.copyCard({ id: cardId })),
     },
-    {},
     {
       title: 'Rename',
       callback: () => beginTitleEdit(),
@@ -255,8 +279,9 @@ export const useOptionsDropdownHooks = ({
     //   callback: () => {},
     // },
     {
-      title: 'Move to unsorted',
-      callback: () => dispatch(actions.unlinkCardFromView(cardId)),
+      title: 'Move to the library',
+      type: ACTION_TYPE.bold,
+      callback: () => dispatch(actions.project.unlinkCardFromView({ id: cardId })),
       icon: LibraryIcon,
     },
     {},
@@ -264,7 +289,59 @@ export const useOptionsDropdownHooks = ({
       title: 'Delete',
       type: ACTION_TYPE.danger,
       icon: RedTrashIcon,
-      callback: () => dispatch(actions.setPopup({
+      callback: () => dispatch(actions.session.setPopup({
+        type: POPUP_KEYS.confirmCardDelete,
+        id: cardId,
+      })),
+    },
+  ];
+
+  return {
+    optionDropdownBtnRef,
+    isOptionDropdownOpen,
+    options,
+    openOptionsDropdown: () => setIsOptionDropdownOpen(!isOptionDropdownOpen),
+    closeOptionsDropdown: () => setIsOptionDropdownOpen(false),
+  };
+};
+
+export const useOptionsDropdownLibraryHooks = ({
+  beginTitleEdit,
+  cardId,
+}) => {
+  const dispatch = useDispatch();
+
+  const activeTab = useSelector(state => state.project.present.activeViewId);
+  const cardTabs = useSelector(state => state.project.present.cards[cardId].views);
+  const [ isOptionDropdownOpen, setIsOptionDropdownOpen ] = useState(false);
+  const optionDropdownBtnRef = useRef();
+
+  const options = [
+    {
+      title: 'Add to tab',
+      type: cardTabs[activeTab] ? ACTION_TYPE.disabled : null,
+      callback: () => dispatch(actions.project.linkCardToView({ id: cardId, position: DEFAULT_CARD_POSITION })),
+    },
+    {
+      title: 'Remove from tab',
+      type: cardTabs[activeTab] ? null : ACTION_TYPE.disabled,
+      callback: () => dispatch(actions.project.unlinkCardFromView({ id: cardId })),
+    },
+    // {
+    //   title: 'Duplicate card',
+    //   callback: () => dispatch(actions.project.copyCard({ id: cardId })),
+    // },
+    {},
+    {
+      title: 'Rename',
+      callback: () => beginTitleEdit(),
+    },
+    {},
+    {
+      title: 'Delete',
+      type: ACTION_TYPE.danger,
+      icon: RedTrashIcon,
+      callback: () => dispatch(actions.session.setPopup({
         type: POPUP_KEYS.confirmCardDelete,
         id: cardId,
       })),
@@ -285,7 +362,7 @@ export const useContentHooks = ({
   setEditingCard,
 }) => {
   const dispatch = useDispatch();
-  const text = useSelector(state => state.campaignData.present.cards[cardId].content.text);
+  const text = useSelector(state => state.project.present.cards[cardId].content.text);
 
   const [ contentValue, setContentValue ] = useState('');
   const [ isEditing, setIsEditing ] = useState(false);
@@ -302,8 +379,8 @@ export const useContentHooks = ({
       setEditingCard(true);
       contentRef.current.focus();
       contentRef.current.setSelectionRange(
-        contentRef.current.text.length,
-        contentRef.current.text.length,
+        contentRef.current.value.length,
+        contentRef.current.value.length,
       );
     }
   };
@@ -311,7 +388,10 @@ export const useContentHooks = ({
   const endContentEdit = () => {
     if (isEditing) {
       document.getSelection().removeAllRanges();
-      dispatch(actions.updCardText(cardId, contentValue));
+      dispatch(actions.project.updateCardText({
+        id: cardId,
+        text: contentValue,
+      }));
       setIsEditing(false);
       setEditingCard(false);
     }

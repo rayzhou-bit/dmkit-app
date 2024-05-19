@@ -12,9 +12,9 @@ const LibrarySearch = props => {
   const [searchFilter, setSearchFilter] = useState('all'); // all, current, unused
 
   // STORE SELECTORS
-  const activeViewId = useSelector(state => state.campaignData.present.activeViewId);
-  const viewOrder = useSelector(state => state.campaignData.present.viewOrder);
-  const cardCollection = useSelector(state => state.campaignData.present.cards);
+  const activeViewId = useSelector(state => state.project.present.activeViewId);
+  const viewOrder = useSelector(state => state.project.present.viewOrder || []);
+  const cardCollection = useSelector(state => state.project.present.cards);
 
   // FUNCTIONS
   const addToCardList = (cardList, cardId) => {

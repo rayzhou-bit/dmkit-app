@@ -2,12 +2,15 @@ import React from 'react';
 
 import { useLibraryCardHooks } from './hooks';
 
-import Title from './Title';
+import LibraryTitle from './LibraryTitle';
 import LibraryContent from './LibraryContent';
 
 import './LibraryCard.scss';
 
-const LibraryCard = ({ cardId }) => {
+const LibraryCard = ({
+  cardId,
+  isExpanded,
+}) => {
   const {
     libraryCardRef,
     isActive,
@@ -20,7 +23,7 @@ const LibraryCard = ({ cardId }) => {
     onAnimationEnd,
     onClick,
   } = useLibraryCardHooks({
-    cardId
+    cardId,
   });
 
   return (
@@ -35,13 +38,14 @@ const LibraryCard = ({ cardId }) => {
       style={cardAnimation}
     >
       {/* <div className="library-border"> */}
-        <Title
+        <LibraryTitle
           cardId={cardId}
           setEditingCard={setIsEditing}
         />
         <LibraryContent
           cardId={cardId}
           setEditingCard={setIsEditing}
+          isExpanded={isExpanded}
           isSelected={isSelected}
         />
       {/* </div> */}
