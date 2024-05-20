@@ -14,6 +14,7 @@ import OpenLibraryIcon from '../../assets/icons/library-open.svg';
 
 const Library = () => {
   const {
+    showButton,
     isOpen,
     toggleLibrary,
     countDisplay,
@@ -64,7 +65,11 @@ const Library = () => {
           {cardComponents}
         </div>
       </div>
-      <button className='library-btn' onClick={toggleLibrary}>
+      <button
+        className='library-btn'
+        onClick={toggleLibrary}
+        style={{ display: showButton ? 'block' : 'none' }}
+      >
         <img src={isOpen ? OpenLibraryIcon : ClosedLibraryIcon} alt='Library' />
         <span className='tooltip'>Library of cards</span>
       </button>

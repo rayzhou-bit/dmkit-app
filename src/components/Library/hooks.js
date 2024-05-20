@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { CARD_COLOR_KEYS } from '../../styles/colors';
 
@@ -87,7 +87,9 @@ export const useLibraryHooks = () => {
   const activeTab = useSelector(state => state.project.present.activeViewId);
   const tabOrder = useSelector(state => state.project.present.viewOrder);
   const cardCollection = useSelector(state => state.project.present.cards);
+  const activeProject = useSelector(state => state.session.activeCampaignId || '');
 
+  const [ showButton, setShowButton ] = useState(!!activeProject);
   const [ isOpen, setIsOpen ] = useState(false);
   const [ searchString, setSearchString ] = useState('');
   const [ isColorFiltered, setIsColorFiltered ] = useState(false);
@@ -95,6 +97,12 @@ export const useLibraryHooks = () => {
   const [ filterTabOption, setFilterTabOption ] = useState(FILTER_OPTIONS.allTab);
   const [ sortOption, setSortOption ] = useState(SORT_OPTIONS.abc);
   const [ viewOption, setViewOption ] = useState(VIEW_OPTIONS.condensed);
+
+  // Reset when project changes
+  useEffect(() => {
+    setShowButton(!!activeProject);
+    setIsOpen(false);
+  }, [activeProject]);
 
   let libraryCards = [];
   for (let id in cardCollection) {
@@ -109,6 +117,7 @@ export const useLibraryHooks = () => {
   libraryCards = sortCards(libraryCards, sortOption, cardCollection);
 
   return {
+    showButton,
     isOpen,
     toggleLibrary: () => setIsOpen(!isOpen),
     countDisplay: (libraryCards?.length ?? 0) + '/' + (cardCollection ? Object.keys(cardCollection).length : 0),

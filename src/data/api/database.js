@@ -107,7 +107,7 @@ export const firstTimeSetup = () => dispatch => {
 };
 
 const saveActiveProjectId = (id, callback) => dispatch => {
-  updateDoc(userDoc(), { activeCampaignId: id })
+  setDoc(userDoc(), { activeCampaignId: id })
     .then(response => {
       console.log('[saveActiveProjectId] success');
       if (callback) {
