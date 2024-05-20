@@ -111,6 +111,8 @@ export const useLibraryHooks = () => {
   return {
     isOpen,
     toggleLibrary: () => setIsOpen(!isOpen),
+    countDisplay: (libraryCards?.length ?? 0) + '/' + (cardCollection ? Object.keys(cardCollection).length : 0),
+    searchString,
     setSearchString,
     isColorFiltered,
     setIsColorFiltered,

@@ -1,10 +1,10 @@
 import React from 'react';
 
+import SearchBar from './SearchBar';
 import FilterBar from './FilterBar';
 import SortBar from './SortBar';
 import ViewBar from './ViewBar';
 import LibraryCard from '../Card/LibraryCard';
-import LibrarySearch from './LibrarySearch';
 
 import { VIEW_OPTIONS, useLibraryHooks } from './hooks';
 
@@ -16,6 +16,8 @@ const Library = () => {
   const {
     isOpen,
     toggleLibrary,
+    countDisplay,
+    searchString,
     setSearchString,
     isColorFiltered,
     setIsColorFiltered,
@@ -37,24 +39,30 @@ const Library = () => {
   return (
     <div className={`library ${isOpen ? 'open': 'close'}`}>
       <div className='library-panel'>
-        {/* 
-          TODO remove LibrarySearch and expand out its functionality to the following.
-            Make changes to the hooks file to change filtering and sorting
-            Change names of components if need be
-        */}
-        {/* <SearchBar setSearchString={setSearchString} /> */}
-        <FilterBar
-          isColorFiltered={isColorFiltered} setIsColorFiltered={setIsColorFiltered}
-          filterColorOption={filterColorOption} setFilterColorOption={setFilterColorOption}
-          filterTabOption={filterTabOption} setFilterTabOption={setFilterTabOption}
+        <SearchBar
+          countDisplay={countDisplay}
+          searchString={searchString}
+          setSearchString={setSearchString}
         />
-        <SortBar sortOption={sortOption} setSortOption={setSortOption} />
-        <ViewBar viewOption={viewOption} setViewOption={setViewOption} />
+        <FilterBar
+          isColorFiltered={isColorFiltered}
+          setIsColorFiltered={setIsColorFiltered}
+          filterColorOption={filterColorOption}
+          setFilterColorOption={setFilterColorOption}
+          filterTabOption={filterTabOption}
+          setFilterTabOption={setFilterTabOption}
+        />
+        <SortBar
+          sortOption={sortOption}
+          setSortOption={setSortOption}
+        />
+        <ViewBar
+          viewOption={viewOption}
+          setViewOption={setViewOption}
+        />
         <div className='library-card-container'>
           {cardComponents}
         </div>
-
-        {/* <LibrarySearch /> */}
       </div>
       <button className='library-btn' onClick={toggleLibrary}>
         <img src={isOpen ? OpenLibraryIcon : ClosedLibraryIcon} alt='Library' />
