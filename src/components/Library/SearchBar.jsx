@@ -3,9 +3,9 @@ import React from 'react';
 import './index.scss';
 
 const SearchBar = ({
+  countDisplay,
   searchString,
   setSearchString,
-  countDisplay,
 }) => {
   return (
     <div className='search-row'>
@@ -23,6 +23,7 @@ const SearchBar = ({
       <img
         className='search-clear'
         onClick={() => setSearchString('')}
+        style={{ display: searchString ? 'block' : 'none' }}
       />
     </div>
   );

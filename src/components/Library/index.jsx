@@ -40,17 +40,26 @@ const Library = () => {
     <div className={`library ${isOpen ? 'open': 'close'}`}>
       <div className='library-panel'>
         <SearchBar
+          countDisplay={countDisplay}
           searchString={searchString}
           setSearchString={setSearchString}
-          countDisplay={countDisplay}
         />
         <FilterBar
-          isColorFiltered={isColorFiltered} setIsColorFiltered={setIsColorFiltered}
-          filterColorOption={filterColorOption} setFilterColorOption={setFilterColorOption}
-          filterTabOption={filterTabOption} setFilterTabOption={setFilterTabOption}
+          isColorFiltered={isColorFiltered}
+          setIsColorFiltered={setIsColorFiltered}
+          filterColorOption={filterColorOption}
+          setFilterColorOption={setFilterColorOption}
+          filterTabOption={filterTabOption}
+          setFilterTabOption={setFilterTabOption}
         />
-        <SortBar sortOption={sortOption} setSortOption={setSortOption} />
-        <ViewBar viewOption={viewOption} setViewOption={setViewOption} />
+        <SortBar
+          sortOption={sortOption}
+          setSortOption={setSortOption}
+        />
+        <ViewBar
+          viewOption={viewOption}
+          setViewOption={setViewOption}
+        />
         <div className='library-card-container'>
           {cardComponents}
         </div>

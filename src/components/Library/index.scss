@@ -108,10 +108,14 @@ $search-text-right-offset: $search-count-offset + 80px;
   }
 
   .search-clear {
-    height: $search-clear-height;
+    // height: $search-clear-height;
+    height: $search-height;
     position: absolute;
-    top: $search-clear-offset;
-    right: $search-clear-offset;
+    padding: $search-clear-offset;
+    // top: $search-clear-offset;
+    // right: $search-clear-offset;
+    top: 0;
+    right: 0;
     content: url('../../assets/icons/search-clear-black.svg');
     &:hover { content: url('../../assets/icons/search-clear-faded.svg'); }
   }
