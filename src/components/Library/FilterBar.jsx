@@ -32,7 +32,7 @@ const FilterBar = ({
             onClick={() => setIsColorFiltered(!isColorFiltered)}
           >
             <span>Color</span>
-            <button
+            <div
               className={`color-display ${CARD_COLOR_KEYS[filterColorOption] ?? '#F4F4F4'}`}
               onClick={(event) => openColorDropdown(event)}
               ref={colorDropdownBtnRef}
