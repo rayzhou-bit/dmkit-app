@@ -24,30 +24,28 @@ export const useTitleHooks = () => {
   const dispatch = useDispatch();
 
   const id = useSelector(state => state.session.activeCampaignId);
-  const value = useSelector(state => state.project.present.title || '');
-  const [ titleValue, setTitleValue ] = useState('');
-  const titleRef = useRef();
+  const title = useSelector(state => state.project.present.title || '');
+  const [ isEditable, setIsEditable ] = useState(false);
 
-  // Initialize title value
-  useEffect(() => {
-    setTitleValue(value);
-  }, [setTitleValue, value]);
-
+  const startEdit = () => setIsEditable(true);
   const endEdit = () => {
     document.getSelection().removeAllRanges();
-    if (titleValue !== value) {
-      dispatch(actions.project.updateProjectTitle({ title: titleValue }));
-      dispatch(actions.session.updateProjectTitle({ id, title: titleValue }));
-    }
+    setIsEditable(false);
   };
 
   return {
-    titleRef,
-    titleValue,
-    changeTitleValue: (newValue) => setTitleValue(newValue),
-    endTitleEdit: endEdit,
-    handleTitleKeyPress: (event) => {
-      if(event.key === 'Enter' || event.key === 'Tab') {
+    title,
+    onChange: (newValue) => {
+      if (newValue !== title) {
+        dispatch(actions.project.updateProjectTitle({ title: newValue }));
+        dispatch(actions.session.updateProjectTitle({ id, title: newValue }));
+      }
+    },
+    isEditable,
+    startEdit,
+    endEdit,
+    handleKeyPress: (event) => {
+      if (event.key === 'Enter' || event.key === 'Tab') {
         endEdit();
       }
     },
@@ -95,6 +93,7 @@ export const useProjectHooks = () => {
   const projects = useSelector(state => state.session.campaignList || []);
   const projectData = useSelector(state => state.project.present || {});
   const [ showProjectDropdown, setShowProjectDropdown ] = useState(false);
+  const [ deleteBtnIcon, setDeleteBtnIcon ] = useState();
   const btnRef = useRef();
   const dropdownRef = useRef();
 
@@ -117,6 +116,7 @@ export const useProjectHooks = () => {
     openProjectDropdown: () => setShowProjectDropdown(true),
     closeProjectDropdown: () => setShowProjectDropdown(false),
     activeProject,
+    activeProjectName: projectData.title,
     projects: sortedProjects,
     newProject: () => {
       if (!!activeProject) {

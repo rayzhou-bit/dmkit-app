@@ -14,31 +14,36 @@ const Projects = () => {
     openProjectDropdown,
     closeProjectDropdown,
     activeProject,
+    activeProjectName,
     projects,
     newProject,
   } = useProjectHooks();
 
-  let projectsList = activeProject
-    ? [
+  let projectsList = [];
+  if (!!activeProject) {
+    projectsList = [
+      ...projectsList,
+      <li key={activeProject} className='project-li'>
         <ProjectItem
           id={activeProject}
-          key={activeProject}
-          name={projects[activeProject]}
+          name={activeProjectName}
           closeProjectDropdown={closeProjectDropdown}
-        />,
-      ]
-    : [];
+        />
+      </li>,
+    ];
+  }
   for (let project in projects) {
     if (project !== activeProject) {
       const name = projects[project];
       projectsList = [
         ...projectsList,
-        <ProjectItem
-          id={project}
-          key={project}
-          name={name}
-          closeProjectDropdown={closeProjectDropdown}
-        />,
+        <li key={project} className='project-li'>
+          <ProjectItem
+            id={project}
+            name={name}
+            closeProjectDropdown={closeProjectDropdown}
+          />
+        </li>,
       ];
     }
   }
@@ -50,17 +55,22 @@ const Projects = () => {
         onClick={showProjectDropdown ? closeProjectDropdown : openProjectDropdown}
         ref={btnRef}
       >
-        <span>Projects</span>
-        <img />
+        <span className='button-text'>Projects</span>
+        <img className='img-arrow' />
       </button>
       <div
-        className='header-dropdown'
+        className='header-dropdown project-dropdown'
         ref={dropdownRef}
         style={{ display: showProjectDropdown ? 'block' : 'none' }}
       >
-        <ul className='projects-ul'>
-          {projectsList}
-        </ul>
+        <div
+          className='list-of-projects'
+          style={{ overflowY: (Object.keys(projects).length > 5) ? 'scroll' : 'hidden' }}
+        >
+          <ul className='projects-ul'>
+            {projectsList}
+          </ul>
+        </div>
         <div
           className='new-project'
           onClick={newProject}

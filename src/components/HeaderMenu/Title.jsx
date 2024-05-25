@@ -6,27 +6,27 @@ import './index.scss';
 
 const Title = () => {
   const {
-    titleRef,
-    titleValue,
-    changeTitleValue,
-    endTitleEdit,
-    handleTitleKeyPress,
+    title,
+    onChange,
+    startEdit,
+    endEdit,
+    handleKeyPress,
   } = useTitleHooks();
 
   return (
     <div className='usermenu-title'>
       <input
         maxLength='300'
-        onBlur={endTitleEdit}
-        onChange={e => changeTitleValue(e.target.value)}
-        onDragOver={e => e.preventDefault()}
-        onKeyDown={handleTitleKeyPress}
-        ref={titleRef}
+        onBlur={endEdit}
+        onClick={startEdit}
+        onChange={event => onChange(event.target.value)}
+        onDragOver={event => event.preventDefault()}
+        onKeyDown={handleKeyPress}
         required
-        size=''
-        title={titleValue}
+        spellCheck={false}
+        title={title}
         type='text'
-        value={titleValue ?? ''}
+        value={title}
       />
     </div>
   );

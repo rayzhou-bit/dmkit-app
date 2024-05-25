@@ -39,12 +39,12 @@ export const Card = ({
 
   return (
     <Rnd style={rndStyle}
-      bounds="parent"
+      bounds='parent'
       // position
       position={position}
       // drag
       disableDragging={isEditing}
-      dragHandleClassName="input-div"
+      dragHandleClassName='input-div'
       // dragGrid={[GRID.size, GRID.size]}
       onDragStart={onDragStart}
       onDragStop={onDragStop}
@@ -64,10 +64,10 @@ export const Card = ({
       onResizeStop={onResizeStop}
     >
       <div
-        className={"card" + (isActive ? " active-card" : " inactive-card")}
+        className={`card ${isActive ? 'active-card' : 'inactive-card'}`}
         onClick={onClick}
         onAnimationEnd={onAnimationEnd}
-        ref={cardRef} 
+        ref={cardRef}
         style={animationStyle}
       >
         <Title

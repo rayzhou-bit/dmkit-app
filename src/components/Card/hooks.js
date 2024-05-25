@@ -13,7 +13,7 @@ import { DEFAULT_CARD_POSITION } from '../../data/redux/project/constants';
 
 export const ANIMATION = {
   cardBlink: 'card-blink .25s step-end 4 alternate',
-  libraryCardBlink: 'library-card-blink .25s step-end 4 alternate',
+  libraryCardBlink: 'card-blink .25s step-end 4 alternate',
 };
 
 export const useCardHooks = ({

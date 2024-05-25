@@ -32,8 +32,8 @@ const UserOptions = () => {
         onClick={showUserOptionsDropdown ? closeUserOptionsDropdown : openUserOptionsDropdown}
         ref={btnRef}
       >
-        <span>{username}</span>
-        <img />
+        <span className='button-text'>{username}</span>
+        <img className='img-arrow' />
       </button>
       <div
         className='header-dropdown'
