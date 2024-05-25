@@ -17,7 +17,7 @@ const SearchBar = ({
         type='search'
         value={searchString}
       />
-      <div className='search-count'>
+      <div className={`search-count ${!searchString ? 'shift-right' : ''}`}>
         {countDisplay}
       </div>
       <img

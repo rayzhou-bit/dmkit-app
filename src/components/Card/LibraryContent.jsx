@@ -2,7 +2,7 @@ import React from 'react';
 
 import { useContentHooks } from './hooks';
 
-import './LibraryCard.scss';
+import './Card.scss';
 
 const LibraryContent = ({
   cardId,

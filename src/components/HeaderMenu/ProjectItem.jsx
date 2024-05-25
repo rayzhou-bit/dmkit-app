@@ -1,13 +1,15 @@
 import React from 'react';
 
-import { useProjectItemHooks } from './hooks';
+import { useProjectItemHooks, useTitleHooks } from './hooks';
 
 import './index.scss';
 import CopyIcon from '../../assets/icons/copy-project.svg';
-import DeleteIcon from '../../assets/icons/delete.svg';
-import DeleteRedIcon from '../../assets/icons/delete-red.svg';
 
-const ProjectItem = ({ closeProjectDropdown, id, name }) => {
+const ProjectItem = ({
+  closeProjectDropdown,
+  id,
+  name,
+}) => {
   const {
     deleteBtnRef,
     isActiveProject,
@@ -16,33 +18,47 @@ const ProjectItem = ({ closeProjectDropdown, id, name }) => {
     confirmDeleteProject,
   } = useProjectItemHooks({ closeProjectDropdown, id, name });
 
-  const [deleteDisplayIcon, setDeleteDisplayIcon] = React.useState(DeleteIcon);
+  const {
+    onChange,
+    isEditable,
+    startEdit,
+    endEdit,
+    handleKeyPress,
+  } = useTitleHooks();
 
   return (
-    <li key={id} className='project-li'>
-      <div
-        className={'project-container' + (isActiveProject ? ' active-proj' : '')}
-        onClick={!isActiveProject ? switchProject : null}
+    <div
+      className={`project-item ${isActiveProject ? 'active-project' : ''}`}
+      onClick={!isActiveProject ? switchProject : null}
+    >
+      <input
+        className='project-name'
+        maxLength='300'
+        onBlur={endEdit}
+        onChange={event => onChange(event.target.value)}
+        onDoubleClick={startEdit}
+        onDragOver={event => event.preventDefault()}
+        onKeyDown={handleKeyPress}
+        readOnly={!isActiveProject || !isEditable}
+        spellCheck={false}
+        style={{ backgroundColor: isEditable ? '#C1E9FF' : 'transparent'}}
+        title={name}
+        type='text'
+        value={name}
+      />
+      <button className='copy' onClick={copyProject}>
+        <img alt='Copy' src={CopyIcon} />
+        <span className='tooltip'>Duplicate project</span>
+      </button>
+      <button
+        className='delete'
+        ref={deleteBtnRef}
+        onClick={confirmDeleteProject}
       >
-        <span className='project-name'>
-          {name}
-        </span>
-        <button className='copy' onClick={copyProject}>
-          <img alt='Copy' src={CopyIcon} />
-          <span className='tooltip'>Duplicate project</span>
-        </button>
-        <button
-          className='delete'
-          ref={deleteBtnRef}
-          onClick={confirmDeleteProject}
-          onMouseOver={e => setDeleteDisplayIcon(DeleteRedIcon)}
-          onMouseOut={e => setDeleteDisplayIcon(DeleteIcon)}
-        >
-          <img alt='Delete' src={deleteDisplayIcon} />
-        </button>
-        <div className={'back' + (isActiveProject ? ' active' : '')} />
-      </div>
-    </li>
+        <img alt='Delete' />
+      </button>
+      <div className={`back ${isActiveProject ? ' active' : ''}`} />
+    </div>
   );
 };
 

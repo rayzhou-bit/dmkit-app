@@ -79,83 +79,121 @@ $border-radius: 0.5rem;
   }
 }
 
-$projects-height: 40px;
+$project-height: 40px;
+$scrollbar-width: 12px;
 .projects {
   position: relative;
 
-  .projects-ul {
-    height: ($projects-height + 1) * 7;
-    overflow-y: scroll;
-    overflow-x: hidden;
+  .project-dropdown {
+    display: flex;
+    flex-flow: column nowrap;
 
-    .project-li {
-      height: $projects-height;
-  
-      .project-container {
-        position: relative;
-        height: 100%;
-        border-bottom: 1px solid #F4F4F4;
-  
-        .project-name {
-          z-index: 1;
-          font-weight: 600;
-          .tooltip { right: -20%; top: 115%; white-space: nowrap; }
-          .tooltip::after { bottom: 100%; right: 8%; border-bottom-color: black; }
-          &:hover ~ .back { background-color: #C1E9FF; }
-        }
-        .copy {
-          margin: auto;
-          z-index: 1;
-          .tooltip { right: -20%; top: 115%; white-space: nowrap; }
-          .tooltip::after { bottom: 100%; right: 8%; border-bottom-color: black; }
-          &:hover { background-color: #C1E9FF; }
-        }
-        .delete {
-          margin: auto;
-          z-index: 1;
-          color: red;
-          &:hover { background-color: #FFE8E0; }
-        }
-        .back {
-          position: absolute;
-          left: 0;
-          right: 0;
-          top: 0;
-          bottom: 0;
-          border: 0;
-          &:hover { background-color: #C1E9FF; }
+    .list-of-projects {
+      max-height: ($project-height + 1) * 5;
+
+      .projects-ul {
+        .project-li {
+          height: $project-height;
         }
       }
+    
+      &::-webkit-scrollbar { width: $scrollbar-width; }
+      &::-webkit-scrollbar-track { background-color: #00000000; }
+      &::-webkit-scrollbar-thumb {
+        background-color: #363B4EA6;
+        border: 4px solid white;
+        border-radius: 12px;
+      }
+    }
+
+    .new-project {
+      height: $project-height;
+      padding: 9px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      span {
+        padding: 0 10px; 
+        font-weight: 600;
+      }
+      &:hover { background-color: #C1E9FF; }
+      img { margin: 4px; }
+    }
+  
+    .project-item {
+      position: relative;
+      height: 100%;
+      padding: 9px;
+      border-bottom: 1px solid #F4F4F4;
+
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      gap: 5px;
+      justify-content: end;
+  
+      .project-name {
+        padding: 0 10px;
+        border: 0;
+        background-color: transparent;
+        z-index: 1;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        color: #353535;
+        font-size: 12px;
+        font-weight: 600;
+        line-height: 25px;
+        letter-spacing: 0.05em;
+        text-align: left;
+        
+        .tooltip { right: -20%; top: 115%; white-space: nowrap; }
+        .tooltip::after { bottom: 100%; right: 8%; border-bottom-color: black; }
+        &:hover ~ .back { background-color: #C1E9FF; }
+      }
+      button {
+        height: 23px;
+        width: 100%;
+        padding: 0;
+        margin: auto;
+        border-radius: 5px;
+        background-color: transparent;
+        text-align: left;
+        line-height: 30px;
+        z-index: 1;
+        img { margin: 4px; }
+      }
+      .copy {
+        .tooltip { right: -20%; top: 115%; white-space: nowrap; }
+        .tooltip::after { bottom: 100%; right: 8%; border-bottom-color: black; }
+        &:hover { background-color: #C1E9FF; }
+      }
+      .delete {
+        color: red;
+        img { content: url('../../assets/icons/delete.svg'); }
+        &:hover { background-color: #FFE8E0; }
+        &:hover > img { content: url('../../assets/icons/delete-red.svg')}
+      }
+      .back {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        border: 0;
+        &:hover { background-color: #C1E9FF; }
+      }
+    }
+
+    .active-project {
+      // height: $project-height;
+      // padding-right: $scrollbar-width;
+      background-color: #DBE2EB;
       
-      .active-proj {
-        .project-name { font-weight: 700; }
-        .project-name:hover ~ .back { background-color: #DBE2EB; }
-        .copy:hover { background-color: white; }
-        .back { background-color: #DBE2EB; }
-        .back:hover { background-color: #DBE2EB; }
-      }
+      .project-name { font-weight: 700; }
+      .project-name:hover ~ .back { background-color: #DBE2EB; }
+      .copy:hover { background-color: white; }
+      .back { background-color: #DBE2EB; }
+      .back:hover { background-color: #DBE2EB; }
     }
-
-    &::-webkit-scrollbar { width: 12px; }
-    &::-webkit-scrollbar-track { background-color: #00000000; }
-    &::-webkit-scrollbar-thumb {
-      background-color: #363B4EA6;
-      border: 4px solid white;
-      border-radius: 12px;
-    }
-  }
-
-  .new-project {
-    padding: 9px;
-    font-weight: 600;
-    display: grid;
-    grid-template-columns: 1fr auto;
-    span {
-      padding: 0 10px; 
-      font-weight: 600;
-    }
-    &:hover { background-color: #C1E9FF; }
-    img { margin: 4px; }
   }
 }
 
@@ -414,15 +452,15 @@ $projects-height: 40px;
   background-color: transparent;
   display: flex;
   flex-flow: row nowrap;
-  span {
+  .button-text {
     padding: 7px;
     white-space: nowrap;
   }
-  img {
+  .img-arrow {
     transition-duration: .5s;
     content: url('../../assets/icons/dropdown-arrow.svg');
   }
-  &:hover > img { transform: translateY(3px); }
+  &:hover > .img-arrow { transform: translateY(3px); }
 }
 
 .header-dropdown {
@@ -449,31 +487,6 @@ $projects-height: 40px;
     padding: 0;
     li {
       list-style: none;
-      div {
-        padding: 9px;
-        display: grid;
-        grid-template-columns: 1fr auto auto;
-        gap: 5px;
-        justify-content: end;
-        span {
-          padding: 0 10px;
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
-        }
-        button {
-          height: 23px;
-          width: 100%;
-          padding: 0;
-          margin: 0 1px;
-          border-radius: 5px;
-          background-color: transparent;
-          text-align: left;
-          line-height: 30px;
-          img { margin: 4px; }
-          &:hover { background-color: white; }
-        }
-      }
     }
   }
 }

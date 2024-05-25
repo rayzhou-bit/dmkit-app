@@ -5,7 +5,7 @@ import { useLibraryCardHooks } from './hooks';
 import LibraryTitle from './LibraryTitle';
 import LibraryContent from './LibraryContent';
 
-import './LibraryCard.scss';
+import './Card.scss';
 
 const LibraryCard = ({
   cardId,
@@ -28,7 +28,7 @@ const LibraryCard = ({
 
   return (
     <div
-      className={'library-card' + (isActive ? ' active-card' : ' inactive-card')}
+      className={`card ${isActive ? 'active-card' : 'inactive-card'}`}
       draggable={!isEditing}
       onAnimationEnd={onAnimationEnd}
       onClick={onClick}
