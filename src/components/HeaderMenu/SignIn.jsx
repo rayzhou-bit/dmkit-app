@@ -3,7 +3,7 @@ import React from 'react';
 import { useSignInHooks } from './hooks';
 
 import './index.scss';
-import GoogleIcon from '../../assets/icons/google.png';
+import GoogleIcon from '../../assets/icons/google.svg';
 
 const SignIn = () => {
   const {

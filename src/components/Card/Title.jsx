@@ -53,7 +53,7 @@ const Title = ({
   });
 
   return (
-    <div className={'title ' + color}>
+    <div className={'card-title ' + color}>
       <div className={'input-div' + (isLightColor ? ' dark' : ' light')}>
         <input
           className={inputClassName}

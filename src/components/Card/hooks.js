@@ -7,8 +7,8 @@ import { CARD_COLOR_KEYS, LIGHT_COLORS } from '../../styles/colors';
 import { POPUP_KEYS } from '../Popup/PopupKey';
 import { ACTION_TYPE } from '../../components-shared/Dropdowns/ActionDropdown';
 
-import LibraryIcon from '../../assets/icons/library-icon.png';
-import RedTrashIcon from '../../assets/icons/red-trash.png';
+import LibraryIcon from '../../assets/icons/library-book.svg';
+import RedTrashIcon from '../../assets/icons/trash-red.svg';
 import { DEFAULT_CARD_POSITION } from '../../data/redux/project/constants';
 
 export const ANIMATION = {

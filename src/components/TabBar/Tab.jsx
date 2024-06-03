@@ -3,7 +3,7 @@ import { Rnd } from "react-rnd";
 
 import "./index.scss";
 import { TAB_HEIGHT, TAB_WIDTH, useTabHooks } from './hooks';
-import ActionDropdown from '../../components-shared/Dropdowns/ActionDropdown';
+import ActionDropdown, { VARIANT_TYPE } from '../../components-shared/Dropdowns/ActionDropdown';
 
 import './index.scss';
 import DropdownArrowIcon from '../../assets/icons/dropdown-arrow.svg';
@@ -81,7 +81,7 @@ const Tab = ({
           <img src={DropdownArrowIcon} />
         </button>
         <ActionDropdown
-          variant='dropup'
+          variant={VARIANT_TYPE.dropup}
           btnRef={dropUpBtnRef}
           isOpen={showTabMenuDropup}
           onClose={closeTabMenuDropup}

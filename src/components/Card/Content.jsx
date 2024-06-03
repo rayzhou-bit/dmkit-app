@@ -21,7 +21,7 @@ const Content = ({
   });
 
   return (
-    <div className='content'>
+    <div className='card-content'>
       <textarea
         className='text'
         onBlur={endContentEdit}
