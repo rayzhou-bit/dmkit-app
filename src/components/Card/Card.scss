@@ -1,4 +1,4 @@
-$round-radius: 12px;
+$card-radius: 12px;
 $title-height: 32px;
 
 .card {
@@ -7,8 +7,9 @@ $title-height: 32px;
   border: 0;
   height: 100%;
   width: 100%;
-  border-radius: $round-radius;
+  border-radius: $card-radius;
   box-sizing: content-box;
+  background-color: #7E849A;
 
   display: flex;
   flex-flow: column nowrap;
@@ -35,10 +36,11 @@ $title-height: 32px;
 }
 @keyframes card-blink { 50% { box-shadow: 0 0 0 6px #5BC5FF, 2px 2px 8px -3px #D7D6D6; } }
 
-.title {
+.card-title {
   width: 100%;
+  margin: 0;
   padding: 0 9px;
-  border-radius: $round-radius $round-radius 0 0;
+  border-radius: $card-radius $card-radius 0 0;
 
   display: grid;
   grid-template-columns: auto 18px 12px;
@@ -49,7 +51,7 @@ $title-height: 32px;
   .input-div {
     width: 100%;
     padding: 0 3px;
-    border-radius: $round-radius 0 0 0;
+    border-radius: $card-radius 0 0 0;
     background-color: transparent;
 
     .editing {
@@ -80,27 +82,27 @@ $title-height: 32px;
     }
   }
 
-  button {
-    padding: 0;
-    justify-content: center;
-    display: flex;
-  }
-
   .color-btn {
+    display: flex;
     background-color: transparent;
     &:hover > img { content: url('../../assets/icons/rounded-square-hover.svg'); }
   }
 
   .dropdown-btn {
+    display: flex;
     background-color: transparent;
     img { transition-duration: .5s; }
     &:hover > img { transform: translateY(3px); }
   }
 }
 
-.content {
+$scrollbar-width: 17px;
+.card-content {
+  margin: 0;
+  padding: 0;
+  border-radius: 0 0 $card-radius $card-radius;
   flex-grow: 1;
-  border-radius: 0 0 $round-radius $round-radius;
+  overflow: hidden;
 
   .text {
     box-sizing: border-box;
@@ -123,32 +125,25 @@ $title-height: 32px;
     text-overflow: ellipsis;
     resize: none;
     overflow: auto;
-
     cursor: auto;
+    &:read-only { cursor: default; }
 
-    &:read-only {
-      cursor: default;
-    }
-
-    &::-webkit-scrollbar {
-      width: 19px;
-    }
-    &::-webkit-scrollbar-track {
-      -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
-    }
+    &::-webkit-scrollbar { width: $scrollbar-width; }
+    &::-webkit-scrollbar-track { background-color: #00000000; }
     &::-webkit-scrollbar-thumb {
-      background-color: darkgrey;
+      background-color: #E5E5E5;
       border: 5px solid white;
-      border-radius: $round-radius;
+      border-radius: $card-radius;
     }
   }
 }
 
 .library-card-content-container {
-  border-radius: 0 0 $round-radius $round-radius;
+  border-radius: 0 0 $card-radius $card-radius;
   position: relative;
   -webkit-transition: 0.4s;
   transition: 0.4s;
+  overflow: hidden;
 
   display: flex;
   flex-flow: column nowrap;
@@ -164,24 +159,18 @@ $title-height: 32px;
     margin: 0;
     padding: 15px 8px 15px 15px;
     border: 0;
-    border-radius: $round-radius;
+    border-radius: 0 0 $card-radius $card-radius;
     resize: none;
     background-color: white;
     font-family: "Roboto";
-
     cursor: auto;
 
-    &::-webkit-scrollbar {
-      width: 19px;
-    }
-    &::-webkit-scrollbar-track {
-      border-radius: 0 0 $round-radius 0;
-      -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
-    }
+    &::-webkit-scrollbar { width: $scrollbar-width; }
+    &::-webkit-scrollbar-track { background-color: #00000000; }
     &::-webkit-scrollbar-thumb {
-      background-color: darkgrey;
+      background-color: #E5E5E5;
       border: 5px solid white;
-      border-radius: $round-radius;
+      border-radius: $card-radius;
     }
   }
 

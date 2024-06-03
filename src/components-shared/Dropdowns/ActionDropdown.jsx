@@ -19,6 +19,10 @@ export const ACTION_TYPE = {
   disabled: 'disabled',
 };
 
+export const VARIANT_TYPE = {
+  dropup: 'dropup',
+};
+
 export const ActionDropdown = ({
   btnRef,
   isOpen,
@@ -46,14 +50,14 @@ export const ActionDropdown = ({
         ...itemsList,
         <li key={title + index}>
           <button
-            className='item-btn'
+            className='selection'
             onClick={() => {
               callback();
               onClose();
             }}
           >
-            <p className={type + ' btn-title'} >{title}</p>
-            {icon ? <img className='btn-icon' src={icon} /> : null}
+            <span className={`selection-name ${type}`} >{title}</span>
+            {icon ? <img className='selection-icon' src={icon} /> : null}
           </button>
         </li>
       ];
@@ -62,10 +66,7 @@ export const ActionDropdown = ({
 
   return (
     <div
-      className={
-        'action-dropdown'
-        + (variant === 'dropup' ? ' dropup-variant' : '')
-      }
+      className={`action-dropdown ${variant}`}
       ref={dropdownRef}
     >
       <ul>

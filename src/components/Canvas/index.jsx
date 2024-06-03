@@ -21,7 +21,7 @@ const Empty = (createNewProject) => (
         <span className='text'>an existing project from the top menu</span>
       </div>
     </div>
-    <button className='button' onClick={createNewProject}>
+    <button className='new-proj-btn' onClick={createNewProject}>
       <span>Create new</span>
       <img src={PlusIcon} />
     </button>

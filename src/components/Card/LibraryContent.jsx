@@ -23,12 +23,14 @@ const LibraryContent = ({
   });
 
   const condensedStyle = {
+    backgroundColor: 'white',
     minHeight: '60px',
     maxHeight: '80px',
     height: '80px',
   };
 
   const expandedStyle = {
+    backgroundColor: 'white',
     minHeight: '80px',
     maxHeight: '50vh',
     height: '35vh',

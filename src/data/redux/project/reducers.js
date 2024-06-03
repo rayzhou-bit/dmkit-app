@@ -283,9 +283,13 @@ const project = createSlice({
       let newViews = { ...state.views };
       delete newViews[payload.id];
       const newViewOrder = [ ...state.viewOrder ].filter(tabId => tabId !== payload.id);
+      let newActiveViewId = state.activeViewId;
+      if (payload.id === state.activeViewId) {
+        newActiveViewId = (newViewOrder.length > 0) ? newViewOrder[0] : null;
+      }
       return {
         ...state,
-        activeViewId: (payload.id === state.activeViewId) ? null : state.activeViewId,
+        activeViewId: newActiveViewId,
         viewOrder: newViewOrder,
         views: newViews,
       };
