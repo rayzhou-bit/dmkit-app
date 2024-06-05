@@ -15,9 +15,9 @@ export const CANVAS_STATES = {
   loaded: 'loaded',
 };
 
-export const CANVAS_DIMENSIONS = {
-  width: 150 * GRID.size,
-  height: 100 * GRID.size,
+export const CANVAS_SIZE = {
+  width: 250 * GRID.size,
+  height: 200 * GRID.size,
 };
 
 export const useCanvasHooks = () => {

@@ -40,7 +40,7 @@ button {
 
   &:hover .tooltip {
     visibility: visible;
-    transition-delay: 0.5s;
+    opacity: 100%;
   }
 
   .tooltip {
@@ -55,7 +55,6 @@ button {
     background-color: #363B4E;
     visibility: hidden;
     z-index: 10000;
-    transition: 0s visibility;
 
     color: white;
     text-align: center;
@@ -66,6 +65,10 @@ button {
     font-weight: 400;
     line-height: 20px;
     letter-spacing: 0.55px;
+
+    transition: opacity .1s;
+    transition-delay: 0.8s;
+    opacity: 0%;
   }
 
   .tooltip::after {

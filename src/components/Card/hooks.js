@@ -7,7 +7,7 @@ import { CARD_COLOR_KEYS, LIGHT_COLORS } from '../../styles/colors';
 import { POPUP_KEYS } from '../Popup/PopupKey';
 import { ACTION_TYPE } from '../../components-shared/Dropdowns/ActionDropdown';
 
-import LibraryIcon from '../../assets/icons/library-book.svg';
+import LibraryIcon from '../../assets/icons/library-open.svg';
 import RedTrashIcon from '../../assets/icons/trash-red.svg';
 import { DEFAULT_CARD_POSITION } from '../../data/redux/project/constants';
 
@@ -257,6 +257,7 @@ export const useOptionsDropdownHooks = ({
 }) => {
   const dispatch = useDispatch();
 
+  const text = useSelector(state => state.project.present.cards[cardId].content.text);
   const [ isOptionDropdownOpen, setIsOptionDropdownOpen ] = useState(false);
   const optionDropdownBtnRef = useRef();
 
@@ -289,10 +290,16 @@ export const useOptionsDropdownHooks = ({
       title: 'Delete',
       type: ACTION_TYPE.danger,
       icon: RedTrashIcon,
-      callback: () => dispatch(actions.session.setPopup({
-        type: POPUP_KEYS.confirmCardDelete,
-        id: cardId,
-      })),
+      callback: () => {
+        if (text.length > 0) {
+          dispatch(actions.session.setPopup({
+            type: POPUP_KEYS.confirmCardDelete,
+            id: cardId,
+          }));
+        } else {
+          dispatch(actions.project.destroyCard({ id: cardId }));
+        }
+      },
     },
   ];
 
@@ -311,6 +318,7 @@ export const useOptionsDropdownLibraryHooks = ({
 }) => {
   const dispatch = useDispatch();
 
+  const text = useSelector(state => state.project.present.cards[cardId].content.text);
   const activeTab = useSelector(state => state.project.present.activeViewId);
   const cardTabs = useSelector(state => state.project.present.cards[cardId].views);
   const [ isOptionDropdownOpen, setIsOptionDropdownOpen ] = useState(false);
@@ -341,10 +349,16 @@ export const useOptionsDropdownLibraryHooks = ({
       title: 'Delete',
       type: ACTION_TYPE.danger,
       icon: RedTrashIcon,
-      callback: () => dispatch(actions.session.setPopup({
-        type: POPUP_KEYS.confirmCardDelete,
-        id: cardId,
-      })),
+      callback: () => {
+        if (text.length > 0) {
+          dispatch(actions.session.setPopup({
+            type: POPUP_KEYS.confirmCardDelete,
+            id: cardId,
+          }));
+        } else {
+          dispatch(actions.project.destroyCard({ id: cardId }));
+        }
+      },
     },
   ];
 
