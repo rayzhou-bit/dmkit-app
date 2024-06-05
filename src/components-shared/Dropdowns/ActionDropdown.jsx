@@ -56,7 +56,7 @@ export const ActionDropdown = ({
               onClose();
             }}
           >
-            <span className={`selection-name ${type}`} >{title}</span>
+            <span className={`selection-name ${type ?? ''}`} >{title}</span>
             {icon ? <img className='selection-icon' src={icon} /> : null}
           </button>
         </li>
@@ -66,7 +66,7 @@ export const ActionDropdown = ({
 
   return (
     <div
-      className={`action-dropdown ${variant}`}
+      className={`action-dropdown ${variant ?? ''}`}
       ref={dropdownRef}
     >
       <ul>

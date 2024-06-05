@@ -109,6 +109,7 @@ $scrollbar-width: 12px;
     .new-project {
       height: $project-height;
       padding: 9px;
+      z-index: -1;
       display: grid;
       grid-template-columns: 1fr auto;
       span {

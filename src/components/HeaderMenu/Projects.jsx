@@ -65,7 +65,7 @@ const Projects = () => {
       >
         <div
           className='list-of-projects'
-          style={{ overflowY: (Object.keys(projects).length > 5) ? 'scroll' : 'hidden' }}
+          style={{ overflowY: (Object.keys(projects).length > 5) ? 'scroll' : 'visible' }}
         >
           <ul className='projects-ul'>
             {projectsList}

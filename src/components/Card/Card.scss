@@ -9,30 +9,25 @@ $title-height: 32px;
   width: 100%;
   border-radius: $card-radius;
   box-sizing: content-box;
-  background-color: #7E849A;
 
   display: flex;
   flex-flow: column nowrap;
   
+}
+.active-card {
+  background-color: #7E849A;
+  box-shadow: 0 0 0 1px #7E849A,
+    0 0 0 6px #DBE2EB,
+    2px 2px 8px -3px #D7D6D6;
+}
+.inactive-card {
+  background-color: #D7D6D6;
+  box-shadow: 0 0 0 1px #D7D6D6,
+    2px 2px 8px -3px #D7D6D6;
   &:hover {
     box-shadow: 0 0 0 6px #DBE2EB,
       2px 2px 8px -3px #D7D6D6;
   }
-}
-.active-card {
-  box-shadow: 0 0 0 1px #7E849A,
-    0 0 0 6px #DBE2EB,
-    2px 2px 8px -3px #D7D6D6;
-  &:hover {
-    box-shadow: 0 0 0 1px #7E849A,
-      0 0 0 6px #DBE2EB,
-      2px 2px 8px -3px #D7D6D6 !important;
-  }
-}
-.inactive-card {
-  box-shadow: 0 0 0 1px #D7D6D6,
-    0 0 0 1px #F0F0F0,
-    2px 2px 8px -3px #D7D6D6;
 }
 @keyframes card-blink { 50% { box-shadow: 0 0 0 6px #5BC5FF, 2px 2px 8px -3px #D7D6D6; } }
 

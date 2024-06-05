@@ -1,7 +1,7 @@
 import React from 'react';
 import { Rnd } from 'react-rnd';
 
-import { CANVAS_STATES, CANVAS_DIMENSIONS, useCanvasHooks } from './hooks';
+import { CANVAS_STATES, CANVAS_SIZE, useCanvasHooks } from './hooks';
 import Card from '../Card/Card';
 
 import { GRID } from '../../styles/constants';
@@ -77,7 +77,7 @@ const Canvas = ({ toolMenuRef }) => {
             onDragStop={dragStopHandler}
             position={canvasPosition}
             scale={canvasScale}
-            size={CANVAS_DIMENSIONS}
+            size={CANVAS_SIZE}
           >
             <div
               className='view'
