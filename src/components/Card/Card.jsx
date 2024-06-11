@@ -7,7 +7,7 @@ import Title from './Title';
 import Content from './Content';
 
 import './Card.scss';
-import { GRID } from '../../styles/constants';
+import { GRID_SIZE, MIN_CARD_SIZE } from '../../constants/dimensions';
 
 export const Card = ({
   cardId,
@@ -45,13 +45,12 @@ export const Card = ({
       // drag
       disableDragging={isEditing}
       dragHandleClassName='input-div'
-      // dragGrid={[GRID.size, GRID.size]}
       onDragStart={onDragStart}
       onDragStop={onDragStop}
       // size
       size={size}
-      minWidth={GRID.size * 12} 
-      minHeight={GRID.size * 10}
+      minWidth={MIN_CARD_SIZE.width} 
+      minHeight={MIN_CARD_SIZE.height}
       scale={activeTabScale}
       // resize
       enableResizing={{
@@ -60,7 +59,7 @@ export const Card = ({
         topLeft: true,
         topRight: true,
       }}
-      resizeGrid={[GRID.size, GRID.size]}
+      resizeGrid={[ GRID_SIZE, GRID_SIZE ]}
       onResizeStop={onResizeStop}
     >
       <div

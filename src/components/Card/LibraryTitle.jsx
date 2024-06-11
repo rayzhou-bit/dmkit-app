@@ -6,7 +6,7 @@ import ColorDropdown from '../../components-shared/Dropdowns/ColorDropdown';
 import ActionDropdown from '../../components-shared/Dropdowns/ActionDropdown';
 
 import './Card.scss';
-import '../../styles/colors.scss';
+import '../../constants/colors.scss';
 import OpenColorBlackIcon from '../../assets/icons/rounded-square.svg';
 import OpenColorWhiteIcon from '../../assets/icons/rounded-square-white.svg';
 import DropdownArrowBlackIcon from '../../assets/icons/dropdown-arrow.svg';

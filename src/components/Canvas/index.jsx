@@ -1,10 +1,12 @@
 import React from 'react';
 import { Rnd } from 'react-rnd';
 
-import { CANVAS_STATES, CANVAS_SIZE, useCanvasHooks } from './hooks';
+import { useCanvasHooks } from './hooks';
 import Card from '../Card/Card';
 
-import { GRID } from '../../styles/constants';
+import { CANVAS_STATES } from '../../constants/states';
+import { GRID_SIZE, CANVAS_SIZE } from '../../constants/dimensions';
+
 import './index.scss';
 import BookIcon from '../../assets/icons/book.svg';
 import PlusIcon from '../../assets/icons/plus.svg'
@@ -88,7 +90,7 @@ const Canvas = ({ toolMenuRef }) => {
               {cardList}
               <div
                 className='grid'
-                style={{ backgroundSize: GRID.size + ' ' + GRID.size }}
+                style={{ backgroundSize: GRID_SIZE + ' ' + GRID_SIZE }}
               />
             </div>
           </Rnd>

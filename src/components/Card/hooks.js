@@ -3,13 +3,13 @@ import { useDispatch, useSelector } from 'react-redux';
 import useOutsideClick from '../../utils/useOutsideClick';
 
 import { actions } from '../../data/redux';
-import { CARD_COLOR_KEYS, LIGHT_COLORS } from '../../styles/colors';
+import { CARD_COLOR_KEYS, LIGHT_COLORS } from '../../constants/colors';
 import { POPUP_KEYS } from '../Popup/PopupKey';
 import { ACTION_TYPE } from '../../components-shared/Dropdowns/ActionDropdown';
 
 import LibraryIcon from '../../assets/icons/library-open.svg';
 import RedTrashIcon from '../../assets/icons/trash-red.svg';
-import { DEFAULT_CARD_POSITION } from '../../data/redux/project/constants';
+import { NEW_CARD_POSITION } from '../../constants/dimensions';
 
 export const ANIMATION = {
   cardBlink: 'card-blink .25s step-end 4 alternate',
@@ -32,13 +32,10 @@ export const useCardHooks = ({
     size: cardSize,
   } = useSelector( state => state.project.present.cards[cardId].views[activeTab]);
 
-  
   const [isDragging, setIsDragging] = useState(false);
   const [isSelected, setIsSelected] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-
   const cardRef = useRef();
-
   const isActive = cardId === activeCard;
 
   useOutsideClick([cardRef, toolMenuRef], isSelected, 
@@ -122,9 +119,7 @@ export const useLibraryCardHooks = ({
   const [isEditing, setIsEditing] = useState(false);
   const [cardAnimation, setCardAnimation] = useState({});
   const [useAnimation, setUseAnimation] = useState(false);
-
   const libraryCardRef = useRef();
-
   const isActive = cardId === activeCard;
 
   useOutsideClick([libraryCardRef], isSelected, 
@@ -328,7 +323,7 @@ export const useOptionsDropdownLibraryHooks = ({
     {
       title: 'Add to tab',
       type: cardTabs[activeTab] ? ACTION_TYPE.disabled : null,
-      callback: () => dispatch(actions.project.linkCardToView({ id: cardId, position: DEFAULT_CARD_POSITION })),
+      callback: () => dispatch(actions.project.linkCardToView({ id: cardId, position: NEW_CARD_POSITION })),
     },
     {
       title: 'Remove from tab',

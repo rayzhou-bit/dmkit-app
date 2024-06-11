@@ -1,5 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { NETWORK_STATUS, DEFAULT_PROJECT } from './constants';
+import { NETWORK_STATUS } from '../../../constants/states';
+import { DEFAULT_PROJECT } from './constants';
 
 const initialState = {
   status: NETWORK_STATUS.idle,
@@ -49,12 +50,13 @@ const session = createSlice({
       },
     }),
     removeProject: (state, { payload }) => {
+      const { id } = payload;
       let newCampaignList = { ...state.campaignList };
-      delete newCampaignList[payload.id];
+      delete newCampaignList[id];
       return {
         ...state,
         campaignList: newCampaignList,
-        activeCampaignId: state.activeCampaignId === payload.id ? null : state.activeCampaignId,
+        activeCampaignId: state.activeCampaignId === id ? null : state.activeCampaignId,
       };
     },
     updateProjectTitle: (state, { payload }) => ({

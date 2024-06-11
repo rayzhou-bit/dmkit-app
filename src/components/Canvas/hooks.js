@@ -4,21 +4,14 @@ import { useDispatch, useSelector } from "react-redux";
 import { actions } from '../../data/redux';
 import * as api from '../../data/api/database';
 
-import { NETWORK_STATUS } from '../../data/redux/session/constants';
-import { GRID } from '../../styles/constants';
+import { NETWORK_STATUS, CANVAS_STATES } from '../../constants/states';
+import {
+  GRID_SIZE,
+  GRID_SCALE,
+  DEFAULT_CANVAS_POSITION,
+  DEFAULT_CANVAS_SCALE,
+} from '../../constants/dimensions';
 import { ANIMATION } from '../Card/hooks';
-import { DEFAULT_TAB_POSITION, DEFAULT_TAB_SCALE } from '../../data/redux/project/constants';
-
-export const CANVAS_STATES = {
-  empty: 'empty',
-  loading: 'loading',
-  loaded: 'loaded',
-};
-
-export const CANVAS_SIZE = {
-  width: 250 * GRID.size,
-  height: 200 * GRID.size,
-};
 
 export const useCanvasHooks = () => {
   const dispatch = useDispatch();
@@ -26,8 +19,8 @@ export const useCanvasHooks = () => {
   const status = useSelector(state => state.session.status || NETWORK_STATUS.idle);
   const activeProject = useSelector(state => state.session.activeCampaignId || '');
   const activeTab = useSelector(state => state.project.present.activeViewId || '');
-  const activeTabPosition = useSelector(state => activeTab ? state.project.present.views[activeTab]?.pos : DEFAULT_TAB_POSITION);
-  const activeTabScale = useSelector(state => activeTab ? state.project.present.views[activeTab]?.scale : DEFAULT_TAB_SCALE);
+  const activeTabPosition = useSelector(state => activeTab ? state.project.present.views[activeTab]?.pos : DEFAULT_CANVAS_POSITION);
+  const activeTabScale = useSelector(state => activeTab ? state.project.present.views[activeTab]?.scale : DEFAULT_CANVAS_SCALE);
   const cardCollection = useSelector(state => state.project.present.cards);
 
   const [ canvasState, setCanvasState ] = useState(CANVAS_STATES.empty);
@@ -78,7 +71,7 @@ export const useCanvasHooks = () => {
       let newScale = activeTabScale ?? 1;
       newScale += event.deltaY * -0.001;
       newScale = Math.round(newScale * 10) / 10;
-      newScale = Math.min(Math.max(GRID.scaleMin, newScale), GRID.scaleMax);
+      newScale = Math.min(Math.max(GRID_SCALE.min, newScale), GRID_SCALE.max);
       dispatch(actions.project.setActiveTabScale({ scale: newScale }));
     },
     cardDropHandler: (event) => {
@@ -87,8 +80,8 @@ export const useCanvasHooks = () => {
       if (cardCollection[droppedCard]) {
         if (!cardCollection[droppedCard].views[activeTab]) {
           // TODO more precise position calculation
-          let x = Math.round((event.clientX - GRID.size - GRID.size) / GRID.size) * GRID.size;
-          let y = Math.round((event.clientY - GRID.size - GRID.size) / GRID.size) * GRID.size;
+          let x = Math.round((event.clientX - GRID_SIZE - GRID_SIZE) / GRID_SIZE) * GRID_SIZE;
+          let y = Math.round((event.clientY - GRID_SIZE - GRID_SIZE) / GRID_SIZE) * GRID_SIZE;
           x = (x < 0) ? 0 : x;
           y = (y < 0) ? 0 : y;
           const position = { x, y };

@@ -1,9 +1,10 @@
 import React from 'react';
 import ColorDropdown from '../../components-shared/Dropdowns/ColorDropdown';
 import { FILTER_OPTIONS, useColorDropdownHooks } from './hooks';
+
 import './index.scss';
-import '../../styles/colors.scss';
-import { CARD_COLOR_KEYS } from '../../styles/colors';
+import '../../constants/colors.scss';
+import { CARD_COLOR_KEYS } from '../../constants/colors';
 
 const FilterBar = ({
   isColorFiltered,

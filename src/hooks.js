@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { authListener } from './data/api/auth';
 import * as api from './data/api/database';
 import { actions, clearHistory } from './data/redux';
-import { NETWORK_STATUS } from './data/redux/session/constants';
+import { NETWORK_STATUS } from './constants/states';
 
 export const useListenerHooks = () => {
   const dispatch = useDispatch();

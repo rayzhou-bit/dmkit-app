@@ -1,17 +1,43 @@
 import { createSelector } from 'reselect';
-import * as module from './selectors';
+import * as project from './selectors';
+import * as session from '../session/selectors';
 
-export const campaignState = (state) => state.campaign;
-const mkSimpleSelector = (cb) => createSelector([module.campaignState], cb);
+export const getProject = (state) => state.project;
+const mkSimpleSelector = (cb) => createSelector([project.getProject], cb);
 export const simpleSelectors = {
-  completeState: mkSimpleSelector(campaignData => campaignData),
-  campaignTitle: mkSimpleSelector(campaignData => campaignData.title),
-  activeViewId: mkSimpleSelector(campaignData => campaignData.activeViewId),
-  viewOrder: mkSimpleSelector(campaignData => campaignData.viewOrder),
-  cards: mkSimpleSelector(campaignData => campaignData.cards),
-  views: mkSimpleSelector(campaignData => campaignData.views),
+  presentState: mkSimpleSelector(project => project.present),
+  activeTab: mkSimpleSelector(project => project.present.activeViewId),
+  tabOrder: mkSimpleSelector(project => project.present.viewOrder),
+  cards: mkSimpleSelector(project => project.present.cards),
+  tabs: mkSimpleSelector(project => project.present.views),
 };
+
+export const activeCardPosition = createSelector(
+  [
+    project.simpleSelectors.cards,
+    session.simpleSelectors.activeCardId,
+    project.simpleSelectors.activeTab,
+  ],
+  (cards, activeCardId, activeTab) => {
+    if (!activeCardId) { return null; }
+    if (!activeTab) { return null; }
+    return cards[activeCardId].views[activeTab]?.pos;
+  },
+);
+
+export const activeTabPosition = createSelector(
+  [
+    project.simpleSelectors.tabs,
+    project.simpleSelectors.activeTab,
+  ],
+  (tabs, activeTab) => {
+    if (!activeTab) { return null; }
+    return tabs[activeTab]?.pos;
+  }
+);
 
 export default {
   ...simpleSelectors,
+  activeCardPosition,
+  activeTabPosition,
 };

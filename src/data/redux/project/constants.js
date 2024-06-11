@@ -1,13 +1,9 @@
-import { GRID } from '../../../styles/constants';
+import {
+  GRID_SIZE,
+  DEFAULT_CANVAS_POSITION,
+  DEFAULT_CANVAS_SCALE,
+} from '../../../constants/dimensions';
 
-export const DEFAULT_CARD_POSITION = {
-  x: 3 * GRID.size,
-  y: 3 * GRID.size,
-};
-export const DEFAULT_CARD_SIZE = {
-  width: 8 * GRID.size,
-  height: 10 * GRID.size,
-};
 export const DEFAULT_CARD = {
   title: 'untitled',
   color: 'gray',
@@ -17,15 +13,10 @@ export const DEFAULT_CARD = {
   editedOn: Date.now(),
 };
 
-export const DEFAULT_TAB_POSITION = {
-  x: 80,
-  y: 50,
-};
-export const DEFAULT_TAB_SCALE = 1;
 export const DEFAULT_TAB = {
   title: 'untitled',
-  pos: DEFAULT_TAB_POSITION,
-  scale: DEFAULT_TAB_SCALE,
+  pos: DEFAULT_CANVAS_POSITION,
+  scale: DEFAULT_CANVAS_SCALE,
   createdOn: Date.now(),
   editedOn: Date.now(),
 };
@@ -39,8 +30,8 @@ export const INTRO_CARDS = {
     },
     views: {
       'tab0': {
-        pos: {x: 5*GRID.size, y: 7*GRID.size},
-        size: {width: 32*GRID.size, height: 20*GRID.size},
+        pos: {x: 5*GRID_SIZE, y: 7*GRID_SIZE},
+        size: {width: 32*GRID_SIZE, height: 20*GRID_SIZE},
       },
     },
   },
@@ -52,8 +43,8 @@ export const INTRO_CARDS = {
     },
     views: {
       'tab1': {
-        pos: {x: 5*GRID.size, y: 7*GRID.size},
-        size: {width: 16*GRID.size, height: 18*GRID.size},
+        pos: {x: 5*GRID_SIZE, y: 7*GRID_SIZE},
+        size: {width: 16*GRID_SIZE, height: 18*GRID_SIZE},
       },
     },
   },
@@ -65,8 +56,8 @@ export const INTRO_CARDS = {
     },
     views: {
       'tab1': {
-        pos: {x: 8*GRID.size, y: 40*GRID.size},
-        size: {width: 20*GRID.size, height: 10*GRID.size},
+        pos: {x: 8*GRID_SIZE, y: 40*GRID_SIZE},
+        size: {width: 20*GRID_SIZE, height: 10*GRID_SIZE},
       },
     },
   },
@@ -78,26 +69,28 @@ export const INTRO_CARDS = {
     },
     views: {
       'tab1': {
-        pos: {x: 50*GRID.size, y: 6*GRID.size},
-        size: {width: 20*GRID.size, height: 20*GRID.size},
+        pos: {x: 50*GRID_SIZE, y: 6*GRID_SIZE},
+        size: {width: 20*GRID_SIZE, height: 20*GRID_SIZE},
       },
     },
   },
 };
+
 export const INTRO_TABS = {
   'tab0': {
     title: 'Welcome!',
-    pos: DEFAULT_TAB_POSITION,
+    pos: DEFAULT_CANVAS_POSITION,
     scale: 1,
     cards: ['card0'],
   },
   'tab1': {
     title: 'READ ME',
-    pos: DEFAULT_TAB_POSITION,
+    pos: DEFAULT_CANVAS_POSITION,
     scale: 1,
     cards: ['card1', 'card2', 'card3'],
   },
 };
+
 export const INTRO_PROJECT = {
   title: 'DM Kit',
   viewOrder: ['tab0', 'tab1'],
@@ -116,7 +109,7 @@ export const BLANK_PROJECT = {
   views: { 
     'tab0': { 
       title: 'Title',
-      pos: DEFAULT_TAB_POSITION,
+      pos: DEFAULT_CANVAS_POSITION,
       scale: 1,
       cards: [],
     },

@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { CARD_COLOR_KEYS } from '../../styles/colors';
+import { CARD_COLOR_KEYS } from '../../constants/colors';
 
 export const FILTER_OPTIONS = {
   allTab: 'allTab',

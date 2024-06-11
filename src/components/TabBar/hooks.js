@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import useOutsideClick from '../../utils/useOutsideClick';
+import generateUID from '../../utils/generateUID';
 
 import { actions } from '../../data/redux';
 
@@ -132,7 +133,9 @@ export const useTabControlsHooks = ({
   return {
     newTab: () => {
       if (!!activeProject) {
-        dispatch(actions.project.createTab());
+        const newId = generateUID('tab');
+        dispatch(actions.project.createTab({ newId }));
+        dispatch(actions.project.setActiveTab({ id: newId }));
       }
     },
     btnRef,
