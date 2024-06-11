@@ -1,8 +1,8 @@
 import React, { useRef } from 'react';
 
 import './ColorDropdown.scss';
-import '../../styles/colors.scss'
-import { CARD_COLOR_KEYS } from '../../styles/colors';
+import '../../constants/colors.scss';
+import { CARD_COLOR_KEYS } from '../../constants/colors';
 import useOutsideClick from '../../utils/useOutsideClick';
 
 export const ColorDropdown = ({

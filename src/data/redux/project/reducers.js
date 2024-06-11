@@ -1,14 +1,11 @@
 import { createSlice } from '@reduxjs/toolkit';
 import {
-  DEFAULT_CARD_POSITION,
-  DEFAULT_CARD_SIZE,
   DEFAULT_CARD,
   DEFAULT_TAB,
   INTRO_PROJECT,
   BLANK_PROJECT,
 } from './constants';
-import { GRID } from '../../../styles/constants';
-import { v4 as uuidv4 } from 'uuid';
+import { GRID_SIZE, NEW_CARD_SIZE } from '../../../constants/dimensions';
 
 // TODO name refactor
 //  view -> tab
@@ -21,8 +18,6 @@ const initialState = {
   cards: {},
   views: {},
 };
-
-const generateUID = (prefix) => (prefix + uuidv4().slice(0, 8));
 
 const project = createSlice({
   name: 'project',
@@ -49,20 +44,19 @@ const project = createSlice({
       return { ...state, viewOrder: newViewOrder };
     },
 
-    createCard: (state) => {
+    createCard: (state, { payload }) => {
+      const { newId, position } = payload;
       if (!state.activeViewId) return state;
-      const newCardId = generateUID('card');
       return {
         ...state,
-        activeCardId: newCardId,
         cards: {
           ...state.cards,
-          [newCardId]: {
+          [newId]: {
             ...DEFAULT_CARD,
             views: {
               [state.activeViewId]: {
-                pos: DEFAULT_CARD_POSITION,
-                size: DEFAULT_CARD_SIZE,
+                pos: position,
+                size: NEW_CARD_SIZE,
               }
             },
           },
@@ -73,29 +67,28 @@ const project = createSlice({
         //     ...state.views[state.activeViewId],
         //     cards: [
         //       ...state.views[state.activeViewId].cards,
-        //       newCardId,
+        //       newId,
         //     ],
         //   },
         // },
       };
     },
     copyCard: (state, { payload }) => {
+      const { id, newId } = payload;
       if (!state.activeViewId) return state;
-      const newCardId = generateUID('card');
       return {
         ...state,
-        activeCardId: newCardId,
         cards: {
           ...state.cards,
-          [newCardId]: {
-            ...state.cards[payload.id],
-            title: state.cards[payload.id].title + ' (copy)',
+          [newId]: {
+            ...state.cards[id],
+            title: state.cards[id].title + ' (copy)',
             views: {
               [state.activeViewId]: {
-                ...state.cards[payload.id].views[state.activeViewId],
+                ...state.cards[id].views[state.activeViewId],
                 pos: {
-                  x: state.cards[payload.id].views[state.activeViewId].pos.x + 3*GRID.size,
-                  y: state.cards[payload.id].views[state.activeViewId].pos.y + 3*GRID.size,
+                  x: state.cards[id].views[state.activeViewId].pos.x + 2*GRID_SIZE,
+                  y: state.cards[id].views[state.activeViewId].pos.y + 3*GRID_SIZE,
                 },
               },
             },
@@ -116,19 +109,19 @@ const project = createSlice({
       };
     },
     destroyCard: (state, { payload }) => {
+      const { id } = payload;
       let newCards = { ...state.cards };
-      delete newCards[payload.id];
+      delete newCards[id];
       return {
         ...state,
         cards: newCards,
       };
     },
     linkCardToView: (state, { payload }) => {
-      if (!state.activeViewId) return state;
       const { id, position } = payload;
+      if (!state.activeViewId) return state;
       return {
         ...state,
-        activeCardId: id,
         cards: {
           ...state.cards,
           [id]: {
@@ -137,7 +130,7 @@ const project = createSlice({
               ...state.cards[id].views,
               [state.activeViewId]: {
                 pos: position,
-                size: DEFAULT_CARD_SIZE,
+                size: NEW_CARD_SIZE,
               },
             },
           },
@@ -155,27 +148,27 @@ const project = createSlice({
       };
     },
     unlinkCardFromView: (state, { payload }) => {
+      const { id } = payload;
       if (!state.activeViewId) return state;
-      let newCardViews = { ...state.cards[payload.id].views };
+      let newCardViews = { ...state.cards[id].views };
       delete newCardViews[state.activeViewId];
       return {
         ...state,
-        activeCardId: null,
         cards: {
           ...state.cards,
-          [payload.id]: {
-            ...state.cards[payload.id],
+          [id]: {
+            ...state.cards[id],
             views: newCardViews,
           },
         },
       };
     },
     updateCardPosition: (state, { payload }) => {
-      if (!state.activeViewId) return state;
       const { id, position } = payload;
+      if (!state.activeViewId) return state;
       const newPos = {
-        x: Math.round(position.x / GRID.size) * GRID.size,
-        y: Math.round(position.y / GRID.size) * GRID.size,
+        x: Math.round(position.x / GRID_SIZE) * GRID_SIZE,
+        y: Math.round(position.y / GRID_SIZE) * GRID_SIZE,
       };
       return {
         ...state,
@@ -195,11 +188,11 @@ const project = createSlice({
       }
     },
     updateCardSize: (state, { payload }) => {
-      if (!state.activeViewId) return state;
       const { id, size } = payload;
+      if (!state.activeViewId) return state;
       const newSize = {
-        height: (Math.round(size.height.split('px').shift() / GRID.size) * GRID.size) + 'px',
-        width: (Math.round(size.width.split('px').shift() / GRID.size) * GRID.size) + 'px',
+        height: (Math.round(size.height.split('px').shift() / GRID_SIZE) * GRID_SIZE) + 'px',
+        width: (Math.round(size.width.split('px').shift() / GRID_SIZE) * GRID_SIZE) + 'px',
       };
       return {
         ...state,
@@ -264,27 +257,27 @@ const project = createSlice({
       };
     },
 
-    createTab: (state) => {
-      const newViewId = generateUID('tab');
+    createTab: (state, { payload }) => {
+      const { newId } = payload;
       let newViewOrder = [ ...state.viewOrder ];
       const pos = state.activeViewId ? newViewOrder.indexOf(state.activeViewId) + 1 : 0;
-      newViewOrder.splice(pos, 0, newViewId);
+      newViewOrder.splice(pos, 0, newId);
       return {
         ...state,
-        activeViewId: newViewId,
         viewOrder: newViewOrder,
         views: {
           ...state.views,
-          [newViewId]: DEFAULT_TAB,
+          [newId]: DEFAULT_TAB,
         },
       };
     },
     destroyTab: (state, { payload }) => {
+      const { id } = payload;
       let newViews = { ...state.views };
-      delete newViews[payload.id];
-      const newViewOrder = [ ...state.viewOrder ].filter(tabId => tabId !== payload.id);
+      delete newViews[id];
+      const newViewOrder = [ ...state.viewOrder ].filter(tabId => tabId !== id);
       let newActiveViewId = state.activeViewId;
-      if (payload.id === state.activeViewId) {
+      if (id === state.activeViewId) {
         newActiveViewId = (newViewOrder.length > 0) ? newViewOrder[0] : null;
       }
       return {
@@ -309,6 +302,7 @@ const project = createSlice({
       };
     },
     setActiveTabPosition: (state, { payload }) => {
+      const { position } = payload;
       if (!state.activeViewId) return state;
       return {
         ...state,
@@ -316,13 +310,14 @@ const project = createSlice({
           ...state.views,
           [state.activeViewId]: {
             ...state.views[state.activeViewId],
-            pos: payload.position,
+            pos: position,
           },
         },
       };
     },
     setActiveTabScale: (state, { payload }) => {
       // does not affect undo/redo
+      const { scale } = payload;
       if (!state.activeViewId) return state;
       return {
         ...state,
@@ -330,7 +325,7 @@ const project = createSlice({
           ...state.views,
           [state.activeViewId]: {
             ...state.views[state.activeViewId],
-            scale: payload.scale,
+            scale: scale,
           },
         },
       };

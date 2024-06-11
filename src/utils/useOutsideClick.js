@@ -1,4 +1,4 @@
-import {useEffect} from 'react';
+import { useEffect } from 'react';
 
 export const useOutsideClick = (refs, condition, handler) => {
   // refs contains an array of references that the user can click without logginging func

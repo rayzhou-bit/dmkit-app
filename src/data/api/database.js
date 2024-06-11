@@ -14,7 +14,8 @@ import { db } from './firebase';
 import { getUserId } from './auth';
 
 import { actions } from '../redux';
-import { NETWORK_STATUS, DEFAULT_PROJECT } from '../redux/session/constants';
+import { NETWORK_STATUS } from '../../constants/states';
+import { DEFAULT_PROJECT } from '../redux/session/constants';
 import { BLANK_PROJECT } from '../redux/project/constants';
 
 // TODO replace campaign terminology with project terminology

@@ -9,7 +9,7 @@ import * as api from  '../../data/api/database';
 import * as authApi from '../../data/api/auth';
 import * as userApi from '../../data/api/user';
 
-import { NETWORK_STATUS } from '../../data/redux/session/constants';
+import { NETWORK_STATUS } from '../../constants/states';
 import { POPUP_KEYS } from '../Popup/PopupKey';
 
 export const SAVE_BUTTON = {
