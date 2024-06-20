@@ -22,6 +22,8 @@ export const NEW_CARD_POSITION = {
   y: 7 * GRID_SIZE,
 };
 
+export const NEW_CARD_OFFSET = 3 * GRID_SIZE;
+
 export const NEW_CARD_SIZE = {
   width: 16 * GRID_SIZE,
   height: 12 * GRID_SIZE,
