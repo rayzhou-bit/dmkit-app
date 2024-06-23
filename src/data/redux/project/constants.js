@@ -5,18 +5,18 @@ import {
 } from '../../../constants/dimensions';
 
 export const DEFAULT_CARD = {
-  title: 'untitled',
-  color: 'gray',
-  content: { text: '' },
   views: {},
+  color: 'gray',
+  title: 'untitled',
+  content: { text: '' },
   createdOn: Date.now(),
   editedOn: Date.now(),
 };
 
 export const DEFAULT_TAB = {
-  title: 'untitled',
   pos: DEFAULT_CANVAS_POSITION,
   scale: DEFAULT_CANVAS_SCALE,
+  title: 'untitled',
   createdOn: Date.now(),
   editedOn: Date.now(),
 };

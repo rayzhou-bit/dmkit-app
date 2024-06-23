@@ -5,7 +5,7 @@ import {
   INTRO_PROJECT,
   BLANK_PROJECT,
 } from './constants';
-import { GRID_SIZE, NEW_CARD_SIZE } from '../../../constants/dimensions';
+import { GRID_SIZE, NEW_CARD_POSITION, NEW_CARD_SIZE } from '../../../constants/dimensions';
 
 // TODO name refactor
 //  view -> tab
@@ -45,7 +45,7 @@ const project = createSlice({
     },
 
     createCard: (state, { payload }) => {
-      const { newId, position } = payload;
+      const { newId, position, size, color, title, text } = payload;
       if (!state.activeViewId) return state;
       return {
         ...state,
@@ -55,12 +55,20 @@ const project = createSlice({
             ...DEFAULT_CARD,
             views: {
               [state.activeViewId]: {
-                pos: position,
-                size: NEW_CARD_SIZE,
-              }
+                pos: position ?? NEW_CARD_POSITION,
+                size: size ?? NEW_CARD_SIZE,
+              },
             },
+            color: color ?? DEFAULT_CARD.color,
+            title: title ?? DEFAULT_CARD.title,
+            content: {
+              text: text ?? DEFAULT_CARD.content.text,
+            },
+            createdOn: Date.now(),
+            editedOn: Date.now(),
           },
         },
+        // TODO add card list to views?
         // views: {
         //   ...state.views,
         //   [state.activeViewId]: {
@@ -68,41 +76,6 @@ const project = createSlice({
         //     cards: [
         //       ...state.views[state.activeViewId].cards,
         //       newId,
-        //     ],
-        //   },
-        // },
-      };
-    },
-    copyCard: (state, { payload }) => {
-      const { id, newId } = payload;
-      if (!state.activeViewId) return state;
-      return {
-        ...state,
-        cards: {
-          ...state.cards,
-          [newId]: {
-            ...state.cards[id],
-            title: state.cards[id].title + ' (copy)',
-            views: {
-              [state.activeViewId]: {
-                ...state.cards[id].views[state.activeViewId],
-                pos: {
-                  x: state.cards[id].views[state.activeViewId].pos.x + 2*GRID_SIZE,
-                  y: state.cards[id].views[state.activeViewId].pos.y + 3*GRID_SIZE,
-                },
-              },
-            },
-            createdOn: Date.now(),
-            editedOn: Date.now(),
-          },
-        },
-        // views: {
-        //   ...state.views,
-        //   [state.activeViewId]: {
-        //     ...state.views[state.activeViewId],
-        //     cards: [
-        //       ...state.views[state.activeViewId].cards,
-        //       newCardId,
         //     ],
         //   },
         // },

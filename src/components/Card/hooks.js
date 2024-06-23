@@ -2,7 +2,8 @@ import { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import useOutsideClick from '../../utils/useOutsideClick';
 
-import { actions } from '../../data/redux';
+import { copySelectedCard } from '../../data/redux/thunkActions';
+import { actions, selectors } from '../../data/redux';
 import { CARD_COLOR_KEYS, LIGHT_COLORS } from '../../constants/colors';
 import { POPUP_KEYS } from '../Popup/PopupKey';
 import { ACTION_TYPE } from '../../components-shared/Dropdowns/ActionDropdown';
@@ -10,6 +11,7 @@ import { ACTION_TYPE } from '../../components-shared/Dropdowns/ActionDropdown';
 import LibraryIcon from '../../assets/icons/library-open.svg';
 import RedTrashIcon from '../../assets/icons/trash-red.svg';
 import { NEW_CARD_POSITION } from '../../constants/dimensions';
+import generateUID from '../../utils/generateUID';
 
 export const ANIMATION = {
   cardBlink: 'card-blink .25s step-end 4 alternate',
@@ -252,14 +254,21 @@ export const useOptionsDropdownHooks = ({
 }) => {
   const dispatch = useDispatch();
 
+  const activeTab = useSelector(selectors.project.activeTab);
+  const cardData = useSelector(state => state.project.present.cards[cardId]);
   const text = useSelector(state => state.project.present.cards[cardId].content.text);
   const [ isOptionDropdownOpen, setIsOptionDropdownOpen ] = useState(false);
   const optionDropdownBtnRef = useRef();
 
   const options = [
     {
-      title: 'Duplicate card',
-      callback: () => dispatch(actions.project.copyCard({ id: cardId })),
+      title: 'Copy card',
+      callback: () => {
+        dispatch(copySelectedCard({
+          selectedCard: cardData,
+          activeTab,
+        }));
+      },
     },
     {
       title: 'Rename',
@@ -330,16 +339,16 @@ export const useOptionsDropdownLibraryHooks = ({
       type: cardTabs[activeTab] ? null : ACTION_TYPE.disabled,
       callback: () => dispatch(actions.project.unlinkCardFromView({ id: cardId })),
     },
-    // {
-    //   title: 'Duplicate card',
-    //   callback: () => dispatch(actions.project.copyCard({ id: cardId })),
-    // },
-    {},
+    {
+      // break
+    },
     {
       title: 'Rename',
       callback: () => beginTitleEdit(),
     },
-    {},
+    {
+      // break
+    },
     {
       title: 'Delete',
       type: ACTION_TYPE.danger,

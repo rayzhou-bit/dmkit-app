@@ -12,10 +12,21 @@ export const simpleSelectors = {
   tabs: mkSimpleSelector(project => project.present.views),
 };
 
+export const activeCardData = createSelector(
+  [
+    project.simpleSelectors.cards,
+    session.simpleSelectors.activeCard,
+  ],
+  (cards, activeCardId) => {
+    if (!activeCardId) { return null; }
+    return cards[activeCardId];
+  }
+)
+
 export const activeCardPosition = createSelector(
   [
     project.simpleSelectors.cards,
-    session.simpleSelectors.activeCardId,
+    session.simpleSelectors.activeCard,
     project.simpleSelectors.activeTab,
   ],
   (cards, activeCardId, activeTab) => {
@@ -38,6 +49,7 @@ export const activeTabPosition = createSelector(
 
 export default {
   ...simpleSelectors,
+  activeCardData,
   activeCardPosition,
   activeTabPosition,
 };
