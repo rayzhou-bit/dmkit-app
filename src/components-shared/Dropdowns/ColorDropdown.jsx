@@ -23,7 +23,7 @@ export const ColorDropdown = ({
   Object.values(CARD_COLOR_KEYS).forEach(color => {
     let className = 'item ' + color;
     if (selectedColor === color) {
-      className += ' selected';
+      className += ' selected-color';
     }
     colorList = [
       ...colorList,
