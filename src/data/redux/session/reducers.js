@@ -12,6 +12,7 @@ const initialState = {
   campaignList: {},     // campaignId: campaignTitle
   activeCampaignId: null,
   activeCardId: null,
+  selectedCards: [],
 
   isProjectEdited: false, // flag for unsaved changes
 };
@@ -68,6 +69,7 @@ const session = createSlice({
     }),
     setActiveProject: (state, { payload }) => ({ ...state, activeCampaignId: payload.id }),
     setActiveCard: (state, { payload }) => ({ ...state, activeCardId: payload.id }),
+    setSelectedCards: (state, { payload }) => ({ ...state, selectedCards: payload.cards }),
 
     setIsProjectEdited: (state, { payload }) => ({ ...state, isProjectEdited: payload }),
   },

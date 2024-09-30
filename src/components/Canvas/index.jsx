@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { Rnd } from 'react-rnd';
 
-import { useCanvasHooks } from './hooks';
+import { useCanvasHooks, useCardsHooks, useMultiSelectHooks } from './hooks';
 import Card from '../Card/Card';
 
 import { CANVAS_STATES } from '../../constants/states';
@@ -39,16 +39,32 @@ const Loading = () => (
 );
 
 const Canvas = ({ toolMenuRef }) => {
+  const canvasRef = useRef();
+  const selectRef = useRef();
+
   const {
     canvasState,
     canvasPosition,
     canvasScale,
-    cardArgs,
-    dragStopHandler,
+    isPanning,
+    beginPanning,
+    endPanning,
+    mouseMoveHandler,
     wheelHandler,
-    cardDropHandler,
     createNewProject,
   } = useCanvasHooks();
+
+  const {
+    cardArgs,
+    cardDropHandler,
+  } = useCardsHooks();
+
+  const {
+    selectStyle,
+  } = useMultiSelectHooks({
+    canvasRef,
+    selectRef,
+  });
 
   let cardList = [];
   for (let card in cardArgs) {
@@ -69,40 +85,87 @@ const Canvas = ({ toolMenuRef }) => {
     case CANVAS_STATES.loaded:
       display = (
         <div
-          className='scale-view'
-          style={{ transform: 'scale('+canvasScale+')'}}
+          className='canvas-container'
+          onMouseDown={beginPanning}
+          onMouseUp={endPanning}
+          onMouseLeave={endPanning}
+          onMouseMove={mouseMoveHandler}
+          onWheel={wheelHandler}
+          style={{
+            cursor: isPanning ? 'grabbing' : 'auto',
+          }}
         >
-          <Rnd
-            allowAnyClick={true}
-            dragHandleClassName='drag-view'
-            enableResizing={false}
-            onDragStop={dragStopHandler}
-            position={canvasPosition}
-            scale={canvasScale}
-            size={CANVAS_SIZE}
+          <div
+            className='canvas'
+            onDragOver={(e) => e.preventDefault()}
+            onDrop={cardDropHandler}
+            style={{
+              width: `${CANVAS_SIZE.width}px`,
+              height: `${CANVAS_SIZE.height}px`,
+              backgroundPosition: `${GRID_SIZE / 2}px ${GRID_SIZE / 2}px`,
+              backgroundSize: `${GRID_SIZE}px ${GRID_SIZE}px`,
+              transition: isPanning ? 'none' : 'transform 0.3s',
+              transform: `translate(${canvasPosition.x}px, ${canvasPosition.y}px) scale(${canvasScale})`,
+            }}
+            ref={canvasRef}
           >
             <div
-              className='view'
-              onDragOver={(e) => e.preventDefault()}
-              onDrop={cardDropHandler}
-            >
-              <div className='drag-view' />
-              {cardList}
-              <div
-                className='grid'
-                style={{ backgroundSize: GRID_SIZE + ' ' + GRID_SIZE }}
-              />
-            </div>
-          </Rnd>
+              className='selection-area'
+              ref={selectRef}
+              style={selectStyle}
+            />
+            {cardList}
+          </div>
         </div>
+        // <div
+        //   className='scaling-div'
+        //   onMouseMove={mouseMoveHandler}
+        //   style={{
+        //     transform: `scale(${canvasScale})`,
+        //     transformOrigin: `${canvasOrigin.x} ${canvasOrigin.y}`,
+        //   }}
+        //   ref={canvasRef}
+        // >
+        //   <Rnd
+        //     allowAnyClick={true}
+        //     dragHandleClassName='dragging-div'
+        //     enableResizing={false}
+        //     onDragStop={dragStopHandler}
+        //     position={canvasPosition}
+        //     scale={canvasScale}
+        //     size={CANVAS_SIZE}
+        //   >
+        //     <div
+        //       className='selection-area'
+        //       ref={selectRef}
+        //       style={selectStyle}
+        //     />
+        //     <div
+        //       className='view'
+        //       id='view'
+        //       onDragOver={(e) => e.preventDefault()}
+        //       onDrop={cardDropHandler}
+        //       onMouseDown={mouseFilterHandler}
+        //     >
+        //       <div className='dragging-div' />
+        //       <div
+        //         className='grid'
+        //         style={{
+        //           backgroundPosition: `${GRID_SIZE / 2}px ${GRID_SIZE / 2}px`,
+        //           backgroundSize: `${GRID_SIZE}px ${GRID_SIZE}px`,
+        //         }}
+        //       />
+        //       {cardList}
+        //     </div>
+        //   </Rnd>
+        // </div>
       );
       break;
   }
 
   return (
     <main
-      className='view-screen'
-      onWheel={wheelHandler}
+      className='view'
       onContextMenu={(e) => e.preventDefault()}
     >
       {display}

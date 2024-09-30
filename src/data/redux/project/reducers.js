@@ -5,7 +5,7 @@ import {
   INTRO_PROJECT,
   BLANK_PROJECT,
 } from './constants';
-import { GRID_SIZE, NEW_CARD_POSITION, NEW_CARD_SIZE } from '../../../constants/dimensions';
+import { GRID_SIZE, DEFAULT_CARD_POSITION, DEFAULT_CARD_SIZE } from '../../../constants/dimensions';
 
 // TODO name refactor
 //  view -> tab
@@ -55,8 +55,8 @@ const project = createSlice({
             ...DEFAULT_CARD,
             views: {
               [state.activeViewId]: {
-                pos: position ?? NEW_CARD_POSITION,
-                size: size ?? NEW_CARD_SIZE,
+                pos: position ?? DEFAULT_CARD_POSITION,
+                size: size ?? DEFAULT_CARD_SIZE,
               },
             },
             color: color ?? DEFAULT_CARD.color,
@@ -103,7 +103,7 @@ const project = createSlice({
               ...state.cards[id].views,
               [state.activeViewId]: {
                 pos: position,
-                size: NEW_CARD_SIZE,
+                size: DEFAULT_CARD_SIZE,
               },
             },
           },

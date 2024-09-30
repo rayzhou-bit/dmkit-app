@@ -1,4 +1,4 @@
-import { GRID_SIZE, CANVAS_SIZE, NEW_CARD_POSITION, NEW_CARD_SIZE } from '../constants/dimensions';
+import { GRID_SIZE, CANVAS_SIZE, DEFAULT_CARD_POSITION, DEFAULT_CARD_SIZE } from '../constants/dimensions';
 
 export const getNearestGrid = ({ x, y }) => {
   let nearestX = Math.round(x / GRID_SIZE) * GRID_SIZE;
@@ -38,13 +38,13 @@ export const getValidPositionAndSize = ({ position, size }) => {
   if (x < 0) {
     x = 0;
   } else if (x + width > CANVAS_SIZE.width) {
-    x = CANVAS_SIZE.width - NEW_CARD_SIZE.width;
+    x = CANVAS_SIZE.width - DEFAULT_CARD_SIZE.width;
   }
 
   if (y < 0) {
     y = 0;
   } else if (y + height > CANVAS_SIZE.height) {
-    y = CANVAS_SIZE.height - NEW_CARD_SIZE.height;
+    y = CANVAS_SIZE.height - DEFAULT_CARD_SIZE.height;
   }
 
   return {

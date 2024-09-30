@@ -10,7 +10,7 @@ import { ACTION_TYPE } from '../../components-shared/Dropdowns/ActionDropdown';
 
 import LibraryIcon from '../../assets/icons/library-open.svg';
 import RedTrashIcon from '../../assets/icons/trash-red.svg';
-import { NEW_CARD_POSITION } from '../../constants/dimensions';
+import { DEFAULT_CARD_POSITION } from '../../constants/dimensions';
 import generateUID from '../../utils/generateUID';
 
 export const ANIMATION = {
@@ -27,12 +27,13 @@ export const useCardHooks = ({
   const dispatch = useDispatch();
 
   const activeCard = useSelector(state => state.session.activeCardId);
+  const selectedCards = useSelector(state => state.session.selectedCards);
   const activeTab = useSelector(state => state.project.present.activeViewId);
   const activeTabScale = useSelector(state => activeTab ? state.project.present.views[activeTab]?.scale : null);
   const {
     pos: cardPosition,
     size: cardSize,
-  } = useSelector( state => state.project.present.cards[cardId].views[activeTab]);
+  } = useSelector(state => state.project.present.cards[cardId].views[activeTab]);
 
   const [isDragging, setIsDragging] = useState(false);
   const [isSelected, setIsSelected] = useState(false);
@@ -57,6 +58,7 @@ export const useCardHooks = ({
   return {
     cardRef,
     isActive,
+    isSelected: selectedCards.includes(cardId),
     activeTabScale,
     size: cardSize,
     position: cardPosition,
@@ -332,7 +334,7 @@ export const useOptionsDropdownLibraryHooks = ({
     {
       title: 'Add to tab',
       type: cardTabs[activeTab] ? ACTION_TYPE.disabled : null,
-      callback: () => dispatch(actions.project.linkCardToView({ id: cardId, position: NEW_CARD_POSITION })),
+      callback: () => dispatch(actions.project.linkCardToView({ id: cardId, position: DEFAULT_CARD_POSITION })),
     },
     {
       title: 'Remove from tab',

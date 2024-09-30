@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { selectors } from '../../data/redux';
 import { copySelectedCard, createNewCard } from '../../data/redux/thunkActions';
 
-import { NEW_CARD_OFFSET } from '../../constants/dimensions';
+import { DEFAULT_CARD_OFFSET } from '../../constants/dimensions';
 
 const OFFSET_TIMEOUT = 3000;
 
@@ -34,7 +34,7 @@ export const useToolMenuHooks = () => {
     onClickNewCard: () => {
       if (!disableNewCard) {
         dispatch(createNewCard({ activeTabPosition, offset }));
-        setOffset(offset + NEW_CARD_OFFSET);
+        setOffset(offset + DEFAULT_CARD_OFFSET);
       }
     },
     disableNewCard,

@@ -18,6 +18,7 @@ export const Card = ({
   const {
     cardRef,
     isActive,
+    isSelected,
     activeTabScale,
     size,
     position,
@@ -63,7 +64,7 @@ export const Card = ({
       onResizeStop={onResizeStop}
     >
       <div
-        className={`card ${isActive ? 'active-card' : 'inactive-card'}`}
+        className={`card ${isActive || isSelected ? 'active-card' : 'inactive-card'}`}
         onClick={onClick}
         onAnimationEnd={onAnimationEnd}
         ref={cardRef}

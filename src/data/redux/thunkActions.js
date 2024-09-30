@@ -1,7 +1,7 @@
 import { actions } from '../../data/redux';
 import generateUID from '../../utils/generateUID';
 import { getNearestGrid, getValidPositionAndSize } from '../../utils/gridUtils';
-import { NEW_CARD_POSITION, NEW_CARD_SIZE, NEW_CARD_OFFSET } from '../../constants/dimensions';
+import { DEFAULT_CARD_POSITION, DEFAULT_CARD_SIZE, DEFAULT_CARD_OFFSET } from '../../constants/dimensions';
 
 export const createNewCard = ({
   activeTabPosition,
@@ -13,10 +13,10 @@ export const createNewCard = ({
     size,
   } = getValidPositionAndSize({
     position: getNearestGrid({
-      x: NEW_CARD_POSITION.x - activeTabPosition.x + (offset ?? 0),
-      y: NEW_CARD_POSITION.y - activeTabPosition.y + (offset ?? 0),
+      x: DEFAULT_CARD_POSITION.x - activeTabPosition.x + (offset ?? 0),
+      y: DEFAULT_CARD_POSITION.y - activeTabPosition.y + (offset ?? 0),
     }),
-    size: NEW_CARD_SIZE,
+    size: DEFAULT_CARD_SIZE,
   });
   dispatch(actions.project.createCard({
     newId,
@@ -32,8 +32,8 @@ export const copySelectedCard = ({
 }) => dispatch => {
   const newId = generateUID('card');
   const position = {
-    x: (selectedCard?.views[activeTab]?.pos?.x ?? 0) + NEW_CARD_OFFSET,
-    y: (selectedCard?.views[activeTab]?.pos?.y ?? 0) + NEW_CARD_OFFSET,
+    x: (selectedCard?.views[activeTab]?.pos?.x ?? 0) + DEFAULT_CARD_OFFSET,
+    y: (selectedCard?.views[activeTab]?.pos?.y ?? 0) + DEFAULT_CARD_OFFSET,
   };
   dispatch(actions.project.createCard({
     newId,
