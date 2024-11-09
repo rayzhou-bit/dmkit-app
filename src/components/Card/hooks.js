@@ -97,7 +97,8 @@ export const useCardHooks = ({
         }
       }
     },
-    onClick: () => {
+    onClick: (event) => {
+      event.stopPropagation();
       if (!isSelected) {
         if (!isActive) dispatch(actions.session.setActiveCard({ id: cardId }));
         setIsSelected(true);

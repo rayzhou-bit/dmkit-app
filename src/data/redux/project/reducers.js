@@ -44,6 +44,7 @@ const project = createSlice({
       return { ...state, viewOrder: newViewOrder };
     },
 
+    // Card reducers
     createCard: (state, { payload }) => {
       const { newId, position, size, color, title, text } = payload;
       if (!state.activeViewId) return state;
@@ -230,6 +231,7 @@ const project = createSlice({
       };
     },
 
+    // Tab reducers
     createTab: (state, { payload }) => {
       const { newId } = payload;
       let newViewOrder = [ ...state.viewOrder ];

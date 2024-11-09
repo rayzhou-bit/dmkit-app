@@ -15,10 +15,12 @@ const ToolMenu = ({
   toolMenuRef,
 }) => {
   const {
-    onClickNewCard,
     disableNewCard,
-    onClickCopyCard,
+    onClickNewCard,
     disableCopyCard,
+    onClickCopyCard,
+    disableCopyCards,
+    onClickCopyCards,
   } = useToolMenuHooks();
 
   return (
@@ -47,14 +49,14 @@ const ToolMenu = ({
       {/* copy card */}
       <button
         className='tool-btn'
-        disabled={disableCopyCard}
-        onClick={onClickCopyCard}
+        disabled={disableCopyCards}
+        onClick={onClickCopyCards}
       >
         <div className='btn-highlight'>
           <img
             alt='Copy'
             draggable='false'
-            src={disableCopyCard ? CopyCardDisabledIcon : CopyCardIcon}
+            src={disableCopyCards ? CopyCardDisabledIcon : CopyCardIcon}
           />
         </div>
         <span>copy</span>

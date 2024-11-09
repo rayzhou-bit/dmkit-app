@@ -45,3 +45,27 @@ export const copySelectedCard = ({
   }));
   dispatch(actions.session.setActiveCard({ id: newId }));
 };
+
+export const copySelectedCards = ({
+  selectedCards,
+  activeTab,
+}) => dispatch => {
+  for (let cardId in selectedCards) {
+    console.log(selectedCards[cardId])
+    const selectedCard = selectedCards[cardId];
+    const newId = generateUID('card');
+    const position = {
+      x: (selectedCard?.views[activeTab]?.pos?.x ?? 0) + DEFAULT_CARD_OFFSET,
+      y: (selectedCard?.views[activeTab]?.pos?.y ?? 0) + DEFAULT_CARD_OFFSET,
+    };
+    dispatch(actions.project.createCard({
+      newId,
+      position,
+      size: selectedCard?.views[activeTab]?.size,
+      color: selectedCard?.color,
+      title: selectedCard?.title,
+      text: selectedCard?.content?.text,
+    }));
+    // dispatch(actions.session.setActiveCard({ id: newId }));
+  }
+};

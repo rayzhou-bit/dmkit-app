@@ -14,11 +14,10 @@ import {
 } from '../../constants/dimensions';
 import { ANIMATION } from '../Card/hooks';
 
-const checkCardInSelection = (selectArea, cardArea, offset) => {
+const checkCardInSelection = (selectArea, cardArea) => {
   const {start, end} = selectArea;
   const {pos, size} = cardArea;
-  const {x, y} = offset;
-  if (!start || !end || !pos || !size || !x || !y) {
+  if (!start || !end || !pos || !size) {
     return false;
   }
   let leftBound = start.x;
@@ -35,21 +34,14 @@ const checkCardInSelection = (selectArea, cardArea, offset) => {
   }
   // The following checks if the card is outside of the bounds.
   // check if card is left or right of bounds
-  if (pos.x + x + size.width < leftBound || pos.x + x > rightBound) {
+  if (pos.x + size.width < leftBound || pos.x > rightBound) {
     return false;
   }
   // check if card is top or bottom of bounds
-  if (pos.y + y + size.height < topBound || pos.y + y > bottomBound) {
+  if (pos.y + size.height < topBound || pos.y > bottomBound) {
     return false;
   }
   return true;
-};
-
-const adjustPositionForScale = (x, y, scale) => {
-  return {
-    x: x * scale,
-    y: y * scale,
-  };
 };
 
 export const useCanvasHooks = () => {
@@ -64,7 +56,7 @@ export const useCanvasHooks = () => {
   const [ canvasState, setCanvasState ] = useState(CANVAS_STATES.empty);
   const [ isPanning, setIsPanning ] = useState(false);
   const [ startPan, setStartPan ] = useState({ x: 0, y: 0 });
-  
+
   // set canvas state
   useEffect(() => {
     if (status === NETWORK_STATUS.loading) {
@@ -75,11 +67,8 @@ export const useCanvasHooks = () => {
       setCanvasState(CANVAS_STATES.empty);
     }
   }, [status, userId, activeProject, activeTab]);
-  
+
   const beginPanning = (event) => {
-    // Panning
-    // event.stopPropagation();
-    // event.preventDefault();
     if (event.button == 1) {
       setIsPanning(true);
       setStartPan({
@@ -90,12 +79,10 @@ export const useCanvasHooks = () => {
   };
 
   const endPanning = () => {
-    // Panning
     setIsPanning(false);
   };
 
-  const mouseMoveHandler = (event) => {
-    // Panning
+  const updatePanning = (event) => {
     if (isPanning) {
       dispatch(actions.project.setActiveTabPosition({
         position: {
@@ -136,11 +123,12 @@ export const useCanvasHooks = () => {
     isPanning,
     beginPanning,
     endPanning,
-    mouseMoveHandler,
+    updatePanning,
     wheelHandler,
     createNewProject: () => dispatch(api.createAndSwitchToEmptyProject()),
   };
 };
+
 
 export const useMultiSelectHooks = ({
   canvasRef,
@@ -158,14 +146,13 @@ export const useMultiSelectHooks = ({
     end: undefined,
   });
   const [ selectStyle, setSelectStyle ] = useState(null);
-  const [ temp, setTemp ] = useState([]);
 
   const updateSelect = (event) => {
     setSelectArea(prev => ({
       ...prev,
       end: {
-        x: event.clientX,
-        y: event.clientY,
+        x: (event.clientX - activeTabPosition.x) / activeTabScale,
+        y: (event.clientY - activeTabPosition.y) / activeTabScale,
       },
     }));
   };
@@ -178,12 +165,12 @@ export const useMultiSelectHooks = ({
         document.addEventListener('mousemove', updateSelect);
         setSelectArea({
           start: {
-            x: event.clientX,
-            y: event.clientY,
+            x: (event.clientX - activeTabPosition.x) / activeTabScale,
+            y: (event.clientY - activeTabPosition.y) / activeTabScale,
           },
           end: {
-            x: event.clientX,
-            y: event.clientY,
+            x: (event.clientX - activeTabPosition.x) / activeTabScale,
+            y: (event.clientY - activeTabPosition.y) / activeTabScale,
           },
         });
       };
@@ -211,7 +198,7 @@ export const useMultiSelectHooks = ({
         document.removeEventListener('mouseup', canvasMouseUpHandler);
       };
     }
-  }, [canvasRef.current]);
+  }, [canvasRef.current, activeTabPosition, activeTabScale]);
 
   // update selection area style when selection area state changes
   useEffect(() => {
@@ -225,75 +212,43 @@ export const useMultiSelectHooks = ({
       let height = null;
       if (start && end) {
         if (end.x > start.x) {
-          left = `${(start.x - activeTabPosition.x)}px`;
-          width = `${(end.x - start.x)}px`;
+          left = `${start.x}px`;
+          width = `${end.x - start.x}px`;
         } else  {
-          left = `${(end.x - activeTabPosition.x)}px`;
-          width = `${(start.x - end.x)}px`;
+          left = `${end.x}px`;
+          width = `${start.x - end.x}px`;
         }
         if (end.y > start.y) {
-          top = `${(start.y - activeTabPosition.y)}px`;
-          height = `${(end.y - start.y)}px`;
+          top = `${start.y}px`;
+          height = `${end.y - start.y}px`;
         } else {
-          top = `${(end.y - activeTabPosition.y)}px`;
-          height = `${(start.y - end.y)}px`;
+          top = `${end.y}px`;
+          height = `${start.y - end.y}px`;
         }
-        console.log(`scale: ${activeTabScale}\n
-          result: ${left}, ${top}\n
-          start: ${start.x}, ${start.y}\n
-          tabPosition: ${activeTabPosition.x}, ${activeTabPosition.y}\n
-          calculation: ${start.x - (activeTabPosition.x / activeTabScale)}
-          `)
         setSelectStyle({ left, top, width, height, border });
       } else {
         setSelectStyle({ border: null });
       }
     }
-  }, [selectArea, activeTabPosition, selectRef.current])
+  }, [selectArea, activeTabPosition, activeTabScale, selectRef.current]);
 
   // update selected cards when selection area state changes
   useEffect(() => {
-    let selectedCards = [];
-    for (let cardId in activeTabCardsDimensions) {
-      if (checkCardInSelection(selectArea, activeTabCardsDimensions[cardId], activeTabPosition)) {
-        selectedCards.push(cardId);
-      }
-    }
     if (isMouseDown) {
+      let selectedCards = [];
+      for (let cardId in activeTabCardsDimensions) {
+        if (checkCardInSelection(selectArea, activeTabCardsDimensions[cardId])) {
+          selectedCards.push(cardId);
+        }
+      }
       dispatch(actions.session.setSelectedCards({ cards: selectedCards }));
     }
-  }, [selectArea, activeTabCardsDimensions, activeTabPosition, isMouseDown]);
+  }, [selectArea, activeTabCardsDimensions, activeTabPosition, activeTabScale, isMouseDown]);
 
   return {
     selectStyle,
   };
 };
-
-
-// const setStyle = (el, selectArea) => {
-//   console.log(el.style)
-//   const {start, end} = selectArea;
-//   const border = `1px solid black`;
-//   if (start && end) {
-//     el.style.border = border;
-//     if (end.x > start.x) {
-//       el.style.left = `${start.x}px`;
-//       el.style.width = `${end.x - start.x}px`;
-//     } else  {
-//       el.style.left = `${end.x}px`;
-//       el.style.width = `${start.x - end.x}px`;
-//     }
-//     if (end.y > start.y) {
-//       el.style.top = `${start.y}px`;
-//       el.style.height = `${end.y - start.y}px`;
-//     } else {
-//       el.style.top = `${end.y}px`;
-//       el.style.height = `${start.y - end.y}px`;
-//     }
-//   } else {
-//     el.style.border = `null`;
-//   }
-// };
 
 export const useCardsHooks = () => {
   const dispatch = useDispatch();

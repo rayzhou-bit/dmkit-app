@@ -1,5 +1,4 @@
 import React, { useRef } from 'react';
-import { Rnd } from 'react-rnd';
 
 import { useCanvasHooks, useCardsHooks, useMultiSelectHooks } from './hooks';
 import Card from '../Card/Card';
@@ -11,7 +10,11 @@ import './index.scss';
 import BookIcon from '../../assets/icons/book.svg';
 import PlusIcon from '../../assets/icons/plus.svg'
 
-// Canvas is the main portion the user is looking at. This is located in the center of the screen.
+// *****
+// Canvas is the main portion of the screen the user uses.
+// This is located in the center of the screen.
+// It contains cards that can be moved around.
+// *****
 
 const Empty = (createNewProject) => (
   <div className='empty'>
@@ -49,7 +52,7 @@ const Canvas = ({ toolMenuRef }) => {
     isPanning,
     beginPanning,
     endPanning,
-    mouseMoveHandler,
+    updatePanning,
     wheelHandler,
     createNewProject,
   } = useCanvasHooks();
@@ -89,7 +92,7 @@ const Canvas = ({ toolMenuRef }) => {
           onMouseDown={beginPanning}
           onMouseUp={endPanning}
           onMouseLeave={endPanning}
-          onMouseMove={mouseMoveHandler}
+          onMouseMove={updatePanning}
           onWheel={wheelHandler}
           style={{
             cursor: isPanning ? 'grabbing' : 'auto',
@@ -99,6 +102,12 @@ const Canvas = ({ toolMenuRef }) => {
             className='canvas'
             onDragOver={(e) => e.preventDefault()}
             onDrop={cardDropHandler}
+            // TODO maybe change code to use onMouse
+            // onMouseDown={beginSelection}
+            // onMouseUp={endSelection}
+            // onMouseLeave={endSelection}
+            // onMouseMove={updateSelection}
+            ref={canvasRef}
             style={{
               width: `${CANVAS_SIZE.width}px`,
               height: `${CANVAS_SIZE.height}px`,
@@ -107,7 +116,6 @@ const Canvas = ({ toolMenuRef }) => {
               transition: isPanning ? 'none' : 'transform 0.3s',
               transform: `translate(${canvasPosition.x}px, ${canvasPosition.y}px) scale(${canvasScale})`,
             }}
-            ref={canvasRef}
           >
             <div
               className='selection-area'
@@ -117,48 +125,6 @@ const Canvas = ({ toolMenuRef }) => {
             {cardList}
           </div>
         </div>
-        // <div
-        //   className='scaling-div'
-        //   onMouseMove={mouseMoveHandler}
-        //   style={{
-        //     transform: `scale(${canvasScale})`,
-        //     transformOrigin: `${canvasOrigin.x} ${canvasOrigin.y}`,
-        //   }}
-        //   ref={canvasRef}
-        // >
-        //   <Rnd
-        //     allowAnyClick={true}
-        //     dragHandleClassName='dragging-div'
-        //     enableResizing={false}
-        //     onDragStop={dragStopHandler}
-        //     position={canvasPosition}
-        //     scale={canvasScale}
-        //     size={CANVAS_SIZE}
-        //   >
-        //     <div
-        //       className='selection-area'
-        //       ref={selectRef}
-        //       style={selectStyle}
-        //     />
-        //     <div
-        //       className='view'
-        //       id='view'
-        //       onDragOver={(e) => e.preventDefault()}
-        //       onDrop={cardDropHandler}
-        //       onMouseDown={mouseFilterHandler}
-        //     >
-        //       <div className='dragging-div' />
-        //       <div
-        //         className='grid'
-        //         style={{
-        //           backgroundPosition: `${GRID_SIZE / 2}px ${GRID_SIZE / 2}px`,
-        //           backgroundSize: `${GRID_SIZE}px ${GRID_SIZE}px`,
-        //         }}
-        //       />
-        //       {cardList}
-        //     </div>
-        //   </Rnd>
-        // </div>
       );
       break;
   }

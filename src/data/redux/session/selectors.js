@@ -9,6 +9,7 @@ export const simpleSelectors = {
   campaignList: mkSimpleSelector(session => session.campaignList),
   activeCampaign: mkSimpleSelector(session => session.activeCampaignId),
   activeCard: mkSimpleSelector(session => session.activeCardId),
+  selectedCards: mkSimpleSelector(session => session.selectedCards),
   isCampaignEdited: mkSimpleSelector(session => session.isProjectEdited),
 };
 

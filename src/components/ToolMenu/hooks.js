@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { selectors } from '../../data/redux';
-import { copySelectedCard, createNewCard } from '../../data/redux/thunkActions';
+import { createNewCard, copySelectedCard, copySelectedCards } from '../../data/redux/thunkActions';
 
 import { DEFAULT_CARD_OFFSET } from '../../constants/dimensions';
 
@@ -13,12 +13,15 @@ export const useToolMenuHooks = () => {
   const activeCard = useSelector(selectors.session.activeCard);
   const activeTab = useSelector(selectors.project.activeTab);
   const activeCardData = useSelector(selectors.project.activeCardData);
+  const selectedCardsData = useSelector(selectors.project.selectedCardsData);
   const activeTabPosition = useSelector(selectors.project.activeTabPosition);
+
   const [ offset, setOffset ] = useState(0);
   const offsetTimerRef = useRef(null);
 
   const disableNewCard = !activeTab;
-  const disableCopyCard = !activeCard || !activeCard;
+  const disableCopyCard = !activeCard || !activeTab;
+  const disableCopyCards = (selectedCardsData && selectedCardsData.length === 0) || !activeTab;
 
   useEffect(() => {
     if (offset > 0) {
@@ -31,13 +34,17 @@ export const useToolMenuHooks = () => {
   }, [offset])
 
   return {
+    disableNewCard,
     onClickNewCard: () => {
       if (!disableNewCard) {
-        dispatch(createNewCard({ activeTabPosition, offset }));
+        dispatch(createNewCard({
+          activeTabPosition,
+          offset,
+        }));
         setOffset(offset + DEFAULT_CARD_OFFSET);
       }
     },
-    disableNewCard,
+    disableCopyCard,
     onClickCopyCard: () => {
       if (!disableCopyCard) {
         dispatch(copySelectedCard({
@@ -46,6 +53,14 @@ export const useToolMenuHooks = () => {
         }));
       }
     },
-    disableCopyCard,
+    disableCopyCards,
+    onClickCopyCards: () => {
+      if (!disableCopyCards) {
+        dispatch(copySelectedCards({
+          selectedCards: selectedCardsData,
+          activeTab,
+        }));
+      }
+    },
   };
 };

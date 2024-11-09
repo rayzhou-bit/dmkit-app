@@ -21,8 +21,23 @@ export const activeCardData = createSelector(
   (cards, activeCardId) => {
     if (!activeCardId) { return null; }
     return cards[activeCardId];
-  }
-)
+  },
+);
+
+export const selectedCardsData = createSelector(
+  [
+    project.simpleSelectors.cards,
+    session.simpleSelectors.selectedCards,
+  ],
+  (cards, selectedCards) => {
+    if (selectedCards && selectedCards.length === 0) { return null; }
+    let selectedCardsData = [];
+    for (let key in selectedCards) {
+      selectedCardsData.push(cards[selectedCards[key]]);
+    }
+    return selectedCardsData;
+  },
+);
 
 export const activeCardPosition = createSelector(
   [
@@ -45,7 +60,7 @@ export const activeTabPosition = createSelector(
   (tabs, activeTab) => {
     if (!activeTab) { return null; }
     return tabs[activeTab]?.pos ?? DEFAULT_CANVAS_POSITION;
-  }
+  },
 );
 
 export const activeTabScale = createSelector(
@@ -56,7 +71,7 @@ export const activeTabScale = createSelector(
   (tabs, activeTab) => {
     if (!activeTab) { return null; }
     return tabs[activeTab]?.scale ?? DEFAULT_CANVAS_SCALE;
-  }
+  },
 );
 
 export const activeTabCardsDimensions = createSelector(
@@ -76,12 +91,13 @@ export const activeTabCardsDimensions = createSelector(
       }
     }
     return cardsInTab;
-  }
+  },
 );
 
 export default {
   ...simpleSelectors,
   activeCardData,
+  selectedCardsData,
   activeCardPosition,
   activeTabPosition,
   activeTabScale,
