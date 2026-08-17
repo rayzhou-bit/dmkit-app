@@ -17,13 +17,26 @@ import {
 } from '@firebase/auth';
 import { actions, clearHistory } from '../redux';
 import * as api from '../api/database';
+import { app, isFirebaseConfigured, FIREBASE_NOT_CONFIGURED_CODE, FIREBASE_NOT_CONFIGURED_MESSAGE } from './firebase';
 
-export const auth = getAuth();
+const reportError = (dispatch, source, error) => {
+  console.log(`[${source}] error`, error);
+  dispatch(actions.session.setError({ source, message: error?.message ?? String(error) }));
+};
+
+const requireFirebase = (dispatch, source, errorCallback) => {
+  if (isFirebaseConfigured) return true;
+  reportError(dispatch, source, new Error(FIREBASE_NOT_CONFIGURED_MESSAGE));
+  if (errorCallback) errorCallback(FIREBASE_NOT_CONFIGURED_CODE);
+  return false;
+};
+
+export const auth = isFirebaseConfigured ? getAuth(app) : null;
 // export const isNewUser = getAdditionalUserInfo();
 export const googleProvider = new GoogleAuthProvider();
 export const facebookProvider = new FacebookAuthProvider();
-export const getUser = () => auth.currentUser ?? null;
-export const getUserId = () => auth.currentUser ? auth.currentUser.uid : null;
+export const getUser = () => auth?.currentUser ?? null;
+export const getUserId = () => auth?.currentUser?.uid ?? null;
 
 export const authListener = ({
   dispatch,
@@ -31,6 +44,15 @@ export const authListener = ({
   projectId,
   projectData,
 }) => {
+  if (!isFirebaseConfigured) {
+    console.log('[authListener] firebase not configured; running offline');
+    dispatch(actions.project.loadIntroProject());
+    dispatch(actions.session.loadIntro());
+    dispatch(actions.user.initialize());
+    dispatch(clearHistory());
+    return () => {};
+  }
+
   onAuthStateChanged(auth, user => {
     if (user) {   // User is signed in
       console.log('[authListener] signed in user:', user.uid);
@@ -69,6 +91,7 @@ export const emailSignIn = ({
   callback,
   errorCallback,
 }) => dispatch => {
+  if (!requireFirebase(dispatch, 'emailSignIn', errorCallback)) return;
   signInWithEmailAndPassword(auth, email, password)
     .then(response => {
       console.log('[emailSignIn] sign in successful:', response);
@@ -84,7 +107,8 @@ export const emailSignIn = ({
     });
 };
 
-export const emailSignOut = () => {
+export const emailSignOut = () => dispatch => {
+  if (!requireFirebase(dispatch, 'emailSignOut')) return;
   signOut(auth)
     .then(response => console.log('[emailSignout] success'))
     .catch(error => console.log('[emailSignOut] error', error));
@@ -94,6 +118,7 @@ export const googleSignIn = ({
   callback,
   errorCallback,
 }) => dispatch => {
+  if (!requireFirebase(dispatch, 'googleSignIn', errorCallback)) return;
   console.log(callback)
   signInWithPopup(auth, googleProvider)
     .then(response => {
@@ -122,6 +147,7 @@ export const emailSignUp = ({
   callback,
   errorCallback,
 }) => dispatch => {
+  if (!requireFirebase(dispatch, 'emailSignUp', errorCallback)) return;
   createUserWithEmailAndPassword(auth, email, password)
     .then(response => {
       console.log('[emailSignUp] sign up successful:', response);
@@ -139,9 +165,10 @@ export const emailSignUp = ({
 };
 
 export const sendVerificationToEmail = () => dispatch => {
+  if (!requireFirebase(dispatch, 'sendVerificationToEmail', undefined)) return;
   sendEmailVerification(getUser())
     .then(response => console.log('[sendVerificationToEmail] success', response))
-    .catch(error => console.log('[sendVerificationToEmail] error', error));
+    .catch(error => reportError(dispatch, 'sendVerificationToEmail', error));
 };
 
 export const sendPasswordResetToEmail = ({
@@ -149,6 +176,7 @@ export const sendPasswordResetToEmail = ({
   callback,
   errorCallback,
 }) => dispatch => {
+  if (!requireFirebase(dispatch, 'sendPasswordResetToEmail', errorCallback)) return;
   sendPasswordResetEmail(auth, email)
     .then(response => {
       console.log('[sendPasswordResetToEmail] sent password reset email to:', email, '. ', response);

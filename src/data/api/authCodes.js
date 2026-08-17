@@ -5,6 +5,7 @@ export const convertToMsg = ({ errorCode }) => {
     case ('auth/unauthorized-domain'): return 'unauthorized domain';
     case ('auth/operation-not-allowed'): return 'operation not allowed';
     case ('auth/operation-not-supported-in-this-environment'): return 'operation not supported';
+    case ('app/firebase-not-configured'): return "Firebase isn't configured for this build";
     // email / account
     case ('auth/account-exists-with-different-credential'): return 'account for this email already exists';
     case ('auth/email-already-in-use'): return 'email already in use';

@@ -26,3 +26,7 @@ yarn-error.log*
 # firebase
 /.firebase
 firebase-debug.log
+
+# local-only tooling config, not shared with the repo
+/.claude/
+/CLAUDE.md
