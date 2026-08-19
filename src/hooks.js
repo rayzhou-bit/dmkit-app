@@ -14,17 +14,33 @@ export const useListenerHooks = () => {
   const isProjectEdited = useSelector(state => state.session.isProjectEdited);
   const projectData = useSelector(state => state.project.present || {});
   const projectChanges = useSelector(state => state.project._latestUnfiltered);
+  // `isProjectEdited` is set by the effect below on every change to
+  // `_latestUnfiltered`, which includes loads and pan/zoom - so it is true
+  // even when the user has changed nothing. redux-undo's `past` only grows on
+  // the allowlisted edit actions (see data/redux/index.js) and is emptied by
+  // clearHistory() after every load, so it is the honest "user edited
+  // something" signal, and the only one worth writing to Firebase for.
+  const hasLocalEdits = useSelector(state => (state.project.past?.length ?? 0) > 0);
   const isLoggedIn = !!userId;
+
+  // Read at auth-callback fire time, not at mount. The auth listener is
+  // deliberately subscribed exactly once (re-subscribing would make Firebase
+  // re-fire its initial callback and re-run the load path), so it cannot close
+  // over these values directly without going stale.
+  const pendingProjectRef = useRef({ saveProject: false, projectId: '', projectData: {} });
+  pendingProjectRef.current = {
+    saveProject: isProjectEdited && hasLocalEdits,
+    projectId: activeProject,
+    projectData,
+  };
 
   // auth listener
   useEffect(() => {
-    const listener = authListener({
+    const unsubscribe = authListener({
       dispatch,
-      saveProject: isProjectEdited,
-      projectId: activeProject,
-      projectData,
+      getPendingProject: () => pendingProjectRef.current,
     });
-    return () => listener();
+    return () => unsubscribe();
   }, []);
 
   // load project when activeProject changes

@@ -40,9 +40,7 @@ export const getUserId = () => auth?.currentUser?.uid ?? null;
 
 export const authListener = ({
   dispatch,
-  saveProject,
-  projectId,
-  projectData,
+  getPendingProject,
 }) => {
   if (!isFirebaseConfigured) {
     console.log('[authListener] firebase not configured; running offline');
@@ -53,7 +51,14 @@ export const authListener = ({
     return () => {};
   }
 
-  onAuthStateChanged(auth, user => {
+  // Only a signed-out -> signed-in transition observed in THIS session means
+  // the user has local work to carry into their account. Firebase's first
+  // callback after subscribing just reports the restored session (app
+  // startup), and an account switch would write the previous user's project
+  // under the new user's credentials - neither should save.
+  let wasSignedOut = false;
+
+  return onAuthStateChanged(auth, user => {
     if (user) {   // User is signed in
       console.log('[authListener] signed in user:', user.uid);
       const userData = {
@@ -66,17 +71,23 @@ export const authListener = ({
       };
       dispatch(actions.user.loadUser({ ...userData }));
 
-      if (saveProject) {
-        dispatch(api.save(projectId, projectData, () => {
-          dispatch(api.fetchActiveProjectId());
-          dispatch(api.fetchProjects());
-        }));
-      } else {
+      const loadUserData = () => {
         dispatch(api.fetchActiveProjectId());
         dispatch(api.fetchProjects());
+      };
+
+      const { saveProject, projectId, projectData } = getPendingProject?.() ?? {};
+      const shouldSaveLocalWork = wasSignedOut && !!saveProject && !!projectId;
+      wasSignedOut = false;
+
+      if (shouldSaveLocalWork) {
+        dispatch(api.save(projectId, projectData, loadUserData));
+      } else {
+        loadUserData();
       }
     } else {      // User is signed out
       console.log('[authListener] signed out');
+      wasSignedOut = true;
       dispatch(actions.project.loadIntroProject());
       dispatch(actions.session.loadIntro());
       dispatch(actions.user.initialize());
