@@ -8,7 +8,7 @@ import {
   collection,
   getDocs,
   writeBatch,
-} from '@firebase/firestore';
+} from 'firebase/firestore';
 
 import { db, isFirebaseConfigured, FIREBASE_NOT_CONFIGURED_MESSAGE } from './firebase';
 import { getUserId } from './auth';
