@@ -100,10 +100,16 @@ $spinner-base-measurement: 10em;
   .canvas-container {
     position: absolute;
     inset: 0;
+
+    &.pan-mode { cursor: grab; }
+    &.pan-mode * { cursor: grab !important; }
+    &.panning, &.panning * { cursor: grabbing !important; }
+
     .canvas {
       background: white;
       background-image: radial-gradient(#FFD749 0.75px, transparent 0);
       transform-origin: 0% 0%;
+      transition: none;
     }
   }
 
@@ -113,6 +119,82 @@ $spinner-base-measurement: 10em;
     border-radius: 6px;
     background-color: #D7D6D633;
     z-index: 1;
+  }
+}
+
+.zoom-controls {
+  position: fixed;
+  left: 96px;
+  bottom: 55px;
+  z-index: 60;
+  height: 32px;
+  padding: 0 4px;
+  border-radius: 16px;
+  background: #FFFFFF;
+  border: 1px solid #F4F4F4;
+  box-shadow: 2px 2px 8px -3px #D7D6D6;
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  gap: 2px;
+
+  .zoom-btn, .zoom-value {
+    position: relative;
+    height: 24px;
+    border-radius: 6px;
+    border: none;
+    background: transparent;
+    font-family: Roboto;
+    color: #363B4E;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover { background: #DBE2EB; }
+  }
+
+  .zoom-btn {
+    width: 24px;
+    font-size: 16px;
+    line-height: 1;
+
+    &:disabled {
+      color: #C4C4C4;
+      cursor: default;
+      &:hover { background: transparent; }
+    }
+  }
+
+  .zoom-value {
+    min-width: 48px;
+    padding: 0 6px;
+    font-size: 12px;
+    letter-spacing: 0.05em;
+  }
+
+  // Show/hide follows the app-wide button tooltip convention in App.scss
+  // (visibility + opacity on button:hover .tooltip); only position/shape/color
+  // are overridden here for this component's placement above the canvas.
+  .tooltip {
+    bottom: 150%;
+    left: 50%;
+    transform: translateX(-50%);
+    white-space: nowrap;
+    padding: 4px 8px;
+    border-radius: 4px;
+    background: #363B4E;
+    font-size: 11px;
+    font-family: Roboto;
+    z-index: 61;
+
+    &::after {
+      top: 100%;
+      left: 50%;
+      margin-left: -5px;
+      border-width: 5px;
+      border-top-color: #363B4E;
+    }
   }
 }
 
