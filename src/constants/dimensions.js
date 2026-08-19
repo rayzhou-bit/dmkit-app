@@ -30,3 +30,12 @@ export const MIN_CARD_SIZE = {
   width: 12 * GRID_SIZE,
   height: 10 * GRID_SIZE,
 };
+
+export const ZOOM_STEP = 0.1;                 // additive step, buttons + keyboard
+export const WHEEL_ZOOM_SENSITIVITY = 0.0025; // exponent per normalized px
+export const WHEEL_PAN_SPEED = 1;             // multiplier on normalized px
+export const WHEEL_LINE_HEIGHT = 16;          // px per DOM_DELTA_LINE unit
+export const WHEEL_PAGE_HEIGHT = 400;         // fallback px per DOM_DELTA_PAGE unit
+export const MAX_WHEEL_DELTA = 50;            // per-event clamp, normalized px
+export const WHEEL_GESTURE_END_MS = 160;      // idle before committing a wheel gesture
+export const CANVAS_TRANSITION_MS = 300;      // replaces the hardcoded `transform 0.3s`

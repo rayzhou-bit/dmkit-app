@@ -12,6 +12,16 @@
                                   supported by Chrome, Edge, Opera and Firefox */
 }
 
+html, body {
+  // Disable the browser's native two-finger-swipe back/forward navigation
+  // gesture. That gesture is triggered by horizontal overscroll bubbling up
+  // to the document; Canvas's own wheel handler already blocks it while the
+  // pointer is over the canvas, but this covers the rest of the app (Library,
+  // ToolMenu, HeaderMenu, and the empty/loading canvas states) where nothing
+  // else calls preventDefault() on wheel events.
+  overscroll-behavior: none;
+}
+
 .layout {
   position: absolute;
   z-index: 0;

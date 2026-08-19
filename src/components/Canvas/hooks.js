@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 import { actions, selectors } from '../../data/redux';
@@ -7,12 +7,22 @@ import * as api from '../../data/api/database';
 import { NETWORK_STATUS, CANVAS_STATES } from '../../constants/states';
 import {
   GRID_SIZE,
-  GRID_SCALE,
   DEFAULT_CANVAS_POSITION,
+  DEFAULT_CANVAS_SCALE,
   MAX_CANVAS_SCALE,
   MIN_CANVAS_SCALE,
+  ZOOM_STEP,
+  WHEEL_PAN_SPEED,
+  WHEEL_GESTURE_END_MS,
 } from '../../constants/dimensions';
 import { ANIMATION } from '../Card/hooks';
+import {
+  normalizeWheelDelta,
+  zoomAtPoint,
+  getWheelScale,
+  applyTransform,
+} from '../../utils/canvasTransform';
+import { isTextEntryTarget, isSpaceActivatedTarget } from '../../utils/focusUtils';
 
 const checkCardInSelection = (selectArea, cardArea) => {
   const {start, end} = selectArea;
@@ -44,7 +54,7 @@ const checkCardInSelection = (selectArea, cardArea) => {
   return true;
 };
 
-export const useCanvasHooks = () => {
+export const useCanvasHooks = ({ containerRef, canvasRef }) => {
   const dispatch = useDispatch();
   const userId = useSelector(state => state.user.userId);
   const status = useSelector(state => state.session.status || NETWORK_STATUS.idle);
@@ -52,10 +62,28 @@ export const useCanvasHooks = () => {
   const activeTab = useSelector(state => state.project.present.activeViewId || '');
   const activeTabPosition = useSelector(selectors.project.activeTabPosition);
   const activeTabScale = useSelector(selectors.project.activeTabScale);
+  const popupType = useSelector(state => state.session.popup?.type);
 
   const [ canvasState, setCanvasState ] = useState(CANVAS_STATES.empty);
   const [ isPanning, setIsPanning ] = useState(false);
-  const [ startPan, setStartPan ] = useState({ x: 0, y: 0 });
+  const [ isPanModifierHeld, setIsPanModifierHeld ] = useState(false);
+  const [ displayScale, setDisplayScale ] = useState(activeTabScale ?? DEFAULT_CANVAS_SCALE);
+
+  const panModifierRef = useRef(false);
+  const liveTransformRef = useRef({
+    position: activeTabPosition ?? DEFAULT_CANVAS_POSITION,
+    scale: activeTabScale ?? DEFAULT_CANVAS_SCALE,
+    animate: false,
+  });
+  const reduxTransformRef = useRef({
+    position: activeTabPosition ?? DEFAULT_CANVAS_POSITION,
+    scale: activeTabScale ?? DEFAULT_CANVAS_SCALE,
+  });
+  const gestureRef = useRef({ type: null, startX: 0, startY: 0, startPosition: null });
+  const rafRef = useRef(null);
+  const wheelSettleRef = useRef(null);
+
+  const isInteractive = canvasState === CANVAS_STATES.loaded && !popupType;
 
   // set canvas state
   useEffect(() => {
@@ -68,63 +96,266 @@ export const useCanvasHooks = () => {
     }
   }, [status, userId, activeProject, activeTab]);
 
-  const beginPanning = (event) => {
-    if (event.button == 1) {
-      setIsPanning(true);
-      setStartPan({
-        x: event.clientX - activeTabPosition.x,
-        y: event.clientY - activeTabPosition.y,
-      });
+  const scheduleApply = () => {
+    if (rafRef.current) return;
+    rafRef.current = requestAnimationFrame(() => {
+      rafRef.current = null;
+      applyTransform(canvasRef.current, liveTransformRef.current);
+      const rounded = Math.round(liveTransformRef.current.scale * 100);
+      setDisplayScale(prev => Math.round(prev * 100) === rounded ? prev : liveTransformRef.current.scale);
+    });
+  };
+
+  const flushApply = () => {
+    if (rafRef.current) {
+      cancelAnimationFrame(rafRef.current);
+      rafRef.current = null;
+    }
+    applyTransform(canvasRef.current, liveTransformRef.current);
+    const rounded = Math.round(liveTransformRef.current.scale * 100);
+    setDisplayScale(prev => Math.round(prev * 100) === rounded ? prev : liveTransformRef.current.scale);
+  };
+
+  const commitTransform = () => {
+    const live = liveTransformRef.current;
+    const committed = reduxTransformRef.current;
+    const positionChanged = live.position.x !== committed.position.x || live.position.y !== committed.position.y;
+    const scaleChanged = live.scale !== committed.scale;
+    if (positionChanged) dispatch(actions.project.setActiveTabPosition({ position: live.position }));
+    if (scaleChanged) dispatch(actions.project.setActiveTabScale({ scale: live.scale }));
+    if (positionChanged || scaleChanged) {
+      reduxTransformRef.current = { position: live.position, scale: live.scale };
     }
   };
 
-  const endPanning = () => {
+  const syncFromRedux = () => {
+    const next = { position: activeTabPosition ?? DEFAULT_CANVAS_POSITION, scale: activeTabScale ?? DEFAULT_CANVAS_SCALE };
+    liveTransformRef.current = { ...next, animate: false };
+    reduxTransformRef.current = next;
+  };
+
+  const cancelGesture = () => {
+    clearTimeout(wheelSettleRef.current);
+    gestureRef.current = { type: null, startX: 0, startY: 0, startPosition: null };
     setIsPanning(false);
+    flushApply();
+    commitTransform();
   };
 
-  const updatePanning = (event) => {
-    if (isPanning) {
-      dispatch(actions.project.setActiveTabPosition({
+  const zoomByStep = (delta) => {
+    const node = containerRef.current;
+    const rect = node ? node.getBoundingClientRect() : { width: 0, height: 0 };
+    const anchor = { x: rect.width / 2, y: rect.height / 2 };
+    const live = liveTransformRef.current;
+    const next = zoomAtPoint({ position: live.position, scale: live.scale, nextScale: live.scale + delta, anchor });
+    liveTransformRef.current = { position: next.position, scale: next.scale, animate: true };
+    flushApply();
+    commitTransform();
+  };
+
+  const zoomIn = () => zoomByStep(ZOOM_STEP);
+  const zoomOut = () => zoomByStep(-ZOOM_STEP);
+
+  const resetView = () => {
+    liveTransformRef.current = { position: DEFAULT_CANVAS_POSITION, scale: DEFAULT_CANVAS_SCALE, animate: true };
+    flushApply();
+    commitTransform();
+  };
+
+  // Layout writer — re-applies the live transform after every render, so an
+  // unrelated re-render never reverts the canvas to a stale value.
+  useLayoutEffect(() => {
+    applyTransform(canvasRef.current, liveTransformRef.current);
+  });
+
+  // Redux -> live sync, runs when Redux's committed transform changes and no gesture is active.
+  useEffect(() => {
+    if (!gestureRef.current.type) {
+      syncFromRedux();
+      scheduleApply();
+    }
+  }, [activeTabPosition, activeTabScale]);
+
+  // Tab-change resync — abandon any in-flight gesture and resync when the active
+  // tab changes. This deliberately does NOT call cancelGesture()/commitTransform():
+  // by the time this effect runs, activeViewId has already switched to the new
+  // tab (the render already happened), so setActiveTabPosition/setActiveTabScale
+  // would write the OLD tab's leftover live transform into the NEW tab's stored
+  // position/scale (both reducers target state.views[state.activeViewId], not a
+  // tab id in the payload). Dropping an uncommitted delta for the tab you just
+  // navigated away from is safe; committing it to the wrong tab is not.
+  useEffect(() => {
+    clearTimeout(wheelSettleRef.current);
+    if (rafRef.current) {
+      cancelAnimationFrame(rafRef.current);
+      rafRef.current = null;
+    }
+    gestureRef.current = { type: null, startX: 0, startY: 0, startPosition: null };
+    setIsPanning(false);
+    syncFromRedux();
+    scheduleApply();
+  }, [activeTab]);
+
+  // Native wheel listener.
+  useEffect(() => {
+    const node = containerRef.current;
+    if (!node || !isInteractive) return;
+
+    const onWheel = (event) => {
+      if (event.target.closest && event.target.closest('textarea')) return;
+      event.preventDefault();
+      if (gestureRef.current.type === 'drag') return;
+      gestureRef.current.type = 'wheel';
+
+      const rect = node.getBoundingClientRect();
+      let { dx, dy } = normalizeWheelDelta(event, rect.height);
+      const live = liveTransformRef.current;
+
+      if (event.ctrlKey || event.metaKey) {
+        const anchor = { x: event.clientX - rect.left, y: event.clientY - rect.top };
+        const next = zoomAtPoint({ position: live.position, scale: live.scale, nextScale: getWheelScale(live.scale, dy), anchor });
+        liveTransformRef.current = { position: next.position, scale: next.scale, animate: false };
+      } else {
+        if (event.shiftKey && dx === 0) { dx = dy; dy = 0; }
+        liveTransformRef.current = {
+          ...live,
+          animate: false,
+          position: { x: live.position.x - dx * WHEEL_PAN_SPEED, y: live.position.y - dy * WHEEL_PAN_SPEED },
+        };
+      }
+      scheduleApply();
+      clearTimeout(wheelSettleRef.current);
+      wheelSettleRef.current = setTimeout(() => {
+        gestureRef.current.type = null;
+        flushApply();
+        commitTransform();
+      }, WHEEL_GESTURE_END_MS);
+    };
+
+    node.addEventListener('wheel', onWheel, { passive: false });
+    return () => node.removeEventListener('wheel', onWheel);
+  }, [containerRef.current, isInteractive]);
+
+  // Native capture-phase mousedown listener for pan-drag (middle-click always;
+  // left-click only while space is held).
+  useEffect(() => {
+    const node = containerRef.current;
+    if (!node || !isInteractive) return;
+
+    const onPanMove = (event) => {
+      const g = gestureRef.current;
+      if (g.type !== 'drag') return;
+      liveTransformRef.current = {
+        ...liveTransformRef.current,
+        animate: false,
         position: {
-          x: event.clientX - startPan.x,
-          y: event.clientY - startPan.y,
+          x: g.startPosition.x + (event.clientX - g.startX),
+          y: g.startPosition.y + (event.clientY - g.startY),
         },
-      }));
-    }
-  };
-  
-  const wheelHandler = (event) => {
-    let scaleDiff = 0;
-    if (event.deltaY < 0) {
-      // Zoom in
-      if (activeTabScale < MAX_CANVAS_SCALE) {
-        scaleDiff = 0.1;
+      };
+      scheduleApply();
+    };
+
+    const onPanEnd = () => {
+      window.removeEventListener('mousemove', onPanMove);
+      window.removeEventListener('mouseup', onPanEnd);
+      gestureRef.current.type = null;
+      setIsPanning(false);
+      flushApply();
+      commitTransform();
+    };
+
+    const onPanMouseDown = (event) => {
+      const isMiddle = event.button === 1;
+      const isSpaceLeft = event.button === 0 && panModifierRef.current;
+      if (!isMiddle && !isSpaceLeft) return;
+      event.preventDefault();
+      event.stopPropagation();
+      gestureRef.current = {
+        type: 'drag',
+        startX: event.clientX,
+        startY: event.clientY,
+        startPosition: { ...liveTransformRef.current.position },
+      };
+      setIsPanning(true);
+      window.addEventListener('mousemove', onPanMove);
+      window.addEventListener('mouseup', onPanEnd);
+    };
+
+    node.addEventListener('mousedown', onPanMouseDown, true);
+    return () => {
+      node.removeEventListener('mousedown', onPanMouseDown, true);
+      window.removeEventListener('mousemove', onPanMove);
+      window.removeEventListener('mouseup', onPanEnd);
+    };
+  }, [containerRef.current, isInteractive]);
+
+  // Keyboard listener — space-to-pan-modifier and Cmd/Ctrl+0/+/- zoom shortcuts.
+  useEffect(() => {
+    if (!isInteractive) return;
+
+    const onKeyDown = (event) => {
+      if (event.code === 'Space' || event.key === ' ') {
+        if (event.repeat) return;
+        if (isTextEntryTarget(event.target) || isSpaceActivatedTarget(event.target)) return;
+        event.preventDefault();
+        if (!panModifierRef.current) {
+          panModifierRef.current = true;
+          setIsPanModifierHeld(true);
+        }
+        return;
       }
-    } else {
-      // Zoom out
-      if (activeTabScale > MIN_CANVAS_SCALE) {
-        scaleDiff = -0.1;
+      if ((event.metaKey || event.ctrlKey) && !event.altKey) {
+        if (event.key === '0' || event.code === 'Digit0' || event.code === 'Numpad0') {
+          event.preventDefault();
+          resetView();
+        } else if (event.key === '=' || event.key === '+' || event.code === 'Equal' || event.code === 'NumpadAdd') {
+          event.preventDefault();
+          zoomByStep(ZOOM_STEP);
+        } else if (event.key === '-' || event.key === '_' || event.code === 'Minus' || event.code === 'NumpadSubtract') {
+          event.preventDefault();
+          zoomByStep(-ZOOM_STEP);
+        }
       }
-    }
-    // Adjust canvas positioning after zooming in or out
-    dispatch(actions.project.setActiveTabPosition({
-      position: {
-        x: activeTabPosition.x - (scaleDiff * event.clientX),
-        y: activeTabPosition.y - (scaleDiff * event.clientY),
-      },
-    }));
-    dispatch(actions.project.setActiveTabScale({ scale: activeTabScale + scaleDiff }));
-  };
+    };
+
+    const releaseSpace = () => {
+      if (panModifierRef.current) {
+        panModifierRef.current = false;
+        setIsPanModifierHeld(false);
+      }
+    };
+
+    const onKeyUp = (event) => {
+      if (event.code === 'Space' || event.key === ' ') releaseSpace();
+    };
+
+    const onBlur = () => { releaseSpace(); cancelGesture(); };
+    const onVisibilityChange = () => { if (document.hidden) { releaseSpace(); cancelGesture(); } };
+
+    window.addEventListener('keydown', onKeyDown);
+    window.addEventListener('keyup', onKeyUp);
+    window.addEventListener('blur', onBlur);
+    document.addEventListener('visibilitychange', onVisibilityChange);
+    return () => {
+      window.removeEventListener('keydown', onKeyDown);
+      window.removeEventListener('keyup', onKeyUp);
+      window.removeEventListener('blur', onBlur);
+      document.removeEventListener('visibilitychange', onVisibilityChange);
+    };
+  }, [isInteractive]);
 
   return {
     canvasState,
-    canvasPosition: activeTabPosition ?? DEFAULT_CANVAS_POSITION,
-    canvasScale: activeTabScale ?? 1,
     isPanning,
-    beginPanning,
-    endPanning,
-    updatePanning,
-    wheelHandler,
+    isPanModifierHeld,
+    panModifierRef,
+    displayScale,
+    zoomIn,
+    zoomOut,
+    resetView,
+    canZoomIn: displayScale < MAX_CANVAS_SCALE,
+    canZoomOut: displayScale > MIN_CANVAS_SCALE,
     createNewProject: () => dispatch(api.createAndSwitchToEmptyProject()),
   };
 };
@@ -133,6 +364,7 @@ export const useCanvasHooks = () => {
 export const useMultiSelectHooks = ({
   canvasRef,
   selectRef,
+  panModifierRef,
 }) => {
   const dispatch = useDispatch();
   const activeTabPosition = useSelector(selectors.project.activeTabPosition);
@@ -158,6 +390,7 @@ export const useMultiSelectHooks = ({
   };
 
   const canvasMouseDownHandler = (event) => {
+    if (panModifierRef && panModifierRef.current) return;
     if (event.button === 0) {
       setIsMouseDown(true);
       // TODO The following line refers to a specific className. Probably not the best to implement this way.
@@ -268,7 +501,7 @@ export const useCardsHooks = () => {
       };
     }
   }
-  
+
   return {
     cardArgs,
     cardDropHandler: (event) => {

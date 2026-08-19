@@ -2,6 +2,7 @@ import React, { useRef } from 'react';
 
 import { useCanvasHooks, useCardsHooks, useMultiSelectHooks } from './hooks';
 import Card from '../Card/Card';
+import ZoomControls from './ZoomControls';
 
 import { CANVAS_STATES } from '../../constants/states';
 import { GRID_SIZE, CANVAS_SIZE } from '../../constants/dimensions';
@@ -42,20 +43,23 @@ const Loading = () => (
 );
 
 const Canvas = ({ toolMenuRef }) => {
+  const containerRef = useRef();
   const canvasRef = useRef();
   const selectRef = useRef();
 
   const {
     canvasState,
-    canvasPosition,
-    canvasScale,
     isPanning,
-    beginPanning,
-    endPanning,
-    updatePanning,
-    wheelHandler,
+    isPanModifierHeld,
+    panModifierRef,
+    displayScale,
+    zoomIn,
+    zoomOut,
+    resetView,
+    canZoomIn,
+    canZoomOut,
     createNewProject,
-  } = useCanvasHooks();
+  } = useCanvasHooks({ containerRef, canvasRef });
 
   const {
     cardArgs,
@@ -67,6 +71,7 @@ const Canvas = ({ toolMenuRef }) => {
   } = useMultiSelectHooks({
     canvasRef,
     selectRef,
+    panModifierRef,
   });
 
   let cardList = [];
@@ -87,44 +92,45 @@ const Canvas = ({ toolMenuRef }) => {
       break;
     case CANVAS_STATES.loaded:
       display = (
-        <div
-          className='canvas-container'
-          onMouseDown={beginPanning}
-          onMouseUp={endPanning}
-          onMouseLeave={endPanning}
-          onMouseMove={updatePanning}
-          onWheel={wheelHandler}
-          style={{
-            cursor: isPanning ? 'grabbing' : 'auto',
-          }}
-        >
+        <>
           <div
-            className='canvas'
-            onDragOver={(e) => e.preventDefault()}
-            onDrop={cardDropHandler}
-            // TODO maybe change code to use onMouse
-            // onMouseDown={beginSelection}
-            // onMouseUp={endSelection}
-            // onMouseLeave={endSelection}
-            // onMouseMove={updateSelection}
-            ref={canvasRef}
-            style={{
-              width: `${CANVAS_SIZE.width}px`,
-              height: `${CANVAS_SIZE.height}px`,
-              backgroundPosition: `${GRID_SIZE / 2}px ${GRID_SIZE / 2}px`,
-              backgroundSize: `${GRID_SIZE}px ${GRID_SIZE}px`,
-              transition: isPanning ? 'none' : 'transform 0.3s',
-              transform: `translate(${canvasPosition.x}px, ${canvasPosition.y}px) scale(${canvasScale})`,
-            }}
+            className={`canvas-container${isPanModifierHeld ? ' pan-mode' : ''}${isPanning ? ' panning' : ''}`}
+            ref={containerRef}
           >
             <div
-              className='selection-area'
-              ref={selectRef}
-              style={selectStyle}
-            />
-            {cardList}
+              className='canvas'
+              onDragOver={(e) => e.preventDefault()}
+              onDrop={cardDropHandler}
+              // TODO maybe change code to use onMouse
+              // onMouseDown={beginSelection}
+              // onMouseUp={endSelection}
+              // onMouseLeave={endSelection}
+              // onMouseMove={updateSelection}
+              ref={canvasRef}
+              style={{
+                width: `${CANVAS_SIZE.width}px`,
+                height: `${CANVAS_SIZE.height}px`,
+                backgroundPosition: `${GRID_SIZE / 2}px ${GRID_SIZE / 2}px`,
+                backgroundSize: `${GRID_SIZE}px ${GRID_SIZE}px`,
+              }}
+            >
+              <div
+                className='selection-area'
+                ref={selectRef}
+                style={selectStyle}
+              />
+              {cardList}
+            </div>
           </div>
-        </div>
+          <ZoomControls
+            scale={displayScale}
+            canZoomIn={canZoomIn}
+            canZoomOut={canZoomOut}
+            zoomIn={zoomIn}
+            zoomOut={zoomOut}
+            resetView={resetView}
+          />
+        </>
       );
       break;
   }
