@@ -14,7 +14,7 @@ import {
   signInWithPopup,
   signOut,
   verifyPasswordResetCode,
-} from '@firebase/auth';
+} from 'firebase/auth';
 import { actions, clearHistory } from '../redux';
 import * as api from '../api/database';
 import { app, isFirebaseConfigured, FIREBASE_NOT_CONFIGURED_CODE, FIREBASE_NOT_CONFIGURED_MESSAGE } from './firebase';
