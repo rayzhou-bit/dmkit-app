@@ -35,8 +35,8 @@ vi.mock('./database', () => ({
   fetchProjects: vi.fn(() => ({ type: 'test/fetchProjects' })),
 }));
 
-import { onAuthStateChanged } from 'firebase/auth';
-import { authListener } from './auth';
+import { onAuthStateChanged, createUserWithEmailAndPassword, sendEmailVerification } from 'firebase/auth';
+import { authListener, emailSignUp } from './auth';
 import * as api from './database';
 
 const fakeUser = (uid) => ({
@@ -123,5 +123,24 @@ describe('authListener - configured (online) path', () => {
     expect(api.fetchActiveProjectId).toHaveBeenCalled();
     expect(api.fetchProjects).toHaveBeenCalled();
     expect(api.save).not.toHaveBeenCalled();
+  });
+});
+
+describe('emailSignUp - success path', () => {
+  it('sends the verification email and calls the callback', async () => {
+    createUserWithEmailAndPassword.mockResolvedValue({ user: { uid: 'new-user' } });
+    sendEmailVerification.mockResolvedValue();
+    const dispatch = vi.fn((action) => (typeof action === 'function' ? action(dispatch) : action));
+    const callback = vi.fn();
+
+    emailSignUp({ email: 'a@example.com', password: 'pw', callback })(dispatch);
+
+    // Let the mocked createUserWithEmailAndPassword promise (and the
+    // .then callback chained onto it) resolve.
+    await Promise.resolve();
+    await Promise.resolve();
+
+    expect(sendEmailVerification).toHaveBeenCalled();
+    expect(callback).toHaveBeenCalled();
   });
 });

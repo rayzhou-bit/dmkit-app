@@ -4,7 +4,6 @@ import {
   confirmPasswordReset,
   createUserWithEmailAndPassword,
   FacebookAuthProvider,
-  getAdditionalUserInfo,
   getAuth,
   GoogleAuthProvider,
   onAuthStateChanged,
@@ -32,7 +31,6 @@ const requireFirebase = (dispatch, source, errorCallback) => {
 };
 
 export const auth = isFirebaseConfigured ? getAuth(app) : null;
-// export const isNewUser = getAdditionalUserInfo();
 export const googleProvider = new GoogleAuthProvider();
 export const facebookProvider = new FacebookAuthProvider();
 export const getUser = () => auth?.currentUser ?? null;
@@ -162,7 +160,7 @@ export const emailSignUp = ({
   createUserWithEmailAndPassword(auth, email, password)
     .then(response => {
       console.log('[emailSignUp] sign up successful:', response);
-      sendVerificationToEmail();
+      dispatch(sendVerificationToEmail());
       if (callback) {
         callback();
       }
