@@ -10,7 +10,7 @@ import {
   writeBatch,
 } from '@firebase/firestore';
 
-import { db } from './firebase';
+import { db, isFirebaseConfigured, FIREBASE_NOT_CONFIGURED_MESSAGE } from './firebase';
 import { getUserId } from './auth';
 
 import { actions } from '../redux';
@@ -34,7 +34,24 @@ const status = {
   saving: (logging) => dispatch => dispatch(actions.session.setStatus({ status: NETWORK_STATUS.saving, logging })),
 };
 
+// Records a failed request in session.error so a failure isn't silently
+// swallowed by a console.log no one is watching. Callers that put `status`
+// into `loading`/`saving` beforehand are responsible for resetting it back
+// to `idle` themselves (see reportError's callers below) - this alone does
+// not touch status.
+const reportError = (dispatch, source, error) => {
+  console.log(`[${source}] error`, error);
+  dispatch(actions.session.setError({ source, message: error?.message ?? String(error) }));
+};
+
+const requireFirebase = (dispatch, source) => {
+  if (isFirebaseConfigured) return true;
+  reportError(dispatch, source, new Error(FIREBASE_NOT_CONFIGURED_MESSAGE));
+  return false;
+};
+
 export const fetchActiveProjectId = () => dispatch => {
+  if (!requireFirebase(dispatch, 'fetchActiveProjectId')) return;
   getDoc(userDoc())
     .then(userSnapshot => {
       console.log('[fetchActiveProjectId] success:', userSnapshot.data());
@@ -43,10 +60,11 @@ export const fetchActiveProjectId = () => dispatch => {
         dispatch(actions.session.setActiveProject({ id: activeProjectId }));
       }
     })
-    .catch(error => console.log('[fetchActiveProjectId] error', error));
+    .catch(error => reportError(dispatch, 'fetchActiveProjectId', error));
 };
 
 export const fetchProjects = () => dispatch => {
+  if (!requireFirebase(dispatch, 'fetchProjects')) return;
   getDocs(projectCollection())
     .then(projectsSnapshot => {
       console.log(`[fetchProjects] success: ${projectsSnapshot.docs?.length} project titles fetched`);
@@ -56,10 +74,11 @@ export const fetchProjects = () => dispatch => {
       });
       dispatch(actions.session.loadProjects({ projects }));
     })
-    .catch(error => console.log('[fetchProjects] error', error));
+    .catch(error => reportError(dispatch, 'fetchProjects', error));
 };
 
 const fetchCards = (project) => dispatch => {
+  if (!requireFirebase(dispatch, 'fetchCards')) return;
   getDocs(cardCollection(project))
     .then(cardsSnapshot => {
       console.log(`[fetchCards] success: ${cardsSnapshot.docs?.length} cards fetched`);
@@ -69,10 +88,11 @@ const fetchCards = (project) => dispatch => {
       });
       dispatch(actions.project.loadCards({ cards }));
     })
-    .catch(error => console.log('[fetchCards] error', error));
+    .catch(error => reportError(dispatch, 'fetchCards', error));
 };
 
 const fetchTabs = (project) => dispatch => {
+  if (!requireFirebase(dispatch, 'fetchTabs')) return;
   getDocs(tabCollection(project))
     .then(tabsSnapshot => {
       console.log(`[fetchTabs] success: ${tabsSnapshot.docs?.length} tabs fetched`);
@@ -82,10 +102,11 @@ const fetchTabs = (project) => dispatch => {
       });
       dispatch(actions.project.loadTabs({ tabs }));
     })
-    .catch(error => console.log('[fetchTabs] error', error));
+    .catch(error => reportError(dispatch, 'fetchTabs', error));
 };
 
 export const fetchProjectData = (id, callback) => dispatch => {
+  if (!requireFirebase(dispatch, 'fetchProjectData')) return;
   dispatch(status.loading('fetch project'));
   getDoc(projectDoc(id))
     .then(projectSnapshot => {
@@ -98,16 +119,21 @@ export const fetchProjectData = (id, callback) => dispatch => {
         callback();
       }
     })
-    .catch(error => console.log('[fetchProjectData] error', error));
+    .catch(error => {
+      reportError(dispatch, 'fetchProjectData', error);
+      dispatch(status.idle('fetchProjectData failed'));
+    });
 };
 
 export const firstTimeSetup = () => dispatch => {
+  if (!requireFirebase(dispatch, 'firstTimeSetup')) return;
   setDoc(userDoc(), { activeCampaignId: null })
     .then(response => console.log('[firstTimeSetup] success', response))
-    .catch(error => console.log('[firstTimeSetup] error', error));
+    .catch(error => reportError(dispatch, 'firstTimeSetup', error));
 };
 
 const saveActiveProjectId = (id, callback) => dispatch => {
+  if (!requireFirebase(dispatch, 'saveActiveProjectId')) return;
   setDoc(userDoc(), { activeCampaignId: id })
     .then(response => {
       console.log('[saveActiveProjectId] success');
@@ -115,16 +141,18 @@ const saveActiveProjectId = (id, callback) => dispatch => {
         callback();
       }
     })
-    .catch(error => console.log('[saveActiveProjectId] error', error));
+    .catch(error => reportError(dispatch, 'saveActiveProjectId', error));
 };
 
 export const switchProject = (projectId) => dispatch => {
+  if (!requireFirebase(dispatch, 'switchProject')) return;
   dispatch(saveActiveProjectId(projectId, () => {
     dispatch(actions.session.setActiveProject({ id: projectId }));
   }));
 };
 
 const saveExistingProject = (id, data, callback) => dispatch => {
+  if (!requireFirebase(dispatch, 'saveExistingProject')) return;
   const batch = writeBatch(db);
   let projectBatch = { ...data, lastSavedOn: Date.now() };
   delete projectBatch.cards;
@@ -143,19 +171,30 @@ const saveExistingProject = (id, data, callback) => dispatch => {
         callback();
       }
     })
-    .catch(error => console.log('[saveExistingProject] error', error));
+    .catch(error => {
+      // `save()` only resets status back to idle inside this callback's
+      // success path, so a failure here has to reset it itself or the app
+      // stays stuck thinking a save is in progress.
+      reportError(dispatch, 'saveExistingProject', error);
+      dispatch(status.idle('saveExistingProject failed'));
+    });
 };
 
 const saveNewProject = (data, callback) => dispatch => {
+  if (!requireFirebase(dispatch, 'saveNewProject')) return;
   addDoc(projectCollection(), { createdOn: Date.now(), lastSavedOn: Date.now() })
     .then(response => {
       console.log('[saveNewProject] success', response);
       dispatch(saveExistingProject(response.id, data, callback));
     })
-    .catch(error => console.log('[saveNewProject] error', error));
+    .catch(error => {
+      reportError(dispatch, 'saveNewProject', error);
+      dispatch(status.idle('saveNewProject failed'));
+    });
 };
 
 export const save = (projectId, projectData, callback) => dispatch => {
+  if (!requireFirebase(dispatch, 'save')) return;
   dispatch(status.saving('saving project'));
   if (DEFAULT_PROJECT[projectId]) {
     dispatch(saveNewProject(projectData, () => {
@@ -177,6 +216,7 @@ export const save = (projectId, projectData, callback) => dispatch => {
 };
 
 export const createAndSwitchToEmptyProject = (callback) => dispatch => {
+  if (!requireFirebase(dispatch, 'createAndSwitchToEmptyProject')) return;
   addDoc(projectCollection(), { ...BLANK_PROJECT })
     .then(response => {
       console.log(`[createAndSwitchToEmptyProject] success: created project ${response?.id}`);
@@ -188,10 +228,11 @@ export const createAndSwitchToEmptyProject = (callback) => dispatch => {
         dispatch(actions.session.setActiveProject({ id: response.id }));
       }));
     })
-    .catch(error => console.log('[createAndSwitchToEmptyProject] error', error));
+    .catch(error => reportError(dispatch, 'createAndSwitchToEmptyProject', error));
 };
 
 export const copyProject = (id, callback) => dispatch => {
+  if (!requireFirebase(dispatch, 'copyProject')) return;
   let projectData = {};
   getDoc(projectDoc(id))
     .then(projectSnapshot => {
@@ -218,14 +259,15 @@ export const copyProject = (id, callback) => dispatch => {
               projectData.views = tabs;
               dispatch(saveNewProject(projectData, callback));
             })
-            .catch(error => console.log('[copyProject] error getting tabs', error));
+            .catch(error => reportError(dispatch, 'copyProject:tabs', error));
         })
-        .catch(error => console.log('[copyProject] error getting cards', error));
+        .catch(error => reportError(dispatch, 'copyProject:cards', error));
       })
-    .catch(error => console.log('[copyProject] error', error));
+    .catch(error => reportError(dispatch, 'copyProject', error));
 };
 
 export const destroyProject = (id, callback) => dispatch => {
+  if (!requireFirebase(dispatch, 'destroyProject')) return;
   deleteDoc(projectDoc(id))
     .then(response => {
       console.log('[destroyProject] success', response);
@@ -233,5 +275,5 @@ export const destroyProject = (id, callback) => dispatch => {
         callback();
       }
     })
-    .catch(error => console.log('[destroyProject] error', error));
+    .catch(error => reportError(dispatch, 'destroyProject', error));
 };

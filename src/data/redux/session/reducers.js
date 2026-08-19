@@ -4,6 +4,7 @@ import { DEFAULT_PROJECT } from './constants';
 
 const initialState = {
   status: NETWORK_STATUS.idle,
+  error: null, // { source, message } for the most recent failed request, or null
   popup: {
     id: null,
     type: null,
@@ -35,6 +36,9 @@ const session = createSlice({
       console.log(`[Status: ${status}]`, logging);
       return ({ ...state, status });
     },
+
+    setError: (state, { payload }) => ({ ...state, error: payload }),
+    clearError: (state) => ({ ...state, error: null }),
 
     setPopup: (state, { payload }) => ({ ...state, popup: { ...payload } }),
     resetPopup: (state) => ({ ...state, popup: { id: null, type: null } }),
