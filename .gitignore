@@ -30,3 +30,7 @@ firebase-debug.log
 # local-only tooling config, not shared with the repo
 /.claude/
 /CLAUDE.md
+
+/test-results
+/playwright-report
+/blob-report
