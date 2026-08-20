@@ -268,7 +268,16 @@ export const copyProject = (id, callback) => dispatch => {
 
 export const destroyProject = (id, callback) => dispatch => {
   if (!requireFirebase(dispatch, 'destroyProject')) return;
-  deleteDoc(projectDoc(id))
+  // Firestore doesn't cascade-delete subcollections - deleting just the
+  // project doc would leave its cards/views behind forever, orphaned.
+  Promise.all([getDocs(cardCollection(id)), getDocs(tabCollection(id))])
+    .then(([cardsSnapshot, tabsSnapshot]) => {
+      const batch = writeBatch(db);
+      cardsSnapshot.forEach(doc => batch.delete(doc.ref));
+      tabsSnapshot.forEach(doc => batch.delete(doc.ref));
+      batch.delete(projectDoc(id));
+      return batch.commit();
+    })
     .then(response => {
       console.log('[destroyProject] success', response);
       if (callback) {
