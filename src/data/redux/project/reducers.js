@@ -255,11 +255,25 @@ const project = createSlice({
       if (id === state.activeViewId) {
         newActiveViewId = (newViewOrder.length > 0) ? newViewOrder[0] : null;
       }
+      // Cascade: strip this tab from every card's placement map too, or
+      // cards accumulate dangling references to a tab that no longer exists.
+      let newCards = {};
+      for (let cardId in state.cards) {
+        const card = state.cards[cardId];
+        if (card.views && id in card.views) {
+          const newCardViews = { ...card.views };
+          delete newCardViews[id];
+          newCards[cardId] = { ...card, views: newCardViews };
+        } else {
+          newCards[cardId] = card;
+        }
+      }
       return {
         ...state,
         activeViewId: newActiveViewId,
         viewOrder: newViewOrder,
         views: newViews,
+        cards: newCards,
       };
     },
     updateTabTitle: (state, { payload }) => {
