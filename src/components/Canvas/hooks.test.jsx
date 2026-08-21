@@ -85,6 +85,20 @@ describe('useCanvasHooks — wheel', () => {
     expect(store.dispatched.some((a) => a.type === 'project/setActiveTabScale')).toBe(false);
   });
 
+  it('panning far past the content bounds is clamped, not left to drift off-screen', () => {
+    const { canvas, container } = setup();
+    // Positive deltaY -> position.y decreases each tick (content scrolls up).
+    // Repeated well past the bound to confirm it saturates instead of drifting.
+    for (let i = 0; i < 100; i++) {
+      const ev = new WheelEvent('wheel', { bubbles: true, cancelable: true, deltaX: 0, deltaY: 9999 });
+      act(() => { container.dispatchEvent(ev); });
+    }
+    flushFrame();
+    // minY = margin(200) - contentHeight(2400)*scale(1) = -2200. Never goes past it.
+    const [, ty] = canvas.style.transform.match(/translate\([-\d.]+px, ([-\d.]+)px\)/);
+    expect(Number(ty)).toBe(-2200);
+  });
+
   it('ctrl+wheel zooms around the pointer', () => {
     const { store, canvas, container } = setup();
     const ev = new WheelEvent('wheel', {
@@ -345,7 +359,9 @@ describe('useCanvasHooks — tab change', () => {
     // The tab switch itself dispatches nothing — the old tab's uncommitted
     // delta is dropped, not written into the new tab.
     expect(store.dispatched.length).toBe(0);
-    expect(canvas.style.transform).toBe('translate(999px, 999px) scale(1)');
+    // v2's stored {999, 999} is itself out of pan bounds for this viewport
+    // (RECT 800x600, margin 200) - clamped to the reachable max (600, 400).
+    expect(canvas.style.transform).toBe('translate(600px, 400px) scale(1)');
   });
 });
 

@@ -7,6 +7,7 @@ import {
   getWheelScale,
   applyTransform,
   formatZoomPercent,
+  clampPosition,
 } from './canvasTransform';
 import {
   MIN_CANVAS_SCALE,
@@ -263,5 +264,27 @@ describe('formatZoomPercent', () => {
 
   it('formats 0.5 as 50%', () => {
     expect(formatZoomPercent(0.5)).toBe('50%');
+  });
+});
+
+describe('clampPosition', () => {
+  const base = { scale: 1, contentWidth: 3000, contentHeight: 2400, viewportWidth: 800, viewportHeight: 600 };
+
+  it('leaves an in-bounds position unchanged', () => {
+    expect(clampPosition({ ...base, position: { x: 80, y: 50 } })).toEqual({ x: 80, y: 50 });
+  });
+
+  it('clamps a position panned far off the right/bottom edge', () => {
+    expect(clampPosition({ ...base, position: { x: 9999, y: 9999 } })).toEqual({ x: 600, y: 400 }); // viewport - margin(200)
+  });
+
+  it('clamps a position panned far off the left/top edge', () => {
+    // minX = margin(200) - contentWidth*scale(3000) = -2800
+    expect(clampPosition({ ...base, position: { x: -99999, y: -99999 } })).toEqual({ x: -2800, y: -2200 });
+  });
+
+  it('does not clamp against a not-yet-measured (0x0) viewport', () => {
+    expect(clampPosition({ ...base, viewportWidth: 0, viewportHeight: 0, position: { x: 9999, y: 9999 } }))
+      .toEqual({ x: 9999, y: 9999 });
   });
 });

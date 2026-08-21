@@ -7,6 +7,7 @@ import * as api from '../../data/api/database';
 import { NETWORK_STATUS, CANVAS_STATES } from '../../constants/states';
 import {
   GRID_SIZE,
+  CANVAS_SIZE,
   DEFAULT_CANVAS_POSITION,
   DEFAULT_CANVAS_SCALE,
   MAX_CANVAS_SCALE,
@@ -21,6 +22,8 @@ import {
   zoomAtPoint,
   getWheelScale,
   applyTransform,
+  clampPosition,
+  getViewportPoint,
 } from '../../utils/canvasTransform';
 import { isTextEntryTarget, isSpaceActivatedTarget } from '../../utils/focusUtils';
 
@@ -96,6 +99,21 @@ export const useCanvasHooks = ({ containerRef, canvasRef }) => {
     }
   }, [status, userId, activeProject, activeTab]);
 
+  // Keeps the canvas from being panned/zoomed entirely out of view - see
+  // clampPosition in canvasTransform.js.
+  const clampToViewport = (position, scale) => {
+    const node = containerRef.current;
+    const rect = node ? node.getBoundingClientRect() : { width: 0, height: 0 };
+    return clampPosition({
+      position,
+      scale,
+      viewportWidth: rect.width,
+      viewportHeight: rect.height,
+      contentWidth: CANVAS_SIZE.width,
+      contentHeight: CANVAS_SIZE.height,
+    });
+  };
+
   const scheduleApply = () => {
     if (rafRef.current) return;
     rafRef.current = requestAnimationFrame(() => {
@@ -129,7 +147,9 @@ export const useCanvasHooks = ({ containerRef, canvasRef }) => {
   };
 
   const syncFromRedux = () => {
-    const next = { position: activeTabPosition ?? DEFAULT_CANVAS_POSITION, scale: activeTabScale ?? DEFAULT_CANVAS_SCALE };
+    const scale = activeTabScale ?? DEFAULT_CANVAS_SCALE;
+    const position = clampToViewport(activeTabPosition ?? DEFAULT_CANVAS_POSITION, scale);
+    const next = { position, scale };
     liveTransformRef.current = { ...next, animate: false };
     reduxTransformRef.current = next;
   };
@@ -148,7 +168,7 @@ export const useCanvasHooks = ({ containerRef, canvasRef }) => {
     const anchor = { x: rect.width / 2, y: rect.height / 2 };
     const live = liveTransformRef.current;
     const next = zoomAtPoint({ position: live.position, scale: live.scale, nextScale: live.scale + delta, anchor });
-    liveTransformRef.current = { position: next.position, scale: next.scale, animate: true };
+    liveTransformRef.current = { position: clampToViewport(next.position, next.scale), scale: next.scale, animate: true };
     flushApply();
     commitTransform();
   };
@@ -157,7 +177,11 @@ export const useCanvasHooks = ({ containerRef, canvasRef }) => {
   const zoomOut = () => zoomByStep(-ZOOM_STEP);
 
   const resetView = () => {
-    liveTransformRef.current = { position: DEFAULT_CANVAS_POSITION, scale: DEFAULT_CANVAS_SCALE, animate: true };
+    liveTransformRef.current = {
+      position: clampToViewport(DEFAULT_CANVAS_POSITION, DEFAULT_CANVAS_SCALE),
+      scale: DEFAULT_CANVAS_SCALE,
+      animate: true,
+    };
     flushApply();
     commitTransform();
   };
@@ -214,13 +238,14 @@ export const useCanvasHooks = ({ containerRef, canvasRef }) => {
       if (event.ctrlKey || event.metaKey) {
         const anchor = { x: event.clientX - rect.left, y: event.clientY - rect.top };
         const next = zoomAtPoint({ position: live.position, scale: live.scale, nextScale: getWheelScale(live.scale, dy), anchor });
-        liveTransformRef.current = { position: next.position, scale: next.scale, animate: false };
+        liveTransformRef.current = { position: clampToViewport(next.position, next.scale), scale: next.scale, animate: false };
       } else {
         if (event.shiftKey && dx === 0) { dx = dy; dy = 0; }
+        const nextPosition = { x: live.position.x - dx * WHEEL_PAN_SPEED, y: live.position.y - dy * WHEEL_PAN_SPEED };
         liveTransformRef.current = {
           ...live,
           animate: false,
-          position: { x: live.position.x - dx * WHEEL_PAN_SPEED, y: live.position.y - dy * WHEEL_PAN_SPEED },
+          position: clampToViewport(nextPosition, live.scale),
         };
       }
       scheduleApply();
@@ -245,13 +270,14 @@ export const useCanvasHooks = ({ containerRef, canvasRef }) => {
     const onPanMove = (event) => {
       const g = gestureRef.current;
       if (g.type !== 'drag') return;
+      const nextPosition = {
+        x: g.startPosition.x + (event.clientX - g.startX),
+        y: g.startPosition.y + (event.clientY - g.startY),
+      };
       liveTransformRef.current = {
         ...liveTransformRef.current,
         animate: false,
-        position: {
-          x: g.startPosition.x + (event.clientX - g.startX),
-          y: g.startPosition.y + (event.clientY - g.startY),
-        },
+        position: clampToViewport(nextPosition, liveTransformRef.current.scale),
       };
       scheduleApply();
     };
@@ -362,6 +388,7 @@ export const useCanvasHooks = ({ containerRef, canvasRef }) => {
 
 
 export const useMultiSelectHooks = ({
+  containerRef,
   canvasRef,
   selectRef,
   panModifierRef,
@@ -379,14 +406,20 @@ export const useMultiSelectHooks = ({
   });
   const [ selectStyle, setSelectStyle ] = useState(null);
 
+  // World-space point under the event: first make it relative to the
+  // container's own top-left (getViewportPoint), THEN undo the canvas's
+  // pan/scale. Using raw event.clientX/Y directly only worked by accident of
+  // the container currently sitting at viewport (0,0).
+  const toWorldPoint = (event) => {
+    const point = getViewportPoint(event, containerRef.current);
+    return {
+      x: (point.x - activeTabPosition.x) / activeTabScale,
+      y: (point.y - activeTabPosition.y) / activeTabScale,
+    };
+  };
+
   const updateSelect = (event) => {
-    setSelectArea(prev => ({
-      ...prev,
-      end: {
-        x: (event.clientX - activeTabPosition.x) / activeTabScale,
-        y: (event.clientY - activeTabPosition.y) / activeTabScale,
-      },
-    }));
+    setSelectArea(prev => ({ ...prev, end: toWorldPoint(event) }));
   };
 
   const canvasMouseDownHandler = (event) => {
@@ -396,16 +429,8 @@ export const useMultiSelectHooks = ({
       // TODO The following line refers to a specific className. Probably not the best to implement this way.
       if (canvasRef.current && event.target.classList.contains('canvas')) {
         document.addEventListener('mousemove', updateSelect);
-        setSelectArea({
-          start: {
-            x: (event.clientX - activeTabPosition.x) / activeTabScale,
-            y: (event.clientY - activeTabPosition.y) / activeTabScale,
-          },
-          end: {
-            x: (event.clientX - activeTabPosition.x) / activeTabScale,
-            y: (event.clientY - activeTabPosition.y) / activeTabScale,
-          },
-        });
+        const start = toWorldPoint(event);
+        setSelectArea({ start, end: start });
       };
     }
   };
@@ -483,10 +508,11 @@ export const useMultiSelectHooks = ({
   };
 };
 
-export const useCardsHooks = () => {
+export const useCardsHooks = ({ containerRef } = {}) => {
   const dispatch = useDispatch();
   const activeTab = useSelector(state => state.project.present.activeViewId || '');
   const activeTabPosition = useSelector(selectors.project.activeTabPosition);
+  const activeTabScale = useSelector(selectors.project.activeTabScale) ?? 1;
   const cardCollection = useSelector(state => state.project.present.cards);
   const [ cardAnimation, setCardAnimation ] = useState({});
 
@@ -509,8 +535,13 @@ export const useCardsHooks = () => {
       const droppedCard = event.dataTransfer.getData('text');
       if (cardCollection[droppedCard]) {
         if (!cardCollection[droppedCard].views[activeTab]) {
-          let x = Math.round((event.clientX - activeTabPosition.x) / GRID_SIZE) * GRID_SIZE;
-          let y = Math.round((event.clientY - activeTabPosition.y) / GRID_SIZE) * GRID_SIZE;
+          // Container-relative first (getViewportPoint), then undo pan/scale
+          // to get world coordinates - matches useMultiSelectHooks. The old
+          // math skipped the scale divide entirely, so drops landed in the
+          // wrong spot at any zoom level other than 100%.
+          const point = getViewportPoint(event, containerRef?.current);
+          let x = Math.round((point.x - activeTabPosition.x) / activeTabScale / GRID_SIZE) * GRID_SIZE;
+          let y = Math.round((point.y - activeTabPosition.y) / activeTabScale / GRID_SIZE) * GRID_SIZE;
           dispatch(actions.project.linkCardToView({
             id: droppedCard,
             position: { x, y }

@@ -14,8 +14,12 @@ export const DEFAULT_CANVAS_POSITION = {
 };
 
 export const DEFAULT_CANVAS_SCALE = 1;
-export const MAX_CANVAS_SCALE = 1.5;
+export const MAX_CANVAS_SCALE = 3;
 export const MIN_CANVAS_SCALE = 0.5;
+
+// Minimum px of canvas content that must stay reachable in the viewport
+// when panning, so you can never scroll the whole board out of view.
+export const PAN_BOUNDS_MARGIN = 200;
 
 export const DEFAULT_CARD_POSITION = {
   x: 10 * GRID_SIZE,
