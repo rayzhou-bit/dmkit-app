@@ -6,6 +6,7 @@ import {
   WHEEL_PAGE_HEIGHT,
   MAX_WHEEL_DELTA,
   CANVAS_TRANSITION_MS,
+  PAN_BOUNDS_MARGIN,
 } from '../constants/dimensions';
 
 export const clampScale = (scale) => Math.max(MIN_CANVAS_SCALE, Math.min(MAX_CANVAS_SCALE, scale));
@@ -43,3 +44,23 @@ export const applyTransform = (node, { position, scale, animate }) => {
 };
 
 export const formatZoomPercent = (scale) => `${Math.round(scale * 100)}%`;
+
+// Keeps at least PAN_BOUNDS_MARGIN px of canvas content reachable inside the
+// viewport, so panning/zooming can never lose the whole board off-screen.
+// Degenerate (0-size) viewport just falls through to the viewport edge -
+// harmless, since nothing is visibly rendered at that size anyway.
+export const clampPosition = ({ position, scale, viewportWidth, viewportHeight, contentWidth, contentHeight, margin = PAN_BOUNDS_MARGIN }) => {
+  // Not yet measured (e.g. before first layout) - clamping against a
+  // degenerate viewport would force the position into a meaningless corner.
+  if (viewportWidth <= 0 || viewportHeight <= 0) return position;
+  const contentW = contentWidth * scale;
+  const contentH = contentHeight * scale;
+  const minX = margin - contentW;
+  const maxX = viewportWidth - margin;
+  const minY = margin - contentH;
+  const maxY = viewportHeight - margin;
+  return {
+    x: Math.min(maxX, Math.max(minX, position.x)),
+    y: Math.min(maxY, Math.max(minY, position.y)),
+  };
+};

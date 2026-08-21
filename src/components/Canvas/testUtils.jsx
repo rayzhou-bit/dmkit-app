@@ -77,12 +77,15 @@ export const Harness = ({ hooksRef, textAreaReadOnly = true }) => {
 // Harness for useMultiSelectHooks — panModifierRef is constructed by the
 // caller and passed straight through (not derived from useCanvasHooks).
 export const MultiSelectHarness = ({ hooksRef, panModifierRef }) => {
+  const containerRef = useRef();
   const canvasRef = useRef();
   const selectRef = useRef();
-  hooksRef.current = useMultiSelectHooks({ canvasRef, selectRef, panModifierRef });
+  hooksRef.current = useMultiSelectHooks({ containerRef, canvasRef, selectRef, panModifierRef });
   return (
-    <div data-testid="canvas" className="canvas" ref={canvasRef}>
-      <div data-testid="select" ref={selectRef} />
+    <div data-testid="container" ref={containerRef}>
+      <div data-testid="canvas" className="canvas" ref={canvasRef}>
+        <div data-testid="select" ref={selectRef} />
+      </div>
     </div>
   );
 };

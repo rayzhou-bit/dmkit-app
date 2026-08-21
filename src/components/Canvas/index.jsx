@@ -64,11 +64,12 @@ const Canvas = ({ toolMenuRef }) => {
   const {
     cardArgs,
     cardDropHandler,
-  } = useCardsHooks();
+  } = useCardsHooks({ containerRef });
 
   const {
     selectStyle,
   } = useMultiSelectHooks({
+    containerRef,
     canvasRef,
     selectRef,
     panModifierRef,
