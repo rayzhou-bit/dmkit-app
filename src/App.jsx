@@ -7,6 +7,7 @@ import Library from './components/Library';
 import TabBar from './components/TabBar';
 import Canvas from './components/Canvas';
 import Popup from './components/Popup';
+import ErrorBanner from './components/ErrorBanner';
 
 import { useListenerHooks, useMenuStateHooks } from './hooks';
 
@@ -34,6 +35,7 @@ const App = () => {
       <TabBar />
       <Canvas toolMenuRef={toolMenuRef} />
       <Popup />
+      <ErrorBanner />
     </div>
   );
 };
