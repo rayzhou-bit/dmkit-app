@@ -1,0 +1,41 @@
+rules_version = '2';
+
+// DM Kit (project dmkit-e7e99) — Firestore access control.
+//
+// Every Firestore path this app touches is rooted at users/{uid}, where {uid}
+// is always the signed-in caller's own auth uid (see getUserId() in
+// src/data/api/auth.js and the doc/collection helpers at the top of
+// src/data/api/database.js):
+//
+//   users/{uid}
+//   users/{uid}/campaigns/{campaignId}
+//   users/{uid}/campaigns/{campaignId}/cards/{cardId}
+//   users/{uid}/campaigns/{campaignId}/views/{viewId}
+//
+// This uses ONE recursive rule rather than a match block per level, on
+// purpose. Ownership here is positional (the uid is a path segment, not a
+// document field), so a recursive rule is exactly as strict as four
+// hand-written ones -- but it keeps working if the app's data model ever
+// changes (e.g. the campaigns -> projects rename that database.js still has a
+// TODO for) without anyone remembering to update this file.
+//
+// There is deliberately NO field/schema validation here. Two reasons:
+//   1. It would need updating on every data-shape change.
+//   2. fetchProjects/fetchCards/fetchTabs issue UNFILTERED getDocs() list
+//      queries. A rule referencing resource.data.* on a path that serves
+//      `list` requires the query to carry matching where() constraints, so
+//      schema checks would break those reads outright.
+//
+// Anything not matched below is denied: Cloud Firestore rules are
+// deny-by-default, so no explicit catch-all deny is required.
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    match /users/{userId}/{document=**} {
+      allow read, write: if request.auth != null
+                         && request.auth.uid == userId;
+    }
+
+  }
+}
