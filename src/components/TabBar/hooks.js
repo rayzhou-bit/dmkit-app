@@ -93,12 +93,21 @@ export const useTabBarHooks = () => {
     scrollRight,
     scrollTo,
     onWheel: (event) => {
-      if (!lockScroll) {
-        if (event.deltaY > 0) {
-          scrollRight();
-        } else {
-          scrollLeft();
-        }
+      if (lockScroll) return;
+      // A real mouse wheel only ever reports deltaY, so map it to
+      // horizontal scroll (existing behavior, kept as-is). A trackpad
+      // horizontal swipe reports a dominant deltaX instead - use that
+      // directly rather than the (near-zero) deltaY, and prevent the
+      // default so Safari doesn't also treat the swipe as a back/forward
+      // navigation gesture. Same sign convention as native scrollLeft:
+      // positive delta = scrolling toward the right/later end.
+      const horizontal = Math.abs(event.deltaX) > Math.abs(event.deltaY);
+      const delta = horizontal ? event.deltaX : event.deltaY;
+      if (horizontal) event.preventDefault();
+      if (delta > 0) {
+        scrollRight();
+      } else if (delta < 0) {
+        scrollLeft();
       }
     },
     isInactiveLeft: lockScroll || position === 0,
