@@ -25,7 +25,7 @@ import {
   clampPosition,
   getViewportPoint,
 } from '../../utils/canvasTransform';
-import { isTextEntryTarget, isSpaceActivatedTarget } from '../../utils/focusUtils';
+import { isTextEntryTarget, isSpaceActivatedTarget, isEditingCardTarget } from '../../utils/focusUtils';
 
 const checkCardInSelection = (selectArea, cardArea) => {
   const {start, end} = selectArea;
@@ -295,6 +295,10 @@ export const useCanvasHooks = ({ containerRef, canvasRef }) => {
       const isMiddle = event.button === 1;
       const isSpaceLeft = event.button === 0 && panModifierRef.current;
       if (!isMiddle && !isSpaceLeft) return;
+      // Don't hijack a drag that starts on the card currently being edited -
+      // let normal text-selection/cursor placement happen there instead.
+      // Panning is still fine over any OTHER card, editing or not.
+      if (isEditingCardTarget(event.target)) return;
       event.preventDefault();
       event.stopPropagation();
       gestureRef.current = {

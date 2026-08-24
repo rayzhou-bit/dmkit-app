@@ -1,4 +1,4 @@
-import { isTextEntryTarget, isSpaceActivatedTarget } from './focusUtils';
+import { isTextEntryTarget, isSpaceActivatedTarget, isEditingCardTarget } from './focusUtils';
 
 describe('isTextEntryTarget', () => {
   it('returns false for null', () => {
@@ -164,5 +164,48 @@ describe('cross-cutting product behavior', () => {
 
     expect(isTextEntryTarget(el)).toBe(false);
     expect(isSpaceActivatedTarget(el)).toBe(true);
+  });
+});
+
+describe('isEditingCardTarget', () => {
+  // Mirrors Card/hooks.js: a card's title/content textarea is non-readOnly
+  // only while actively being edited.
+  const makeCard = ({ editing }) => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    const textarea = document.createElement('textarea');
+    textarea.readOnly = !editing;
+    card.appendChild(textarea);
+    document.body.appendChild(card);
+    return { card, textarea };
+  };
+
+  afterEach(() => {
+    document.body.innerHTML = '';
+  });
+
+  it('is true for a mousedown inside the card whose textarea is currently focused and editable', () => {
+    const { card, textarea } = makeCard({ editing: true });
+    textarea.focus();
+    expect(isEditingCardTarget(textarea)).toBe(true);
+    expect(isEditingCardTarget(card)).toBe(true); // any descendant of the card counts
+  });
+
+  it('is false when the focused textarea is readOnly (card selected but not editing)', () => {
+    const { textarea } = makeCard({ editing: false });
+    textarea.focus();
+    expect(isEditingCardTarget(textarea)).toBe(false);
+  });
+
+  it('is false for a mousedown on a DIFFERENT card than the one being edited', () => {
+    makeCard({ editing: true }).textarea.focus();
+    const other = makeCard({ editing: false });
+    expect(isEditingCardTarget(other.card)).toBe(false);
+  });
+
+  it('is false when nothing is focused (activeElement defaults to body)', () => {
+    const { card } = makeCard({ editing: false });
+    document.body.focus();
+    expect(isEditingCardTarget(card)).toBe(false);
   });
 });

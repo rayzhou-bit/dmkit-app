@@ -33,10 +33,10 @@ const flushFrame = () => act(() => { vi.advanceTimersByTime(20); });
 const settleWheel = () => act(() => { vi.advanceTimersByTime(WHEEL_GESTURE_END_MS + 20); });
 
 // Standard per-test arrangement: fresh fake store + Harness, container rect stubbed.
-const setup = (state = makeState()) => {
+const setup = (state = makeState(), harnessProps = {}) => {
   const store = makeStore(state);
   const hooksRef = { current: null };
-  const utils = render(<Provider store={store}><Harness hooksRef={hooksRef} /></Provider>);
+  const utils = render(<Provider store={store}><Harness hooksRef={hooksRef} {...harnessProps} /></Provider>);
   const container = utils.getByTestId('container');
   const canvas = utils.getByTestId('canvas');
   stubRect(container, RECT);
@@ -296,6 +296,43 @@ describe('useCanvasHooks — mouse drag panning', () => {
     expect(documentSpy).not.toHaveBeenCalled();
 
     document.removeEventListener('mousedown', documentSpy);
+  });
+
+  it('does not pan when the drag starts on the card currently being edited (space+left-click)', () => {
+    // textAreaReadOnly: false -> the harness's card-text textarea is
+    // non-readOnly, i.e. "being edited" per Card/hooks.js's isEditing.
+    const { hooksRef, getByTestId } = setup(makeState(), { textAreaReadOnly: false });
+    getByTestId('card-text').focus();
+    fireEvent.keyDown(document.body, { code: 'Space', key: ' ' });
+
+    const downEv = new MouseEvent('mousedown', { button: 0, clientX: 5, clientY: 5, bubbles: true, cancelable: true });
+    act(() => { getByTestId('card-text').dispatchEvent(downEv); });
+
+    expect(downEv.defaultPrevented).toBe(false);
+    expect(hooksRef.current.isPanning).toBe(false);
+  });
+
+  it('does not pan on middle-click either, when it starts on the card being edited', () => {
+    const { hooksRef, getByTestId } = setup(makeState(), { textAreaReadOnly: false });
+    getByTestId('card-text').focus();
+
+    const downEv = new MouseEvent('mousedown', { button: 1, clientX: 5, clientY: 5, bubbles: true, cancelable: true });
+    act(() => { getByTestId('card-text').dispatchEvent(downEv); });
+
+    expect(downEv.defaultPrevented).toBe(false);
+    expect(hooksRef.current.isPanning).toBe(false);
+  });
+
+  it('still pans over a DIFFERENT card while another card is being edited', () => {
+    const { hooksRef, getByTestId } = setup(makeState(), { textAreaReadOnly: false });
+    getByTestId('card-text').focus(); // this card is "being edited"
+
+    // Drag starts on the OTHER card, not the one being edited.
+    const downEv = new MouseEvent('mousedown', { button: 1, clientX: 5, clientY: 5, bubbles: true, cancelable: true });
+    act(() => { getByTestId('other-card-text').dispatchEvent(downEv); });
+
+    expect(downEv.defaultPrevented).toBe(true);
+    expect(hooksRef.current.isPanning).toBe(true);
   });
 });
 
