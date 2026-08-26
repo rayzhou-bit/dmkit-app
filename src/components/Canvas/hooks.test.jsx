@@ -47,8 +47,8 @@ const setup = (state = makeState(), harnessProps = {}) => {
 };
 
 describe('useCanvasHooks — wheel', () => {
-  it('wheel inside a textarea is ignored (does not pan the canvas)', () => {
-    const { canvas, container, getByTestId } = setup();
+  it('wheel inside the active card is ignored (does not pan the canvas)', () => {
+    const { canvas, container, getByTestId } = setup(makeState(), { activeCard: 'card' });
     const initialTransform = canvas.style.transform;
 
     const insideEv = new WheelEvent('wheel', {
@@ -65,6 +65,21 @@ describe('useCanvasHooks — wheel', () => {
     });
     act(() => { container.dispatchEvent(outsideEv); });
     expect(outsideEv.defaultPrevented).toBe(true);
+  });
+
+  it('wheel inside a card that is NOT active still pans the canvas', () => {
+    // No activeCard set -> neither harness card carries the `active-card`
+    // class, matching an unselected card on the real canvas.
+    const { canvas, getByTestId } = setup();
+    const initialTransform = canvas.style.transform;
+
+    const insideEv = new WheelEvent('wheel', {
+      bubbles: true, cancelable: true, deltaX: 0, deltaY: 100, clientX: 400, clientY: 300,
+    });
+    act(() => { getByTestId('card-text').dispatchEvent(insideEv); });
+    expect(insideEv.defaultPrevented).toBe(true);
+    flushFrame();
+    expect(canvas.style.transform).not.toBe(initialTransform);
   });
 
   it('pans by default and commits once, on settle, to setActiveTabPosition only', () => {
@@ -298,11 +313,11 @@ describe('useCanvasHooks — mouse drag panning', () => {
     document.removeEventListener('mousedown', documentSpy);
   });
 
-  it('does not pan when the drag starts on the card currently being edited (space+left-click)', () => {
-    // textAreaReadOnly: false -> the harness's card-text textarea is
-    // non-readOnly, i.e. "being edited" per Card/hooks.js's isEditing.
-    const { hooksRef, getByTestId } = setup(makeState(), { textAreaReadOnly: false });
-    getByTestId('card-text').focus();
+  it('does not pan when the drag starts anywhere on the active card, including its text (space+left-click)', () => {
+    // activeCard: 'card' -> Card.jsx applies the `active-card` class to the
+    // whole card (title, content, everywhere) as soon as it's clicked; the
+    // harness mirrors that by putting the class on the wrapping .card div.
+    const { hooksRef, getByTestId } = setup(makeState(), { activeCard: 'card' });
     fireEvent.keyDown(document.body, { code: 'Space', key: ' ' });
 
     const downEv = new MouseEvent('mousedown', { button: 0, clientX: 5, clientY: 5, bubbles: true, cancelable: true });
@@ -312,9 +327,8 @@ describe('useCanvasHooks — mouse drag panning', () => {
     expect(hooksRef.current.isPanning).toBe(false);
   });
 
-  it('does not pan on middle-click either, when it starts on the card being edited', () => {
-    const { hooksRef, getByTestId } = setup(makeState(), { textAreaReadOnly: false });
-    getByTestId('card-text').focus();
+  it('does not pan on middle-click either, when it starts on the active card', () => {
+    const { hooksRef, getByTestId } = setup(makeState(), { activeCard: 'card' });
 
     const downEv = new MouseEvent('mousedown', { button: 1, clientX: 5, clientY: 5, bubbles: true, cancelable: true });
     act(() => { getByTestId('card-text').dispatchEvent(downEv); });
@@ -323,11 +337,10 @@ describe('useCanvasHooks — mouse drag panning', () => {
     expect(hooksRef.current.isPanning).toBe(false);
   });
 
-  it('still pans over a DIFFERENT card while another card is being edited', () => {
-    const { hooksRef, getByTestId } = setup(makeState(), { textAreaReadOnly: false });
-    getByTestId('card-text').focus(); // this card is "being edited"
+  it('still pans over a DIFFERENT card while another card is active', () => {
+    const { hooksRef, getByTestId } = setup(makeState(), { activeCard: 'card' });
 
-    // Drag starts on the OTHER card, not the one being edited.
+    // Drag starts on the OTHER card, not the active one.
     const downEv = new MouseEvent('mousedown', { button: 1, clientX: 5, clientY: 5, bubbles: true, cancelable: true });
     act(() => { getByTestId('other-card-text').dispatchEvent(downEv); });
 

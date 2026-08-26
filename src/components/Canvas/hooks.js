@@ -25,7 +25,7 @@ import {
   clampPosition,
   getViewportPoint,
 } from '../../utils/canvasTransform';
-import { isTextEntryTarget, isSpaceActivatedTarget, isEditingCardTarget } from '../../utils/focusUtils';
+import { isTextEntryTarget, isSpaceActivatedTarget } from '../../utils/focusUtils';
 
 const checkCardInSelection = (selectArea, cardArea) => {
   const {start, end} = selectArea;
@@ -226,7 +226,11 @@ export const useCanvasHooks = ({ containerRef, canvasRef }) => {
     if (!node || !isInteractive) return;
 
     const onWheel = (event) => {
-      if (event.target.closest && event.target.closest('textarea')) return;
+      // Same rule as the drag-pan guard below: let the active/selected card
+      // handle its own scroll (e.g. a long text field), but wheel-pan the
+      // canvas as normal over any other card's text, since it's not being
+      // interacted with.
+      if (event.target.closest && event.target.closest('.active-card')) return;
       event.preventDefault();
       if (gestureRef.current.type === 'drag') return;
       gestureRef.current.type = 'wheel';
@@ -295,10 +299,14 @@ export const useCanvasHooks = ({ containerRef, canvasRef }) => {
       const isMiddle = event.button === 1;
       const isSpaceLeft = event.button === 0 && panModifierRef.current;
       if (!isMiddle && !isSpaceLeft) return;
-      // Don't hijack a drag that starts on the card currently being edited -
-      // let normal text-selection/cursor placement happen there instead.
-      // Panning is still fine over any OTHER card, editing or not.
-      if (isEditingCardTarget(event.target)) return;
+      // Don't hijack a drag that starts anywhere on the currently active/
+      // selected card - Card.jsx applies the `active-card` class to the
+      // whole card (title, content, everywhere) as soon as it's clicked,
+      // so this covers the whole surface, not just a specific sub-element.
+      // Let normal interaction (text selection, cursor placement, react-rnd's
+      // own drag) happen there instead. Panning is still fine over any
+      // OTHER card.
+      if (event.target.closest && event.target.closest('.active-card')) return;
       event.preventDefault();
       event.stopPropagation();
       gestureRef.current = {

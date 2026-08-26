@@ -21,17 +21,3 @@ export const isSpaceActivatedTarget = (el) => {
   return false;
 };
 
-// True when a mousedown at `target` would land on the SAME card whose
-// title/content is currently being edited (Card/hooks.js's `isEditing` -
-// component-local React state, not in Redux, so this is the only way to see
-// it from a native DOM listener like Canvas/hooks.js's pan handler: a card's
-// title/content textarea is only non-readOnly while it's actively being
-// edited, so a focused, non-readOnly one IS "this card is in edit mode").
-// Used to let normal text-selection/cursor placement happen on a card
-// you're editing, instead of the drag being hijacked into a canvas pan.
-export const isEditingCardTarget = (target, activeElement = document.activeElement) => {
-  if (!isTextEntryTarget(activeElement)) return false;
-  const activeCard = activeElement.closest ? activeElement.closest('.card') : null;
-  const targetCard = target && target.closest ? target.closest('.card') : null;
-  return !!activeCard && activeCard === targetCard;
-};
