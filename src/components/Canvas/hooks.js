@@ -226,10 +226,7 @@ export const useCanvasHooks = ({ containerRef, canvasRef }) => {
     if (!node || !isInteractive) return;
 
     const onWheel = (event) => {
-      // Same rule as the drag-pan guard below: let the active/selected card
-      // handle its own scroll (e.g. a long text field), but wheel-pan the
-      // canvas as normal over any other card's text, since it's not being
-      // interacted with.
+      // Same rule as the drag-pan guard below - skip the active card only.
       if (event.target.closest && event.target.closest('.active-card')) return;
       event.preventDefault();
       if (gestureRef.current.type === 'drag') return;
@@ -299,13 +296,9 @@ export const useCanvasHooks = ({ containerRef, canvasRef }) => {
       const isMiddle = event.button === 1;
       const isSpaceLeft = event.button === 0 && panModifierRef.current;
       if (!isMiddle && !isSpaceLeft) return;
-      // Don't hijack a drag that starts anywhere on the currently active/
-      // selected card - Card.jsx applies the `active-card` class to the
-      // whole card (title, content, everywhere) as soon as it's clicked,
-      // so this covers the whole surface, not just a specific sub-element.
-      // Let normal interaction (text selection, cursor placement, react-rnd's
-      // own drag) happen there instead. Panning is still fine over any
-      // OTHER card.
+      // Don't hijack a drag starting on the active/selected card (whole
+      // surface, via Card.jsx's `active-card` class) - let it handle its
+      // own interaction instead. Other cards still pan normally.
       if (event.target.closest && event.target.closest('.active-card')) return;
       event.preventDefault();
       event.stopPropagation();
