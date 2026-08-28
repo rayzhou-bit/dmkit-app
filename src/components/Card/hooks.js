@@ -5,6 +5,8 @@ import useOutsideClick from '../../utils/useOutsideClick';
 import { copySelectedCard } from '../../data/redux/thunkActions';
 import { actions, selectors } from '../../data/redux';
 import { CARD_COLOR_KEYS, LIGHT_COLORS } from '../../constants/colors';
+import { getCardType } from '../../constants/cards';
+import { processImageFile } from '../../utils/imageUtils';
 import { POPUP_KEYS } from '../Popup/PopupKey';
 import { ACTION_TYPE } from '../../components-shared/Dropdowns/ActionDropdown';
 
@@ -262,7 +264,8 @@ export const useOptionsDropdownHooks = ({
 
   const activeTab = useSelector(selectors.project.activeTab);
   const cardData = useSelector(state => state.project.present.cards[cardId]);
-  const text = useSelector(state => state.project.present.cards[cardId].content.text);
+  const content = useSelector(state => state.project.present.cards[cardId].content);
+  const hasContent = !!(content?.text?.length || content?.image);
   const [ isOptionDropdownOpen, setIsOptionDropdownOpen ] = useState(false);
   const optionDropdownBtnRef = useRef();
 
@@ -301,7 +304,7 @@ export const useOptionsDropdownHooks = ({
       type: ACTION_TYPE.danger,
       icon: RedTrashIcon,
       callback: () => {
-        if (text.length > 0) {
+        if (hasContent) {
           dispatch(actions.session.setPopup({
             type: POPUP_KEYS.confirmCardDelete,
             id: cardId,
@@ -328,7 +331,8 @@ export const useOptionsDropdownLibraryHooks = ({
 }) => {
   const dispatch = useDispatch();
 
-  const text = useSelector(state => state.project.present.cards[cardId].content.text);
+  const content = useSelector(state => state.project.present.cards[cardId].content);
+  const hasContent = !!(content?.text?.length || content?.image);
   const activeTab = useSelector(state => state.project.present.activeViewId);
   const cardTabs = useSelector(state => state.project.present.cards[cardId].views);
   const [ isOptionDropdownOpen, setIsOptionDropdownOpen ] = useState(false);
@@ -360,7 +364,7 @@ export const useOptionsDropdownLibraryHooks = ({
       type: ACTION_TYPE.danger,
       icon: RedTrashIcon,
       callback: () => {
-        if (text.length > 0) {
+        if (hasContent) {
           dispatch(actions.session.setPopup({
             type: POPUP_KEYS.confirmCardDelete,
             id: cardId,
@@ -428,5 +432,65 @@ export const useContentHooks = ({
     changeContentValue: (newValue) => setContentValue(newValue),
     beginContentEdit,
     endContentEdit,
+  };
+};
+
+export const useCardType = (cardId) => useSelector(state => getCardType(state.project.present.cards[cardId]));
+
+export const useImageContentHooks = ({
+  cardId,
+}) => {
+  const dispatch = useDispatch();
+  const image = useSelector(state => state.project.present.cards[cardId].content?.image ?? '');
+  const alt = useSelector(state => state.project.present.cards[cardId].content?.alt ?? '');
+
+  const [ isProcessing, setIsProcessing ] = useState(false);
+  const [ errorMessage, setErrorMessage ] = useState(null);
+  const fileInputRef = useRef();
+  const isMountedRef = useRef(true);
+
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => { isMountedRef.current = false; };
+  }, []);
+
+  const openFilePicker = () => {
+    setErrorMessage(null);
+    fileInputRef.current?.click();
+  };
+
+  const onFileChange = async (event) => {
+    const file = event.target.files?.[0];
+    // Reset immediately so re-picking the same file after an error still fires `change`.
+    event.target.value = '';
+    if (!file) return;
+
+    setIsProcessing(true);
+    try {
+      const result = await processImageFile(file);
+      if (!isMountedRef.current) return;
+      dispatch(actions.project.updateCardImage({
+        id: cardId,
+        image: result.image,
+        alt: result.alt,
+      }));
+    } catch (err) {
+      if (!isMountedRef.current) return;
+      setErrorMessage(err.message);
+    } finally {
+      if (isMountedRef.current) setIsProcessing(false);
+    }
+  };
+
+  return {
+    image,
+    alt,
+    hasImage: !!image,
+    fileInputRef,
+    isProcessing,
+    errorMessage,
+    openFilePicker,
+    onFileChange,
+    dismissError: () => setErrorMessage(null),
   };
 };

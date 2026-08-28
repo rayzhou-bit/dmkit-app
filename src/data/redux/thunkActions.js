@@ -2,10 +2,12 @@ import { actions } from '../../data/redux';
 import generateUID from '../../utils/generateUID';
 import { getNearestGrid, getValidPositionAndSize } from '../../utils/gridUtils';
 import { DEFAULT_CARD_POSITION, DEFAULT_CARD_SIZE, DEFAULT_CARD_OFFSET } from '../../constants/dimensions';
+import { CARD_TYPES, getCardType } from '../../constants/cards';
 
 export const createNewCard = ({
   activeTabPosition,
   offset,
+  type = CARD_TYPES.text,
 }) => dispatch => {
   const newId = generateUID('card');
   let {
@@ -22,6 +24,7 @@ export const createNewCard = ({
     newId,
     position,
     size,
+    type,
   }));
   dispatch(actions.session.setActiveCard({ id: newId }));
 };
@@ -41,7 +44,10 @@ export const copySelectedCard = ({
     size: selectedCard?.views[activeTab]?.size,
     color: selectedCard?.color,
     title: selectedCard?.title,
+    type: getCardType(selectedCard),
     text: selectedCard?.content?.text,
+    image: selectedCard?.content?.image,
+    alt: selectedCard?.content?.alt,
   }));
   dispatch(actions.session.setActiveCard({ id: newId }));
 };
@@ -51,7 +57,6 @@ export const copySelectedCards = ({
   activeTab,
 }) => dispatch => {
   for (let cardId in selectedCards) {
-    console.log(selectedCards[cardId])
     const selectedCard = selectedCards[cardId];
     const newId = generateUID('card');
     const position = {
@@ -64,7 +69,10 @@ export const copySelectedCards = ({
       size: selectedCard?.views[activeTab]?.size,
       color: selectedCard?.color,
       title: selectedCard?.title,
+      type: getCardType(selectedCard),
       text: selectedCard?.content?.text,
+      image: selectedCard?.content?.image,
+      alt: selectedCard?.content?.alt,
     }));
     // dispatch(actions.session.setActiveCard({ id: newId }));
   }

@@ -16,7 +16,7 @@ export const isSpaceActivatedTarget = (el) => {
   if (tag === 'BUTTON' || tag === 'SELECT' || tag === 'SUMMARY') return true;
   if (tag === 'A' && el.hasAttribute('href')) return true;
   if (tag === 'INPUT') {
-    return ['checkbox', 'radio', 'submit', 'button', 'reset'].includes(el.type);
+    return ['checkbox', 'radio', 'submit', 'button', 'reset', 'file'].includes(el.type);
   }
   return false;
 };

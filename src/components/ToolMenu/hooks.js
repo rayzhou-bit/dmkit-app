@@ -5,6 +5,7 @@ import { selectors } from '../../data/redux';
 import { createNewCard, copySelectedCard, copySelectedCards } from '../../data/redux/thunkActions';
 
 import { DEFAULT_CARD_OFFSET } from '../../constants/dimensions';
+import { CARD_TYPES } from '../../constants/cards';
 
 const OFFSET_TIMEOUT = 3000;
 
@@ -19,6 +20,7 @@ export const useToolMenuHooks = () => {
   const offsetTimerRef = useRef(null);
 
   const disableNewCard = !activeTab;
+  const disableNewImageCard = !activeTab;
   // Copy uses the multi-selection when there is one, otherwise falls back
   // to the single active card (a plain click doesn't add to selectedCards).
   const hasSelection = !!(selectedCardsData && selectedCardsData.length > 0);
@@ -41,6 +43,17 @@ export const useToolMenuHooks = () => {
         dispatch(createNewCard({
           activeTabPosition,
           offset,
+        }));
+        setOffset(offset + DEFAULT_CARD_OFFSET);
+      }
+    },
+    disableNewImageCard,
+    onClickNewImageCard: () => {
+      if (!disableNewImageCard) {
+        dispatch(createNewCard({
+          activeTabPosition,
+          offset,
+          type: CARD_TYPES.image,
         }));
         setOffset(offset + DEFAULT_CARD_OFFSET);
       }

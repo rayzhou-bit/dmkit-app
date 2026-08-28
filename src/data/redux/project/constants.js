@@ -3,11 +3,13 @@ import {
   DEFAULT_CANVAS_POSITION,
   DEFAULT_CANVAS_SCALE,
 } from '../../../constants/dimensions';
+import { CARD_TYPES } from '../../../constants/cards';
 
 export const DEFAULT_CARD = {
   views: {},
   color: 'gray',
   title: 'untitled',
+  type: CARD_TYPES.text,
   content: { text: '' },
   createdOn: Date.now(),
   editedOn: Date.now(),

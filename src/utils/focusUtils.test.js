@@ -118,7 +118,7 @@ describe('isSpaceActivatedTarget', () => {
     expect(isSpaceActivatedTarget(el)).toBe(false);
   });
 
-  it.each(['checkbox', 'radio', 'submit', 'button', 'reset'])(
+  it.each(['checkbox', 'radio', 'submit', 'button', 'reset', 'file'])(
     'returns true for a real input of type "%s"',
     (type) => {
       const el = document.createElement('input');
