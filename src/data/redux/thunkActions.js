@@ -56,9 +56,11 @@ export const copySelectedCards = ({
   selectedCards,
   activeTab,
 }) => dispatch => {
+  const newIds = [];
   for (let cardId in selectedCards) {
     const selectedCard = selectedCards[cardId];
     const newId = generateUID('card');
+    newIds.push(newId);
     const position = {
       x: (selectedCard?.views[activeTab]?.pos?.x ?? 0) + DEFAULT_CARD_OFFSET,
       y: (selectedCard?.views[activeTab]?.pos?.y ?? 0) + DEFAULT_CARD_OFFSET,
@@ -74,6 +76,8 @@ export const copySelectedCards = ({
       image: selectedCard?.content?.image,
       alt: selectedCard?.content?.alt,
     }));
-    // dispatch(actions.session.setActiveCard({ id: newId }));
   }
+  // Select the copies (same idea as copySelectedCard activating its new
+  // card): keeps both originals and copies visible, cascaded apart.
+  dispatch(actions.session.setSelectedCards({ cards: newIds }));
 };
