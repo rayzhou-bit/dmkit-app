@@ -5,6 +5,7 @@ import { selectors } from '../../data/redux';
 import { createNewCard, copySelectedCard, copySelectedCards } from '../../data/redux/thunkActions';
 
 import { DEFAULT_CARD_OFFSET } from '../../constants/dimensions';
+import { CARD_TYPES } from '../../constants/cards';
 
 const OFFSET_TIMEOUT = 3000;
 
@@ -20,6 +21,7 @@ export const useToolMenuHooks = () => {
   const offsetTimerRef = useRef(null);
 
   const disableNewCard = !activeTab;
+  const disableNewImageCard = !activeTab;
   const disableCopyCard = !activeCard || !activeTab;
   const disableCopyCards = (selectedCardsData && selectedCardsData.length === 0) || !activeTab;
 
@@ -40,6 +42,17 @@ export const useToolMenuHooks = () => {
         dispatch(createNewCard({
           activeTabPosition,
           offset,
+        }));
+        setOffset(offset + DEFAULT_CARD_OFFSET);
+      }
+    },
+    disableNewImageCard,
+    onClickNewImageCard: () => {
+      if (!disableNewImageCard) {
+        dispatch(createNewCard({
+          activeTabPosition,
+          offset,
+          type: CARD_TYPES.image,
         }));
         setOffset(offset + DEFAULT_CARD_OFFSET);
       }

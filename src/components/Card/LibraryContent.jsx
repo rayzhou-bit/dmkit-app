@@ -1,8 +1,10 @@
 import React from 'react';
 
-import { useContentHooks } from './hooks';
+import { useCardType } from './hooks';
+import { CARD_TYPES } from '../../constants/cards';
 
-import './Card.scss';
+import LibraryTextContent from './LibraryTextContent';
+import LibraryImageContent from './LibraryImageContent';
 
 const LibraryContent = ({
   cardId,
@@ -10,48 +12,18 @@ const LibraryContent = ({
   isSelected,
   setEditingCard,
 }) => {
-  const {
-    readOnly,
-    contentRef,
-    contentValue,
-    changeContentValue,
-    beginContentEdit,
-    endContentEdit,
-  } = useContentHooks({
-    cardId,
-    setEditingCard,
-  });
+  const cardType = useCardType(cardId);
 
-  const condensedStyle = {
-    minHeight: '60px',
-    maxHeight: '80px',
-    height: '80px',
-  };
-
-  const expandedStyle = {
-    minHeight: '80px',
-    maxHeight: '50vh',
-    height: contentRef ? contentRef.current?.scrollHeight + 31 : null,
-  };
-
+  if (cardType === CARD_TYPES.image) {
+    return <LibraryImageContent cardId={cardId} isExpanded={isExpanded} isSelected={isSelected} />;
+  }
   return (
-    <div
-      className='library-card-content-container'
-      style={(isSelected || isExpanded) ? expandedStyle : condensedStyle}
-    >
-      <textarea
-        className={`library-card-textarea ${(isSelected || isExpanded) ? "selected" : ""}`}
-        onBlur={endContentEdit}
-        onChange={(e) => changeContentValue(e.target.value)}
-        onClick={beginContentEdit}
-        onDragOver={(e) => e.preventDefault()}
-        onWheel={(e) => e.stopPropagation()}
-        placeholder='Fill me in!'
-        readOnly={readOnly}
-        ref={contentRef}
-        value={contentValue}
-      />
-    </div>
+    <LibraryTextContent
+      cardId={cardId}
+      isExpanded={isExpanded}
+      isSelected={isSelected}
+      setEditingCard={setEditingCard}
+    />
   );
 };
 

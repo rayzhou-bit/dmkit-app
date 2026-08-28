@@ -93,11 +93,88 @@ $title-height: 32px;
 
 $scrollbar-width: 17px;
 .card-content {
+  position: relative;
   margin: 0;
   padding: 0;
   border-radius: 0 0 $card-radius $card-radius;
   flex-grow: 1;
   overflow: hidden;
+
+  .card-image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    background-color: white;
+    border-radius: inherit;
+    user-select: none;
+  }
+
+  .image-placeholder {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    border: 1px dashed #D7D6D6;
+    border-radius: inherit;
+    box-sizing: border-box;
+    background-color: white;
+    cursor: pointer;
+
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+
+    &:hover { background-color: #F4F4F4; }
+
+    span {
+      font-family: Roboto;
+      font-size: 12px;
+      color: #363B4E;
+    }
+  }
+
+  .card-file-input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .image-status,
+  .image-error {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 4px 8px;
+    font-family: Roboto;
+    font-size: 11px;
+  }
+
+  .image-status {
+    background-color: rgba(255, 255, 255, 0.85);
+    color: #363B4E;
+  }
+
+  .image-error {
+    background-color: #ed5e31;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+
+    button {
+      background-color: transparent;
+      color: white;
+      line-height: 1;
+      cursor: pointer;
+    }
+  }
 
   .text {
     box-sizing: border-box;
@@ -174,6 +251,24 @@ $scrollbar-width: 17px;
     flex: 1 1 auto;
     overflow-y: auto;
     -webkit-line-clamp: inherit;
+  }
+
+  .library-card-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .library-card-image.selected {
+    object-fit: contain;
+  }
+
+  .library-image-empty {
+    margin: auto;
+    font-family: Roboto;
+    font-size: 12px;
+    color: #A0A4B4;
+    text-align: center;
   }
 }
 

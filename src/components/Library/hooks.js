@@ -29,6 +29,11 @@ const hasSearch = (card, search) => {
   if (text.toLowerCase().includes(search.toLowerCase())) {
     return true;
   }
+  // Image cards have no text - match on the original filename instead.
+  const alt = card?.content?.alt ?? '';
+  if (alt.toLowerCase().includes(search.toLowerCase())) {
+    return true;
+  }
   return false;
 };
 

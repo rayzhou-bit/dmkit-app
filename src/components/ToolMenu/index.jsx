@@ -7,7 +7,6 @@ import NewCardIcon from '../../assets/icons/new-card.svg';
 import NewCardDisabledIcon from '../../assets/icons/new-card-disabled.svg';
 import CopyCardIcon from '../../assets/icons/copy-card.svg';
 import CopyCardDisabledIcon from '../../assets/icons/copy-card-disabled.svg';
-import StatBlockIcon from '../../assets/icons/stat-block.svg';
 import AddImageIcon from '../../assets/icons/add-image.svg';
 
 const ToolMenu = ({
@@ -17,6 +16,8 @@ const ToolMenu = ({
   const {
     disableNewCard,
     onClickNewCard,
+    disableNewImageCard,
+    onClickNewImageCard,
     disableCopyCard,
     onClickCopyCard,
     disableCopyCards,
@@ -44,6 +45,22 @@ const ToolMenu = ({
           />
         </div>
         <span>new</span>
+      </button>
+
+      {/* new image card */}
+      <button
+        className='tool-btn tool-btn-image'
+        disabled={disableNewImageCard}
+        onClick={onClickNewImageCard}
+      >
+        <div className='btn-highlight'>
+          <img
+            alt='New image'
+            draggable='false'
+            src={AddImageIcon}
+          />
+        </div>
+        <span>image</span>
       </button>
 
       {/* copy card */}

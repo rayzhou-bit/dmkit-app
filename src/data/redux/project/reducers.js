@@ -6,6 +6,7 @@ import {
   BLANK_PROJECT,
 } from './constants';
 import { GRID_SIZE, DEFAULT_CARD_POSITION, DEFAULT_CARD_SIZE } from '../../../constants/dimensions';
+import { CARD_TYPES } from '../../../constants/cards';
 
 // TODO name refactor
 //  view -> tab
@@ -46,7 +47,7 @@ const project = createSlice({
 
     // Card reducers
     createCard: (state, { payload }) => {
-      const { newId, position, size, color, title, text } = payload;
+      const { newId, position, size, color, title, text, type, image, alt } = payload;
       if (!state.activeViewId) return state;
       return {
         ...state,
@@ -62,9 +63,10 @@ const project = createSlice({
             },
             color: color ?? DEFAULT_CARD.color,
             title: title ?? DEFAULT_CARD.title,
-            content: {
-              text: text ?? DEFAULT_CARD.content.text,
-            },
+            type: type ?? DEFAULT_CARD.type,
+            content: type === CARD_TYPES.image
+              ? { image: image ?? '', alt: alt ?? '' }
+              : { text: text ?? DEFAULT_CARD.content.text },
             createdOn: Date.now(),
             editedOn: Date.now(),
           },
@@ -225,6 +227,25 @@ const project = createSlice({
               ...state.cards[id].content,
               text: text,
             },
+            editedOn: Date.now(),
+          },
+        },
+      };
+    },
+    updateCardImage: (state, { payload }) => {
+      const { id, image, alt } = payload;
+      return {
+        ...state,
+        cards: {
+          ...state.cards,
+          [id]: {
+            ...state.cards[id],
+            content: {
+              ...state.cards[id].content,
+              image,
+              alt,
+            },
+            type: CARD_TYPES.image,
             editedOn: Date.now(),
           },
         },

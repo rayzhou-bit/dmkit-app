@@ -1,41 +1,21 @@
 import React from 'react';
 
-import { useContentHooks } from './hooks';
+import { useCardType } from './hooks';
+import { CARD_TYPES } from '../../constants/cards';
 
-import './Card.scss';
+import TextContent from './TextContent';
+import ImageContent from './ImageContent';
 
 const Content = ({
   cardId,
   setEditingCard,
 }) => {
-  const {
-    readOnly,
-    contentRef,
-    contentValue,
-    changeContentValue,
-    beginContentEdit,
-    endContentEdit,
-  } = useContentHooks({
-    cardId,
-    setEditingCard,
-  });
+  const cardType = useCardType(cardId);
 
-  return (
-    <div className='card-content'>
-      <textarea
-        className='text'
-        onBlur={endContentEdit}
-        onChange={(e) => changeContentValue(e.target.value)}
-        onClick={beginContentEdit}
-        onDragOver={(e) => e.preventDefault()}
-        onWheel={(e) => e.stopPropagation()}
-        placeholder='Fill me in!'
-        readOnly={readOnly}
-        ref={contentRef}
-        value={contentValue}
-      />
-    </div>
-  );
+  if (cardType === CARD_TYPES.image) {
+    return <ImageContent cardId={cardId} />;
+  }
+  return <TextContent cardId={cardId} setEditingCard={setEditingCard} />;
 };
 
 export default Content;

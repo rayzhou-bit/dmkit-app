@@ -21,7 +21,7 @@ $border-radius: 5px;
   .tool-btn {
     padding: 0;
     background-color: transparent;
-    
+
     &:disabled > .btn-highlight { background-color: transparent !important; }
     &:hover > .btn-highlight { background-color: #DBE2EB; }
 
@@ -46,6 +46,14 @@ $border-radius: 5px;
       font-weight: 400;
       line-height: 11px;
     }
+  }
+
+  // The new/copy buttons dim via an -disabled icon swap instead; the image
+  // button has no such asset, so dim it directly here (scoped so it doesn't
+  // double up with the icon swap on the other buttons).
+  .tool-btn-image:disabled {
+    img { opacity: 0.35; }
+    span { color: #A0A4B4; }
   }
 
   .toolmenu-item {
