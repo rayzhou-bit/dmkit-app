@@ -60,15 +60,26 @@ export const stubRect = (el, { left, top, width, height }) => {
 // <Canvas>/<Card>/react-rnd tree. `textAreaReadOnly` defaults to true (the
 // production <Card> text field is a readOnly textarea while not actively
 // being edited); pass false to test the non-readOnly (text-entry) case.
-export const Harness = ({ hooksRef, textAreaReadOnly = true }) => {
+// Both the textarea+button and a second, separate card are rendered, each
+// wrapped in a `.card` div matching Card/Card.jsx's className; `activeCard`
+// ('card' | 'other-card' | null) marks which one also gets the `active-card`
+// class Card.jsx applies to the whole card once it's clicked/selected - for
+// the pan-guard tests.
+export const Harness = ({ hooksRef, textAreaReadOnly = true, activeCard = null }) => {
   const containerRef = useRef();
   const canvasRef = useRef();
   hooksRef.current = useCanvasHooks({ containerRef, canvasRef });
+  const cardClass = (name) => 'card' + (activeCard === name ? ' active-card' : '');
   return (
     <div data-testid="container" ref={containerRef}>
       <div data-testid="canvas" className="canvas" ref={canvasRef}>
-        <textarea data-testid="card-text" readOnly={textAreaReadOnly} />
-        <button data-testid="card-button" type="button">ok</button>
+        <div data-testid="card" className={cardClass('card')}>
+          <textarea data-testid="card-text" readOnly={textAreaReadOnly} />
+          <button data-testid="card-button" type="button">ok</button>
+        </div>
+        <div data-testid="other-card" className={cardClass('other-card')}>
+          <textarea data-testid="other-card-text" readOnly />
+        </div>
       </div>
     </div>
   );

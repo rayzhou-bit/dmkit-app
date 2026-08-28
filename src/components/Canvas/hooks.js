@@ -226,7 +226,8 @@ export const useCanvasHooks = ({ containerRef, canvasRef }) => {
     if (!node || !isInteractive) return;
 
     const onWheel = (event) => {
-      if (event.target.closest && event.target.closest('textarea')) return;
+      // Same rule as the drag-pan guard below - skip the active card only.
+      if (event.target.closest && event.target.closest('.active-card')) return;
       event.preventDefault();
       if (gestureRef.current.type === 'drag') return;
       gestureRef.current.type = 'wheel';
@@ -295,6 +296,10 @@ export const useCanvasHooks = ({ containerRef, canvasRef }) => {
       const isMiddle = event.button === 1;
       const isSpaceLeft = event.button === 0 && panModifierRef.current;
       if (!isMiddle && !isSpaceLeft) return;
+      // Don't hijack a drag starting on the active/selected card (whole
+      // surface, via Card.jsx's `active-card` class) - let it handle its
+      // own interaction instead. Other cards still pan normally.
+      if (event.target.closest && event.target.closest('.active-card')) return;
       event.preventDefault();
       event.stopPropagation();
       gestureRef.current = {

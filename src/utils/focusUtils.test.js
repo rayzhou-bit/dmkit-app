@@ -166,3 +166,4 @@ describe('cross-cutting product behavior', () => {
     expect(isSpaceActivatedTarget(el)).toBe(true);
   });
 });
+
