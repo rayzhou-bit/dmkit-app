@@ -43,7 +43,10 @@ export const useCardHooks = ({
   const cardRef = useRef();
   const isActive = cardId === activeCard;
 
-  useOutsideClick([cardRef, toolMenuRef], isSelected, 
+  // isActive can become true without a click on this card (e.g. a freshly
+  // created/copied card is activated straight from the toolbar), so the
+  // outside-click guard has to watch that too, not just local isSelected.
+  useOutsideClick([cardRef, toolMenuRef], isActive || isSelected,
     () => {
       if (isActive) dispatch(actions.session.setActiveCard({ id: null }));
       setIsSelected(false);
@@ -129,7 +132,7 @@ export const useLibraryCardHooks = ({
   const libraryCardRef = useRef();
   const isActive = cardId === activeCard;
 
-  useOutsideClick([libraryCardRef], isSelected, 
+  useOutsideClick([libraryCardRef], isSelected,
     () => {
       if (isActive) dispatch(actions.session.setActiveCard({ id: null }));
       setIsSelected(false);

@@ -18,8 +18,6 @@ const ToolMenu = ({
     onClickNewCard,
     disableNewImageCard,
     onClickNewImageCard,
-    disableCopyCard,
-    onClickCopyCard,
     disableCopyCards,
     onClickCopyCards,
   } = useToolMenuHooks();

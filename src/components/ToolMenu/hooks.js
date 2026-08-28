@@ -11,7 +11,6 @@ const OFFSET_TIMEOUT = 3000;
 
 export const useToolMenuHooks = () => {
   const dispatch = useDispatch();
-  const activeCard = useSelector(selectors.session.activeCard);
   const activeTab = useSelector(selectors.project.activeTab);
   const activeCardData = useSelector(selectors.project.activeCardData);
   const selectedCardsData = useSelector(selectors.project.selectedCardsData);
@@ -22,8 +21,10 @@ export const useToolMenuHooks = () => {
 
   const disableNewCard = !activeTab;
   const disableNewImageCard = !activeTab;
-  const disableCopyCard = !activeCard || !activeTab;
-  const disableCopyCards = (selectedCardsData && selectedCardsData.length === 0) || !activeTab;
+  // Copy uses the multi-selection when there is one, otherwise falls back
+  // to the single active card (a plain click doesn't add to selectedCards).
+  const hasSelection = !!(selectedCardsData && selectedCardsData.length > 0);
+  const disableCopyCards = !activeTab || (!hasSelection && !activeCardData);
 
   useEffect(() => {
     if (offset > 0) {
@@ -57,20 +58,17 @@ export const useToolMenuHooks = () => {
         setOffset(offset + DEFAULT_CARD_OFFSET);
       }
     },
-    disableCopyCard,
-    onClickCopyCard: () => {
-      if (!disableCopyCard) {
-        dispatch(copySelectedCard({
-          selectedCard: activeCardData,
-          activeTab,
-        }));
-      }
-    },
     disableCopyCards,
     onClickCopyCards: () => {
-      if (!disableCopyCards) {
+      if (disableCopyCards) return;
+      if (hasSelection) {
         dispatch(copySelectedCards({
           selectedCards: selectedCardsData,
+          activeTab,
+        }));
+      } else {
+        dispatch(copySelectedCard({
+          selectedCard: activeCardData,
           activeTab,
         }));
       }
