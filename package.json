@@ -27,9 +27,6 @@
     "test:e2e": "playwright test",
     "test:e2e:install": "playwright install chromium"
   },
-  "eslintConfig": {
-    "extends": "react-app"
-  },
   "browserslist": {
     "production": [
       ">0.2%",
