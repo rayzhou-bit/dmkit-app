@@ -1,12 +1,13 @@
 import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
-  esbuild: {
+  oxc: {
     // Classic transform: every .jsx in src/ imports React, and no .js file
-    // contains JSX, so esbuild's built-in handling is sufficient. Deliberately
-    // NOT loading @vitejs/plugin-react here — it peers on vite ^4.2.0 while
-    // Vitest runs its own nested Vite, and we don't need Fast Refresh in tests.
-    jsx: 'transform',
+    // contains JSX, so Oxc's built-in handling is sufficient. Deliberately
+    // NOT loading @vitejs/plugin-react here — it peers on vite ^8.0.0 and
+    // Vitest 5 shares that single vite via peer dep; we don't need Fast
+    // Refresh in tests.
+    jsx: { runtime: 'classic' },
   },
   test: {
     // Required: @testing-library/react@12 only registers its auto-cleanup
