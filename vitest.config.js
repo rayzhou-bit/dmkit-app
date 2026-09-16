@@ -10,8 +10,9 @@ export default defineConfig({
     jsx: { runtime: 'classic' },
   },
   test: {
-    // Required: @testing-library/react@12 only registers its auto-cleanup
-    // afterEach hook when a global `afterEach` exists.
+    // Required: RTL only registers its auto-cleanup afterEach when a global
+    // `afterEach` exists, and (RTL 14+) its act-environment beforeAll/afterAll
+    // setup the same way.
     globals: true,
     environment: 'jsdom',
     environmentOptions: {
