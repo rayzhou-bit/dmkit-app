@@ -1,8 +1,4 @@
 export const GRID_SIZE = 12; // px
-export const GRID_SCALE = {
-  min: 0.5,
-  max: 4,
-};
 
 export const CANVAS_SIZE = {
   width: 250 * GRID_SIZE,
