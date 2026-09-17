@@ -430,9 +430,9 @@ export const useMultiSelectHooks = ({
   const canvasMouseDownHandler = (event) => {
     if (panModifierRef && panModifierRef.current) return;
     if (event.button === 0) {
-      setIsMouseDown(true);
       // TODO The following line refers to a specific className. Probably not the best to implement this way.
       if (canvasRef.current && event.target.classList.contains('canvas')) {
+        setIsMouseDown(true);
         document.addEventListener('mousemove', updateSelect);
         const start = toWorldPoint(event);
         setSelectArea({ start, end: start });
@@ -520,6 +520,12 @@ export const useCardsHooks = ({ containerRef } = {}) => {
   const activeTabScale = useSelector(selectors.project.activeTabScale) ?? 1;
   const cardCollection = useSelector(state => state.project.present.cards);
   const [ cardAnimation, setCardAnimation ] = useState({});
+
+  // Stale selection would otherwise survive a tab switch and could target
+  // cards no longer visible (copy button, bulk delete).
+  useEffect(() => {
+    dispatch(actions.session.setSelectedCards({ cards: [] }));
+  }, [activeTab]);
 
   let cardArgs = {};
   for (let card in cardCollection) {
