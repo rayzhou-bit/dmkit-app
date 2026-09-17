@@ -525,7 +525,6 @@ export const useCardsHooks = ({ containerRef } = {}) => {
   for (let card in cardCollection) {
     if (cardCollection[card].views && cardCollection[card].views[activeTab]) {
       cardArgs[card] = {
-        key: card,
         cardId: card,
         cardAnimation: cardAnimation,
         setCardAnimation: setCardAnimation,

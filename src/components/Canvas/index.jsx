@@ -79,7 +79,7 @@ const Canvas = ({ toolMenuRef }) => {
   for (let card in cardArgs) {
     cardList = [
       cardList,
-      <Card toolMenuRef={toolMenuRef} {...cardArgs[card]} />
+      <Card key={card} toolMenuRef={toolMenuRef} {...cardArgs[card]} />
     ];
   }
 
