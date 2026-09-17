@@ -26,6 +26,7 @@ import {
   getViewportPoint,
 } from '../../utils/canvasTransform';
 import { isTextEntryTarget, isSpaceActivatedTarget } from '../../utils/focusUtils';
+import { useGroupDragStore } from './groupDrag';
 
 const checkCardInSelection = (selectArea, cardArea) => {
   const {start, end} = selectArea;
@@ -519,7 +520,13 @@ export const useCardsHooks = ({ containerRef } = {}) => {
   const activeTabPosition = useSelector(selectors.project.activeTabPosition);
   const activeTabScale = useSelector(selectors.project.activeTabScale) ?? 1;
   const cardCollection = useSelector(state => state.project.present.cards);
+  const selectedCards = useSelector(state => state.session.selectedCards);
+  const activeTabCardsDimensions = useSelector(selectors.project.activeTabCardsDimensions);
   const [ cardAnimation, setCardAnimation ] = useState({});
+  const groupDrag = useGroupDragStore();
+  // Latest selection/dimensions for groupDrag.start() to read - so a
+  // leader's onDragStart doesn't need to re-select this itself.
+  groupDrag.selectionRef.current = { selectedCards, cardsDimensions: activeTabCardsDimensions };
 
   // Stale selection would otherwise survive a tab switch and could target
   // cards no longer visible (copy button, bulk delete).
@@ -534,12 +541,14 @@ export const useCardsHooks = ({ containerRef } = {}) => {
         cardId: card,
         cardAnimation: cardAnimation,
         setCardAnimation: setCardAnimation,
+        groupDrag,
       };
     }
   }
 
   return {
     cardArgs,
+    groupDrag,
     cardDropHandler: (event) => {
       event.preventDefault();
       const droppedCard = event.dataTransfer.getData('text');

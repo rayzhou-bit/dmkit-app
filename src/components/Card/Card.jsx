@@ -11,9 +11,10 @@ import { GRID_SIZE, MIN_CARD_SIZE } from '../../constants/dimensions';
 
 export const Card = ({
   cardId,
-  toolMenuRef, 
+  toolMenuRef,
   cardAnimation,
   setCardAnimation,
+  groupDrag,
 }) => {
   const {
     cardRef,
@@ -27,6 +28,7 @@ export const Card = ({
     isEditing,
     setIsEditing,
     onDragStart,
+    onDrag,
     onDragStop,
     onResizeStop,
     onClick,
@@ -36,6 +38,7 @@ export const Card = ({
     toolMenuRef,
     cardAnimation,
     setCardAnimation,
+    groupDrag,
   });
 
   return (
@@ -47,6 +50,7 @@ export const Card = ({
       disableDragging={isEditing}
       dragHandleClassName='input-div'
       onDragStart={onDragStart}
+      onDrag={onDrag}
       onDragStop={onDragStop}
       // size
       size={size}
