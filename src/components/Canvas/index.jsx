@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 
-import { useCanvasHooks, useCardsHooks, useMultiSelectHooks } from './hooks';
+import { useCanvasHooks, useCardsHooks, useMultiSelectHooks, useCardShortcutHooks } from './hooks';
 import Card from '../Card/Card';
 import ZoomControls from './ZoomControls';
 
@@ -64,6 +64,7 @@ const Canvas = ({ toolMenuRef }) => {
   const {
     cardArgs,
     cardDropHandler,
+    groupDrag,
   } = useCardsHooks({ containerRef });
 
   const {
@@ -74,6 +75,8 @@ const Canvas = ({ toolMenuRef }) => {
     selectRef,
     panModifierRef,
   });
+
+  useCardShortcutHooks({ groupDrag });
 
   let cardList = [];
   for (let card in cardArgs) {

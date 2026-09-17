@@ -51,7 +51,8 @@ $border-radius: 5px;
   // The new/copy buttons dim via an -disabled icon swap instead; the image
   // button has no such asset, so dim it directly here (scoped so it doesn't
   // double up with the icon swap on the other buttons).
-  .tool-btn-image:disabled {
+  .tool-btn-image:disabled,
+  .tool-btn-delete:disabled {
     img { opacity: 0.35; }
     span { color: #A0A4B4; }
   }

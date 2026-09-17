@@ -27,6 +27,7 @@ import {
 } from '../../utils/canvasTransform';
 import { isTextEntryTarget, isSpaceActivatedTarget } from '../../utils/focusUtils';
 import { useGroupDragStore } from './groupDrag';
+import { useDeleteCardsHooks } from '../ToolMenu/hooks';
 
 const checkCardInSelection = (selectArea, cardArea) => {
   const {start, end} = selectArea;
@@ -574,4 +575,25 @@ export const useCardsHooks = ({ containerRef } = {}) => {
       }
     }
   };
+};
+
+// Delete/Backspace shortcut - fires the same decision helper as the
+// ToolMenu delete button (useDeleteCardsHooks), so the two can't diverge.
+export const useCardShortcutHooks = ({ groupDrag }) => {
+  const popupType = useSelector(state => state.session.popup?.type);
+  const activeTab = useSelector(state => state.project.present.activeViewId || '');
+  const { disableDeleteCards, onClickDeleteCards } = useDeleteCardsHooks();
+
+  useEffect(() => {
+    const onKeyDown = (event) => {
+      if (event.key !== 'Delete' && event.key !== 'Backspace') return;
+      if (popupType || !activeTab || disableDeleteCards) return;
+      if (isTextEntryTarget(event.target)) return;
+      if (groupDrag.isActive()) return;
+      event.preventDefault();
+      onClickDeleteCards();
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [popupType, activeTab, disableDeleteCards, onClickDeleteCards, groupDrag]);
 };
