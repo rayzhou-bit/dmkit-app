@@ -1,5 +1,4 @@
-import React from 'react';
-import { useSelector } from 'react-redux';
+import React, { useState } from 'react';
 
 import { useMonsterSectionHooks } from './hooks';
 import { MONSTER_SECTIONS, MONSTER_FIELDS, abilityModifier, formatModifier } from '../../constants/monster';
@@ -75,12 +74,20 @@ const SectionBody = ({ cardId, section }) => {
 };
 
 const AbilityCell = ({ cardId, fieldKey }) => {
-  const score = useSelector(state => state.project.present.cards[cardId].content?.[fieldKey] ?? '');
+  // Fed live (uncommitted) values via onValueChange, so the modifier updates
+  // as you type, not just after the field commits on blur.
+  const [score, setScore] = useState('');
   const modifier = formatModifier(abilityModifier(score));
 
   return (
     <div className='monster-ability-cell'>
-      <MonsterTextField cardId={cardId} fieldKey={fieldKey} {...MONSTER_FIELDS[fieldKey]} className='monster-ability-score' />
+      <MonsterTextField
+        cardId={cardId}
+        fieldKey={fieldKey}
+        {...MONSTER_FIELDS[fieldKey]}
+        className='monster-ability-score'
+        onValueChange={setScore}
+      />
       <span className='monster-ability-modifier'>{modifier}</span>
     </div>
   );

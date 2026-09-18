@@ -101,6 +101,18 @@ describe('MonsterContent', () => {
     expect(input.value).toBe('18');
   });
 
+  it('ability modifier updates live while typing, before blur/commit', () => {
+    const content = buildMonsterContent();
+    const { getByLabelText, container, store } = renderMonster(content);
+    const input = getByLabelText('STR');
+    const modifier = container.querySelector('.monster-ability-cell .monster-ability-modifier');
+
+    expect(modifier.textContent).toBe('—');
+    fireEvent.change(input, { target: { value: '18' } });
+    expect(modifier.textContent).toBe('+4'); // live, not yet committed
+    expect(store.dispatched).toHaveLength(0); // no blur yet - nothing dispatched
+  });
+
   it('clicking a collapsed section header dispatches setCardSectionCollapsed with collapsed:false', () => {
     const content = buildMonsterContent(); // bonusActions defaults collapsed:true
     const { getByText, store } = renderMonster(content);
