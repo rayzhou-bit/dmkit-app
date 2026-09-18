@@ -182,11 +182,11 @@ describe('MonsterContent', () => {
     };
     const { getByText } = render(<Provider store={store}><MonsterContent cardId='c1' /></Provider>);
 
-    // Collapsing shrinks by the column's delta (136 for combat).
+    // Collapsing shrinks by the column's delta (205 for combat).
     fireEvent.click(getByText('Combat'));
     expect(dispatched).toContainEqual({
       type: 'project/updateCardSize',
-      payload: { id: 'c1', size: { width: '416px', height: '360px' } },
+      payload: { id: 'c1', size: { width: '347px', height: '360px' } },
     });
   });
 });
