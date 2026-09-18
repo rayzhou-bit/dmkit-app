@@ -272,14 +272,15 @@ $scrollbar-width: 17px;
   }
 }
 
-// Monster stat-block card - 3 columns: Media, Attributes, Combat. Widths are
-// fixed pixels, not fr units - a flexible column would grow to absorb a
-// sibling's freed space when it collapses, moving that sibling's own toggle
-// strip even though it wasn't touched. Card width is kept in sync with
-// these sums by useMonsterSectionHooks' toggleColumn (MONSTER_COLUMN_WIDTH_DELTA).
+// Monster stat-block card - 3 columns: Media, Attributes, Combat. Media is
+// the only flexible (1fr) track, so the card's own width never changes when
+// a column collapses/expands - Media just absorbs whatever Attributes/Combat
+// give up or need, and Combat stays flush against the right edge always.
+// Attributes/Combat are fixed pixels (not fr) so collapsing one never moves
+// the other's toggle strip.
 .monster-content {
   display: grid;
-  grid-template-columns: 108px 184px 229px;
+  grid-template-columns: minmax(108px, 1fr) 184px 229px;
   gap: 8px;
   padding: 6px 8px;
   height: 100%;
@@ -290,13 +291,13 @@ $scrollbar-width: 17px;
   color: #363B4E;
 }
 .monster-content.monster-content-attributes-collapsed {
-  grid-template-columns: 108px 24px 229px;
+  grid-template-columns: minmax(108px, 1fr) 24px 229px;
 }
 .monster-content.monster-content-combat-collapsed {
-  grid-template-columns: 108px 184px 24px;
+  grid-template-columns: minmax(108px, 1fr) 184px 24px;
 }
 .monster-content.monster-content-attributes-collapsed.monster-content-combat-collapsed {
-  grid-template-columns: 108px 24px 24px;
+  grid-template-columns: minmax(108px, 1fr) 24px 24px;
 }
 
 .monster-column-media {

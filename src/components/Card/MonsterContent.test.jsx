@@ -159,34 +159,15 @@ describe('MonsterContent', () => {
     expect(queryByLabelText('Armor Class')).toBeNull();
   });
 
-  it('toggling a column also grows/shrinks the card width, on top of the collapse dispatch', () => {
+  it('toggling a column dispatches only the collapse action - the card itself never resizes', () => {
     const content = buildMonsterContent();
-    const dispatched = [];
-    // Stable state object (not rebuilt per getState() call) - a fresh nested
-    // object every call defeats useSyncExternalStore's reference equality
-    // and causes an infinite render loop.
-    const state = {
-      project: {
-        present: {
-          activeViewId: 'tab1',
-          cards: { c1: { content, views: { tab1: { size: { width: '552px', height: '360px' } } } } },
-        },
-      },
-      session: { monsterCollapse: { c1: {} } },
-    };
-    const store = {
-      dispatched,
-      getState: () => state,
-      dispatch: (action) => { dispatched.push(action); return action; },
-      subscribe: () => () => {},
-    };
-    const { getByText } = render(<Provider store={store}><MonsterContent cardId='c1' /></Provider>);
+    const { getByText, store } = renderMonster(content);
 
-    // Collapsing shrinks by the column's delta (205 for combat).
     fireEvent.click(getByText('Combat'));
-    expect(dispatched).toContainEqual({
-      type: 'project/updateCardSize',
-      payload: { id: 'c1', size: { width: '347px', height: '360px' } },
-    });
+
+    expect(store.dispatched).toEqual([{
+      type: 'session/setMonsterCollapsed',
+      payload: { id: 'c1', key: 'combat', collapsed: true },
+    }]);
   });
 });

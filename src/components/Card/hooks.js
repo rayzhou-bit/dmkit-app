@@ -8,14 +8,14 @@ import { CARD_COLOR_KEYS, LIGHT_COLORS } from '../../constants/colors';
 import { getCardType, hasCardContent } from '../../constants/cards';
 import { processImageFile } from '../../utils/imageUtils';
 import { MAX_PORTRAIT_DATA_URI_LENGTH, PORTRAIT_MAX_EDGE_STEPS } from '../../constants/images';
-import { MONSTER_FIELDS, MONSTER_SECTIONS, MONSTER_COLUMN_SECTIONS, MONSTER_COLUMN_WIDTH_DELTA, DEFAULT_COLLAPSED } from '../../constants/monster';
+import { MONSTER_FIELDS, MONSTER_SECTIONS, MONSTER_COLUMN_SECTIONS, DEFAULT_COLLAPSED } from '../../constants/monster';
 import { POPUP_KEYS } from '../Popup/PopupKey';
 import { ACTION_TYPE } from '../../components-shared/Dropdowns/ActionDropdown';
 import { useGroupDragPosition } from '../Canvas/groupDrag';
 
 import LibraryIcon from '../../assets/icons/library-open.svg';
 import RedTrashIcon from '../../assets/icons/trash-red.svg';
-import { DEFAULT_CARD_POSITION, MIN_CARD_SIZE } from '../../constants/dimensions';
+import { DEFAULT_CARD_POSITION } from '../../constants/dimensions';
 import generateUID from '../../utils/generateUID';
 
 export const ANIMATION = {
@@ -580,10 +580,6 @@ export const useMonsterSectionHooks = ({ cardId }) => {
   // Raw per-card object, possibly undefined - not defaulted here to avoid a
   // fresh {} every render (would break memoization).
   const collapse = useSelector(state => state.session.monsterCollapse?.[cardId]);
-  const cardSize = useSelector(state => {
-    const tab = state.project.present.activeViewId;
-    return tab ? state.project.present.cards[cardId]?.views?.[tab]?.size : null;
-  });
 
   const isCollapsed = (key) => collapse?.[key] ?? DEFAULT_COLLAPSED[key] ?? false;
 
@@ -602,26 +598,14 @@ export const useMonsterSectionHooks = ({ cardId }) => {
       key,
       collapsed: !isCollapsed(key),
     })),
-    // Also grows/shrinks the card so an expanding column doesn't just
-    // squeeze the others - and shrinks back when re-collapsed.
-    toggleColumn: (columnKey) => {
-      const nextCollapsed = !isCollapsed(columnKey);
-      dispatch(actions.session.setMonsterCollapsed({ id: cardId, key: columnKey, collapsed: nextCollapsed }));
-      if (cardSize) {
-        const delta = MONSTER_COLUMN_WIDTH_DELTA[columnKey] ?? 0;
-        const nextWidth = Math.max(
-          MIN_CARD_SIZE.width,
-          parseFloat(cardSize.width) + (nextCollapsed ? -delta : delta),
-        );
-        // A never-manually-resized card's size is still a plain number
-        // (updateCardSize expects "Npx" strings, like react-rnd gives it).
-        const height = typeof cardSize.height === 'number' ? `${cardSize.height}px` : cardSize.height;
-        dispatch(actions.project.updateCardSize({
-          id: cardId,
-          size: { width: `${nextWidth}px`, height },
-        }));
-      }
-    },
+    // The card itself never resizes here - Media (Card.scss) is the one
+    // flexible column, so it absorbs whatever width Attributes/Combat give
+    // up or need. Keeps this a pure view-state toggle with nothing to undo.
+    toggleColumn: (columnKey) => dispatch(actions.session.setMonsterCollapsed({
+      id: cardId,
+      key: columnKey,
+      collapsed: !isCollapsed(columnKey),
+    })),
   };
 };
 
