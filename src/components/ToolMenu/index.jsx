@@ -8,6 +8,7 @@ import NewCardDisabledIcon from '../../assets/icons/new-card-disabled.svg';
 import CopyCardIcon from '../../assets/icons/copy-card.svg';
 import CopyCardDisabledIcon from '../../assets/icons/copy-card-disabled.svg';
 import AddImageIcon from '../../assets/icons/add-image.svg';
+import DeleteCardIcon from '../../assets/icons/trash-red.svg';
 
 const ToolMenu = ({
   isOpen,
@@ -20,6 +21,8 @@ const ToolMenu = ({
     onClickNewImageCard,
     disableCopyCards,
     onClickCopyCards,
+    disableDeleteCards,
+    onClickDeleteCards,
   } = useToolMenuHooks();
 
   return (
@@ -76,7 +79,23 @@ const ToolMenu = ({
         </div>
         <span>copy</span>
       </button>
-      
+
+      {/* delete card(s) */}
+      <button
+        className='tool-btn tool-btn-delete'
+        disabled={disableDeleteCards}
+        onClick={onClickDeleteCards}
+      >
+        <div className='btn-highlight'>
+          <img
+            alt='Delete'
+            draggable='false'
+            src={DeleteCardIcon}
+          />
+        </div>
+        <span>delete</span>
+      </button>
+
     </div>
   );
 };

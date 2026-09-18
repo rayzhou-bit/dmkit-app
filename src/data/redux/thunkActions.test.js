@@ -1,7 +1,7 @@
 // database.js (imported transitively by hooks.js, not this file) pulls in
 // Firebase; thunkActions.js itself has no such import, so no mock is needed
 // here.
-import { copySelectedCard, copySelectedCards, createNewCard } from './thunkActions';
+import { copySelectedCard, copySelectedCards, createNewCard, destroySelectedCards } from './thunkActions';
 
 // Hand-rolled dispatch recorder - thunkActions dispatch plain actions
 // synchronously, no store/state read-back needed.
@@ -74,5 +74,32 @@ describe('copySelectedCards', () => {
 
     expect(dispatched).toHaveLength(1);
     expect(dispatched[0]).toEqual({ type: 'session/setSelectedCards', payload: { cards: [] } });
+  });
+});
+
+describe('destroySelectedCards', () => {
+  it('destroys the ids and clears the selection', () => {
+    const { dispatch, dispatched } = makeDispatch();
+    destroySelectedCards({ ids: ['c1', 'c2'], activeCardId: null })(dispatch);
+
+    expect(dispatched).toEqual([
+      { type: 'project/destroyCards', payload: { ids: ['c1', 'c2'] } },
+      { type: 'session/setSelectedCards', payload: { cards: [] } },
+    ]);
+  });
+
+  it('also clears the active card when it is among the deleted ids', () => {
+    const { dispatch, dispatched } = makeDispatch();
+    destroySelectedCards({ ids: ['c1', 'c2'], activeCardId: 'c1' })(dispatch);
+
+    const clearActive = dispatched.find(a => a.type === 'session/setActiveCard');
+    expect(clearActive).toEqual({ type: 'session/setActiveCard', payload: { id: null } });
+  });
+
+  it('leaves the active card alone when it is not among the deleted ids', () => {
+    const { dispatch, dispatched } = makeDispatch();
+    destroySelectedCards({ ids: ['c1', 'c2'], activeCardId: 'c3' })(dispatch);
+
+    expect(dispatched.some(a => a.type === 'session/setActiveCard')).toBe(false);
   });
 });

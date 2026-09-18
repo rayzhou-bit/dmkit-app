@@ -1,13 +1,44 @@
 import { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { selectors } from '../../data/redux';
-import { createNewCard, copySelectedCard, copySelectedCards } from '../../data/redux/thunkActions';
+import { actions, selectors } from '../../data/redux';
+import { createNewCard, copySelectedCard, copySelectedCards, destroySelectedCards } from '../../data/redux/thunkActions';
+import { POPUP_KEYS } from '../Popup/PopupKey';
 
 import { DEFAULT_CARD_OFFSET } from '../../constants/dimensions';
 import { CARD_TYPES } from '../../constants/cards';
 
 const OFFSET_TIMEOUT = 3000;
+
+const hasContent = (card) => !!(card?.content?.text?.length || card?.content?.image);
+
+// Shared by the ToolMenu delete button and the Delete/Backspace shortcut, so
+// the confirm-vs-immediate decision can't diverge between the two.
+export const useDeleteCardsHooks = () => {
+  const dispatch = useDispatch();
+  const activeTab = useSelector(selectors.project.activeTab);
+  const activeCardData = useSelector(selectors.project.activeCardData);
+  const activeCardId = useSelector(selectors.session.activeCard);
+  const selectedCards = useSelector(selectors.session.selectedCards);
+  const selectedCardsData = useSelector(selectors.project.selectedCardsData);
+
+  const hasSelection = !!(selectedCardsData && selectedCardsData.length > 0);
+  const disableDeleteCards = !activeTab || (!hasSelection && !activeCardData);
+
+  return {
+    disableDeleteCards,
+    onClickDeleteCards: () => {
+      if (disableDeleteCards) return;
+      const ids = hasSelection ? selectedCards : [activeCardId];
+      const cards = hasSelection ? selectedCardsData : [activeCardData];
+      if (cards.some(hasContent)) {
+        dispatch(actions.session.setPopup({ type: POPUP_KEYS.confirmCardsDelete, ids }));
+      } else {
+        dispatch(destroySelectedCards({ ids, activeCardId }));
+      }
+    },
+  };
+};
 
 export const useToolMenuHooks = () => {
   const dispatch = useDispatch();
@@ -15,6 +46,8 @@ export const useToolMenuHooks = () => {
   const activeCardData = useSelector(selectors.project.activeCardData);
   const selectedCardsData = useSelector(selectors.project.selectedCardsData);
   const activeTabPosition = useSelector(selectors.project.activeTabPosition);
+
+  const { disableDeleteCards, onClickDeleteCards } = useDeleteCardsHooks();
 
   const [ offset, setOffset ] = useState(0);
   const offsetTimerRef = useRef(null);
@@ -73,5 +106,7 @@ export const useToolMenuHooks = () => {
         }));
       }
     },
+    disableDeleteCards,
+    onClickDeleteCards,
   };
 };

@@ -81,3 +81,14 @@ export const copySelectedCards = ({
   // card): keeps both originals and copies visible, cascaded apart.
   dispatch(actions.session.setSelectedCards({ cards: newIds }));
 };
+
+export const destroySelectedCards = ({
+  ids,
+  activeCardId,
+}) => dispatch => {
+  dispatch(actions.project.destroyCards({ ids }));
+  dispatch(actions.session.setSelectedCards({ cards: [] }));
+  if (ids.includes(activeCardId)) {
+    dispatch(actions.session.setActiveCard({ id: null }));
+  }
+};

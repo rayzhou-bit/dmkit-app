@@ -26,6 +26,8 @@ import {
   getViewportPoint,
 } from '../../utils/canvasTransform';
 import { isTextEntryTarget, isSpaceActivatedTarget } from '../../utils/focusUtils';
+import { useGroupDragStore } from './groupDrag';
+import { useDeleteCardsHooks } from '../ToolMenu/hooks';
 
 const checkCardInSelection = (selectArea, cardArea) => {
   const {start, end} = selectArea;
@@ -430,9 +432,9 @@ export const useMultiSelectHooks = ({
   const canvasMouseDownHandler = (event) => {
     if (panModifierRef && panModifierRef.current) return;
     if (event.button === 0) {
-      setIsMouseDown(true);
       // TODO The following line refers to a specific className. Probably not the best to implement this way.
       if (canvasRef.current && event.target.classList.contains('canvas')) {
+        setIsMouseDown(true);
         document.addEventListener('mousemove', updateSelect);
         const start = toWorldPoint(event);
         setSelectArea({ start, end: start });
@@ -519,7 +521,19 @@ export const useCardsHooks = ({ containerRef } = {}) => {
   const activeTabPosition = useSelector(selectors.project.activeTabPosition);
   const activeTabScale = useSelector(selectors.project.activeTabScale) ?? 1;
   const cardCollection = useSelector(state => state.project.present.cards);
+  const selectedCards = useSelector(state => state.session.selectedCards);
+  const activeTabCardsDimensions = useSelector(selectors.project.activeTabCardsDimensions);
   const [ cardAnimation, setCardAnimation ] = useState({});
+  const groupDrag = useGroupDragStore();
+  // Latest selection/dimensions for groupDrag.start() to read - so a
+  // leader's onDragStart doesn't need to re-select this itself.
+  groupDrag.selectionRef.current = { selectedCards, cardsDimensions: activeTabCardsDimensions };
+
+  // Stale selection would otherwise survive a tab switch and could target
+  // cards no longer visible (copy button, bulk delete).
+  useEffect(() => {
+    dispatch(actions.session.setSelectedCards({ cards: [] }));
+  }, [activeTab]);
 
   let cardArgs = {};
   for (let card in cardCollection) {
@@ -528,12 +542,14 @@ export const useCardsHooks = ({ containerRef } = {}) => {
         cardId: card,
         cardAnimation: cardAnimation,
         setCardAnimation: setCardAnimation,
+        groupDrag,
       };
     }
   }
 
   return {
     cardArgs,
+    groupDrag,
     cardDropHandler: (event) => {
       event.preventDefault();
       const droppedCard = event.dataTransfer.getData('text');
@@ -559,4 +575,25 @@ export const useCardsHooks = ({ containerRef } = {}) => {
       }
     }
   };
+};
+
+// Delete/Backspace shortcut - fires the same decision helper as the
+// ToolMenu delete button (useDeleteCardsHooks), so the two can't diverge.
+export const useCardShortcutHooks = ({ groupDrag }) => {
+  const popupType = useSelector(state => state.session.popup?.type);
+  const activeTab = useSelector(state => state.project.present.activeViewId || '');
+  const { disableDeleteCards, onClickDeleteCards } = useDeleteCardsHooks();
+
+  useEffect(() => {
+    const onKeyDown = (event) => {
+      if (event.key !== 'Delete' && event.key !== 'Backspace') return;
+      if (popupType || !activeTab || disableDeleteCards) return;
+      if (isTextEntryTarget(event.target)) return;
+      if (groupDrag.isActive()) return;
+      event.preventDefault();
+      onClickDeleteCards();
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [popupType, activeTab, disableDeleteCards, onClickDeleteCards, groupDrag]);
 };

@@ -93,6 +93,17 @@ const project = createSlice({
         cards: newCards,
       };
     },
+    destroyCards: (state, { payload }) => {
+      const { ids } = payload;
+      let newCards = { ...state.cards };
+      for (const id of ids) {
+        delete newCards[id];
+      }
+      return {
+        ...state,
+        cards: newCards,
+      };
+    },
     linkCardToView: (state, { payload }) => {
       const { id, position } = payload;
       if (!state.activeViewId) return state;
@@ -162,6 +173,27 @@ const project = createSlice({
           },
         },
       }
+    },
+    moveCards: (state, { payload }) => {
+      const { ids, delta } = payload;
+      if (!state.activeViewId) return state;
+      let newCards = { ...state.cards };
+      for (const id of ids) {
+        const view = newCards[id]?.views?.[state.activeViewId];
+        if (!view) continue;
+        const newPos = {
+          x: Math.round((view.pos.x + delta.x) / GRID_SIZE) * GRID_SIZE,
+          y: Math.round((view.pos.y + delta.y) / GRID_SIZE) * GRID_SIZE,
+        };
+        newCards[id] = {
+          ...newCards[id],
+          views: {
+            ...newCards[id].views,
+            [state.activeViewId]: { ...view, pos: newPos },
+          },
+        };
+      }
+      return { ...state, cards: newCards };
     },
     updateCardSize: (state, { payload }) => {
       const { id, size } = payload;

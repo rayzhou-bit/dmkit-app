@@ -5,6 +5,7 @@ import { actions } from '../../data/redux';
 import { POPUP_KEYS } from './PopupKey';
 
 import * as Card from '../Card/popups/DeleteConfirmation';
+import * as CardsSelected from '../Card/popups/DeleteSelectedConfirmation';
 import * as Tab from '../TabBar/popups/DeleteConfirmation';
 import * as Project from '../HeaderMenu/popups/DeleteConfirmation';
 import SignUp from '../HeaderMenu/popups/SignUp';
@@ -32,6 +33,8 @@ export const Popup = () => {
     switch (popup.type) {
       case POPUP_KEYS.confirmCardDelete:
         return <Card.DeleteConfirmation {...popup} />;
+      case POPUP_KEYS.confirmCardsDelete:
+        return <CardsSelected.DeleteConfirmation {...popup} />;
       case POPUP_KEYS.confirmTabDelete:
         return <Tab.DeleteConfirmation {...popup} />;
       case POPUP_KEYS.confirmProjectDelete:

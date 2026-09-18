@@ -9,6 +9,7 @@ import { getCardType } from '../../constants/cards';
 import { processImageFile } from '../../utils/imageUtils';
 import { POPUP_KEYS } from '../Popup/PopupKey';
 import { ACTION_TYPE } from '../../components-shared/Dropdowns/ActionDropdown';
+import { useGroupDragPosition } from '../Canvas/groupDrag';
 
 import LibraryIcon from '../../assets/icons/library-open.svg';
 import RedTrashIcon from '../../assets/icons/trash-red.svg';
@@ -25,6 +26,7 @@ export const useCardHooks = ({
   toolMenuRef,
   cardAnimation,
   setCardAnimation,
+  groupDrag,
 }) => {
   const dispatch = useDispatch();
 
@@ -42,6 +44,14 @@ export const useCardHooks = ({
   const [isEditing, setIsEditing] = useState(false);
   const cardRef = useRef();
   const isActive = cardId === activeCard;
+  const groupPosition = useGroupDragPosition(groupDrag, cardId);
+  // Set at drag start, read at drag stop - selectedCards can change mid-drag.
+  const isGroupDragRef = useRef(false);
+  // Set at drag start, flipped by the first real onDrag - distinguishes a
+  // plain click (no movement, both fire onDragStart/onDragStop too) from
+  // an actual drag, so the trailing click doesn't collapse a selection a
+  // group drag just moved.
+  const hasMovedRef = useRef(false);
 
   // isActive can become true without a click on this card (e.g. a freshly
   // created/copied card is activated straight from the toolbar), so the
@@ -53,10 +63,13 @@ export const useCardHooks = ({
     }
   );
 
+  // A card unmounting mid-drag (deleted, or tab switched) must not strand the store.
+  useEffect(() => () => {
+    if (isGroupDragRef.current) groupDrag.end();
+  }, []);
+
   let zIndex = (100 * cardPosition.y) + cardPosition.x + 10;
-  if (isDragging) {
-    zIndex = 20000 * (cardPosition.y + cardPosition.x + 10);
-  } else if (isActive) {
+  if (isDragging || isActive || groupPosition !== null) {
     zIndex = 20000 * (cardPosition.y + cardPosition.x + 10);
   }
 
@@ -66,15 +79,35 @@ export const useCardHooks = ({
     isSelected: selectedCards.includes(cardId),
     activeTabScale,
     size: cardSize,
-    position: cardPosition,
+    position: groupPosition ?? cardPosition,
     rndStyle: { zIndex },
     animationStyle: { animation: cardAnimation ? cardAnimation[cardId] : null },
     isEditing,
     setIsEditing,
-    onDragStart: () => setIsDragging(true),
+    onDragStart: () => {
+      setIsDragging(true);
+      hasMovedRef.current = false;
+      if (selectedCards.length > 1 && selectedCards.includes(cardId)) {
+        isGroupDragRef.current = true;
+        groupDrag.start({ leaderId: cardId });
+      } else if (selectedCards.length > 0 && !selectedCards.includes(cardId)) {
+        dispatch(actions.session.setSelectedCards({ cards: [] }));
+      }
+    },
+    onDrag: (event, data) => {
+      hasMovedRef.current = true;
+      if (isGroupDragRef.current) groupDrag.move({ x: data.x, y: data.y });
+    },
     onDragStop: (event, data) => {
       setIsDragging(false);
-      if (cardPosition) {
+      if (isGroupDragRef.current) {
+        const delta = groupDrag.getCommitDelta();
+        if (delta.x !== 0 || delta.y !== 0) {
+          dispatch(actions.project.moveCards({ ids: selectedCards, delta }));
+        }
+        groupDrag.end();
+        isGroupDragRef.current = false;
+      } else if (cardPosition) {
         if (cardPosition.x !== data.x || cardPosition.y !== data.y) {
           dispatch(actions.project.updateCardPosition({
             id: cardId,
@@ -104,6 +137,11 @@ export const useCardHooks = ({
     },
     onClick: (event) => {
       event.stopPropagation();
+      // A plain click (no movement) always collapses any multi-selection to
+      // just this card - a real drag already handled the selection itself.
+      if (!hasMovedRef.current && selectedCards.length > 0) {
+        dispatch(actions.session.setSelectedCards({ cards: [] }));
+      }
       if (!isSelected) {
         if (!isActive) dispatch(actions.session.setActiveCard({ id: cardId }));
         setIsSelected(true);

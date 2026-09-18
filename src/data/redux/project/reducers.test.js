@@ -82,6 +82,62 @@ describe('updateCardText regression', () => {
   });
 });
 
+describe('destroyCards', () => {
+  it('removes every listed id, leaving the rest untouched', () => {
+    const state = {
+      ...baseState,
+      cards: {
+        c1: { views: { tabA: { pos: { x: 0, y: 0 }, size: {} } } },
+        c2: { views: { tabA: { pos: { x: 12, y: 0 }, size: {} } } },
+        c3: { views: { tabA: { pos: { x: 24, y: 0 }, size: {} } } },
+      },
+    };
+    const next = reducer(state, { type: 'project/destroyCards', payload: { ids: ['c1', 'c3'] } });
+    expect(next.cards.c1).toBeUndefined();
+    expect(next.cards.c3).toBeUndefined();
+    expect(next.cards.c2).toBeDefined();
+  });
+});
+
+describe('moveCards', () => {
+  const state = {
+    ...baseState,
+    cards: {
+      c1: { views: { tabA: { pos: { x: 0, y: 0 }, size: {} } } },
+      c2: { views: { tabA: { pos: { x: 24, y: 36 }, size: {} } } },
+      c3: { views: {} }, // not on the active tab - must be skipped
+    },
+  };
+
+  it('applies the same delta to every id, grid-snapped', () => {
+    const next = reducer(state, {
+      type: 'project/moveCards',
+      payload: { ids: ['c1', 'c2'], delta: { x: 10, y: 5 } },
+    });
+    // (0+10, 0+5) snapped to GRID_SIZE(12) -> (12, 0)
+    expect(next.cards.c1.views.tabA.pos).toEqual({ x: 12, y: 0 });
+    // (24+10, 36+5) -> (34, 41) snapped -> (36, 36)
+    expect(next.cards.c2.views.tabA.pos).toEqual({ x: 36, y: 36 });
+  });
+
+  it('skips ids with no view on the active tab', () => {
+    const next = reducer(state, {
+      type: 'project/moveCards',
+      payload: { ids: ['c3'], delta: { x: 10, y: 10 } },
+    });
+    expect(next.cards.c3).toEqual(state.cards.c3);
+  });
+
+  it('is a no-op when there is no active tab', () => {
+    const noTabState = { ...state, activeViewId: null };
+    const next = reducer(noTabState, {
+      type: 'project/moveCards',
+      payload: { ids: ['c1'], delta: { x: 10, y: 10 } },
+    });
+    expect(next).toBe(noTabState);
+  });
+});
+
 describe('destroyTab', () => {
   it('cascades: removes the tab from every card that referenced it', () => {
     const state = {
