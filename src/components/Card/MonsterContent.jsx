@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 
 import { useMonsterSectionHooks } from './hooks';
-import { MONSTER_SECTIONS, MONSTER_FIELDS, abilityModifier, formatModifier } from '../../constants/monster';
+import { MONSTER_COLUMNS, MONSTER_COLUMN_SECTIONS, MONSTER_FIELDS, abilityModifier, formatModifier } from '../../constants/monster';
+import CollapsibleColumn from './CollapsibleColumn';
 import CollapsibleSection from './CollapsibleSection';
 import MonsterTextField from './MonsterTextField';
 import MonsterPortrait from './MonsterPortrait';
@@ -14,39 +15,49 @@ import './Card.scss';
 const MonsterContent = ({
   cardId,
 }) => {
-  const { isCollapsed, sectionHasContent, toggleSection } = useMonsterSectionHooks({ cardId });
+  const { isCollapsed, sectionHasContent, columnHasContent, toggleSection, toggleColumn } = useMonsterSectionHooks({ cardId });
+
+  const collapsedModifierClasses = MONSTER_COLUMNS
+    .filter(column => isCollapsed(column.key))
+    .map(column => `monster-content-${column.key}-collapsed`)
+    .join(' ');
 
   return (
-    <div className='card-content monster-content' onWheel={(e) => e.stopPropagation()} onDragOver={(e) => e.preventDefault()}>
-      {MONSTER_SECTIONS.map(section => (
-        <CollapsibleSection
-          key={section.key}
-          title={section.title}
-          isCollapsed={isCollapsed(section.key)}
-          hasContent={sectionHasContent(section.key)}
-          onToggle={() => toggleSection(section.key)}
+    <div
+      className={'card-content monster-content' + (collapsedModifierClasses ? ' ' + collapsedModifierClasses : '')}
+      onWheel={(e) => e.stopPropagation()}
+      onDragOver={(e) => e.preventDefault()}
+    >
+      <div className='monster-column-media'>
+        <MonsterPortrait cardId={cardId} />
+        <MonsterTextField cardId={cardId} fieldKey='notes' {...MONSTER_FIELDS.notes} className='monster-notes-field' />
+      </div>
+      {MONSTER_COLUMNS.map(column => (
+        <CollapsibleColumn
+          key={column.key}
+          title={column.title}
+          isCollapsed={isCollapsed(column.key)}
+          hasContent={columnHasContent(column.key)}
+          onToggle={() => toggleColumn(column.key)}
         >
-          <SectionBody cardId={cardId} section={section} />
-        </CollapsibleSection>
+          {MONSTER_COLUMN_SECTIONS[column.key].map(section => (
+            <CollapsibleSection
+              key={section.key}
+              title={section.title}
+              isCollapsed={isCollapsed(section.key)}
+              hasContent={sectionHasContent(section.key)}
+              onToggle={() => toggleSection(section.key)}
+            >
+              <SectionBody cardId={cardId} section={section} />
+            </CollapsibleSection>
+          ))}
+        </CollapsibleColumn>
       ))}
     </div>
   );
 };
 
 const SectionBody = ({ cardId, section }) => {
-  if (section.layout === 'header') {
-    return (
-      <div className='monster-header'>
-        <MonsterPortrait cardId={cardId} />
-        <div className='monster-header-fields'>
-          {section.fields.map(fieldKey => (
-            <MonsterTextField key={fieldKey} cardId={cardId} fieldKey={fieldKey} {...MONSTER_FIELDS[fieldKey]} />
-          ))}
-        </div>
-      </div>
-    );
-  }
-
   if (section.layout === 'abilities') {
     return (
       <div className='monster-abilities'>

@@ -31,7 +31,8 @@ export const MIN_CARD_SIZE = {
   height: 10 * GRID_SIZE,
 };
 export const MONSTER_CARD_SIZE = {
-  width: 28 * GRID_SIZE,
+  // Three columns at their minimum widths total ~440px; 552 leaves slack.
+  width: 46 * GRID_SIZE,
   height: 36 * GRID_SIZE,
 };
 

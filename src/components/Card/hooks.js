@@ -8,7 +8,7 @@ import { CARD_COLOR_KEYS, LIGHT_COLORS } from '../../constants/colors';
 import { getCardType, hasCardContent } from '../../constants/cards';
 import { processImageFile } from '../../utils/imageUtils';
 import { MAX_PORTRAIT_DATA_URI_LENGTH, PORTRAIT_MAX_EDGE_STEPS } from '../../constants/images';
-import { MONSTER_FIELDS, MONSTER_SECTIONS, DEFAULT_SECTION_COLLAPSED } from '../../constants/monster';
+import { MONSTER_FIELDS, MONSTER_SECTIONS, MONSTER_COLUMN_SECTIONS, DEFAULT_COLLAPSED } from '../../constants/monster';
 import { POPUP_KEYS } from '../Popup/PopupKey';
 import { ACTION_TYPE } from '../../components-shared/Dropdowns/ActionDropdown';
 import { useGroupDragPosition } from '../Canvas/groupDrag';
@@ -578,22 +578,27 @@ export const useMonsterSectionHooks = ({ cardId }) => {
   const dispatch = useDispatch();
   const content = useSelector(state => state.project.present.cards[cardId].content);
 
-  const isCollapsed = (key) => content?.collapsed?.[key] ?? DEFAULT_SECTION_COLLAPSED[key] ?? false;
+  const isCollapsed = (key) => content?.collapsed?.[key] ?? DEFAULT_COLLAPSED[key] ?? false;
 
   const sectionHasContent = (key) => {
     const section = MONSTER_SECTIONS.find(s => s.key === key);
     if (!section) return false;
-    if (section.fields.some(f => (content?.[f] ?? '').trim().length > 0)) return true;
-    return key === 'header' && !!content?.portrait;
+    return section.fields.some(f => (content?.[f] ?? '').trim().length > 0);
   };
 
   return {
     isCollapsed,
     sectionHasContent,
+    columnHasContent: (columnKey) => (MONSTER_COLUMN_SECTIONS[columnKey] ?? []).some(s => sectionHasContent(s.key)),
     toggleSection: (key) => dispatch(actions.project.setCardSectionCollapsed({
       id: cardId,
       section: key,
       collapsed: !isCollapsed(key),
+    })),
+    toggleColumn: (columnKey) => dispatch(actions.project.setCardSectionCollapsed({
+      id: cardId,
+      section: columnKey,
+      collapsed: !isCollapsed(columnKey),
     })),
   };
 };
