@@ -16,6 +16,7 @@ const MonsterTextField = ({
   multiline,
   numeric,
   className,
+  hideLabel,
   onValueChange, // optional - notified of the local (uncommitted) value live, e.g. for the ability modifier
 }) => {
   const { value, changeValue, commit, handleKeyDown } = useMonsterFieldHooks({ cardId, fieldKey });
@@ -27,7 +28,7 @@ const MonsterTextField = ({
 
   return (
     <div className={'monster-field' + (className ? ' ' + className : '')}>
-      <label className='monster-field-label' htmlFor={id}>{label}</label>
+      <label className={'monster-field-label' + (hideLabel ? ' sr-only' : '')} htmlFor={id}>{label}</label>
       {multiline ? (
         <textarea
           id={id}
