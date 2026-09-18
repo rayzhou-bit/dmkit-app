@@ -577,8 +577,11 @@ export const useMonsterFieldHooks = ({ cardId, fieldKey }) => {
 export const useMonsterSectionHooks = ({ cardId }) => {
   const dispatch = useDispatch();
   const content = useSelector(state => state.project.present.cards[cardId].content);
+  // Raw per-card object, possibly undefined - not defaulted here to avoid a
+  // fresh {} every render (would break memoization).
+  const collapse = useSelector(state => state.session.monsterCollapse?.[cardId]);
 
-  const isCollapsed = (key) => content?.collapsed?.[key] ?? DEFAULT_COLLAPSED[key] ?? false;
+  const isCollapsed = (key) => collapse?.[key] ?? DEFAULT_COLLAPSED[key] ?? false;
 
   const sectionHasContent = (key) => {
     const section = MONSTER_SECTIONS.find(s => s.key === key);
@@ -590,14 +593,14 @@ export const useMonsterSectionHooks = ({ cardId }) => {
     isCollapsed,
     sectionHasContent,
     columnHasContent: (columnKey) => (MONSTER_COLUMN_SECTIONS[columnKey] ?? []).some(s => sectionHasContent(s.key)),
-    toggleSection: (key) => dispatch(actions.project.setCardSectionCollapsed({
+    toggleSection: (key) => dispatch(actions.session.setMonsterCollapsed({
       id: cardId,
-      section: key,
+      key,
       collapsed: !isCollapsed(key),
     })),
-    toggleColumn: (columnKey) => dispatch(actions.project.setCardSectionCollapsed({
+    toggleColumn: (columnKey) => dispatch(actions.session.setMonsterCollapsed({
       id: cardId,
-      section: columnKey,
+      key: columnKey,
       collapsed: !isCollapsed(columnKey),
     })),
   };
