@@ -22,19 +22,21 @@ describe('undo history vs. filtered (non-undoable) actions', () => {
   });
 });
 
-describe('undo history vs. section-collapse toggles', () => {
-  it('undo reverts a field edit but not a collapse toggle done in between', () => {
+describe('undo history vs. monster-card session state', () => {
+  it('undo after a collapse toggle with no intervening edit leaves the toggle intact', () => {
+    // This exact sequence - toggle as the LAST dispatch before undo, no
+    // undoable action after it - is what the old project-slice collapse
+    // action got wrong (redux-undo would silently revert the toggle too).
     store.dispatch(actions.project.setActiveTab({ id: 'mtab' }));
     store.dispatch(actions.project.createCard({ newId: 'mcard', type: 'monster' }));
-    store.dispatch(actions.project.updateCardMonsterFields({ id: 'mcard', fields: { creatureType: 'first' } })); // undoable
-    store.dispatch(actions.project.setCardSectionCollapsed({ id: 'mcard', section: 'identity', collapsed: true })); // filtered
     store.dispatch(actions.project.updateCardMonsterFields({ id: 'mcard', fields: { creatureType: 'second' } })); // undoable
+    store.dispatch(actions.session.setMonsterCollapsed({ id: 'mcard', key: 'identity', collapsed: true })); // session, not undo-tracked
 
     undo();
 
-    const present = store.getState().project.present;
-    expect(present.cards.mcard.content.creatureType).toBe('first'); // the undoable edit was reverted
-    expect(present.cards.mcard.content.collapsed.identity).toBe(true); // the filtered toggle was not
+    const state = store.getState();
+    expect(state.project.present.cards.mcard.content.creatureType).toBe(''); // the undoable edit was reverted
+    expect(state.session.monsterCollapse.mcard.identity).toBe(true); // the session toggle survived
   });
 
   it('updateCardPortrait is also undoable', () => {
@@ -43,15 +45,14 @@ describe('undo history vs. section-collapse toggles', () => {
     expect(store.getState().project.present.cards.mcard.content.portrait).toBe('');
   });
 
-  it('undo does not revert a column-collapse toggle', () => {
+  it('same for a column-collapse toggle', () => {
     store.dispatch(actions.project.updateCardMonsterFields({ id: 'mcard', fields: { creatureType: 'third' } })); // undoable
-    store.dispatch(actions.project.setCardSectionCollapsed({ id: 'mcard', section: 'combat', collapsed: true })); // filtered
-    store.dispatch(actions.project.updateCardMonsterFields({ id: 'mcard', fields: { creatureType: 'fourth' } })); // undoable
+    store.dispatch(actions.session.setMonsterCollapsed({ id: 'mcard', key: 'combat', collapsed: true })); // session, not undo-tracked
 
     undo();
 
-    const present = store.getState().project.present;
-    expect(present.cards.mcard.content.creatureType).toBe('third'); // the undoable edit was reverted
-    expect(present.cards.mcard.content.collapsed.combat).toBe(true); // the filtered toggle was not
+    const state = store.getState();
+    expect(state.project.present.cards.mcard.content.creatureType).toBe(''); // the undoable edit was reverted
+    expect(state.session.monsterCollapse.mcard.combat).toBe(true); // the session toggle survived
   });
 });

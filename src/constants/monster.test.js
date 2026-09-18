@@ -3,6 +3,7 @@ import {
   formatModifier,
   buildMonsterContent,
   DEFAULT_COLLAPSED,
+  MONSTER_COLLAPSIBLE_KEYS,
   MONSTER_SECTION_KEYS,
   MONSTER_COLUMN_KEYS,
   MONSTER_COLUMNS,
@@ -30,12 +31,12 @@ describe('formatModifier', () => {
 });
 
 describe('buildMonsterContent', () => {
-  it('with no args, every value key is empty and collapsed matches the defaults', () => {
+  it('with no args, every value key is empty and there is no collapsed key', () => {
     const content = buildMonsterContent();
     for (const key of MONSTER_FIELD_KEYS) {
       expect(content[key]).toBe('');
     }
-    expect(content.collapsed).toEqual(DEFAULT_COLLAPSED);
+    expect(content.collapsed).toBeUndefined();
   });
 
   it('round-trips losslessly through JSON (undefined-never-written invariant)', () => {
@@ -58,23 +59,9 @@ describe('buildMonsterContent', () => {
     expect(content.alignment).toBe('');
   });
 
-  it('falls back to defaults for missing collapsed keys', () => {
+  it('a stray collapsed key on the source cannot leak into content', () => {
     const content = buildMonsterContent({ collapsed: { identity: true } });
-    expect(content.collapsed.identity).toBe(true);
-    expect(content.collapsed.actions).toBe(DEFAULT_COLLAPSED.actions);
-    expect(content.collapsed.bonusActions).toBe(DEFAULT_COLLAPSED.bonusActions);
-  });
-
-  it('defaults both column-collapse keys to false', () => {
-    const content = buildMonsterContent();
-    expect(content.collapsed.attributes).toBe(false);
-    expect(content.collapsed.combat).toBe(false);
-  });
-
-  it('honors a source column-collapse flag, leaving the other column at its default', () => {
-    const content = buildMonsterContent({ collapsed: { combat: true } });
-    expect(content.collapsed.combat).toBe(true);
-    expect(content.collapsed.attributes).toBe(false);
+    expect(content.collapsed).toBeUndefined();
   });
 
   it('notes round-trips', () => {
@@ -131,5 +118,9 @@ describe('section/column metadata', () => {
     for (const section of MONSTER_SECTIONS) {
       expect(section.fields).not.toContain('notes');
     }
+  });
+
+  it('DEFAULT_COLLAPSED has exactly one entry per MONSTER_COLLAPSIBLE_KEYS entry', () => {
+    expect(Object.keys(DEFAULT_COLLAPSED).sort()).toEqual([...MONSTER_COLLAPSIBLE_KEYS].sort());
   });
 });

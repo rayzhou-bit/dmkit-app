@@ -6,18 +6,21 @@ import MonsterContent from './MonsterContent';
 import { buildMonsterContent } from '../../constants/monster';
 
 // Hand-rolled fake store, matching the pattern in Canvas/testUtils.jsx.
-const makeStore = (content) => {
+const makeStore = (content, collapseOverrides = {}) => {
   const dispatched = [];
   return {
     dispatched,
-    getState: () => ({ project: { present: { cards: { c1: { content } } } } }),
+    getState: () => ({
+      project: { present: { cards: { c1: { content } } } },
+      session: { monsterCollapse: { c1: collapseOverrides } },
+    }),
     dispatch: (action) => { dispatched.push(action); return action; },
     subscribe: () => () => {},
   };
 };
 
-const renderMonster = (content) => {
-  const store = makeStore(content);
+const renderMonster = (content, collapseOverrides) => {
+  const store = makeStore(content, collapseOverrides);
   const utils = render(<Provider store={store}><MonsterContent cardId='c1' /></Provider>);
   return { ...utils, store };
 };
@@ -113,15 +116,27 @@ describe('MonsterContent', () => {
     expect(store.dispatched).toHaveLength(0); // no blur yet - nothing dispatched
   });
 
-  it('clicking a collapsed section header dispatches setCardSectionCollapsed with collapsed:false', () => {
+  it('clicking a collapsed section header dispatches session/setMonsterCollapsed with collapsed:false', () => {
     const content = buildMonsterContent(); // bonusActions defaults collapsed:true
     const { getByText, store } = renderMonster(content);
 
     fireEvent.click(getByText('Bonus Actions'));
 
     expect(store.dispatched).toContainEqual({
-      type: 'project/setCardSectionCollapsed',
-      payload: { id: 'c1', section: 'bonusActions', collapsed: false },
+      type: 'session/setMonsterCollapsed',
+      payload: { id: 'c1', key: 'bonusActions', collapsed: false },
+    });
+  });
+
+  it('clicking a column header dispatches session/setMonsterCollapsed with the column key', () => {
+    const content = buildMonsterContent();
+    const { getByText, store } = renderMonster(content);
+
+    fireEvent.click(getByText('Combat'));
+
+    expect(store.dispatched).toContainEqual({
+      type: 'session/setMonsterCollapsed',
+      payload: { id: 'c1', key: 'combat', collapsed: true },
     });
   });
 
@@ -131,9 +146,16 @@ describe('MonsterContent', () => {
     expect(queryByLabelText('Bonus Actions')).toBeNull();
   });
 
-  it('renders with defaults, without throwing, when content.collapsed is entirely absent', () => {
-    const content = buildMonsterContent();
-    delete content.collapsed;
-    expect(() => renderMonster(content)).not.toThrow();
+  it('a session override drives isCollapsed: expands a normally-default-collapsed section', () => {
+    const content = buildMonsterContent({ bonusActions: 'Some bonus action text' }); // defaults collapsed:true
+    const { getByLabelText } = renderMonster(content, { bonusActions: false });
+    expect(getByLabelText('Bonus Actions')).not.toBeNull();
+  });
+
+  it('a session override collapses a column and the DOM reflects it', () => {
+    const content = buildMonsterContent({ armorClass: '18' }); // armorClass lives in the combat column
+    const { container, queryByLabelText } = renderMonster(content, { combat: true });
+    expect(container.querySelector('.monster-column-collapsed')).not.toBeNull();
+    expect(queryByLabelText('Armor Class')).toBeNull();
   });
 });

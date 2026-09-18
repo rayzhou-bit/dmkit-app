@@ -83,13 +83,4 @@ describe('LibraryMonsterContent', () => {
     expect(queryByText('lair is flooded')).toBeNull();
     expect(container.querySelector('.library-card-content-container').style.height).toBe('80px');
   });
-
-  it('ignores column-collapse state', () => {
-    const content = buildMonsterContent({
-      creatureType: 'dragon', traits: 'Amphibious.', collapsed: { attributes: true, combat: true },
-    });
-    const { getByText } = renderLibraryMonster(content, { isExpanded: true });
-    expect(getByText('dragon')).not.toBeNull();
-    expect(getByText('Amphibious.')).not.toBeNull();
-  });
 });

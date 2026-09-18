@@ -6,8 +6,9 @@ import Content from './Content';
 import { buildMonsterContent } from '../../constants/monster';
 
 // Hand-rolled fake store, matching the pattern in Canvas/testUtils.jsx.
+// session.monsterCollapse is read unconditionally by useMonsterSectionHooks.
 const makeStore = (cards) => ({
-  getState: () => ({ project: { present: { cards } } }),
+  getState: () => ({ project: { present: { cards } }, session: { monsterCollapse: {} } }),
   dispatch: () => {},
   subscribe: () => () => {},
 });

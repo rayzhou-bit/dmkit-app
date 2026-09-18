@@ -1,5 +1,5 @@
 import { reducer } from './reducers';
-import { buildMonsterContent, DEFAULT_SECTION_COLLAPSED } from '../../../constants/monster';
+import { buildMonsterContent } from '../../../constants/monster';
 
 const baseState = {
   cards: {},
@@ -47,6 +47,7 @@ describe('createCard - monster', () => {
     expect(card.content).toEqual(buildMonsterContent());
     expect(card.content.text).toBeUndefined();
     expect(card.content.image).toBeUndefined();
+    expect(card.content.collapsed).toBeUndefined();
     expect(JSON.parse(JSON.stringify(card))).toEqual(card);
   });
 
@@ -172,65 +173,6 @@ describe('updateCardPortrait', () => {
     });
     expect(cleared.cards.c1.content.portrait).toBe('');
     expect(cleared.cards.c1.content.portraitAlt).toBe('');
-  });
-});
-
-describe('setCardSectionCollapsed', () => {
-  const state = {
-    ...baseState,
-    cards: {
-      c1: { views: {}, color: 'gray', title: 'untitled', content: buildMonsterContent(), createdOn: 1, editedOn: 1 },
-    },
-  };
-
-  it('sets the given flag, leaves the rest untouched, does not bump editedOn', () => {
-    const next = reducer(state, {
-      type: 'project/setCardSectionCollapsed',
-      payload: { id: 'c1', section: 'identity', collapsed: true },
-    });
-    expect(next.cards.c1.content.collapsed.identity).toBe(true);
-    expect(next.cards.c1.content.collapsed.defenses).toBe(DEFAULT_SECTION_COLLAPSED.defenses);
-    expect(next.cards.c1.editedOn).toBe(state.cards.c1.editedOn);
-  });
-
-  it('no-ops on an unknown section key', () => {
-    const next = reducer(state, {
-      type: 'project/setCardSectionCollapsed',
-      payload: { id: 'c1', section: 'notASection', collapsed: true },
-    });
-    expect(next).toBe(state);
-  });
-
-  it('works when content.collapsed is absent entirely', () => {
-    const legacyState = {
-      ...baseState,
-      cards: { c1: { views: {}, content: { armorClass: '' } } },
-    };
-    const next = reducer(legacyState, {
-      type: 'project/setCardSectionCollapsed',
-      payload: { id: 'c1', section: 'traits', collapsed: true },
-    });
-    expect(next.cards.c1.content.collapsed.traits).toBe(true);
-    expect(next.cards.c1.content.collapsed.identity).toBe(DEFAULT_SECTION_COLLAPSED.identity);
-  });
-
-  it('accepts a column key, same semantics as a section key', () => {
-    const next = reducer(state, {
-      type: 'project/setCardSectionCollapsed',
-      payload: { id: 'c1', section: 'combat', collapsed: true },
-    });
-    expect(next.cards.c1.content.collapsed.combat).toBe(true);
-    expect(next.cards.c1.content.collapsed.attributes).toBe(false);
-    expect(next.cards.c1.content.collapsed.defenses).toBe(DEFAULT_SECTION_COLLAPSED.defenses);
-    expect(next.cards.c1.editedOn).toBe(state.cards.c1.editedOn);
-  });
-
-  it('still no-ops on a key that is neither a section nor a column', () => {
-    const next = reducer(state, {
-      type: 'project/setCardSectionCollapsed',
-      payload: { id: 'c1', section: 'media', collapsed: true },
-    });
-    expect(next).toBe(state);
   });
 });
 
