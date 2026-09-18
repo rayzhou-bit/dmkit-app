@@ -7,7 +7,7 @@ import {
 } from './constants';
 import { GRID_SIZE, DEFAULT_CARD_POSITION, DEFAULT_CARD_SIZE, MONSTER_CARD_SIZE } from '../../../constants/dimensions';
 import { CARD_TYPES, getCardType } from '../../../constants/cards';
-import { buildMonsterContent, MONSTER_FIELD_KEYS, MONSTER_SECTION_KEYS, DEFAULT_SECTION_COLLAPSED } from '../../../constants/monster';
+import { buildMonsterContent, MONSTER_FIELD_KEYS, MONSTER_COLLAPSIBLE_KEYS, DEFAULT_COLLAPSED } from '../../../constants/monster';
 
 // TODO name refactor
 //  view -> tab
@@ -321,9 +321,10 @@ const project = createSlice({
       };
     },
     setCardSectionCollapsed: (state, { payload }) => {
-      // View state, not a document edit - excluded from undo in index.js.
+      // View state (section OR column), not a document edit - excluded from
+      // undo in index.js. payload.section accepts any MONSTER_COLLAPSIBLE_KEYS entry.
       const { id, section, collapsed } = payload;
-      if (!MONSTER_SECTION_KEYS.includes(section)) return state;
+      if (!MONSTER_COLLAPSIBLE_KEYS.includes(section)) return state;
       return {
         ...state,
         cards: {
@@ -333,7 +334,7 @@ const project = createSlice({
             content: {
               ...state.cards[id].content,
               collapsed: {
-                ...DEFAULT_SECTION_COLLAPSED,
+                ...DEFAULT_COLLAPSED,
                 ...state.cards[id].content?.collapsed,
                 [section]: collapsed,
               },

@@ -27,19 +27,31 @@ describe('undo history vs. section-collapse toggles', () => {
     store.dispatch(actions.project.setActiveTab({ id: 'mtab' }));
     store.dispatch(actions.project.createCard({ newId: 'mcard', type: 'monster' }));
     store.dispatch(actions.project.updateCardMonsterFields({ id: 'mcard', fields: { creatureType: 'first' } })); // undoable
-    store.dispatch(actions.project.setCardSectionCollapsed({ id: 'mcard', section: 'header', collapsed: true })); // filtered
+    store.dispatch(actions.project.setCardSectionCollapsed({ id: 'mcard', section: 'identity', collapsed: true })); // filtered
     store.dispatch(actions.project.updateCardMonsterFields({ id: 'mcard', fields: { creatureType: 'second' } })); // undoable
 
     undo();
 
     const present = store.getState().project.present;
     expect(present.cards.mcard.content.creatureType).toBe('first'); // the undoable edit was reverted
-    expect(present.cards.mcard.content.collapsed.header).toBe(true); // the filtered toggle was not
+    expect(present.cards.mcard.content.collapsed.identity).toBe(true); // the filtered toggle was not
   });
 
   it('updateCardPortrait is also undoable', () => {
     store.dispatch(actions.project.updateCardPortrait({ id: 'mcard', portrait: 'data:x', portraitAlt: 'x.png' }));
     undo();
     expect(store.getState().project.present.cards.mcard.content.portrait).toBe('');
+  });
+
+  it('undo does not revert a column-collapse toggle', () => {
+    store.dispatch(actions.project.updateCardMonsterFields({ id: 'mcard', fields: { creatureType: 'third' } })); // undoable
+    store.dispatch(actions.project.setCardSectionCollapsed({ id: 'mcard', section: 'combat', collapsed: true })); // filtered
+    store.dispatch(actions.project.updateCardMonsterFields({ id: 'mcard', fields: { creatureType: 'fourth' } })); // undoable
+
+    undo();
+
+    const present = store.getState().project.present;
+    expect(present.cards.mcard.content.creatureType).toBe('third'); // the undoable edit was reverted
+    expect(present.cards.mcard.content.collapsed.combat).toBe(true); // the filtered toggle was not
   });
 });

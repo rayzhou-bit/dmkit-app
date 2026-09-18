@@ -3,20 +3,36 @@
 // from here instead, keeping the dependency one-directional.
 
 export const MONSTER_SECTION_KEYS = [
-  'header', 'defenses', 'abilities', 'proficiencies',
+  'identity', 'defenses', 'abilities', 'proficiencies',
   'traits', 'actions', 'bonusActions', 'reactions', 'legendaryActions',
 ];
 
+// The two collapsible columns (Media isn't one - it's structural, not
+// metadata-driven).
+export const MONSTER_COLUMN_KEYS = ['attributes', 'combat'];
+
+// Single validation list for the reducer - sections and columns share one
+// collapsed-flags map. Must stay disjoint from MONSTER_SECTION_KEYS (tested).
+export const MONSTER_COLLAPSIBLE_KEYS = [...MONSTER_SECTION_KEYS, ...MONSTER_COLUMN_KEYS];
+
 export const DEFAULT_SECTION_COLLAPSED = {
-  header: false, defenses: false, abilities: false, proficiencies: false,
+  identity: false, defenses: false, abilities: false, proficiencies: false,
   traits: false, actions: false,
   bonusActions: true, reactions: true, legendaryActions: true,
 };
 
+export const DEFAULT_COLUMN_COLLAPSED = { attributes: false, combat: false };
+
+// The shape content.collapsed actually takes now - reducer/hook/builder use this.
+export const DEFAULT_COLLAPSED = { ...DEFAULT_SECTION_COLLAPSED, ...DEFAULT_COLUMN_COLLAPSED };
+
 export const MONSTER_TEXT_MAX_LENGTH = 4000;
+export const MONSTER_NOTES_MAX_LENGTH = 500; // scratchpad, not a sixth action block
 const PROSE_PLACEHOLDER = '**Multiattack.** The dragon makes three attacks…';
 
 export const MONSTER_FIELDS = {
+  notes: { label: 'Quick Notes', placeholder: 'Scratch notes…', maxLength: MONSTER_NOTES_MAX_LENGTH, multiline: true, hideLabel: true },
+
   size: { label: 'Size', placeholder: 'Large', maxLength: 60 },
   creatureType: { label: 'Type', placeholder: 'dragon (chromatic)', maxLength: 60 },
   alignment: { label: 'Alignment', placeholder: 'chaotic evil', maxLength: 60 },
@@ -51,38 +67,47 @@ export const MONSTER_FIELDS = {
   legendaryActions: { label: 'Legendary Actions', placeholder: PROSE_PLACEHOLDER, maxLength: MONSTER_TEXT_MAX_LENGTH, multiline: true },
 };
 
-// Prose (free-text) field keys - the five one-textarea sections.
-export const MONSTER_TEXT_KEYS = ['traits', 'actions', 'bonusActions', 'reactions', 'legendaryActions'];
-
 export const MONSTER_SECTIONS = [
-  { key: 'header', title: 'Creature', layout: 'header', fields: ['size', 'creatureType', 'alignment'] },
-  { key: 'defenses', title: 'Combat', layout: 'lines', fields: ['armorClass', 'hitPoints', 'speed'] },
-  { key: 'abilities', title: 'Ability Scores', layout: 'abilities', fields: ['str', 'dex', 'con', 'int', 'wis', 'cha'] },
+  { key: 'identity', title: 'Creature', layout: 'lines', column: 'attributes', fields: ['size', 'creatureType', 'alignment'] },
+  { key: 'defenses', title: 'Defenses', layout: 'lines', column: 'combat', fields: ['armorClass', 'hitPoints', 'speed'] },
+  { key: 'abilities', title: 'Ability Scores', layout: 'abilities', column: 'attributes', fields: ['str', 'dex', 'con', 'int', 'wis', 'cha'] },
   {
-    key: 'proficiencies', title: 'Proficiencies & Senses', layout: 'lines',
+    key: 'proficiencies', title: 'Proficiencies & Senses', layout: 'lines', column: 'attributes',
     fields: [
       'savingThrows', 'skills', 'damageVulnerabilities', 'damageResistances', 'damageImmunities',
       'conditionImmunities', 'senses', 'languages', 'challengeRating', 'xp', 'proficiencyBonus',
     ],
   },
-  { key: 'traits', title: 'Traits', layout: 'prose', fields: ['traits'] },
-  { key: 'actions', title: 'Actions', layout: 'prose', fields: ['actions'] },
-  { key: 'bonusActions', title: 'Bonus Actions', layout: 'prose', fields: ['bonusActions'] },
-  { key: 'reactions', title: 'Reactions', layout: 'prose', fields: ['reactions'] },
-  { key: 'legendaryActions', title: 'Legendary Actions', layout: 'prose', fields: ['legendaryActions'] },
+  { key: 'traits', title: 'Traits', layout: 'prose', column: 'combat', fields: ['traits'] },
+  { key: 'actions', title: 'Actions', layout: 'prose', column: 'combat', fields: ['actions'] },
+  { key: 'bonusActions', title: 'Bonus Actions', layout: 'prose', column: 'combat', fields: ['bonusActions'] },
+  { key: 'reactions', title: 'Reactions', layout: 'prose', column: 'combat', fields: ['reactions'] },
+  { key: 'legendaryActions', title: 'Legendary Actions', layout: 'prose', column: 'combat', fields: ['legendaryActions'] },
 ];
 
-// Every value key in content, header's portrait/portraitAlt included (not
-// listed in MONSTER_SECTIONS' header.fields, since those two are rendered
-// by MonsterPortrait, not MonsterTextField).
+// Left-to-right render order of the two collapsible columns. Media isn't
+// here - it's structural, holding a component + one section-less field.
+export const MONSTER_COLUMNS = [
+  { key: 'attributes', title: 'Attributes' },
+  { key: 'combat', title: 'Combat' },
+];
+
+// Derived, not hand-listed - preserves MONSTER_SECTIONS' canonical order within each column.
+export const MONSTER_COLUMN_SECTIONS = MONSTER_COLUMN_KEYS.reduce((acc, key) => ({
+  ...acc,
+  [key]: MONSTER_SECTIONS.filter(s => s.column === key),
+}), {});
+
+// Every value key in content. portrait/portraitAlt/notes are likewise
+// section-less (portrait + notes are rendered in the Media column).
 export const MONSTER_FIELD_KEYS = [
-  'portrait', 'portraitAlt',
+  'portrait', 'portraitAlt', 'notes',
   ...MONSTER_SECTIONS.flatMap(section => section.fields),
 ];
 
 export const DEFAULT_MONSTER_CONTENT = {
   ...MONSTER_FIELD_KEYS.reduce((content, key) => ({ ...content, [key]: '' }), {}),
-  collapsed: { ...DEFAULT_SECTION_COLLAPSED },
+  collapsed: { ...DEFAULT_COLLAPSED },
 };
 
 // The one funnel every write path (createCard, copySelectedCard(s)) goes
@@ -93,10 +118,10 @@ export const buildMonsterContent = (source) => {
     content[key] = String(source?.[key] ?? '');
   }
   content.collapsed = {};
-  for (const key of MONSTER_SECTION_KEYS) {
+  for (const key of MONSTER_COLLAPSIBLE_KEYS) {
     content.collapsed[key] = typeof source?.collapsed?.[key] === 'boolean'
       ? source.collapsed[key]
-      : DEFAULT_SECTION_COLLAPSED[key];
+      : DEFAULT_COLLAPSED[key];
   }
   return content;
 };

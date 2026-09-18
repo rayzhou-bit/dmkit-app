@@ -2,7 +2,13 @@ import {
   abilityModifier,
   formatModifier,
   buildMonsterContent,
-  DEFAULT_SECTION_COLLAPSED,
+  DEFAULT_COLLAPSED,
+  MONSTER_SECTION_KEYS,
+  MONSTER_COLUMN_KEYS,
+  MONSTER_COLUMNS,
+  MONSTER_COLUMN_SECTIONS,
+  MONSTER_SECTIONS,
+  MONSTER_FIELDS,
   MONSTER_FIELD_KEYS,
 } from './monster';
 
@@ -29,7 +35,7 @@ describe('buildMonsterContent', () => {
     for (const key of MONSTER_FIELD_KEYS) {
       expect(content[key]).toBe('');
     }
-    expect(content.collapsed).toEqual(DEFAULT_SECTION_COLLAPSED);
+    expect(content.collapsed).toEqual(DEFAULT_COLLAPSED);
   });
 
   it('round-trips losslessly through JSON (undefined-never-written invariant)', () => {
@@ -53,9 +59,77 @@ describe('buildMonsterContent', () => {
   });
 
   it('falls back to defaults for missing collapsed keys', () => {
-    const content = buildMonsterContent({ collapsed: { header: true } });
-    expect(content.collapsed.header).toBe(true);
-    expect(content.collapsed.actions).toBe(DEFAULT_SECTION_COLLAPSED.actions);
-    expect(content.collapsed.bonusActions).toBe(DEFAULT_SECTION_COLLAPSED.bonusActions);
+    const content = buildMonsterContent({ collapsed: { identity: true } });
+    expect(content.collapsed.identity).toBe(true);
+    expect(content.collapsed.actions).toBe(DEFAULT_COLLAPSED.actions);
+    expect(content.collapsed.bonusActions).toBe(DEFAULT_COLLAPSED.bonusActions);
+  });
+
+  it('defaults both column-collapse keys to false', () => {
+    const content = buildMonsterContent();
+    expect(content.collapsed.attributes).toBe(false);
+    expect(content.collapsed.combat).toBe(false);
+  });
+
+  it('honors a source column-collapse flag, leaving the other column at its default', () => {
+    const content = buildMonsterContent({ collapsed: { combat: true } });
+    expect(content.collapsed.combat).toBe(true);
+    expect(content.collapsed.attributes).toBe(false);
+  });
+
+  it('notes round-trips', () => {
+    const content = buildMonsterContent({ notes: 'lair is flooded' });
+    expect(content.notes).toBe('lair is flooded');
+  });
+});
+
+describe('section/column metadata', () => {
+  it('MONSTER_COLUMN_KEYS and MONSTER_SECTION_KEYS are disjoint', () => {
+    const overlap = MONSTER_COLUMN_KEYS.filter(key => MONSTER_SECTION_KEYS.includes(key));
+    expect(overlap).toEqual([]);
+  });
+
+  it.each(MONSTER_SECTIONS.map(s => [s.key, s.column]))('%s has a column in MONSTER_COLUMN_KEYS (%s)', (key, column) => {
+    expect(MONSTER_COLUMN_KEYS).toContain(column);
+  });
+
+  it('MONSTER_COLUMN_SECTIONS partitions MONSTER_SECTIONS exactly', () => {
+    const partitioned = MONSTER_COLUMN_KEYS.flatMap(key => MONSTER_COLUMN_SECTIONS[key]);
+    expect(partitioned.length).toBe(MONSTER_SECTIONS.length);
+    expect(partitioned.map(s => s.key).sort()).toEqual(MONSTER_SECTION_KEYS.slice().sort());
+  });
+
+  it.each([
+    ['identity', 'attributes'],
+    ['abilities', 'attributes'],
+    ['proficiencies', 'attributes'],
+    ['defenses', 'combat'],
+    ['traits', 'combat'],
+    ['actions', 'combat'],
+    ['bonusActions', 'combat'],
+    ['reactions', 'combat'],
+    ['legendaryActions', 'combat'],
+  ])('%s is placed in the %s column', (sectionKey, columnKey) => {
+    expect(MONSTER_SECTIONS.find(s => s.key === sectionKey).column).toBe(columnKey);
+  });
+
+  it('MONSTER_COLUMNS lists attributes then combat', () => {
+    expect(MONSTER_COLUMNS.map(c => c.key)).toEqual(['attributes', 'combat']);
+  });
+
+  it('MONSTER_FIELD_KEYS includes notes', () => {
+    expect(MONSTER_FIELD_KEYS).toContain('notes');
+  });
+
+  it('MONSTER_FIELDS.notes has the expected metadata', () => {
+    expect(MONSTER_FIELDS.notes.maxLength).toBe(500);
+    expect(MONSTER_FIELDS.notes.multiline).toBe(true);
+    expect(MONSTER_FIELDS.notes.hideLabel).toBe(true);
+  });
+
+  it('no section lists notes in its fields array', () => {
+    for (const section of MONSTER_SECTIONS) {
+      expect(section.fields).not.toContain('notes');
+    }
   });
 });
