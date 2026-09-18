@@ -5,8 +5,10 @@ import useOutsideClick from '../../utils/useOutsideClick';
 import { copySelectedCard } from '../../data/redux/thunkActions';
 import { actions, selectors } from '../../data/redux';
 import { CARD_COLOR_KEYS, LIGHT_COLORS } from '../../constants/colors';
-import { getCardType } from '../../constants/cards';
+import { getCardType, hasCardContent } from '../../constants/cards';
 import { processImageFile } from '../../utils/imageUtils';
+import { MAX_PORTRAIT_DATA_URI_LENGTH, PORTRAIT_MAX_EDGE_STEPS } from '../../constants/images';
+import { MONSTER_FIELDS, MONSTER_SECTIONS, DEFAULT_SECTION_COLLAPSED } from '../../constants/monster';
 import { POPUP_KEYS } from '../Popup/PopupKey';
 import { ACTION_TYPE } from '../../components-shared/Dropdowns/ActionDropdown';
 import { useGroupDragPosition } from '../Canvas/groupDrag';
@@ -303,7 +305,7 @@ export const useOptionsDropdownHooks = ({
   const activeTab = useSelector(selectors.project.activeTab);
   const cardData = useSelector(state => state.project.present.cards[cardId]);
   const content = useSelector(state => state.project.present.cards[cardId].content);
-  const hasContent = !!(content?.text?.length || content?.image);
+  const hasContent = hasCardContent(content);
   const [ isOptionDropdownOpen, setIsOptionDropdownOpen ] = useState(false);
   const optionDropdownBtnRef = useRef();
 
@@ -370,7 +372,7 @@ export const useOptionsDropdownLibraryHooks = ({
   const dispatch = useDispatch();
 
   const content = useSelector(state => state.project.present.cards[cardId].content);
-  const hasContent = !!(content?.text?.length || content?.image);
+  const hasContent = hasCardContent(content);
   const activeTab = useSelector(state => state.project.present.activeViewId);
   const cardTabs = useSelector(state => state.project.present.cards[cardId].views);
   const [ isOptionDropdownOpen, setIsOptionDropdownOpen ] = useState(false);
@@ -529,6 +531,131 @@ export const useImageContentHooks = ({
     errorMessage,
     openFilePicker,
     onFileChange,
+    dismissError: () => setErrorMessage(null),
+  };
+};
+
+// Commit-on-blur with an equality guard: local `value` only dispatches when
+// it actually differs from the store, one undo step per finished edit.
+export const useMonsterFieldHooks = ({ cardId, fieldKey }) => {
+  const dispatch = useDispatch();
+  const storeValue = useSelector(state => state.project.present.cards[cardId].content?.[fieldKey] ?? '');
+  const fieldMeta = MONSTER_FIELDS[fieldKey] ?? {};
+
+  const [ value, setValue ] = useState('');
+
+  useEffect(() => {
+    setValue(storeValue);
+  }, [storeValue]);
+
+  const commit = () => {
+    if (value !== storeValue) {
+      dispatch(actions.project.updateCardMonsterFields({ id: cardId, fields: { [fieldKey]: value } }));
+    }
+  };
+
+  const revert = () => setValue(storeValue);
+
+  return {
+    value,
+    changeValue: (nextValue) => setValue(fieldMeta.numeric ? nextValue.replace(/\D/g, '') : nextValue),
+    commit,
+    revert,
+    handleKeyDown: (event) => {
+      if (event.key === 'Escape') {
+        revert();
+        return;
+      }
+      // Multiline fields (textareas) need Enter for newlines - only Escape applies there.
+      if (!fieldMeta.multiline && (event.key === 'Enter' || event.key === 'Tab')) {
+        commit();
+      }
+    },
+  };
+};
+
+export const useMonsterSectionHooks = ({ cardId }) => {
+  const dispatch = useDispatch();
+  const content = useSelector(state => state.project.present.cards[cardId].content);
+
+  const isCollapsed = (key) => content?.collapsed?.[key] ?? DEFAULT_SECTION_COLLAPSED[key] ?? false;
+
+  const sectionHasContent = (key) => {
+    const section = MONSTER_SECTIONS.find(s => s.key === key);
+    if (!section) return false;
+    if (section.fields.some(f => (content?.[f] ?? '').trim().length > 0)) return true;
+    return key === 'header' && !!content?.portrait;
+  };
+
+  return {
+    isCollapsed,
+    sectionHasContent,
+    toggleSection: (key) => dispatch(actions.project.setCardSectionCollapsed({
+      id: cardId,
+      section: key,
+      collapsed: !isCollapsed(key),
+    })),
+  };
+};
+
+// Deliberately duplicated from useImageContentHooks, not shared/parameterized -
+// different content keys (portrait/portraitAlt), action, and compression budget.
+export const useMonsterPortraitHooks = ({ cardId }) => {
+  const dispatch = useDispatch();
+  const portrait = useSelector(state => state.project.present.cards[cardId].content?.portrait ?? '');
+  const portraitAlt = useSelector(state => state.project.present.cards[cardId].content?.portraitAlt ?? '');
+
+  const [ isProcessing, setIsProcessing ] = useState(false);
+  const [ errorMessage, setErrorMessage ] = useState(null);
+  const fileInputRef = useRef();
+  const isMountedRef = useRef(true);
+
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => { isMountedRef.current = false; };
+  }, []);
+
+  const openFilePicker = () => {
+    setErrorMessage(null);
+    fileInputRef.current?.click();
+  };
+
+  const onFileChange = async (event) => {
+    const file = event.target.files?.[0];
+    // Reset immediately so re-picking the same file after an error still fires `change`.
+    event.target.value = '';
+    if (!file) return;
+
+    setIsProcessing(true);
+    try {
+      const result = await processImageFile(file, {
+        maxEdgeSteps: PORTRAIT_MAX_EDGE_STEPS,
+        maxLength: MAX_PORTRAIT_DATA_URI_LENGTH,
+      });
+      if (!isMountedRef.current) return;
+      dispatch(actions.project.updateCardPortrait({
+        id: cardId,
+        portrait: result.image,
+        portraitAlt: result.alt,
+      }));
+    } catch (err) {
+      if (!isMountedRef.current) return;
+      setErrorMessage(err.message);
+    } finally {
+      if (isMountedRef.current) setIsProcessing(false);
+    }
+  };
+
+  return {
+    portrait,
+    portraitAlt,
+    hasPortrait: !!portrait,
+    fileInputRef,
+    isProcessing,
+    errorMessage,
+    openFilePicker,
+    onFileChange,
+    clearPortrait: () => dispatch(actions.project.updateCardPortrait({ id: cardId, portrait: '', portraitAlt: '' })),
     dismissError: () => setErrorMessage(null),
   };
 };
