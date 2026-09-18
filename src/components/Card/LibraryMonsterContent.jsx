@@ -1,7 +1,7 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 
-import { MONSTER_SECTIONS, MONSTER_FIELDS, MONSTER_TEXT_KEYS, abilityModifier, formatModifier } from '../../constants/monster';
+import { MONSTER_SECTIONS, MONSTER_FIELDS, abilityModifier, formatModifier } from '../../constants/monster';
 import { hasCardContent } from '../../constants/cards';
 
 import './Card.scss';
@@ -50,6 +50,12 @@ const LibraryMonsterContent = ({
     <div className='library-card-content-container library-monster-expanded' style={{ height: '280px' }}>
       {portrait && <img className='library-monster-thumb' src={portrait} alt={portraitAlt} draggable='false' />}
       {MONSTER_SECTIONS.map(section => <LibrarySection key={section.key} content={content} section={section} />)}
+      {content.notes?.trim() && (
+        <div className='library-monster-section'>
+          <div className='library-monster-section-title'>Quick Notes</div>
+          <div className='library-monster-field-value prose'>{content.notes}</div>
+        </div>
+      )}
     </div>
   );
 };
@@ -64,7 +70,7 @@ const LibrarySection = ({ content, section }) => {
       {filledFields.map(fieldKey => (
         <div key={fieldKey} className='library-monster-field'>
           <span className='library-monster-field-label'>{MONSTER_FIELDS[fieldKey].label}</span>
-          <span className={'library-monster-field-value' + (MONSTER_TEXT_KEYS.includes(fieldKey) ? ' prose' : '')}>
+          <span className={'library-monster-field-value' + (MONSTER_FIELDS[fieldKey]?.multiline ? ' prose' : '')}>
             {fieldKey === 'str' || fieldKey === 'dex' || fieldKey === 'con'
               || fieldKey === 'int' || fieldKey === 'wis' || fieldKey === 'cha'
               ? `${content[fieldKey]} (${formatModifier(abilityModifier(content[fieldKey]))})`

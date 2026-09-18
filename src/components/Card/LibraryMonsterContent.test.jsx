@@ -48,12 +48,12 @@ describe('LibraryMonsterContent', () => {
     const content = buildMonsterContent({ creatureType: 'dragon' });
     const { queryByText } = renderLibraryMonster(content, { isExpanded: true });
     expect(queryByText('Traits')).toBeNull();
-    expect(queryByText('Combat')).toBeNull();
+    expect(queryByText('Defenses')).toBeNull();
   });
 
   it('renders no input or textarea, condensed or expanded', () => {
     const content = buildMonsterContent({
-      creatureType: 'dragon', armorClass: '18', traits: 'Amphibious.', portrait: 'data:image/jpeg;base64,x',
+      creatureType: 'dragon', armorClass: '18', traits: 'Amphibious.', portrait: 'data:image/jpeg;base64,x', notes: 'scratch',
     });
     const condensed = renderLibraryMonster(content, { isExpanded: false });
     expect(condensed.container.querySelector('input')).toBeNull();
@@ -62,5 +62,34 @@ describe('LibraryMonsterContent', () => {
     const expanded = renderLibraryMonster(content, { isExpanded: true });
     expect(expanded.container.querySelector('input')).toBeNull();
     expect(expanded.container.querySelector('textarea')).toBeNull();
+  });
+
+  it('surfaces notes in the expanded view', () => {
+    const content = buildMonsterContent({ notes: 'lair is flooded' });
+    const { getByText } = renderLibraryMonster(content, { isExpanded: true });
+    expect(getByText('Quick Notes')).not.toBeNull();
+    expect(getByText('lair is flooded')).not.toBeNull();
+  });
+
+  it.each([[''], ['   ']])('omits the notes block when notes are %j', (notes) => {
+    const content = buildMonsterContent({ notes });
+    const { queryByText } = renderLibraryMonster(content, { isExpanded: true });
+    expect(queryByText('Quick Notes')).toBeNull();
+  });
+
+  it('condensed view does not show notes', () => {
+    const content = buildMonsterContent({ notes: 'lair is flooded' });
+    const { container, queryByText } = renderLibraryMonster(content, { isExpanded: false });
+    expect(queryByText('lair is flooded')).toBeNull();
+    expect(container.querySelector('.library-card-content-container').style.height).toBe('80px');
+  });
+
+  it('ignores column-collapse state', () => {
+    const content = buildMonsterContent({
+      creatureType: 'dragon', traits: 'Amphibious.', collapsed: { attributes: true, combat: true },
+    });
+    const { getByText } = renderLibraryMonster(content, { isExpanded: true });
+    expect(getByText('dragon')).not.toBeNull();
+    expect(getByText('Amphibious.')).not.toBeNull();
   });
 });
