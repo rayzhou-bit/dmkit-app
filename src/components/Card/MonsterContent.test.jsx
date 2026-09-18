@@ -153,8 +153,8 @@ describe('MonsterContent', () => {
   });
 
   it('a session override collapses a column and the DOM reflects it', () => {
-    const content = buildMonsterContent({ armorClass: '18' }); // armorClass lives in the combat column
-    const { container, queryByLabelText } = renderMonster(content, { combat: true });
+    const content = buildMonsterContent({ armorClass: '18' }); // armorClass lives in the attributes column
+    const { container, queryByLabelText } = renderMonster(content, { attributes: true });
     expect(container.querySelector('.monster-column-collapsed')).not.toBeNull();
     expect(queryByLabelText('Armor Class')).toBeNull();
   });

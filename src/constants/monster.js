@@ -71,7 +71,7 @@ export const MONSTER_FIELDS = {
 
 export const MONSTER_SECTIONS = [
   { key: 'identity', title: 'Creature', layout: 'lines', column: 'attributes', fields: ['size', 'creatureType', 'alignment'] },
-  { key: 'defenses', title: 'Defenses', layout: 'lines', column: 'combat', fields: ['armorClass', 'hitPoints', 'speed'] },
+  { key: 'defenses', title: 'Defenses', layout: 'lines', column: 'attributes', fields: ['armorClass', 'hitPoints', 'speed'] },
   { key: 'abilities', title: 'Ability Scores', layout: 'abilities', column: 'attributes', fields: ['str', 'dex', 'con', 'int', 'wis', 'cha'] },
   {
     key: 'proficiencies', title: 'Proficiencies & Senses', layout: 'lines', column: 'attributes',

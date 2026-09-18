@@ -90,7 +90,7 @@ describe('section/column metadata', () => {
     ['identity', 'attributes'],
     ['abilities', 'attributes'],
     ['proficiencies', 'attributes'],
-    ['defenses', 'combat'],
+    ['defenses', 'attributes'],
     ['traits', 'combat'],
     ['actions', 'combat'],
     ['bonusActions', 'combat'],
