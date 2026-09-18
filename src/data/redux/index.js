@@ -26,7 +26,6 @@ const actionsToRemove = [
   'setActiveTab',
   'setActiveTabPosition',
   'setActiveTabScale',
-  'setCardSectionCollapsed',
 ];
 undoableActions = undoableActions.filter(action => !actionsToRemove.includes(action));
 undoableActions = undoableActions.map(action => 'project/' + action);

@@ -1,6 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { NETWORK_STATUS } from '../../../constants/states';
 import { DEFAULT_PROJECT } from './constants';
+import { MONSTER_COLLAPSIBLE_KEYS } from '../../../constants/monster';
 
 const initialState = {
   status: NETWORK_STATUS.idle,
@@ -16,6 +17,13 @@ const initialState = {
   selectedCards: [],
 
   isProjectEdited: false, // flag for unsaved changes
+
+  // Sparse per-card overrides for monster-card section/column collapse -
+  // intentionally session-only (not saved), see setMonsterCollapsed below.
+  // Orphaned entries for deleted cards are left in place on purpose: deletes
+  // are undoable, and cleaning up here would mean undoing a delete brings
+  // the card back with its collapse layout silently reset.
+  monsterCollapse: {},   // cardId -> { [sectionOrColumnKey]: boolean }
 };
 
 const session = createSlice({
@@ -76,6 +84,18 @@ const session = createSlice({
     setSelectedCards: (state, { payload }) => ({ ...state, selectedCards: payload.cards }),
 
     setIsProjectEdited: (state, { payload }) => ({ ...state, isProjectEdited: payload }),
+
+    setMonsterCollapsed: (state, { payload }) => {
+      const { id, key, collapsed } = payload;
+      if (!MONSTER_COLLAPSIBLE_KEYS.includes(key)) return state;
+      return {
+        ...state,
+        monsterCollapse: {
+          ...state.monsterCollapse,
+          [id]: { ...state.monsterCollapse[id], [key]: collapsed },
+        },
+      };
+    },
   },
 });
 

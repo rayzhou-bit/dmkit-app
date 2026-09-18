@@ -11,8 +11,9 @@ export const MONSTER_SECTION_KEYS = [
 // metadata-driven).
 export const MONSTER_COLUMN_KEYS = ['attributes', 'combat'];
 
-// Single validation list for the reducer - sections and columns share one
-// collapsed-flags map. Must stay disjoint from MONSTER_SECTION_KEYS (tested).
+// Validation list for session/reducers.js's setMonsterCollapsed - sections
+// and columns share one collapsed-flags map. Must stay disjoint from
+// MONSTER_SECTION_KEYS (tested).
 export const MONSTER_COLLAPSIBLE_KEYS = [...MONSTER_SECTION_KEYS, ...MONSTER_COLUMN_KEYS];
 
 export const DEFAULT_SECTION_COLLAPSED = {
@@ -23,7 +24,8 @@ export const DEFAULT_SECTION_COLLAPSED = {
 
 export const DEFAULT_COLUMN_COLLAPSED = { attributes: false, combat: false };
 
-// The shape content.collapsed actually takes now - reducer/hook/builder use this.
+// Fallback map for session.monsterCollapse lookups (useMonsterSectionHooks) -
+// view metadata, not part of card content.
 export const DEFAULT_COLLAPSED = { ...DEFAULT_SECTION_COLLAPSED, ...DEFAULT_COLUMN_COLLAPSED };
 
 export const MONSTER_TEXT_MAX_LENGTH = 4000;
@@ -107,7 +109,6 @@ export const MONSTER_FIELD_KEYS = [
 
 export const DEFAULT_MONSTER_CONTENT = {
   ...MONSTER_FIELD_KEYS.reduce((content, key) => ({ ...content, [key]: '' }), {}),
-  collapsed: { ...DEFAULT_COLLAPSED },
 };
 
 // The one funnel every write path (createCard, copySelectedCard(s)) goes
@@ -116,12 +117,6 @@ export const buildMonsterContent = (source) => {
   const content = { ...DEFAULT_MONSTER_CONTENT };
   for (const key of MONSTER_FIELD_KEYS) {
     content[key] = String(source?.[key] ?? '');
-  }
-  content.collapsed = {};
-  for (const key of MONSTER_COLLAPSIBLE_KEYS) {
-    content.collapsed[key] = typeof source?.collapsed?.[key] === 'boolean'
-      ? source.collapsed[key]
-      : DEFAULT_COLLAPSED[key];
   }
   return content;
 };
