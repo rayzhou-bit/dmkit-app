@@ -2,6 +2,8 @@
 // Firebase; thunkActions.js itself has no such import, so no mock is needed
 // here.
 import { copySelectedCard, copySelectedCards, createNewCard, destroySelectedCards } from './thunkActions';
+import { MONSTER_CARD_SIZE } from '../../constants/dimensions';
+import { buildMonsterContent } from '../../constants/monster';
 
 // Hand-rolled dispatch recorder - thunkActions dispatch plain actions
 // synchronously, no store/state read-back needed.
@@ -10,6 +12,17 @@ const makeDispatch = () => {
   const dispatch = (action) => { dispatched.push(action); return action; };
   return { dispatch, dispatched };
 };
+
+describe('createNewCard', () => {
+  it('creates a monster card sized MONSTER_CARD_SIZE', () => {
+    const { dispatch, dispatched } = makeDispatch();
+    createNewCard({ activeTabPosition: { x: 0, y: 0 }, offset: 0, type: 'monster' })(dispatch);
+
+    const createAction = dispatched.find(a => a.type === 'project/createCard');
+    expect(createAction.payload.type).toBe('monster');
+    expect(createAction.payload.size).toEqual(MONSTER_CARD_SIZE);
+  });
+});
 
 describe('copySelectedCard', () => {
   it('activates the new copy, leaving the original as-is', () => {
@@ -28,6 +41,23 @@ describe('copySelectedCard', () => {
     expect(createAction).toBeDefined();
     expect(activateAction).toBeDefined();
     expect(activateAction.payload.id).toBe(createAction.payload.newId);
+  });
+
+  it('round-trips every monster content field through the monster payload key', () => {
+    const { dispatch, dispatched } = makeDispatch();
+    const monsterContent = buildMonsterContent({ creatureType: 'dragon', armorClass: '18', str: '20' });
+    const selectedCard = {
+      views: { tab1: { pos: { x: 10, y: 20 }, size: { width: 336, height: 432 } } },
+      color: 'gray',
+      title: 'Ancient Red Dragon',
+      type: 'monster',
+      content: monsterContent,
+    };
+
+    copySelectedCard({ selectedCard, activeTab: 'tab1' })(dispatch);
+
+    const createAction = dispatched.find(a => a.type === 'project/createCard');
+    expect(createAction.payload.monster).toEqual(monsterContent);
   });
 });
 
@@ -66,6 +96,23 @@ describe('copySelectedCards', () => {
     expect(selectAction.payload.cards).toEqual(createActions.map(a => a.payload.newId));
     // dispatched last, after every copy has been created.
     expect(dispatched[dispatched.length - 1]).toBe(selectAction);
+  });
+
+  it('round-trips every monster content field through the monster payload key, for each card', () => {
+    const { dispatch, dispatched } = makeDispatch();
+    const monsterContent = buildMonsterContent({ creatureType: 'dragon', hitPoints: '195' });
+    const monsterCard = {
+      views: { tab1: { pos: { x: 0, y: 0 }, size: { width: 336, height: 432 } } },
+      color: 'gray',
+      title: 'Dragon',
+      type: 'monster',
+      content: monsterContent,
+    };
+
+    copySelectedCards({ selectedCards: [cardA, monsterCard], activeTab })(dispatch);
+
+    const createActions = dispatched.filter(a => a.type === 'project/createCard');
+    expect(createActions[1].payload.monster).toEqual(monsterContent);
   });
 
   it('selects nothing (clears the old selection) when there is nothing to copy', () => {

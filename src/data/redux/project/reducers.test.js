@@ -1,4 +1,5 @@
 import { reducer } from './reducers';
+import { buildMonsterContent, DEFAULT_SECTION_COLLAPSED } from '../../../constants/monster';
 
 const baseState = {
   cards: {},
@@ -35,6 +36,27 @@ describe('createCard', () => {
     // Round-trip through JSON (as Firestore effectively does) must be lossless -
     // any `undefined` field would silently vanish here.
     expect(JSON.parse(JSON.stringify(card))).toEqual(card);
+  });
+});
+
+describe('createCard - monster', () => {
+  it('stamps type and content matches buildMonsterContent(), no text/image keys', () => {
+    const next = reducer(baseState, { type: 'project/createCard', payload: { newId: 'c1', type: 'monster' } });
+    const card = next.cards.c1;
+    expect(card.type).toBe('monster');
+    expect(card.content).toEqual(buildMonsterContent());
+    expect(card.content.text).toBeUndefined();
+    expect(card.content.image).toBeUndefined();
+    expect(JSON.parse(JSON.stringify(card))).toEqual(card);
+  });
+
+  it('copies fields from the monster payload', () => {
+    const next = reducer(baseState, {
+      type: 'project/createCard',
+      payload: { newId: 'c1', type: 'monster', monster: { creatureType: 'dragon', armorClass: '18' } },
+    });
+    expect(next.cards.c1.content.creatureType).toBe('dragon');
+    expect(next.cards.c1.content.armorClass).toBe('18');
   });
 });
 
@@ -79,6 +101,108 @@ describe('updateCardText regression', () => {
     expect(next.cards.c1.content.text).toBe('new');
     expect(next.cards.c1.type).toBeUndefined();
     expect(next.cards.c1.color).toBe('gray');
+  });
+});
+
+describe('updateCardMonsterFields', () => {
+  const state = {
+    ...baseState,
+    cards: {
+      c1: { views: {}, color: 'gray', title: 'untitled', content: buildMonsterContent(), createdOn: 1, editedOn: 1 },
+    },
+  };
+
+  it('patches only the given keys, leaving siblings untouched, and bumps editedOn', () => {
+    const next = reducer(state, {
+      type: 'project/updateCardMonsterFields',
+      payload: { id: 'c1', fields: { creatureType: 'dragon', armorClass: '18' } },
+    });
+    expect(next.cards.c1.content.creatureType).toBe('dragon');
+    expect(next.cards.c1.content.armorClass).toBe('18');
+    expect(next.cards.c1.content.alignment).toBe('');
+    expect(next.cards.c1.editedOn).toBeGreaterThanOrEqual(state.cards.c1.editedOn);
+  });
+
+  it('ignores unknown keys and coerces undefined to empty string', () => {
+    const next = reducer(state, {
+      type: 'project/updateCardMonsterFields',
+      payload: { id: 'c1', fields: { notARealField: 'junk', speed: undefined } },
+    });
+    expect(next.cards.c1.content.notARealField).toBeUndefined();
+    expect(next.cards.c1.content.speed).toBe('');
+  });
+});
+
+describe('updateCardPortrait', () => {
+  const state = {
+    ...baseState,
+    cards: {
+      c1: { views: {}, color: 'gray', title: 'untitled', content: buildMonsterContent({ creatureType: 'dragon' }), createdOn: 1, editedOn: 1 },
+    },
+  };
+
+  it('sets both keys, bumps editedOn, does not clobber other fields', () => {
+    const next = reducer(state, {
+      type: 'project/updateCardPortrait',
+      payload: { id: 'c1', portrait: 'data:image/jpeg;base64,xxx', portraitAlt: 'dragon.png' },
+    });
+    expect(next.cards.c1.content.portrait).toBe('data:image/jpeg;base64,xxx');
+    expect(next.cards.c1.content.portraitAlt).toBe('dragon.png');
+    expect(next.cards.c1.content.creatureType).toBe('dragon');
+    expect(next.cards.c1.editedOn).toBeGreaterThanOrEqual(state.cards.c1.editedOn);
+  });
+
+  it('clears the portrait when set back to empty strings', () => {
+    const withPortrait = reducer(state, {
+      type: 'project/updateCardPortrait',
+      payload: { id: 'c1', portrait: 'data:image/jpeg;base64,xxx', portraitAlt: 'dragon.png' },
+    });
+    const cleared = reducer(withPortrait, {
+      type: 'project/updateCardPortrait',
+      payload: { id: 'c1', portrait: '', portraitAlt: '' },
+    });
+    expect(cleared.cards.c1.content.portrait).toBe('');
+    expect(cleared.cards.c1.content.portraitAlt).toBe('');
+  });
+});
+
+describe('setCardSectionCollapsed', () => {
+  const state = {
+    ...baseState,
+    cards: {
+      c1: { views: {}, color: 'gray', title: 'untitled', content: buildMonsterContent(), createdOn: 1, editedOn: 1 },
+    },
+  };
+
+  it('sets the given flag, leaves the rest untouched, does not bump editedOn', () => {
+    const next = reducer(state, {
+      type: 'project/setCardSectionCollapsed',
+      payload: { id: 'c1', section: 'header', collapsed: true },
+    });
+    expect(next.cards.c1.content.collapsed.header).toBe(true);
+    expect(next.cards.c1.content.collapsed.defenses).toBe(DEFAULT_SECTION_COLLAPSED.defenses);
+    expect(next.cards.c1.editedOn).toBe(state.cards.c1.editedOn);
+  });
+
+  it('no-ops on an unknown section key', () => {
+    const next = reducer(state, {
+      type: 'project/setCardSectionCollapsed',
+      payload: { id: 'c1', section: 'notASection', collapsed: true },
+    });
+    expect(next).toBe(state);
+  });
+
+  it('works when content.collapsed is absent entirely', () => {
+    const legacyState = {
+      ...baseState,
+      cards: { c1: { views: {}, content: { armorClass: '' } } },
+    };
+    const next = reducer(legacyState, {
+      type: 'project/setCardSectionCollapsed',
+      payload: { id: 'c1', section: 'traits', collapsed: true },
+    });
+    expect(next.cards.c1.content.collapsed.traits).toBe(true);
+    expect(next.cards.c1.content.collapsed.header).toBe(DEFAULT_SECTION_COLLAPSED.header);
   });
 });
 

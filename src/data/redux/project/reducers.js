@@ -5,8 +5,9 @@ import {
   INTRO_PROJECT,
   BLANK_PROJECT,
 } from './constants';
-import { GRID_SIZE, DEFAULT_CARD_POSITION, DEFAULT_CARD_SIZE } from '../../../constants/dimensions';
-import { CARD_TYPES } from '../../../constants/cards';
+import { GRID_SIZE, DEFAULT_CARD_POSITION, DEFAULT_CARD_SIZE, MONSTER_CARD_SIZE } from '../../../constants/dimensions';
+import { CARD_TYPES, getCardType } from '../../../constants/cards';
+import { buildMonsterContent, MONSTER_FIELD_KEYS, MONSTER_SECTION_KEYS, DEFAULT_SECTION_COLLAPSED } from '../../../constants/monster';
 
 // TODO name refactor
 //  view -> tab
@@ -47,7 +48,7 @@ const project = createSlice({
 
     // Card reducers
     createCard: (state, { payload }) => {
-      const { newId, position, size, color, title, text, type, image, alt } = payload;
+      const { newId, position, size, color, title, text, type, image, alt, monster } = payload;
       if (!state.activeViewId) return state;
       return {
         ...state,
@@ -64,8 +65,8 @@ const project = createSlice({
             color: color ?? DEFAULT_CARD.color,
             title: title ?? DEFAULT_CARD.title,
             type: type ?? DEFAULT_CARD.type,
-            content: type === CARD_TYPES.image
-              ? { image: image ?? '', alt: alt ?? '' }
+            content: type === CARD_TYPES.monster ? buildMonsterContent(monster)
+              : type === CARD_TYPES.image ? { image: image ?? '', alt: alt ?? '' }
               : { text: text ?? DEFAULT_CARD.content.text },
             createdOn: Date.now(),
             editedOn: Date.now(),
@@ -117,7 +118,7 @@ const project = createSlice({
               ...state.cards[id].views,
               [state.activeViewId]: {
                 pos: position,
-                size: DEFAULT_CARD_SIZE,
+                size: getCardType(state.cards[id]) === CARD_TYPES.monster ? MONSTER_CARD_SIZE : DEFAULT_CARD_SIZE,
               },
             },
           },
@@ -279,6 +280,64 @@ const project = createSlice({
             },
             type: CARD_TYPES.image,
             editedOn: Date.now(),
+          },
+        },
+      };
+    },
+    updateCardMonsterFields: (state, { payload }) => {
+      const { id, fields } = payload;
+      const newContent = { ...state.cards[id].content };
+      for (const key of MONSTER_FIELD_KEYS) {
+        if (key in fields) newContent[key] = fields[key] ?? '';
+      }
+      return {
+        ...state,
+        cards: {
+          ...state.cards,
+          [id]: {
+            ...state.cards[id],
+            content: newContent,
+            editedOn: Date.now(),
+          },
+        },
+      };
+    },
+    updateCardPortrait: (state, { payload }) => {
+      const { id, portrait, portraitAlt } = payload;
+      return {
+        ...state,
+        cards: {
+          ...state.cards,
+          [id]: {
+            ...state.cards[id],
+            content: {
+              ...state.cards[id].content,
+              portrait,
+              portraitAlt,
+            },
+            editedOn: Date.now(),
+          },
+        },
+      };
+    },
+    setCardSectionCollapsed: (state, { payload }) => {
+      // View state, not a document edit - excluded from undo in index.js.
+      const { id, section, collapsed } = payload;
+      if (!MONSTER_SECTION_KEYS.includes(section)) return state;
+      return {
+        ...state,
+        cards: {
+          ...state.cards,
+          [id]: {
+            ...state.cards[id],
+            content: {
+              ...state.cards[id].content,
+              collapsed: {
+                ...DEFAULT_SECTION_COLLAPSED,
+                ...state.cards[id].content?.collapsed,
+                [section]: collapsed,
+              },
+            },
           },
         },
       };

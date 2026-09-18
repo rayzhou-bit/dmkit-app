@@ -30,6 +30,10 @@ export const MIN_CARD_SIZE = {
   width: 12 * GRID_SIZE,
   height: 10 * GRID_SIZE,
 };
+export const MONSTER_CARD_SIZE = {
+  width: 28 * GRID_SIZE,
+  height: 36 * GRID_SIZE,
+};
 
 export const ZOOM_STEP = 0.1;                 // additive step, buttons + keyboard
 export const WHEEL_ZOOM_SENSITIVITY = 0.0025; // exponent per normalized px
