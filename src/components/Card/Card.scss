@@ -339,8 +339,11 @@ $scrollbar-width: 17px;
 }
 
 // The header is always the same vertical strip, collapsed or not - only
-// whether a body sits next to it changes.
+// whether a body sits next to it changes. Sits on the right of its own
+// column's body (order swaps visual position; DOM order keeps the button
+// before the content it controls, for screen readers/tab order).
 .monster-column-header {
+  order: 2;
   flex: 0 0 24px;
   height: 100%;
   padding: 8px 0;
@@ -350,7 +353,7 @@ $scrollbar-width: 17px;
   gap: 6px;
   cursor: pointer;
   writing-mode: vertical-rl;
-  border-right: 1px solid #F4F4F4;
+  border-left: 1px solid #D7D6D6;
 
   &:hover { background-color: #F4F4F4; }
 
@@ -375,11 +378,12 @@ $scrollbar-width: 17px;
 }
 
 .monster-column-body {
+  order: 1;
   flex: 1 1 auto;
   min-width: 0;
   min-height: 0;
   overflow-y: auto;
-  padding-left: 8px;
+  padding-right: 8px;
 }
 
 .monster-column-collapsed {
@@ -389,7 +393,7 @@ $scrollbar-width: 17px;
   .monster-column-header {
     flex: 1 1 auto;
     width: 100%;
-    border-right: 0;
+    border-left: 0;
   }
 }
 
