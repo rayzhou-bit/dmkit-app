@@ -36,6 +36,10 @@ const rootReducer = combineReducers({
     {
       filter: includeAction(undoableActions),
       limit: 10,
+      // Without this, a filtered action (e.g. setActiveTab) between two
+      // undoable ones gets swept up by the next undo instead of surviving
+      // it - see redux-undo's _latestUnfiltered handling.
+      syncFilter: true,
     }
   ),
   session: session.reducer,
