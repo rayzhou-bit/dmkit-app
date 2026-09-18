@@ -75,12 +75,12 @@ const ToolMenu = ({
       >
         <div className='btn-highlight'>
           <img
-            alt='New stat block'
+            alt='New stat'
             draggable='false'
             src={StatBlockIcon}
           />
         </div>
-        <span>stat block</span>
+        <span>stat</span>
       </button>
 
       {/* copy card */}

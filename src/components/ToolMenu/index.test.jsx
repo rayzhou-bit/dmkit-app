@@ -77,11 +77,11 @@ describe('ToolMenu image button', () => {
   });
 });
 
-describe('ToolMenu stat block button', () => {
+describe('ToolMenu stat button', () => {
   it('is disabled when there is no active tab', () => {
     const store = makeStore(makeState());
     const { getByText } = render(<Harness store={store} />);
-    expect(getByText('stat block').closest('button')).toBeDisabled();
+    expect(getByText('stat').closest('button')).toBeDisabled();
   });
 
   it('is enabled when there is an active tab', () => {
@@ -89,7 +89,7 @@ describe('ToolMenu stat block button', () => {
       project: { present: { activeViewId: 'tab1', viewOrder: ['tab1'], views: { tab1: { pos: { x: 0, y: 0 } } }, cards: {} } },
     }));
     const { getByText } = render(<Harness store={store} />);
-    expect(getByText('stat block').closest('button')).not.toBeDisabled();
+    expect(getByText('stat').closest('button')).not.toBeDisabled();
   });
 
   it('dispatches a project/createCard action with type: monster and the monster card size', () => {
@@ -97,7 +97,7 @@ describe('ToolMenu stat block button', () => {
       project: { present: { activeViewId: 'tab1', viewOrder: ['tab1'], views: { tab1: { pos: { x: 0, y: 0 } } }, cards: {} } },
     }));
     const { getByText } = render(<Harness store={store} />);
-    fireEvent.click(getByText('stat block').closest('button'));
+    fireEvent.click(getByText('stat').closest('button'));
 
     const createCardAction = store.dispatched.find(a => a.type === 'project/createCard');
     expect(createCardAction).toBeDefined();
@@ -110,10 +110,10 @@ describe('ToolMenu stat block button', () => {
       project: { present: { activeViewId: 'tab1', viewOrder: ['tab1'], views: { tab1: { pos: { x: 0, y: 0 } } }, cards: {} } },
     }));
     const { getByText, queryByText } = render(<Harness store={store} />);
-    expect(getByText('stat block')).not.toBeNull();
+    expect(getByText('stat')).not.toBeNull();
     expect(queryByText('monster')).toBeNull();
 
-    fireEvent.click(getByText('stat block').closest('button'));
+    fireEvent.click(getByText('stat').closest('button'));
     const createCardAction = store.dispatched.find(a => a.type === 'project/createCard');
     expect(createCardAction.payload.type).toBe('monster');
   });

@@ -94,6 +94,14 @@ export const MONSTER_COLUMNS = [
   { key: 'combat', title: 'Combat' },
 ];
 
+// How much a card's width grows/shrinks when a column expands/collapses -
+// each column's Card.scss minmax() minimum minus the 24px collapsed-strip
+// width (140-24, 160-24). Keep in sync with Card.scss if those change.
+export const MONSTER_COLUMN_WIDTH_DELTA = {
+  attributes: 116,
+  combat: 136,
+};
+
 // Derived, not hand-listed - preserves MONSTER_SECTIONS' canonical order within each column.
 export const MONSTER_COLUMN_SECTIONS = MONSTER_COLUMN_KEYS.reduce((acc, key) => ({
   ...acc,
