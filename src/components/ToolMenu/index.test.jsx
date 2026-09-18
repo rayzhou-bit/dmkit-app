@@ -3,6 +3,7 @@ import { render, fireEvent } from '@testing-library/react';
 import { Provider } from 'react-redux';
 
 import ToolMenu from './index';
+import { MONSTER_CARD_SIZE } from '../../constants/dimensions';
 
 // Hand-rolled fake store, matching the pattern in Canvas/testUtils.jsx.
 const makeState = (overrides = {}) => ({
@@ -73,6 +74,35 @@ describe('ToolMenu image button', () => {
     const createCardAction = store.dispatched.find(a => a.type === 'project/createCard');
     expect(createCardAction).toBeDefined();
     expect(createCardAction.payload.type).toBe('image');
+  });
+});
+
+describe('ToolMenu monster button', () => {
+  it('is disabled when there is no active tab', () => {
+    const store = makeStore(makeState());
+    const { getByText } = render(<Harness store={store} />);
+    expect(getByText('monster').closest('button')).toBeDisabled();
+  });
+
+  it('is enabled when there is an active tab', () => {
+    const store = makeStore(makeState({
+      project: { present: { activeViewId: 'tab1', viewOrder: ['tab1'], views: { tab1: { pos: { x: 0, y: 0 } } }, cards: {} } },
+    }));
+    const { getByText } = render(<Harness store={store} />);
+    expect(getByText('monster').closest('button')).not.toBeDisabled();
+  });
+
+  it('dispatches a project/createCard action with type: monster and the monster card size', () => {
+    const store = makeStore(makeState({
+      project: { present: { activeViewId: 'tab1', viewOrder: ['tab1'], views: { tab1: { pos: { x: 0, y: 0 } } }, cards: {} } },
+    }));
+    const { getByText } = render(<Harness store={store} />);
+    fireEvent.click(getByText('monster').closest('button'));
+
+    const createCardAction = store.dispatched.find(a => a.type === 'project/createCard');
+    expect(createCardAction).toBeDefined();
+    expect(createCardAction.payload.type).toBe('monster');
+    expect(createCardAction.payload.size).toEqual(MONSTER_CARD_SIZE);
   });
 });
 
