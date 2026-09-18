@@ -5,6 +5,7 @@ import { CARD_TYPES } from '../../constants/cards';
 
 import TextContent from './TextContent';
 import ImageContent from './ImageContent';
+import MonsterContent from './MonsterContent';
 
 const Content = ({
   cardId,
@@ -12,6 +13,9 @@ const Content = ({
 }) => {
   const cardType = useCardType(cardId);
 
+  if (cardType === CARD_TYPES.monster) {
+    return <MonsterContent cardId={cardId} />;
+  }
   if (cardType === CARD_TYPES.image) {
     return <ImageContent cardId={cardId} />;
   }

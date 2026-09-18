@@ -34,6 +34,16 @@ const hasSearch = (card, search) => {
   if (alt.toLowerCase().includes(search.toLowerCase())) {
     return true;
   }
+  // Monster cards have no text either - match on creature type and the
+  // portrait's original filename.
+  const creatureType = card?.content?.creatureType ?? '';
+  if (creatureType.toLowerCase().includes(search.toLowerCase())) {
+    return true;
+  }
+  const portraitAlt = card?.content?.portraitAlt ?? '';
+  if (portraitAlt.toLowerCase().includes(search.toLowerCase())) {
+    return true;
+  }
   return false;
 };
 
