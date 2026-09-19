@@ -467,6 +467,51 @@ $scrollbar-width: 17px;
     letter-spacing: 0.05em;
   }
 
+  // Icon replacement for .monster-field-label (see MonsterTextField's `icon`
+  // prop) - the real <label> above stays for a11y (visually hidden), this
+  // is purely a decorative hover affordance, hence aria-hidden.
+  .monster-field-icon-label {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    cursor: default;
+
+    &:hover .tooltip {
+      visibility: visible;
+      opacity: 100%;
+    }
+
+    .monster-field-icon {
+      display: block;
+      width: 14px;
+      height: 14px;
+    }
+
+    .tooltip {
+      display: inline-block;
+      position: absolute;
+      top: 130%;
+      left: 0;
+      padding: 3px 8px;
+      border-radius: 6px;
+      background-color: #363B4E;
+      visibility: hidden;
+      z-index: 10000;
+      color: white;
+      text-align: center;
+      font-family: Roboto;
+      font-size: 11px;
+      font-weight: 400;
+      line-height: 20px;
+      letter-spacing: 0.55px;
+      white-space: nowrap;
+      pointer-events: none;
+      transition: opacity .1s;
+      transition-delay: 0.3s;
+      opacity: 0%;
+    }
+  }
+
   .monster-field-input,
   .monster-field-textarea {
     width: 100%;

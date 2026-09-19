@@ -17,6 +17,7 @@ const MonsterTextField = ({
   numeric,
   className,
   hideLabel,
+  icon, // optional - replaces the visible text label with an icon + hover tooltip (label stays as the a11y name)
   onValueChange, // optional - notified of the local (uncommitted) value live, e.g. for the ability modifier
 }) => {
   const { value, changeValue, commit, handleKeyDown } = useMonsterFieldHooks({ cardId, fieldKey });
@@ -28,7 +29,13 @@ const MonsterTextField = ({
 
   return (
     <div className={'monster-field' + (className ? ' ' + className : '')}>
-      <label className={'monster-field-label' + (hideLabel ? ' sr-only' : '')} htmlFor={id}>{label}</label>
+      <label className={'monster-field-label' + (hideLabel || icon ? ' sr-only' : '')} htmlFor={id}>{label}</label>
+      {icon && (
+        <span className='monster-field-icon-label' aria-hidden='true'>
+          <img className='monster-field-icon' src={icon} alt='' />
+          <span className='tooltip'>{label}</span>
+        </span>
+      )}
       {multiline ? (
         <textarea
           id={id}

@@ -2,6 +2,12 @@
 // does NOT import from ./cards - cards.js imports hasCardContent's needs
 // from here instead, keeping the dependency one-directional.
 
+import AcShieldIcon from '../assets/icons/ac-shield.svg';
+import HpHeartIcon from '../assets/icons/hp-heart.svg';
+import SpeedBoltIcon from '../assets/icons/speed-bolt.svg';
+import CrSkullIcon from '../assets/icons/cr-skull.svg';
+import XpStarIcon from '../assets/icons/xp-star.svg';
+
 export const MONSTER_SECTION_KEYS = [
   'identity', 'defenses', 'abilities', 'proficiencies',
   'traits', 'actions', 'bonusActions', 'reactions', 'legendaryActions',
@@ -41,9 +47,11 @@ export const MONSTER_FIELDS = {
   creatureType: { label: 'Type', placeholder: 'dragon (chromatic)', maxLength: 60 },
   alignment: { label: 'Alignment', placeholder: 'chaotic evil', maxLength: 60 },
 
-  armorClass: { label: 'Armor Class', placeholder: '18 (natural armor)', maxLength: 60 },
-  hitPoints: { label: 'Hit Points', placeholder: '195 (17d12 + 85)', maxLength: 60 },
-  speed: { label: 'Speed', placeholder: '40 ft., fly 80 ft.', maxLength: 120 },
+  // icon: label doubles as the sr-only accessible name AND the hover
+  // tooltip text (MonsterTextField) - replaces the inline text label.
+  armorClass: { label: 'Armor Class', placeholder: '18 (natural armor)', maxLength: 60, icon: AcShieldIcon },
+  hitPoints: { label: 'Hit Points', placeholder: '195 (17d12 + 85)', maxLength: 60, icon: HpHeartIcon },
+  speed: { label: 'Speed', placeholder: '40 ft., fly 80 ft.', maxLength: 120, icon: SpeedBoltIcon },
 
   str: { label: 'STR', maxLength: 3, numeric: true },
   dex: { label: 'DEX', maxLength: 3, numeric: true },
@@ -60,8 +68,8 @@ export const MONSTER_FIELDS = {
   conditionImmunities: { label: 'Condition Immunities', placeholder: 'charmed, frightened', maxLength: 200 },
   senses: { label: 'Senses', placeholder: 'blindsight 60 ft., passive Perception 23', maxLength: 200 },
   languages: { label: 'Languages', placeholder: 'Common, Draconic', maxLength: 200 },
-  challengeRating: { label: 'Challenge', placeholder: '17', maxLength: 20 },
-  xp: { label: 'XP', placeholder: '18,000', maxLength: 20 },
+  challengeRating: { label: 'Challenge Rating', placeholder: '17', maxLength: 20, icon: CrSkullIcon },
+  xp: { label: 'XP', placeholder: '18,000', maxLength: 20, icon: XpStarIcon },
   proficiencyBonus: { label: 'Proficiency Bonus', placeholder: '+6', maxLength: 10 },
 
   traits: { label: 'Traits', placeholder: PROSE_PLACEHOLDER, maxLength: MONSTER_TEXT_MAX_LENGTH, multiline: true },
@@ -91,8 +99,11 @@ export const MONSTER_SECTIONS = [
 
 // Left-to-right render order of the two collapsible columns. Media isn't
 // here - it's structural, holding a component + one section-less field.
+// title is the only user-visible piece - key stays 'attributes' everywhere
+// else (session state, CSS class names) since renaming it has no user-facing
+// benefit and would touch a lot of unrelated plumbing.
 export const MONSTER_COLUMNS = [
-  { key: 'attributes', title: 'Attributes' },
+  { key: 'attributes', title: 'Stats' },
   { key: 'combat', title: 'Combat' },
 ];
 

@@ -164,7 +164,7 @@ describe('MonsterContent', () => {
   it('a session override expands a column, overriding its default-collapsed state', () => {
     const content = buildMonsterContent({ armorClass: '18' }); // armorClass lives in the attributes column
     const { getByText, getByLabelText } = renderMonster(content, { attributes: false });
-    const attributesColumn = getByText('Attributes').closest('.monster-column');
+    const attributesColumn = getByText('Stats').closest('.monster-column');
     expect(attributesColumn.className).not.toContain('monster-column-collapsed');
     expect(getByLabelText('Armor Class')).not.toBeNull();
   });
