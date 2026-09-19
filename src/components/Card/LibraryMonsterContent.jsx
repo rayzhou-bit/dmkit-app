@@ -7,6 +7,7 @@ import { useMonsterSectionHooks } from './hooks';
 import CollapsibleSection from './CollapsibleSection';
 import MonsterTextField from './MonsterTextField';
 import MonsterSectionBody from './MonsterSectionBody';
+import MonsterPortrait from './MonsterPortrait';
 
 import './Card.scss';
 
@@ -66,8 +67,6 @@ const LibraryMonsterContent = ({
     <LibraryMonsterExpanded
       cardId={cardId}
       content={content}
-      portrait={portrait}
-      portraitAlt={portraitAlt}
       subtitle={subtitle}
       setEditingCard={setEditingCard}
     />
@@ -80,7 +79,7 @@ const LibraryMonsterContent = ({
 // can't type a value into a field you can never see. Collapse + the dot
 // indicators (reused as-is from the canvas) keep an all-empty section from
 // just being noise.
-const LibraryMonsterExpanded = ({ cardId, content, portrait, portraitAlt, subtitle, setEditingCard }) => {
+const LibraryMonsterExpanded = ({ cardId, content, subtitle, setEditingCard }) => {
   const { isCollapsed, sectionContentCount, columnContentCount, toggleSection } =
     useMonsterSectionHooks({ cardId, scope: 'library' });
   const notesDotCount = content?.notes?.trim() ? 1 : 0;
@@ -91,15 +90,15 @@ const LibraryMonsterExpanded = ({ cardId, content, portrait, portraitAlt, subtit
       style={{ minHeight: '80px', maxHeight: '60vh', height: 'auto' }}
       onDragOver={(e) => e.preventDefault()}
     >
-      {subtitle && <div className='library-monster-subtitle'>{subtitle}</div>}
       <div className='library-monster-media-top'>
-        {portrait && <img className='library-monster-thumb' src={portrait} alt={portraitAlt} draggable='false' />}
+        <MonsterPortrait cardId={cardId} />
         <div className='library-monster-defenses'>
           {MONSTER_MEDIA_FIELDS.map(fieldKey => (
             <MonsterTextField key={fieldKey} cardId={cardId} fieldKey={fieldKey} {...MONSTER_FIELDS[fieldKey]} setEditingCard={setEditingCard} />
           ))}
         </div>
       </div>
+      {subtitle && <div className='library-monster-subtitle'>{subtitle}</div>}
 
       <CollapsibleSection
         title='Quick Notes'

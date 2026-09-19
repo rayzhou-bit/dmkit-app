@@ -111,8 +111,27 @@ describe('LibraryMonsterContent - expanded view: rendering', () => {
     const content = buildMonsterContent({ armorClass: '18', portrait: 'data:image/jpeg;base64,x' });
     const { container } = renderLibraryMonster(content, {}, { isExpanded: true });
     const mediaTop = container.querySelector('.library-monster-media-top');
-    expect(mediaTop.querySelector('.library-monster-thumb')).not.toBeNull();
+    expect(mediaTop.querySelector('.monster-portrait')).not.toBeNull();
     expect(mediaTop.querySelector('.library-monster-defenses')).not.toBeNull();
+  });
+
+  it('the subtitle (creature description) sits below the picture/chips row', () => {
+    const content = buildMonsterContent({ size: 'Huge', creatureType: 'dragon (red)', alignment: 'chaotic evil' });
+    const { container } = renderLibraryMonster(content, {}, { isExpanded: true });
+    const rows = Array.from(container.querySelectorAll('.library-monster-media-top, .library-monster-subtitle'));
+    expect(rows.map(el => el.className.includes('media-top') ? 'media-top' : 'subtitle')).toEqual(['media-top', 'subtitle']);
+  });
+
+  it('the portrait is editable - shows an upload placeholder when empty', () => {
+    const { container } = renderLibraryMonster(buildMonsterContent({ armorClass: '18' }), {}, { isExpanded: true });
+    expect(container.querySelector('.monster-portrait-placeholder')).not.toBeNull();
+  });
+
+  it('the portrait shows a clear button when a portrait is set', () => {
+    const content = buildMonsterContent({ armorClass: '18', portrait: 'data:image/jpeg;base64,x', portraitAlt: 'A goblin' });
+    const { container, getByAltText } = renderLibraryMonster(content, {}, { isExpanded: true });
+    expect(getByAltText('A goblin')).not.toBeNull();
+    expect(container.querySelector('.monster-portrait-clear')).not.toBeNull();
   });
 
   it("the Library's Quick Notes field label is hidden - the CollapsibleSection header already says \"Quick Notes\"", () => {
