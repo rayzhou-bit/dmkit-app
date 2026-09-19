@@ -3,10 +3,12 @@ import { render } from '@testing-library/react';
 import { Provider } from 'react-redux';
 
 import Content from './Content';
+import { buildMonsterContent } from '../../constants/monster';
 
 // Hand-rolled fake store, matching the pattern in Canvas/testUtils.jsx.
+// session.monsterCollapse is read unconditionally by useMonsterSectionHooks.
 const makeStore = (cards) => ({
-  getState: () => ({ project: { present: { cards } } }),
+  getState: () => ({ project: { present: { cards } }, session: { monsterCollapse: {} } }),
   dispatch: () => {},
   subscribe: () => () => {},
 });
@@ -30,5 +32,15 @@ describe('Content (dispatcher)', () => {
     );
     expect(container.querySelector('textarea')).toBeNull();
     expect(container.querySelector('.image-placeholder')).not.toBeNull();
+  });
+
+  it('renders monster sections (no textarea.text, no .image-placeholder) for a monster card', () => {
+    const store = makeStore({ c3: { type: 'monster', content: buildMonsterContent() } });
+    const { container } = render(
+      <Provider store={store}><Content cardId='c3' setEditingCard={() => {}} /></Provider>
+    );
+    expect(container.querySelector('.monster-content')).not.toBeNull();
+    expect(container.querySelector('textarea.text')).toBeNull();
+    expect(container.querySelector('.image-placeholder')).toBeNull();
   });
 });

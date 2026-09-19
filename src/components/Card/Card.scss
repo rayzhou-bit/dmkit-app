@@ -272,3 +272,713 @@ $scrollbar-width: 17px;
   }
 }
 
+// Monster stat-block card - 3 columns: Media, Attributes, Combat. Media is
+// the only flexible (1fr) track - it absorbs any width beyond what
+// Attributes/Combat need, whether from manually resizing the card wider or
+// the 1.5x default width (MONSTER_CARD_SIZE), instead of leaving dead
+// space. Attributes/Combat stay fixed pixels - expanding/collapsing one
+// grows the CARD's own width instead (useMonsterSectionHooks' toggleColumn),
+// so a column's toggle position only ever depends on what's structurally to
+// its left, never on a sibling's own collapse state or Media's flex size.
+.monster-content {
+  display: grid;
+  grid-template-columns: minmax(108px, 1fr) 184px 229px;
+  gap: 8px;
+  padding: 6px 8px;
+  height: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  background-color: white;
+  font-family: Roboto;
+  color: #363B4E;
+}
+.monster-content.monster-content-attributes-collapsed {
+  grid-template-columns: minmax(108px, 1fr) 24px 229px;
+}
+.monster-content.monster-content-combat-collapsed {
+  grid-template-columns: minmax(108px, 1fr) 184px 24px;
+}
+.monster-content.monster-content-attributes-collapsed.monster-content-combat-collapsed {
+  grid-template-columns: minmax(108px, 1fr) 24px 24px;
+}
+
+.monster-column-media {
+  display: flex;
+  flex-flow: column nowrap;
+  gap: 8px;
+  min-width: 0;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  // Always reserve the scrollbar's width, whether or not it's currently
+  // needed - otherwise content jitters horizontally by ~17px every time a
+  // collapse toggle pushes this column's content just past/under its
+  // visible height (e.g. Media growing/shrinking as siblings toggle).
+  // Single-edge - both-edges was only needed to keep the portrait's old
+  // centered alignment from skewing; it's flex-start now (see .monster-
+  // media-top below), so that concern is gone, and both-edges' extra 17px
+  // was tight enough to wrap .monster-media-fields under the portrait.
+  scrollbar-gutter: stable;
+}
+
+// Portrait + HP/AC/Speed side by side, above the notes field.
+.monster-media-top {
+  display: flex;
+  flex-flow: row wrap; // falls back to stacking only if the column gets too narrow for both
+  justify-content: center;
+  gap: 14px;
+  align-items: flex-start;
+}
+
+.monster-media-fields {
+  flex: 0 1 110px;
+  min-width: 80px;
+  max-width: 110px;
+  display: flex;
+  flex-flow: column nowrap;
+  gap: 6px;
+
+  // A bordered "chip" around the icon+value together, not just the input -
+  // distinguishes these from the plain fields elsewhere now that they sit
+  // on their own in the Media column.
+  .monster-field-icon-row {
+    min-width: 0; // else the chip's own icon+padding+border floor can overflow .monster-media-fields
+    border: 1px solid #D7D6D6;
+    border-radius: 6px;
+    padding: 3px 6px;
+
+    // The input's own border is 0 here, so its :focus border-color change
+    // (Card.scss's .monster-field rule) is invisible - show it on the chip
+    // itself instead.
+    &:focus-within {
+      border-color: #5BC5FF;
+    }
+
+    .monster-field-input {
+      border: 0;
+      padding: 0;
+      background-color: transparent;
+    }
+  }
+}
+
+.monster-notes-field {
+  flex: 1 1 auto;
+  min-height: 0;
+
+  // .monster-field.monster-notes-field (compound, not a plain descendant
+  // selector) - needs to outrank .monster-field .monster-field-textarea's
+  // resize:vertical below, which is otherwise equal specificity and would
+  // win on source order alone.
+  &.monster-field .monster-field-textarea {
+    height: 100%;
+    min-height: 60px; // scales with the card via flex:1 1 auto/height:100% above, not manually
+    resize: none;
+    overflow-x: hidden;
+    overflow-y: auto;
+    // field-sizing/max-height are separate properties from height - the
+    // generic .monster-field-textarea rule's field-sizing: content and
+    // max-height: 200px (for Saving Throws etc.) aren't overridden by this
+    // rule's own height:100% (different properties, cascade independently),
+    // and DO apply here too unless reset - they were silently capping notes
+    // back to a fixed content-fit size, undoing "fills the card" above.
+    field-sizing: fixed;
+    max-height: none;
+  }
+}
+
+.monster-column-media,
+.monster-column-body {
+  &::-webkit-scrollbar { width: $scrollbar-width; }
+  &::-webkit-scrollbar-track { background-color: #00000000; }
+  &::-webkit-scrollbar-thumb {
+    background-color: #E5E5E5;
+    border: 5px solid white;
+    border-radius: $card-radius;
+  }
+}
+
+.monster-column {
+  display: flex;
+  flex-flow: row nowrap;
+  min-width: 0;
+  min-height: 0;
+}
+
+// The header is always the same vertical strip, collapsed or not - only
+// whether a body sits next to it changes. Sits on the left of its own
+// column's body, in natural DOM order (button before the content it
+// controls) - the stable anchor everything grows rightward from.
+.monster-column-header {
+  flex: 0 0 24px;
+  height: 100%;
+  padding: 8px 0;
+  background-color: transparent;
+  display: flex;
+  // button's global justify-content: center (App.scss) would otherwise
+  // vertically center the caret+title in the strip - start them at the top
+  // instead ("left" as the user reads it, since the text is rotated).
+  justify-content: flex-start;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  writing-mode: vertical-rl;
+  // Left border only when uncollapsed (this rule) - separates the strip
+  // from whatever column/body sits to its left. Collapsed strips get
+  // neither border (see .monster-column-collapsed below); they look like
+  // a self-contained pill instead.
+  border-left: 1px solid #D7D6D6;
+  border-right: 1px solid #D7D6D6;
+
+  &:hover { background-color: #F4F4F4; }
+
+  .monster-column-caret {
+    writing-mode: horizontal-tb;
+    flex-shrink: 0;
+    width: 10px;
+    font-size: 10px;
+    color: #A0A4B4;
+  }
+  .monster-column-title {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    text-align: left;
+  }
+  .monster-column-dots {
+    writing-mode: horizontal-tb;
+    flex-shrink: 0;
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: center;
+    gap: 3px;
+  }
+  .monster-column-dot {
+    flex-shrink: 0;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: #5BC5FF;
+  }
+}
+
+// Collapsed and every field inside is blank - dim the caret/title so it
+// reads as "nothing here yet" without expanding (complements
+// .monster-column-dot, which signals the opposite: collapsed WITH content).
+.monster-column-header-empty {
+  .monster-column-caret,
+  .monster-column-title {
+    opacity: 0.4;
+  }
+}
+
+.monster-column-body {
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  scrollbar-gutter: stable; // see .monster-column-media
+  padding-left: 8px;
+}
+
+.monster-column-collapsed {
+  background-color: #F4F4F4;
+  border-radius: 6px;
+
+  .monster-column-header {
+    flex: 1 1 auto;
+    width: 100%;
+    border-left: 0;
+    border-right: 0;
+  }
+}
+
+.monster-section {
+  border-bottom: 1px solid #F4F4F4;
+  &:last-child { border-bottom: 0; }
+}
+
+.monster-section-header {
+  width: 100%;
+  padding: 6px 0;
+  background-color: transparent;
+  display: flex;
+  // button's global justify-content: center (App.scss) would otherwise
+  // center the caret+title in the row - left-align them instead, same fix
+  // as .monster-column-header.
+  justify-content: flex-start;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+
+  &:hover { background-color: #F4F4F4; }
+
+  .monster-section-caret {
+    flex-shrink: 0;
+    width: 10px;
+    font-size: 10px;
+    color: #A0A4B4;
+  }
+  .monster-section-title {
+    // flex:1 1 auto + min-width:0 - takes the remaining space and wraps
+    // cleanly there, instead of the caret/dots (fixed-size, non-text)
+    // getting squeezed by the flex algorithm's default even-shrink
+    // behavior (that was squishing the dot into an oval on long titles
+    // like "Proficiencies & Senses").
+    flex: 1 1 auto;
+    min-width: 0;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-align: left;
+  }
+  .monster-section-dots {
+    flex-shrink: 0;
+    display: flex;
+    flex-flow: row nowrap;
+    gap: 3px;
+  }
+  .monster-section-dot {
+    flex-shrink: 0;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: #5BC5FF;
+  }
+}
+
+// See .monster-column-header-empty above - same idea, one level down.
+.monster-section-header-empty {
+  .monster-section-caret,
+  .monster-section-title {
+    opacity: 0.4;
+  }
+}
+
+.monster-section-body {
+  padding: 4px 4px 10px 10px;
+  display: flex;
+  flex-flow: column nowrap;
+  gap: 8px;
+}
+
+.monster-field {
+  display: flex;
+  flex-flow: column nowrap;
+  gap: 2px;
+
+  // Icon fields (armorClass/hitPoints/speed) sit icon-left, input-right
+  // instead of label-above-input - compound selector (both classes are on
+  // this same div) so it reliably outranks the plain .monster-field rule
+  // above, not just by source order (see the notes-field resize bug).
+  &.monster-field-icon-row {
+    flex-flow: row nowrap;
+    align-items: center;
+    gap: 6px;
+
+    .monster-field-icon-label {
+      flex: 0 0 auto;
+    }
+    .monster-field-input {
+      flex: 1 1 auto;
+      min-width: 0;
+    }
+  }
+
+  .monster-field-label {
+    font-size: 10px;
+    font-weight: 600;
+    color: #A0A4B4;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  // Icon replacement for .monster-field-label (see MonsterTextField's `icon`
+  // prop) - the real <label> above stays for a11y (visually hidden), this
+  // is purely a decorative hover affordance, hence aria-hidden.
+  .monster-field-icon-label {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    cursor: default;
+
+    &:hover .tooltip {
+      visibility: visible;
+      opacity: 100%;
+    }
+
+    .monster-field-icon {
+      display: block;
+      width: 14px;
+      height: 14px;
+    }
+
+    .tooltip {
+      display: inline-block;
+      position: absolute;
+      top: 130%;
+      left: 0;
+      padding: 3px 8px;
+      border-radius: 6px;
+      background-color: #363B4E;
+      visibility: hidden;
+      z-index: 10000;
+      color: white;
+      text-align: center;
+      font-family: Roboto;
+      font-size: 11px;
+      font-weight: 400;
+      line-height: 20px;
+      letter-spacing: 0.55px;
+      white-space: nowrap;
+      pointer-events: none;
+      transition: opacity .1s;
+      transition-delay: 0.3s;
+      opacity: 0%;
+    }
+  }
+
+  .monster-field-input,
+  .monster-field-textarea {
+    width: 100%;
+    box-sizing: border-box;
+    border: 1px solid #F4F4F4;
+    border-radius: 4px;
+    padding: 4px 6px;
+    font-family: Roboto;
+    font-size: 12px;
+    color: #363B4E;
+    background-color: white;
+
+    &:focus { outline: none; border-color: #5BC5FF; }
+  }
+
+  .monster-field-textarea {
+    resize: none;
+    min-height: 40px;
+    max-height: 200px;
+    overflow-y: auto;
+    // Grows downward to fit typed content (a long comma-separated list,
+    // e.g. Saving Throws/Senses) instead of clipping/scrolling like a
+    // fixed-size box - capped by max-height above, scrolls past that.
+    // notes' own override (.monster-notes-field.monster-field, higher
+    // specificity) sets an explicit height:100% instead, which wins over
+    // this regardless - only fields that don't override height get it.
+    field-sizing: content;
+  }
+}
+
+// One Combat-section entry ("box") - name + description + duplicate/delete
+// controls. Self-contained (not `.monster-field`-based) - its two inputs
+// need their own font/border rules rather than fighting the ancestor-scoped
+// .monster-field ones for a div that isn't semantically one field.
+.monster-entry-list {
+  display: flex;
+  flex-flow: column nowrap;
+  gap: 8px;
+}
+
+.monster-entry {
+  position: relative;
+  min-width: 0;
+  border: 1px solid #D7D6D6;
+  border-radius: 6px;
+  padding: 6px 8px;
+  display: flex;
+  flex-flow: column nowrap;
+  gap: 4px;
+
+  &:focus-within { border-color: #5BC5FF; }
+
+  .monster-entry-name {
+    width: 100%;
+    box-sizing: border-box;
+    border: 0;
+    padding: 0;
+    padding-right: 44px; // room for the controls, top-right
+    background-color: transparent;
+    font-family: Roboto;
+    font-size: 12px;
+    font-weight: 700;
+    color: #363B4E;
+
+    &:focus { outline: none; }
+    &::placeholder { font-weight: 400; color: #A0A4B4; }
+  }
+
+  .monster-field-textarea {
+    width: 100%;
+    box-sizing: border-box;
+    border: 0;
+    padding: 0;
+    background-color: transparent;
+    font-family: Roboto;
+    font-size: 12px;
+    color: #363B4E;
+    min-height: 40px;
+    resize: vertical;
+
+    &:focus { outline: none; }
+  }
+}
+
+.monster-entry-controls {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  display: flex;
+  gap: 4px;
+  opacity: 0;
+  transition: opacity .15s;
+
+  button {
+    width: 18px;
+    height: 18px;
+    padding: 0;
+    border: 0;
+    border-radius: 4px;
+    background-color: transparent;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover { background-color: #F4F4F4; }
+    img { width: 12px; height: 12px; }
+  }
+}
+.monster-entry:hover .monster-entry-controls,
+.monster-entry-controls:focus-within {
+  opacity: 1;
+}
+
+.monster-entry-add {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 6px;
+  border: 1px dashed #D7D6D6;
+  border-radius: 6px;
+  background-color: transparent;
+  color: #A0A4B4;
+  font-family: Roboto;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+
+  &:hover { background-color: #F4F4F4; }
+}
+
+.monster-lines {
+  display: flex;
+  flex-flow: column nowrap;
+  gap: 8px;
+}
+
+.monster-abilities {
+  display: grid;
+  // minmax(0, 1fr), not bare 1fr - a bare 1fr track won't shrink below its
+  // content's intrinsic min-width (an <input>'s default is wide), which is
+  // exactly what was forcing this column to scroll horizontally.
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+}
+.monster-ability-cell {
+  display: flex;
+  flex-flow: column nowrap;
+  align-items: center;
+  gap: 2px;
+  min-width: 0; // grid items default to min-width:auto, same trap as the track
+
+  .monster-ability-score {
+    width: 100%;
+    min-width: 0;
+    .monster-field-label { text-align: center; }
+    .monster-field-input { text-align: center; }
+  }
+  .monster-ability-modifier {
+    font-size: 11px;
+    color: #7E849A;
+  }
+}
+
+.monster-portrait {
+  position: relative;
+  flex: 0 1 auto; // shrinks first, before .monster-media-fields dips below its own min-width
+  max-width: min(192px, 100%);
+  border-radius: 6px;
+  overflow: hidden;
+  background-color: #F4F4F4;
+
+  // Sized to the image's own aspect ratio - not stretched/cropped to fill
+  // a fixed square. Width capped at 2x the old fixed 96x96 box; height
+  // gets 1.5x that (288px) of headroom for portrait-oriented art.
+  .monster-portrait-image {
+    display: block;
+    max-width: min(192px, 100%);
+    max-height: 288px;
+    width: auto;
+    height: auto;
+  }
+
+  .monster-portrait-placeholder {
+    // Fixed, unlike .monster-portrait-image - there's no image aspect ratio
+    // to size to yet, and .monster-portrait itself is now auto-sized (it
+    // sizes to whichever of these two is showing).
+    width: 96px;
+    height: 96px;
+    box-sizing: border-box; // else the border pushes it to 98x98, clipped by overflow:hidden
+    border: 1px dashed #D7D6D6;
+    background-color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover { background-color: #F4F4F4; }
+  }
+
+  .monster-portrait-clear {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    width: 18px;
+    height: 18px;
+    box-sizing: border-box; // it's a <button> - UA padding/border would blow past 18x18, making it an oval, not a circle
+    padding: 0;
+    border: 0;
+    line-height: 1;
+    border-radius: 50%;
+    background-color: rgba(0, 0, 0, 0.55);
+    color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity .15s;
+  }
+  &:hover .monster-portrait-clear,
+  .monster-portrait-clear:focus-visible {
+    opacity: 1;
+  }
+
+  .monster-portrait-status,
+  .monster-portrait-error {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 2px 4px;
+    font-family: Roboto;
+    font-size: 9px;
+  }
+  .monster-portrait-status {
+    background-color: rgba(255, 255, 255, 0.85);
+    color: #363B4E;
+  }
+  .monster-portrait-error {
+    background-color: #ed5e31;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 4px;
+
+    button {
+      background-color: transparent;
+      color: white;
+      line-height: 1;
+      cursor: pointer;
+    }
+  }
+}
+
+// Library monster preview - read-only, no inputs.
+.library-monster-condensed {
+  flex-flow: row nowrap;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 15px;
+}
+.library-monster-thumb {
+  flex: 0 0 48px;
+  width: 48px;
+  height: 48px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+.library-monster-summary {
+  overflow: hidden;
+}
+.library-monster-line {
+  font-family: Roboto;
+  font-size: 11px;
+  color: #363B4E;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.library-monster-expanded {
+  padding: 10px 15px;
+  overflow-y: auto;
+  gap: 6px;
+
+  .library-monster-thumb { width: 64px; height: 64px; }
+}
+.library-monster-section {
+  padding: 4px 0;
+  border-bottom: 1px solid #F4F4F4;
+  &:last-child { border-bottom: 0; }
+}
+.library-monster-section-title {
+  font-family: Roboto;
+  font-size: 10px;
+  font-weight: 600;
+  color: #A0A4B4;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 2px;
+}
+.library-monster-field {
+  font-family: Roboto;
+  font-size: 11px;
+  color: #363B4E;
+  display: flex;
+  gap: 4px;
+
+  .library-monster-field-label {
+    font-weight: 600;
+    flex: 0 0 auto;
+  }
+  .library-monster-field-value.prose {
+    white-space: pre-wrap;
+  }
+}
+.library-monster-entry {
+  font-family: Roboto;
+  font-size: 11px;
+  color: #363B4E;
+  display: flex;
+  flex-flow: column nowrap;
+  gap: 1px;
+  margin-bottom: 4px;
+  &:last-child { margin-bottom: 0; }
+
+  .library-monster-entry-name {
+    font-weight: 700;
+  }
+  .library-monster-field-value.prose {
+    white-space: pre-wrap;
+  }
+}
+.library-monster-empty {
+  margin: auto;
+  font-family: Roboto;
+  font-size: 12px;
+  color: #A0A4B4;
+  text-align: center;
+}
+

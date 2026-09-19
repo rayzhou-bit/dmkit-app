@@ -5,15 +5,20 @@ import useOutsideClick from '../../utils/useOutsideClick';
 import { copySelectedCard } from '../../data/redux/thunkActions';
 import { actions, selectors } from '../../data/redux';
 import { CARD_COLOR_KEYS, LIGHT_COLORS } from '../../constants/colors';
-import { getCardType } from '../../constants/cards';
+import { getCardType, hasCardContent, CARD_TYPES } from '../../constants/cards';
 import { processImageFile } from '../../utils/imageUtils';
+import { MAX_PORTRAIT_DATA_URI_LENGTH, PORTRAIT_MAX_EDGE_STEPS } from '../../constants/images';
+import {
+  MONSTER_FIELDS, MONSTER_SECTIONS, MONSTER_COLUMN_SECTIONS, DEFAULT_COLLAPSED, getMonsterExpansionDelta,
+  MONSTER_MAX_ENTRIES_PER_SECTION, MONSTER_MAX_DOTS, normalizeMonsterEntries, entryHasContent, monsterFieldHasContent,
+} from '../../constants/monster';
 import { POPUP_KEYS } from '../Popup/PopupKey';
 import { ACTION_TYPE } from '../../components-shared/Dropdowns/ActionDropdown';
 import { useGroupDragPosition } from '../Canvas/groupDrag';
 
 import LibraryIcon from '../../assets/icons/library-open.svg';
 import RedTrashIcon from '../../assets/icons/trash-red.svg';
-import { DEFAULT_CARD_POSITION } from '../../constants/dimensions';
+import { DEFAULT_CARD_POSITION, MIN_CARD_SIZE, MONSTER_MIN_CARD_SIZE } from '../../constants/dimensions';
 import generateUID from '../../utils/generateUID';
 
 export const ANIMATION = {
@@ -38,6 +43,20 @@ export const useCardHooks = ({
     pos: cardPosition,
     size: cardSize,
   } = useSelector(state => state.project.present.cards[cardId].views[activeTab]);
+  const cardType = useSelector(state => getCardType(state.project.present.cards[cardId]));
+  const monsterCollapse = useSelector(state => state.session.monsterCollapse?.[cardId]);
+  // The persisted width is always the both-collapsed baseline - an expanded
+  // column's extra width is added here, at render time, purely from session
+  // state, so it's never written to project history and can't desync from
+  // undo (see getMonsterExpansionDelta).
+  const expansionDelta = cardType === CARD_TYPES.monster ? getMonsterExpansionDelta(monsterCollapse) : 0;
+  const minSize = cardType === CARD_TYPES.monster
+    ? { ...MONSTER_MIN_CARD_SIZE, width: MONSTER_MIN_CARD_SIZE.width + expansionDelta }
+    : MIN_CARD_SIZE;
+  const displaySize = expansionDelta === 0 ? cardSize : {
+    ...cardSize,
+    width: (typeof cardSize.width === 'string' ? parseInt(cardSize.width, 10) : cardSize.width) + expansionDelta,
+  };
 
   const [isDragging, setIsDragging] = useState(false);
   const [isSelected, setIsSelected] = useState(false);
@@ -78,7 +97,8 @@ export const useCardHooks = ({
     isActive,
     isSelected: selectedCards.includes(cardId),
     activeTabScale,
-    size: cardSize,
+    size: displaySize,
+    minSize,
     position: groupPosition ?? cardPosition,
     rndStyle: { zIndex },
     animationStyle: { animation: cardAnimation ? cardAnimation[cardId] : null },
@@ -123,9 +143,13 @@ export const useCardHooks = ({
     },
     onResizeStop: (event, direction, ref, delta, position) => {
       if (delta.width !== 0 || delta.height !== 0) {
+        // ref.style.width reflects the displayed (baseline + expansionDelta)
+        // size - strip the delta back out so what's persisted stays the
+        // both-collapsed baseline, same as displaySize's math in reverse.
+        const draggedWidth = parseInt(ref.style.width, 10) - expansionDelta;
         dispatch(actions.project.updateCardSize({
           id: cardId,
-          size: { width: ref.style.width, height: ref.style.height },
+          size: { width: draggedWidth + 'px', height: ref.style.height },
         }));
         if (["top", "left", "topRight", "bottomLeft", "topLeft"].indexOf(direction) !== -1) {
           dispatch(actions.project.updateCardPosition({
@@ -303,7 +327,7 @@ export const useOptionsDropdownHooks = ({
   const activeTab = useSelector(selectors.project.activeTab);
   const cardData = useSelector(state => state.project.present.cards[cardId]);
   const content = useSelector(state => state.project.present.cards[cardId].content);
-  const hasContent = !!(content?.text?.length || content?.image);
+  const hasContent = hasCardContent(content);
   const [ isOptionDropdownOpen, setIsOptionDropdownOpen ] = useState(false);
   const optionDropdownBtnRef = useRef();
 
@@ -370,7 +394,7 @@ export const useOptionsDropdownLibraryHooks = ({
   const dispatch = useDispatch();
 
   const content = useSelector(state => state.project.present.cards[cardId].content);
-  const hasContent = !!(content?.text?.length || content?.image);
+  const hasContent = hasCardContent(content);
   const activeTab = useSelector(state => state.project.present.activeViewId);
   const cardTabs = useSelector(state => state.project.present.cards[cardId].views);
   const [ isOptionDropdownOpen, setIsOptionDropdownOpen ] = useState(false);
@@ -529,6 +553,222 @@ export const useImageContentHooks = ({
     errorMessage,
     openFilePicker,
     onFileChange,
+    dismissError: () => setErrorMessage(null),
+  };
+};
+
+// Commit-on-blur with an equality guard: local `value` only dispatches when
+// it actually differs from the store, one undo step per finished edit.
+export const useMonsterFieldHooks = ({ cardId, fieldKey }) => {
+  const dispatch = useDispatch();
+  const storeValue = useSelector(state => state.project.present.cards[cardId].content?.[fieldKey] ?? '');
+  const fieldMeta = MONSTER_FIELDS[fieldKey] ?? {};
+
+  const [ value, setValue ] = useState('');
+
+  useEffect(() => {
+    setValue(storeValue);
+  }, [storeValue]);
+
+  const commit = () => {
+    if (value !== storeValue) {
+      dispatch(actions.project.updateCardMonsterFields({ id: cardId, fields: { [fieldKey]: value } }));
+    }
+  };
+
+  const revert = () => setValue(storeValue);
+
+  return {
+    value,
+    changeValue: (nextValue) => setValue(fieldMeta.numeric ? nextValue.replace(/\D/g, '') : nextValue),
+    commit,
+    revert,
+    handleKeyDown: (event) => {
+      if (event.key === 'Escape') {
+        revert();
+        return;
+      }
+      // Multiline fields (textareas) need Enter for newlines - only Escape applies there.
+      if (!fieldMeta.multiline && (event.key === 'Enter' || event.key === 'Tab')) {
+        commit();
+      }
+    },
+  };
+};
+
+export const useMonsterEntryListHooks = ({ cardId, fieldKey }) => {
+  const dispatch = useDispatch();
+  // Select the RAW value and normalize outside the selector.
+  // normalizeMonsterEntries always returns a fresh array, and a useSelector
+  // that returns a fresh reference every call defeats react-redux's
+  // equality bail-out -> infinite render loop. Hit this exact class of bug
+  // before on this card type (see MonsterContent.test.jsx's stable-state-
+  // object comment) - not repeating it here.
+  const raw = useSelector(state => state.project.present.cards[cardId].content?.[fieldKey]);
+  const entries = normalizeMonsterEntries(raw);
+
+  return {
+    entries,
+    canAdd: entries.length < MONSTER_MAX_ENTRIES_PER_SECTION,
+    addEntry: () => dispatch(actions.project.addMonsterEntry({
+      id: cardId, field: fieldKey, entryId: generateUID('entry'),
+    })),
+    duplicateEntry: (entryId) => dispatch(actions.project.duplicateMonsterEntry({
+      id: cardId, field: fieldKey, entryId, newEntryId: generateUID('entry'),
+    })),
+    deleteEntry: (entryId) => dispatch(actions.project.deleteMonsterEntry({
+      id: cardId, field: fieldKey, entryId,
+    })),
+  };
+};
+
+// Deliberately a near-duplicate of useMonsterFieldHooks, not shared/
+// parameterized - one entry's one field (name or description) vs. a
+// whole top-level content field; different action (updateMonsterEntry),
+// different Enter/Tab behavior (name commits on Enter, description is a
+// textarea and needs Enter for newlines).
+export const useMonsterEntryFieldHooks = ({ cardId, fieldKey, entry, entryFieldKey }) => {
+  const dispatch = useDispatch();
+  const storeValue = entry[entryFieldKey] ?? '';
+
+  const [ value, setValue ] = useState(storeValue);
+
+  useEffect(() => {
+    setValue(storeValue);
+  }, [storeValue]);
+
+  const commit = () => {
+    if (value !== storeValue) {
+      dispatch(actions.project.updateMonsterEntry({
+        id: cardId, field: fieldKey, entryId: entry.id, changes: { [entryFieldKey]: value },
+      }));
+    }
+  };
+
+  const revert = () => setValue(storeValue);
+
+  return {
+    value,
+    changeValue: setValue,
+    commit,
+    revert,
+    handleKeyDown: (event) => {
+      if (event.key === 'Escape') {
+        revert();
+        return;
+      }
+      if (entryFieldKey === 'name' && (event.key === 'Enter' || event.key === 'Tab')) {
+        commit();
+      }
+    },
+  };
+};
+
+export const useMonsterSectionHooks = ({ cardId }) => {
+  const dispatch = useDispatch();
+  const content = useSelector(state => state.project.present.cards[cardId].content);
+  // Raw per-card object, possibly undefined - not defaulted here to avoid a
+  // fresh {} every render (would break memoization).
+  const collapse = useSelector(state => state.session.monsterCollapse?.[cardId]);
+
+  const isCollapsed = (key) => collapse?.[key] ?? DEFAULT_COLLAPSED[key] ?? false;
+
+  // One dot per item with content - a filled field for lines/abilities
+  // sections, a filled entry for entries sections - capped so a big section
+  // (Proficiencies & Senses can have up to 11 filled fields) doesn't turn
+  // into a wall of dots.
+  const sectionContentCount = (key) => {
+    const section = MONSTER_SECTIONS.find(s => s.key === key);
+    if (!section) return 0;
+    const count = section.layout === 'entries'
+      ? normalizeMonsterEntries(content?.[section.fields[0]]).filter(entryHasContent).length
+      : section.fields.filter(f => monsterFieldHasContent(content, f)).length;
+    return Math.min(count, MONSTER_MAX_DOTS);
+  };
+
+  return {
+    isCollapsed,
+    sectionContentCount,
+    // A column's own "item" is a section - one dot per section with any
+    // content inside, same cap.
+    columnContentCount: (columnKey) => Math.min(
+      (MONSTER_COLUMN_SECTIONS[columnKey] ?? []).filter(s => sectionContentCount(s.key) > 0).length,
+      MONSTER_MAX_DOTS,
+    ),
+    toggleSection: (key) => dispatch(actions.session.setMonsterCollapsed({
+      id: cardId,
+      key,
+      collapsed: !isCollapsed(key),
+    })),
+    // The card's width grows/shrinks with this purely as a rendering-time
+    // effect - see getMonsterExpansionDelta/useCardHooks - not dispatched
+    // here, so it can never be reverted by (or consume) an undo step.
+    toggleColumn: (columnKey) => dispatch(actions.session.setMonsterCollapsed({
+      id: cardId,
+      key: columnKey,
+      collapsed: !isCollapsed(columnKey),
+    })),
+  };
+};
+
+// Deliberately duplicated from useImageContentHooks, not shared/parameterized -
+// different content keys (portrait/portraitAlt), action, and compression budget.
+export const useMonsterPortraitHooks = ({ cardId }) => {
+  const dispatch = useDispatch();
+  const portrait = useSelector(state => state.project.present.cards[cardId].content?.portrait ?? '');
+  const portraitAlt = useSelector(state => state.project.present.cards[cardId].content?.portraitAlt ?? '');
+
+  const [ isProcessing, setIsProcessing ] = useState(false);
+  const [ errorMessage, setErrorMessage ] = useState(null);
+  const fileInputRef = useRef();
+  const isMountedRef = useRef(true);
+
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => { isMountedRef.current = false; };
+  }, []);
+
+  const openFilePicker = () => {
+    setErrorMessage(null);
+    fileInputRef.current?.click();
+  };
+
+  const onFileChange = async (event) => {
+    const file = event.target.files?.[0];
+    // Reset immediately so re-picking the same file after an error still fires `change`.
+    event.target.value = '';
+    if (!file) return;
+
+    setIsProcessing(true);
+    try {
+      const result = await processImageFile(file, {
+        maxEdgeSteps: PORTRAIT_MAX_EDGE_STEPS,
+        maxLength: MAX_PORTRAIT_DATA_URI_LENGTH,
+      });
+      if (!isMountedRef.current) return;
+      dispatch(actions.project.updateCardPortrait({
+        id: cardId,
+        portrait: result.image,
+        portraitAlt: result.alt,
+      }));
+    } catch (err) {
+      if (!isMountedRef.current) return;
+      setErrorMessage(err.message);
+    } finally {
+      if (isMountedRef.current) setIsProcessing(false);
+    }
+  };
+
+  return {
+    portrait,
+    portraitAlt,
+    hasPortrait: !!portrait,
+    fileInputRef,
+    isProcessing,
+    errorMessage,
+    openFilePicker,
+    onFileChange,
+    clearPortrait: () => dispatch(actions.project.updateCardPortrait({ id: cardId, portrait: '', portraitAlt: '' })),
     dismissError: () => setErrorMessage(null),
   };
 };

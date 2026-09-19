@@ -6,6 +6,7 @@ import {
   computeTargetDimensions,
   validateImageFile,
   processImageFile,
+  isWithinBudget,
 } from './imageUtils';
 import { IMAGE_ERRORS, MAX_SOURCE_FILE_BYTES } from '../constants/images';
 
@@ -124,5 +125,41 @@ describe('processImageFile', () => {
 
     await expect(processImageFile(file, { readFile, loadImage, encode })).rejects.toThrow(IMAGE_ERRORS.decodeFailed);
     expect(encode).not.toHaveBeenCalled();
+  });
+
+  it('honors an injected maxEdgeSteps/maxLength (the portrait budget)', async () => {
+    const readFile = vi.fn().mockResolvedValue('data:image/png;base64,xxx');
+    const loadImage = vi.fn().mockResolvedValue(fakeImage);
+    const encode = vi.fn().mockReturnValue('short-result');
+
+    const result = await processImageFile(file, {
+      readFile, loadImage, encode,
+      maxEdgeSteps: [256], maxLength: 20,
+    });
+
+    expect(result).toEqual({ image: 'short-result', alt: 'photo.png', width: 256, height: 128 });
+    expect(encode).toHaveBeenCalledWith(fakeImage, { width: 256, height: 128, quality: 0.82 });
+  });
+
+  it('omitting maxEdgeSteps/maxLength reproduces today\'s default behavior exactly', async () => {
+    const readFile = vi.fn().mockResolvedValue('data:image/png;base64,xxx');
+    const loadImage = vi.fn().mockResolvedValue(fakeImage);
+    const encode = vi.fn().mockReturnValue('short-result');
+
+    const result = await processImageFile(file, { readFile, loadImage, encode });
+
+    expect(result).toEqual({ image: 'short-result', alt: 'photo.png', width: 1024, height: 512 });
+  });
+});
+
+describe('isWithinBudget', () => {
+  it('uses the default budget when no limit is given', () => {
+    expect(isWithinBudget('x'.repeat(700_000))).toBe(true);
+    expect(isWithinBudget('x'.repeat(700_001))).toBe(false);
+  });
+
+  it('uses an explicit limit when given', () => {
+    expect(isWithinBudget('x'.repeat(200_000), 200_000)).toBe(true);
+    expect(isWithinBudget('x'.repeat(200_001), 200_000)).toBe(false);
   });
 });

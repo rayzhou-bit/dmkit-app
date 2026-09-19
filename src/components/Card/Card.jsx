@@ -7,7 +7,7 @@ import Title from './Title';
 import Content from './Content';
 
 import './Card.scss';
-import { GRID_SIZE, MIN_CARD_SIZE } from '../../constants/dimensions';
+import { GRID_SIZE } from '../../constants/dimensions';
 
 export const Card = ({
   cardId,
@@ -22,6 +22,7 @@ export const Card = ({
     isSelected,
     activeTabScale,
     size,
+    minSize,
     position,
     rndStyle,
     animationStyle,
@@ -54,8 +55,8 @@ export const Card = ({
       onDragStop={onDragStop}
       // size
       size={size}
-      minWidth={MIN_CARD_SIZE.width} 
-      minHeight={MIN_CARD_SIZE.height}
+      minWidth={minSize.width}
+      minHeight={minSize.height}
       scale={activeTabScale}
       // resize
       enableResizing={{

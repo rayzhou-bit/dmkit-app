@@ -6,11 +6,11 @@ import { createNewCard, copySelectedCard, copySelectedCards, destroySelectedCard
 import { POPUP_KEYS } from '../Popup/PopupKey';
 
 import { DEFAULT_CARD_OFFSET } from '../../constants/dimensions';
-import { CARD_TYPES } from '../../constants/cards';
+import { CARD_TYPES, hasCardContent } from '../../constants/cards';
 
 const OFFSET_TIMEOUT = 3000;
 
-const hasContent = (card) => !!(card?.content?.text?.length || card?.content?.image);
+const hasContent = (card) => hasCardContent(card?.content);
 
 // Shared by the ToolMenu delete button and the Delete/Backspace shortcut, so
 // the confirm-vs-immediate decision can't diverge between the two.
@@ -54,6 +54,7 @@ export const useToolMenuHooks = () => {
 
   const disableNewCard = !activeTab;
   const disableNewImageCard = !activeTab;
+  const disableNewMonsterCard = !activeTab;
   // Copy uses the multi-selection when there is one, otherwise falls back
   // to the single active card (a plain click doesn't add to selectedCards).
   const hasSelection = !!(selectedCardsData && selectedCardsData.length > 0);
@@ -87,6 +88,17 @@ export const useToolMenuHooks = () => {
           activeTabPosition,
           offset,
           type: CARD_TYPES.image,
+        }));
+        setOffset(offset + DEFAULT_CARD_OFFSET);
+      }
+    },
+    disableNewMonsterCard,
+    onClickNewMonsterCard: () => {
+      if (!disableNewMonsterCard) {
+        dispatch(createNewCard({
+          activeTabPosition,
+          offset,
+          type: CARD_TYPES.monster,
         }));
         setOffset(offset + DEFAULT_CARD_OFFSET);
       }

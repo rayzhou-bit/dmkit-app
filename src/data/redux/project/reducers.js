@@ -5,12 +5,63 @@ import {
   INTRO_PROJECT,
   BLANK_PROJECT,
 } from './constants';
-import { GRID_SIZE, DEFAULT_CARD_POSITION, DEFAULT_CARD_SIZE } from '../../../constants/dimensions';
-import { CARD_TYPES } from '../../../constants/cards';
+import { GRID_SIZE, DEFAULT_CARD_POSITION, DEFAULT_CARD_SIZE, MONSTER_CARD_SIZE } from '../../../constants/dimensions';
+import { CARD_TYPES, getCardType } from '../../../constants/cards';
+import {
+  buildMonsterContent, MONSTER_FIELD_KEYS,
+  MONSTER_ENTRY_FIELD_KEYS, MONSTER_MAX_ENTRIES_PER_SECTION, normalizeMonsterEntries,
+} from '../../../constants/monster';
 
 // TODO name refactor
 //  view -> tab
 //  pos -> position
+
+const applyCardSize = (state, { id, size }) => {
+  if (!state.activeViewId) return state;
+  const newSize = {
+    height: (Math.round(size.height.split('px').shift() / GRID_SIZE) * GRID_SIZE) + 'px',
+    width: (Math.round(size.width.split('px').shift() / GRID_SIZE) * GRID_SIZE) + 'px',
+  };
+  return {
+    ...state,
+    cards: {
+      ...state.cards,
+      [id]: {
+        ...state.cards[id],
+        views: {
+          ...state.cards[id].views,
+          [state.activeViewId]: {
+            ...state.cards[id].views[state.activeViewId],
+            size: newSize,
+          },
+        },
+      },
+    },
+  };
+};
+
+// Shared by the 4 entry reducers below - normalizes, hands the current
+// entries to `updater`, and writes back only if it actually returned a
+// different array (updater returns the SAME array reference to signal
+// "no-op", e.g. an unknown field/entryId or hitting the per-section cap).
+const applyMonsterEntries = (state, { id, field }, updater) => {
+  const card = state.cards[id];
+  if (!card || !MONSTER_ENTRY_FIELD_KEYS.includes(field)) return state;
+  const entries = normalizeMonsterEntries(card.content?.[field]);
+  const next = updater(entries);
+  if (next === entries) return state;
+  return {
+    ...state,
+    cards: {
+      ...state.cards,
+      [id]: {
+        ...card,
+        content: { ...card.content, [field]: next },
+        editedOn: Date.now(),
+      },
+    },
+  };
+};
 
 const initialState = {
   title: '',
@@ -47,7 +98,7 @@ const project = createSlice({
 
     // Card reducers
     createCard: (state, { payload }) => {
-      const { newId, position, size, color, title, text, type, image, alt } = payload;
+      const { newId, position, size, color, title, text, type, image, alt, monster } = payload;
       if (!state.activeViewId) return state;
       return {
         ...state,
@@ -64,8 +115,8 @@ const project = createSlice({
             color: color ?? DEFAULT_CARD.color,
             title: title ?? DEFAULT_CARD.title,
             type: type ?? DEFAULT_CARD.type,
-            content: type === CARD_TYPES.image
-              ? { image: image ?? '', alt: alt ?? '' }
+            content: type === CARD_TYPES.monster ? buildMonsterContent(monster)
+              : type === CARD_TYPES.image ? { image: image ?? '', alt: alt ?? '' }
               : { text: text ?? DEFAULT_CARD.content.text },
             createdOn: Date.now(),
             editedOn: Date.now(),
@@ -117,7 +168,7 @@ const project = createSlice({
               ...state.cards[id].views,
               [state.activeViewId]: {
                 pos: position,
-                size: DEFAULT_CARD_SIZE,
+                size: getCardType(state.cards[id]) === CARD_TYPES.monster ? MONSTER_CARD_SIZE : DEFAULT_CARD_SIZE,
               },
             },
           },
@@ -195,30 +246,7 @@ const project = createSlice({
       }
       return { ...state, cards: newCards };
     },
-    updateCardSize: (state, { payload }) => {
-      const { id, size } = payload;
-      if (!state.activeViewId) return state;
-      const newSize = {
-        height: (Math.round(size.height.split('px').shift() / GRID_SIZE) * GRID_SIZE) + 'px',
-        width: (Math.round(size.width.split('px').shift() / GRID_SIZE) * GRID_SIZE) + 'px',
-      };
-      return {
-        ...state,
-        cards: {
-          ...state.cards,
-          [id]: {
-            ...state.cards[id],
-            views: {
-              ...state.cards[id].views,
-              [state.activeViewId]: {
-                ...state.cards[id].views[state.activeViewId],
-                size: newSize,
-              },
-            },
-          },
-        },
-      };
-    },
+    updateCardSize: (state, { payload }) => applyCardSize(state, payload),
     updateCardTitle: (state, { payload }) => {
       const { id, title } = payload;
       return {
@@ -283,7 +311,75 @@ const project = createSlice({
         },
       };
     },
-
+    updateCardMonsterFields: (state, { payload }) => {
+      const { id, fields } = payload;
+      const newContent = { ...state.cards[id].content };
+      for (const key of MONSTER_FIELD_KEYS) {
+        if (key in fields) newContent[key] = fields[key] ?? '';
+      }
+      return {
+        ...state,
+        cards: {
+          ...state.cards,
+          [id]: {
+            ...state.cards[id],
+            content: newContent,
+            editedOn: Date.now(),
+          },
+        },
+      };
+    },
+    updateCardPortrait: (state, { payload }) => {
+      const { id, portrait, portraitAlt } = payload;
+      return {
+        ...state,
+        cards: {
+          ...state.cards,
+          [id]: {
+            ...state.cards[id],
+            content: {
+              ...state.cards[id].content,
+              portrait,
+              portraitAlt,
+            },
+            editedOn: Date.now(),
+          },
+        },
+      };
+    },
+    // Monster entry-list reducers (traits/actions/bonusActions/reactions/
+    // legendaryActions - each a list of {id, name, description} "boxes").
+    // Ordinary undo-tracked project actions (not in index.js's
+    // actionsToRemove) - add/duplicate/delete are content edits like any
+    // other and should undo/redo like one. entryId/newEntryId are generated
+    // by the caller (useMonsterEntryListHooks), never here, so the reducer
+    // stays a pure function of its payload.
+    addMonsterEntry: (state, { payload }) => applyMonsterEntries(state, payload, (entries) => {
+      if (entries.length >= MONSTER_MAX_ENTRIES_PER_SECTION) return entries;
+      return [...entries, { id: payload.entryId, name: '', description: '' }];
+    }),
+    duplicateMonsterEntry: (state, { payload }) => applyMonsterEntries(state, payload, (entries) => {
+      const index = entries.findIndex(e => e.id === payload.entryId);
+      if (index === -1 || entries.length >= MONSTER_MAX_ENTRIES_PER_SECTION) return entries;
+      const copy = { ...entries[index], id: payload.newEntryId };
+      return [...entries.slice(0, index + 1), copy, ...entries.slice(index + 1)];
+    }),
+    deleteMonsterEntry: (state, { payload }) => applyMonsterEntries(state, payload, (entries) => {
+      const next = entries.filter(e => e.id !== payload.entryId);
+      return next.length === entries.length ? entries : next;
+    }),
+    updateMonsterEntry: (state, { payload }) => applyMonsterEntries(state, payload, (entries) => {
+      const index = entries.findIndex(e => e.id === payload.entryId);
+      if (index === -1) return entries;
+      const { changes } = payload;
+      const next = [...entries];
+      next[index] = {
+        ...next[index],
+        ...('name' in changes ? { name: String(changes.name ?? '') } : {}),
+        ...('description' in changes ? { description: String(changes.description ?? '') } : {}),
+      };
+      return next;
+    }),
     // Tab reducers
     createTab: (state, { payload }) => {
       const { newId } = payload;

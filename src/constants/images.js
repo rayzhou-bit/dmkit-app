@@ -12,6 +12,11 @@ export const IMAGE_QUALITY_STEPS = [0.82, 0.72, 0.62, 0.5];
 // SVG deliberately excluded: zero intrinsic dimensions rasterize unpredictably.
 export const ACCEPTED_IMAGE_TYPES = ['image/png', 'image/jpeg', 'image/webp', 'image/gif', 'image/bmp'];
 
+// Tighter than the standalone image card: the portrait is fetched on every
+// project load (fetchCards pulls every card doc) and only renders small.
+export const MAX_PORTRAIT_DATA_URI_LENGTH = 200_000;
+export const PORTRAIT_MAX_EDGE_STEPS = [512, 384, 256];
+
 export const IMAGE_ERRORS = {
   tooLargeFile: 'That file is too large — please use an image under 20 MB.',
   unsupportedType: 'That file type isn\'t supported. Use PNG, JPEG, WebP, GIF, or BMP.',

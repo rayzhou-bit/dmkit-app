@@ -20,7 +20,7 @@ export const computeTargetDimensions = ({ width, height, maxEdge }) => {
   };
 };
 
-export const isWithinBudget = (dataUri) => dataUri.length <= MAX_IMAGE_DATA_URI_LENGTH;
+export const isWithinBudget = (dataUri, maxLength = MAX_IMAGE_DATA_URI_LENGTH) => dataUri.length <= maxLength;
 
 export const validateImageFile = (file) => {
   if (!ACCEPTED_IMAGE_TYPES.includes(file?.type)) return IMAGE_ERRORS.unsupportedType;
@@ -65,6 +65,10 @@ export const processImageFile = async (file, deps = {}) => {
     readFile = readFileAsDataUri,
     loadImage = loadImageElement,
     encode = encodeToDataUri,
+    // Config, not injected dependencies - lets callers (the portrait
+    // uploader) reuse this same compression ladder with a tighter budget.
+    maxEdgeSteps = IMAGE_MAX_EDGE_STEPS,
+    maxLength = MAX_IMAGE_DATA_URI_LENGTH,
   } = deps;
 
   const validationError = validateImageFile(file);
@@ -78,7 +82,7 @@ export const processImageFile = async (file, deps = {}) => {
     throw new Error(IMAGE_ERRORS.decodeFailed);
   }
 
-  for (const maxEdge of IMAGE_MAX_EDGE_STEPS) {
+  for (const maxEdge of maxEdgeSteps) {
     const { width, height } = computeTargetDimensions({
       width: imageEl.width,
       height: imageEl.height,
@@ -86,7 +90,7 @@ export const processImageFile = async (file, deps = {}) => {
     });
     for (const quality of IMAGE_QUALITY_STEPS) {
       const encoded = await encode(imageEl, { width, height, quality });
-      if (isWithinBudget(encoded)) {
+      if (isWithinBudget(encoded, maxLength)) {
         return { image: encoded, alt: file.name, width, height };
       }
     }
