@@ -126,7 +126,7 @@ describe('MonsterContent', () => {
 
     expect(store.dispatched).toContainEqual({
       type: 'session/setMonsterCollapsed',
-      payload: { id: 'c1', key: 'bonusActions', collapsed: false },
+      payload: { id: 'c1', key: 'bonusActions', collapsed: false, scope: 'canvas' },
     });
   });
 
@@ -138,7 +138,7 @@ describe('MonsterContent', () => {
 
     expect(store.dispatched).toContainEqual({
       type: 'session/setMonsterCollapsed',
-      payload: { id: 'c1', key: 'combat', collapsed: false },
+      payload: { id: 'c1', key: 'combat', collapsed: false, scope: 'canvas' },
     });
   });
 
@@ -210,7 +210,7 @@ describe('MonsterContent', () => {
 
     fireEvent.click(getByText('Combat'));
     expect(dispatched).toEqual([
-      { type: 'session/setMonsterCollapsed', payload: { id: 'c1', key: 'combat', collapsed: false } },
+      { type: 'session/setMonsterCollapsed', payload: { id: 'c1', key: 'combat', collapsed: false, scope: 'canvas' } },
     ]);
   });
 });

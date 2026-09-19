@@ -9,7 +9,7 @@ import './Card.scss';
 // Renders one Combat section (traits/actions/bonusActions/reactions/
 // legendaryActions) as a list of little boxes instead of one free-text
 // field. Starts empty - just the add button - no blank starter entry.
-const MonsterEntryList = ({ cardId, fieldKey }) => {
+const MonsterEntryList = ({ cardId, fieldKey, setEditingCard }) => {
   const { entries, canAdd, addEntry, duplicateEntry, deleteEntry } = useMonsterEntryListHooks({ cardId, fieldKey });
   const { singular, namePlaceholder, textPlaceholder } = MONSTER_FIELDS[fieldKey];
   const addButtonRef = useRef(null);
@@ -37,6 +37,7 @@ const MonsterEntryList = ({ cardId, fieldKey }) => {
           textPlaceholder={textPlaceholder}
           onDuplicate={duplicateEntry}
           onDelete={handleDelete}
+          setEditingCard={setEditingCard}
         />
       ))}
       {canAdd && (

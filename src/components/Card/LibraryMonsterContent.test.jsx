@@ -1,32 +1,50 @@
 import React from 'react';
-import { render } from '@testing-library/react';
+import { render, fireEvent } from '@testing-library/react';
 import { Provider } from 'react-redux';
 
 import LibraryMonsterContent from './LibraryMonsterContent';
 import { buildMonsterContent } from '../../constants/monster';
 
-// Hand-rolled fake store, matching the pattern in Canvas/testUtils.jsx.
-const makeStore = (content) => ({
-  getState: () => ({ project: { present: { cards: { c1: { content } } } } }),
-  dispatch: () => {},
-  subscribe: () => () => {},
-});
+// Hand-rolled fake store, matching the pattern in MonsterContent.test.jsx -
+// libraryMonsterCollapse is a separate map from the canvas's monsterCollapse
+// (see MONSTER_COLLAPSE_SCOPES). The 3 top-level groups (attributes/combat/
+// notes) default OPEN here (LIBRARY_DEFAULT_COLLAPSED), unlike the canvas's
+// default-collapsed columns - most tests don't need a collapse override to
+// see fields; only the collapse-behavior tests do.
+const makeStore = (content, collapseOverrides = {}) => {
+  const dispatched = [];
+  return {
+    dispatched,
+    getState: () => ({
+      project: { present: { cards: { c1: { content } } } },
+      session: { libraryMonsterCollapse: { c1: collapseOverrides } },
+    }),
+    dispatch: (action) => { dispatched.push(action); return action; },
+    subscribe: () => () => {},
+  };
+};
 
-const renderLibraryMonster = (content, props = {}) => render(
-  <Provider store={makeStore(content)}>
-    <LibraryMonsterContent cardId='c1' isExpanded={false} isSelected={false} {...props} />
-  </Provider>
-);
+const renderLibraryMonster = (content, collapseOverrides = {}, props = {}) => {
+  const store = makeStore(content, collapseOverrides);
+  const utils = render(
+    <Provider store={store}>
+      <LibraryMonsterContent cardId='c1' isExpanded={false} isSelected={false} setEditingCard={() => {}} {...props} />
+    </Provider>
+  );
+  return { ...utils, store };
+};
 
-describe('LibraryMonsterContent', () => {
+describe('LibraryMonsterContent - empty state', () => {
   it('shows the empty label for fully-empty content', () => {
     const { getByText, container } = renderLibraryMonster(buildMonsterContent());
     expect(getByText('No stat block yet')).not.toBeNull();
     expect(container.querySelector('input')).toBeNull();
     expect(container.querySelector('textarea')).toBeNull();
   });
+});
 
-  it('condensed view is 80px tall and shows filled fields, omitting empty ones', () => {
+describe('LibraryMonsterContent - condensed view (unselected, not expanded)', () => {
+  it('is 80px tall and shows filled fields, omitting empty ones', () => {
     const content = buildMonsterContent({ size: 'Large', creatureType: 'dragon', armorClass: '18' });
     const { container, getByText } = renderLibraryMonster(content);
     const wrapper = container.querySelector('.library-card-content-container');
@@ -35,113 +53,208 @@ describe('LibraryMonsterContent', () => {
     expect(getByText('AC 18')).not.toBeNull();
   });
 
-  it('expanded view is 280px tall and renders non-empty sections/fields', () => {
-    const content = buildMonsterContent({ creatureType: 'dragon', traits: 'Amphibious.' });
-    const { container, getByText } = renderLibraryMonster(content, { isExpanded: true });
-    const wrapper = container.querySelector('.library-card-content-container');
-    expect(wrapper.style.height).toBe('280px');
-    expect(getByText('dragon')).not.toBeNull();
-    expect(getByText('Amphibious.')).not.toBeNull();
-  });
-
-  it('expanded view omits sections that are entirely empty', () => {
-    const content = buildMonsterContent({ creatureType: 'dragon' });
-    const { queryByText } = renderLibraryMonster(content, { isExpanded: true });
-    expect(queryByText('Traits')).toBeNull();
-    expect(queryByText('Defenses')).toBeNull();
-  });
-
-  it('renders no input or textarea, condensed or expanded', () => {
+  it('renders no input or textarea - stays fully read-only, unlike the expanded view', () => {
     const content = buildMonsterContent({
-      creatureType: 'dragon', armorClass: '18', traits: 'Amphibious.', portrait: 'data:image/jpeg;base64,x', notes: 'scratch',
+      creatureType: 'dragon', armorClass: '18', traits: [{ id: 'e1', name: 'Amphibious', description: '' }],
+      portrait: 'data:image/jpeg;base64,x', notes: 'scratch',
     });
-    const condensed = renderLibraryMonster(content, { isExpanded: false });
-    expect(condensed.container.querySelector('input')).toBeNull();
-    expect(condensed.container.querySelector('textarea')).toBeNull();
-
-    const expanded = renderLibraryMonster(content, { isExpanded: true });
-    expect(expanded.container.querySelector('input')).toBeNull();
-    expect(expanded.container.querySelector('textarea')).toBeNull();
+    const { container } = renderLibraryMonster(content, {}, { isExpanded: false, isSelected: false });
+    expect(container.querySelector('input')).toBeNull();
+    expect(container.querySelector('textarea')).toBeNull();
   });
 
-  it('surfaces notes in the expanded view', () => {
+  it('does not show notes', () => {
     const content = buildMonsterContent({ notes: 'lair is flooded' });
-    const { getByText } = renderLibraryMonster(content, { isExpanded: true });
-    expect(getByText('Quick Notes')).not.toBeNull();
-    expect(getByText('lair is flooded')).not.toBeNull();
+    const { container, queryByText } = renderLibraryMonster(content, {}, { isExpanded: false });
+    expect(queryByText('lair is flooded')).toBeNull();
+    expect(container.querySelector('.library-card-content-container').style.height).toBe('80px');
   });
+});
 
-  it.each([[''], ['   ']])('omits the notes block when notes are %j', (notes) => {
-    const content = buildMonsterContent({ notes });
-    const { queryByText } = renderLibraryMonster(content, { isExpanded: true });
-    expect(queryByText('Quick Notes')).toBeNull();
-  });
-
-  it('expanded view renders an entry-list section\'s name and description', () => {
-    const content = buildMonsterContent({
-      actions: [{ id: 'e1', name: 'Scimitar', description: 'Melee Weapon Attack: +7 to hit.' }],
-    });
-    const { getByText } = renderLibraryMonster(content, { isExpanded: true });
-    expect(getByText('Actions')).not.toBeNull();
-    expect(getByText('Scimitar')).not.toBeNull();
-    expect(getByText('Melee Weapon Attack: +7 to hit.')).not.toBeNull();
-  });
-
-  it('expanded view omits an entry-list section whose only entry is all-blank', () => {
-    const content = buildMonsterContent({ actions: [{ id: 'e1', name: '', description: '' }] });
-    const { queryByText } = renderLibraryMonster(content, { isExpanded: true });
-    expect(queryByText('Actions')).toBeNull();
-  });
-
-  it('expanded view shows one combined subtitle line, not a separate Creature section', () => {
+describe('LibraryMonsterContent - expanded view: rendering', () => {
+  it('shows one combined subtitle line', () => {
     const content = buildMonsterContent({ size: 'Huge', creatureType: 'dragon (red)', alignment: 'chaotic evil' });
-    const { getByText, queryByText, container } = renderLibraryMonster(content, { isExpanded: true });
+    const { getByText, container } = renderLibraryMonster(content, {}, { isExpanded: true });
     expect(getByText('Huge dragon (red), chaotic evil')).not.toBeNull();
-    expect(queryByText('Creature')).toBeNull();
-    expect(queryByText('Size')).toBeNull();
     expect(container.querySelector('.library-monster-subtitle')).not.toBeNull();
   });
 
-  it('expanded view shows AC/HP/Speed as icon chips, not label:value lines', () => {
+  it('shows AC/HP/Speed as real editable icon-chip inputs', () => {
     const content = buildMonsterContent({ armorClass: '18', hitPoints: '195', speed: '40 ft.' });
-    const { container, getByText, queryByText } = renderLibraryMonster(content, { isExpanded: true });
-    const chips = container.querySelectorAll('.library-monster-defense-chip');
-    expect(chips.length).toBe(3);
-    expect(getByText('18')).not.toBeNull();
-    expect(getByText('195')).not.toBeNull();
-    expect(getByText('40 ft.')).not.toBeNull();
-    // no leftover "Armor Class"/"Hit Points" text labels (those are icon+value chips now)
-    expect(queryByText('Armor Class')).toBeNull();
-    expect(queryByText('Hit Points')).toBeNull();
+    const { getByLabelText, container } = renderLibraryMonster(content, {}, { isExpanded: true });
+    expect(getByLabelText('Armor Class').value).toBe('18');
+    expect(getByLabelText('Hit Points').value).toBe('195');
+    expect(getByLabelText('Speed').value).toBe('40 ft.');
+    expect(container.querySelectorAll('.library-monster-defenses input').length).toBe(3);
   });
 
-  it('expanded view omits the defenses row entirely when AC/HP/Speed are all blank', () => {
-    const content = buildMonsterContent({ creatureType: 'dragon' });
-    const { container } = renderLibraryMonster(content, { isExpanded: true });
-    expect(container.querySelector('.library-monster-defenses')).toBeNull();
+  it('renders the three top-level groups: Stats, Combat, Quick Notes', () => {
+    const { getByText, getByRole } = renderLibraryMonster(buildMonsterContent({ armorClass: '18' }), {}, { isExpanded: true });
+    expect(getByText('Stats')).not.toBeNull();
+    expect(getByText('Combat')).not.toBeNull();
+    expect(getByRole('button', { name: /Quick Notes/ })).not.toBeNull();
   });
 
-  it('expanded view shows all 6 ability scores as a grid when any is filled, blanks as —', () => {
-    const content = buildMonsterContent({ str: '18', dex: '14' });
-    const { container, getByText } = renderLibraryMonster(content, { isExpanded: true });
-    const abilities = container.querySelectorAll('.library-monster-ability');
-    expect(abilities.length).toBe(6);
-    expect(getByText('18')).not.toBeNull();
-    expect(getByText('+4')).not.toBeNull(); // STR 18 modifier
-    const blankScores = container.querySelectorAll('.library-monster-ability-score');
-    expect(Array.from(blankScores).filter(el => el.textContent === '—').length).toBe(4);
+  it('groups default open - nested section fields (e.g. Size) are visible with no collapse override', () => {
+    const { getByLabelText } = renderLibraryMonster(buildMonsterContent({ armorClass: '18' }), {}, { isExpanded: true });
+    expect(getByLabelText('Size')).not.toBeNull();
+    expect(getByLabelText('Quick Notes')).not.toBeNull();
   });
 
-  it('expanded view omits the ability score grid when all 6 are blank', () => {
-    const content = buildMonsterContent({ creatureType: 'dragon' });
-    const { queryByText } = renderLibraryMonster(content, { isExpanded: true });
-    expect(queryByText('Ability Scores')).toBeNull();
+  it('an empty field still renders (with its placeholder) - editable means visible even when blank', () => {
+    const { getByLabelText } = renderLibraryMonster(buildMonsterContent({ armorClass: '18' }), {}, { isExpanded: true });
+    const sizeInput = getByLabelText('Size');
+    expect(sizeInput.value).toBe('');
+    expect(sizeInput.placeholder).toBe('Large');
   });
 
-  it('condensed view does not show notes', () => {
-    const content = buildMonsterContent({ notes: 'lair is flooded' });
-    const { container, queryByText } = renderLibraryMonster(content, { isExpanded: false });
-    expect(queryByText('lair is flooded')).toBeNull();
-    expect(container.querySelector('.library-card-content-container').style.height).toBe('80px');
+  it('all 6 ability scores render as real inputs, sharing the canvas markup (.monster-ability-cell)', () => {
+    const content = buildMonsterContent({ armorClass: '18', str: '18' });
+    const { getByLabelText, container } = renderLibraryMonster(content, {}, { isExpanded: true });
+    expect(getByLabelText('STR').value).toBe('18');
+    expect(getByLabelText('DEX').value).toBe('');
+    expect(container.querySelectorAll('.monster-ability-cell').length).toBe(6);
+  });
+});
+
+describe('LibraryMonsterContent - collapse behavior', () => {
+  it('collapsing Combat hides an Actions entry field from the DOM', () => {
+    const content = buildMonsterContent({
+      armorClass: '18',
+      actions: [{ id: 'e1', name: 'Bite', description: '' }],
+    });
+    const { queryByLabelText } = renderLibraryMonster(content, { combat: true }, { isExpanded: true });
+    expect(queryByLabelText('Action 1 name')).toBeNull();
+  });
+
+  it('Combat expanded (default) shows the Actions entry field', () => {
+    const content = buildMonsterContent({
+      armorClass: '18',
+      actions: [{ id: 'e1', name: 'Bite', description: '' }],
+    });
+    const { getByLabelText } = renderLibraryMonster(content, {}, { isExpanded: true });
+    expect(getByLabelText('Action 1 name').value).toBe('Bite');
+  });
+
+  it('clicking a group header dispatches setMonsterCollapsed with scope: library', () => {
+    const { getByText, store } = renderLibraryMonster(buildMonsterContent({ armorClass: '18' }), {}, { isExpanded: true });
+    fireEvent.click(getByText('Combat'));
+    expect(store.dispatched).toContainEqual({
+      type: 'session/setMonsterCollapsed',
+      payload: { id: 'c1', key: 'combat', collapsed: true, scope: 'library' },
+    });
+  });
+
+  it('clicking the Quick Notes header dispatches the library-only "notes" key', () => {
+    const { getByRole, store } = renderLibraryMonster(buildMonsterContent({ armorClass: '18' }), {}, { isExpanded: true });
+    fireEvent.click(getByRole('button', { name: /Quick Notes/ }));
+    expect(store.dispatched).toContainEqual({
+      type: 'session/setMonsterCollapsed',
+      payload: { id: 'c1', key: 'notes', collapsed: true, scope: 'library' },
+    });
+  });
+
+  it('a nested section (e.g. Creature) collapses independently of its Stats group', () => {
+    const content = buildMonsterContent({ armorClass: '18', size: 'Large' });
+    const { getByText, queryByLabelText } = renderLibraryMonster(content, { identity: true }, { isExpanded: true });
+    expect(getByText('Stats')).not.toBeNull(); // group itself still open
+    expect(queryByLabelText('Size')).toBeNull(); // nested Creature section is collapsed
+  });
+
+  it('clicking a collapse toggle does not disarm dragging (no setEditingCard call)', () => {
+    const setEditingCard = vi.fn();
+    const { getByText } = renderLibraryMonster(buildMonsterContent({ armorClass: '18' }), {}, { isExpanded: true, setEditingCard });
+    fireEvent.click(getByText('Combat'));
+    expect(setEditingCard).not.toHaveBeenCalled();
+  });
+});
+
+describe('LibraryMonsterContent - editing dispatches (reuses the canvas actions/hooks)', () => {
+  it('typing dispatches nothing; blurring dispatches exactly one updateCardMonsterFields', () => {
+    const content = buildMonsterContent({ armorClass: '18', creatureType: 'dragon' });
+    const { getByLabelText, store } = renderLibraryMonster(content, {}, { isExpanded: true });
+    const input = getByLabelText('Type');
+
+    fireEvent.click(input);
+    fireEvent.change(input, { target: { value: 'giant' } });
+    expect(store.dispatched).toHaveLength(0);
+
+    fireEvent.blur(input);
+    expect(store.dispatched).toEqual([
+      { type: 'project/updateCardMonsterFields', payload: { id: 'c1', fields: { creatureType: 'giant' } } },
+    ]);
+  });
+
+  it('a click flips readOnly off and calls setEditingCard(true); blur reverses both', () => {
+    const setEditingCard = vi.fn();
+    const content = buildMonsterContent({ armorClass: '18' });
+    const { getByLabelText } = renderLibraryMonster(content, {}, { isExpanded: true, setEditingCard });
+    const input = getByLabelText('Armor Class');
+
+    expect(input.readOnly).toBe(true);
+    fireEvent.click(input);
+    expect(input.readOnly).toBe(false);
+    expect(setEditingCard).toHaveBeenCalledWith(true);
+
+    fireEvent.blur(input);
+    expect(input.readOnly).toBe(true);
+    expect(setEditingCard).toHaveBeenLastCalledWith(false);
+  });
+
+  it('an entry name field dispatches updateMonsterEntry on blur', () => {
+    const content = buildMonsterContent({ armorClass: '18', actions: [{ id: 'e1', name: 'Scimitar', description: '' }] });
+    const { getByLabelText, store } = renderLibraryMonster(content, {}, { isExpanded: true });
+    const nameInput = getByLabelText('Action 1 name');
+
+    fireEvent.click(nameInput);
+    fireEvent.change(nameInput, { target: { value: 'Longsword' } });
+    fireEvent.blur(nameInput);
+
+    expect(store.dispatched).toEqual([{
+      type: 'project/updateMonsterEntry',
+      payload: { id: 'c1', field: 'actions', entryId: 'e1', changes: { name: 'Longsword' } },
+    }]);
+  });
+
+  it('+ Add Action dispatches addMonsterEntry (entry CRUD is in scope)', () => {
+    const content = buildMonsterContent({ armorClass: '18' });
+    const { getByText, store } = renderLibraryMonster(content, {}, { isExpanded: true });
+
+    fireEvent.click(getByText('+ Add Action'));
+
+    expect(store.dispatched).toHaveLength(1);
+    expect(store.dispatched[0].type).toBe('project/addMonsterEntry');
+    expect(store.dispatched[0].payload).toMatchObject({ id: 'c1', field: 'actions' });
+  });
+
+  it('duplicate/delete entry buttons work and do not need setEditingCard (plain clicks)', () => {
+    const setEditingCard = vi.fn();
+    const content = buildMonsterContent({
+      armorClass: '18',
+      actions: [{ id: 'e1', name: 'Scimitar', description: '' }],
+    });
+    const { getByRole, store } = renderLibraryMonster(content, {}, { isExpanded: true, setEditingCard });
+
+    fireEvent.click(getByRole('button', { name: 'Duplicate Action 1' }));
+    expect(store.dispatched[0].type).toBe('project/duplicateMonsterEntry');
+
+    fireEvent.click(getByRole('button', { name: 'Delete Action 1' }));
+    expect(store.dispatched[1].type).toBe('project/deleteMonsterEntry');
+
+    expect(setEditingCard).not.toHaveBeenCalled();
+  });
+
+  it('the notes field dispatches updateCardMonsterFields on blur, same as the canvas', () => {
+    const content = buildMonsterContent({ armorClass: '18' });
+    const { getByLabelText, store } = renderLibraryMonster(content, {}, { isExpanded: true });
+    const notes = getByLabelText('Quick Notes');
+
+    fireEvent.click(notes);
+    fireEvent.change(notes, { target: { value: 'lair is flooded' } });
+    fireEvent.blur(notes);
+
+    expect(store.dispatched).toEqual([
+      { type: 'project/updateCardMonsterFields', payload: { id: 'c1', fields: { notes: 'lair is flooded' } } },
+    ]);
   });
 });

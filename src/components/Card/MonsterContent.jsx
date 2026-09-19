@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React from 'react';
 
 import { useMonsterSectionHooks } from './hooks';
-import { MONSTER_COLUMNS, MONSTER_COLUMN_SECTIONS, MONSTER_FIELDS, MONSTER_MEDIA_FIELDS, abilityModifier, formatModifier } from '../../constants/monster';
+import { MONSTER_COLUMNS, MONSTER_COLUMN_SECTIONS, MONSTER_FIELDS, MONSTER_MEDIA_FIELDS } from '../../constants/monster';
 import CollapsibleColumn from './CollapsibleColumn';
 import CollapsibleSection from './CollapsibleSection';
 import MonsterTextField from './MonsterTextField';
-import MonsterEntryList from './MonsterEntryList';
+import MonsterSectionBody from './MonsterSectionBody';
 import MonsterPortrait from './MonsterPortrait';
 
 import './Card.scss';
@@ -56,57 +56,11 @@ const MonsterContent = ({
               dotCount={sectionContentCount(section.key)}
               onToggle={() => toggleSection(section.key)}
             >
-              <SectionBody cardId={cardId} section={section} />
+              <MonsterSectionBody cardId={cardId} section={section} />
             </CollapsibleSection>
           ))}
         </CollapsibleColumn>
       ))}
-    </div>
-  );
-};
-
-const SectionBody = ({ cardId, section }) => {
-  if (section.layout === 'abilities') {
-    return (
-      <div className='monster-abilities'>
-        {section.fields.map(fieldKey => (
-          <AbilityCell key={fieldKey} cardId={cardId} fieldKey={fieldKey} />
-        ))}
-      </div>
-    );
-  }
-
-  if (section.layout === 'entries') {
-    // One field per section for all 5 (field key === section key).
-    return <MonsterEntryList cardId={cardId} fieldKey={section.fields[0]} />;
-  }
-
-  // 'lines'
-  return (
-    <div className='monster-lines'>
-      {section.fields.map(fieldKey => (
-        <MonsterTextField key={fieldKey} cardId={cardId} fieldKey={fieldKey} {...MONSTER_FIELDS[fieldKey]} />
-      ))}
-    </div>
-  );
-};
-
-const AbilityCell = ({ cardId, fieldKey }) => {
-  // Fed live (uncommitted) values via onValueChange, so the modifier updates
-  // as you type, not just after the field commits on blur.
-  const [score, setScore] = useState('');
-  const modifier = formatModifier(abilityModifier(score));
-
-  return (
-    <div className='monster-ability-cell'>
-      <MonsterTextField
-        cardId={cardId}
-        fieldKey={fieldKey}
-        {...MONSTER_FIELDS[fieldKey]}
-        className='monster-ability-score'
-        onValueChange={setScore}
-      />
-      <span className='monster-ability-modifier'>{modifier}</span>
     </div>
   );
 };

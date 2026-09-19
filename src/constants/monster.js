@@ -34,6 +34,28 @@ export const DEFAULT_COLUMN_COLLAPSED = { attributes: true, combat: true };
 // view metadata, not part of card content.
 export const DEFAULT_COLLAPSED = { ...DEFAULT_SECTION_COLLAPSED, ...DEFAULT_COLUMN_COLLAPSED };
 
+// The Library card's own collapse state (session.libraryMonsterCollapse),
+// deliberately separate from the canvas card's (session.monsterCollapse)
+// even though both are keyed by the same cardId and reuse the same section/
+// column keys - collapsing "Combat" in the Library sidebar must not resize
+// that same card on the canvas (getMonsterExpansionDelta reads
+// monsterCollapse to grow the canvas card's width; sharing one map would
+// make a Library toggle do that too).
+export const MONSTER_COLLAPSE_SCOPES = { canvas: 'canvas', library: 'library' };
+// Library adds a third top-level collapsible group (Quick Notes) that
+// doesn't exist as a collapsible unit on the canvas at all - it's always
+// visible there, in the Media column.
+export const LIBRARY_MONSTER_COLLAPSIBLE_KEYS = [...MONSTER_COLLAPSIBLE_KEYS, 'notes'];
+// The 3 top-level groups (Stats/Combat/notes - 'attributes'/'combat' reuse
+// the column keys) default open, unlike the canvas's default-collapsed
+// columns - there's no card-width cost to it here. Nested sections keep the
+// canvas's own defaults (Bonus Actions/Reactions/Legendary Actions still
+// start collapsed).
+export const LIBRARY_DEFAULT_COLLAPSED = {
+  ...DEFAULT_SECTION_COLLAPSED,
+  attributes: false, combat: false, notes: false,
+};
+
 export const MONSTER_NOTES_MAX_LENGTH = 500; // scratchpad, not a sixth action block
 export const MONSTER_ENTRY_NAME_MAX_LENGTH = 120;
 export const MONSTER_ENTRY_TEXT_MAX_LENGTH = 1000;

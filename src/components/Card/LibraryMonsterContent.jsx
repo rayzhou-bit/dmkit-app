@@ -1,21 +1,32 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 
-import { MONSTER_SECTIONS, MONSTER_FIELDS, normalizeMonsterEntries, entryHasContent, abilityModifier, formatModifier } from '../../constants/monster';
+import { MONSTER_COLUMN_SECTIONS, MONSTER_FIELDS, MONSTER_MEDIA_FIELDS } from '../../constants/monster';
 import { hasCardContent } from '../../constants/cards';
+import { useMonsterSectionHooks } from './hooks';
+import CollapsibleSection from './CollapsibleSection';
+import MonsterTextField from './MonsterTextField';
+import MonsterSectionBody from './MonsterSectionBody';
 
 import './Card.scss';
-import AcShieldIcon from '../../assets/icons/ac-shield.svg';
-import HpHeartIcon from '../../assets/icons/hp-heart.svg';
-import SpeedBoltIcon from '../../assets/icons/speed-bolt.svg';
 
-// Read-only by design, same precedent as LibraryImageContent - LibraryCard
-// makes the whole card div draggable, which would fight live inputs.
-// Renders no <input>/<textarea> anywhere.
+// The Library's own top-level grouping - 'attributes'/'combat' reuse the
+// canvas's column keys (same sections inside), 'notes' is Library-only
+// (Quick Notes isn't collapsible at all on the canvas - always-visible in
+// the Media column there; the Library groups it for the same reason it
+// groups Stats/Combat, there's no room to show everything at once).
+const LIBRARY_GROUPS = [
+  { key: 'attributes', title: 'Stats' },
+  { key: 'combat', title: 'Combat' },
+];
+
+// The condensed (80px, unselected) card stays read-only, same as before -
+// setEditingCard is only ever exercised by the expanded view below.
 const LibraryMonsterContent = ({
   cardId,
   isExpanded,
   isSelected,
+  setEditingCard,
 }) => {
   const content = useSelector(state => state.project.present.cards[cardId].content);
   const expanded = isSelected || isExpanded;
@@ -50,94 +61,73 @@ const LibraryMonsterContent = ({
     );
   }
 
-  // Icon reused from the main card's chips - AC/HP/Speed live in the Media
-  // column there, not MONSTER_SECTIONS, so they need their own row here too.
-  const defenseChips = [
-    armorClass && { key: 'armorClass', icon: AcShieldIcon, label: 'Armor Class', value: armorClass },
-    hitPoints && { key: 'hitPoints', icon: HpHeartIcon, label: 'Hit Points', value: hitPoints },
-    speed && { key: 'speed', icon: SpeedBoltIcon, label: 'Speed', value: speed },
-  ].filter(Boolean);
-
   return (
-    <div className='library-card-content-container library-monster-expanded' style={{ height: '280px' }}>
-      {portrait && <img className='library-monster-thumb' src={portrait} alt={portraitAlt} draggable='false' />}
-      {subtitle && <div className='library-monster-subtitle'>{subtitle}</div>}
-      {defenseChips.length > 0 && (
-        <div className='library-monster-defenses'>
-          {defenseChips.map(chip => (
-            <span key={chip.key} className='library-monster-defense-chip' title={chip.label}>
-              <img className='library-monster-defense-icon' src={chip.icon} alt='' />
-              {chip.value}
-            </span>
-          ))}
-        </div>
-      )}
-      {/* identity (size/type/alignment) is covered by the subtitle above */}
-      {MONSTER_SECTIONS.filter(section => section.key !== 'identity').map(section => (
-        <LibrarySection key={section.key} content={content} section={section} />
-      ))}
-      {content.notes?.trim() && (
-        <div className='library-monster-section'>
-          <div className='library-monster-section-title'>Quick Notes</div>
-          <div className='library-monster-field-value prose'>{content.notes}</div>
-        </div>
-      )}
-    </div>
+    <LibraryMonsterExpanded
+      cardId={cardId}
+      content={content}
+      portrait={portrait}
+      portraitAlt={portraitAlt}
+      subtitle={subtitle}
+      setEditingCard={setEditingCard}
+    />
   );
 };
 
-const LibrarySection = ({ content, section }) => {
-  if (section.layout === 'entries') {
-    const fieldKey = section.fields[0];
-    const entries = normalizeMonsterEntries(content?.[fieldKey]).filter(entryHasContent);
-    if (entries.length === 0) return null;
-
-    return (
-      <div className='library-monster-section'>
-        <div className='library-monster-section-title'>{section.title}</div>
-        {entries.map(entry => (
-          <div key={entry.id} className='library-monster-entry'>
-            {entry.name && <span className='library-monster-entry-name'>{entry.name}</span>}
-            {entry.description && <span className='library-monster-field-value prose'>{entry.description}</span>}
-          </div>
-        ))}
-      </div>
-    );
-  }
-
-  const filledFields = section.fields.filter(fieldKey => (content?.[fieldKey] ?? '').trim().length > 0);
-  if (filledFields.length === 0) return null;
-
-  if (section.layout === 'abilities') {
-    // All 6, not just filled ones (real stat blocks always show the full
-    // row) - '—' for a blank score, matching the main card's own convention.
-    return (
-      <div className='library-monster-section'>
-        <div className='library-monster-section-title'>{section.title}</div>
-        <div className='library-monster-abilities'>
-          {section.fields.map(fieldKey => (
-            <div key={fieldKey} className='library-monster-ability'>
-              <span className='library-monster-ability-label'>{MONSTER_FIELDS[fieldKey].label}</span>
-              <span className='library-monster-ability-score'>{content[fieldKey] || '—'}</span>
-              <span className='library-monster-ability-mod'>{formatModifier(abilityModifier(content[fieldKey]))}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-    );
-  }
+// Fields are real editable inputs here (see MonsterTextField/MonsterEntry's
+// setEditingCard plumbing and useDragSafeFieldHooks) - so, unlike the old
+// read-only preview, empty fields render too (with their placeholder) - you
+// can't type a value into a field you can never see. Collapse + the dot
+// indicators (reused as-is from the canvas) keep an all-empty section from
+// just being noise.
+const LibraryMonsterExpanded = ({ cardId, content, portrait, portraitAlt, subtitle, setEditingCard }) => {
+  const { isCollapsed, sectionContentCount, columnContentCount, toggleSection } =
+    useMonsterSectionHooks({ cardId, scope: 'library' });
+  const notesDotCount = content?.notes?.trim() ? 1 : 0;
 
   return (
-    <div className='library-monster-section'>
-      <div className='library-monster-section-title'>{section.title}</div>
-      {filledFields.map(fieldKey => (
-        <div key={fieldKey} className='library-monster-field'>
-          <span className='library-monster-field-label'>{MONSTER_FIELDS[fieldKey].label}</span>
-          <span className={'library-monster-field-value' + (MONSTER_FIELDS[fieldKey]?.multiline ? ' prose' : '')}>
-            {content[fieldKey]}
-          </span>
-        </div>
+    <div
+      className='library-card-content-container library-monster-expanded library-monster-editable'
+      style={{ minHeight: '80px', maxHeight: '60vh', height: 'auto' }}
+      onDragOver={(e) => e.preventDefault()}
+    >
+      {portrait && <img className='library-monster-thumb' src={portrait} alt={portraitAlt} draggable='false' />}
+      {subtitle && <div className='library-monster-subtitle'>{subtitle}</div>}
+      <div className='library-monster-defenses'>
+        {MONSTER_MEDIA_FIELDS.map(fieldKey => (
+          <MonsterTextField key={fieldKey} cardId={cardId} fieldKey={fieldKey} {...MONSTER_FIELDS[fieldKey]} setEditingCard={setEditingCard} />
+        ))}
+      </div>
+
+      {LIBRARY_GROUPS.map(group => (
+        <CollapsibleSection
+          key={group.key}
+          title={group.title}
+          isCollapsed={isCollapsed(group.key)}
+          dotCount={columnContentCount(group.key)}
+          onToggle={() => toggleSection(group.key)}
+        >
+          {MONSTER_COLUMN_SECTIONS[group.key].map(section => (
+            <CollapsibleSection
+              key={section.key}
+              title={section.title}
+              isCollapsed={isCollapsed(section.key)}
+              dotCount={sectionContentCount(section.key)}
+              onToggle={() => toggleSection(section.key)}
+            >
+              <MonsterSectionBody cardId={cardId} section={section} setEditingCard={setEditingCard} />
+            </CollapsibleSection>
+          ))}
+        </CollapsibleSection>
       ))}
+
+      <CollapsibleSection
+        title='Quick Notes'
+        isCollapsed={isCollapsed('notes')}
+        dotCount={notesDotCount}
+        onToggle={() => toggleSection('notes')}
+      >
+        <MonsterTextField cardId={cardId} fieldKey='notes' {...MONSTER_FIELDS.notes} setEditingCard={setEditingCard} />
+      </CollapsibleSection>
     </div>
   );
 };

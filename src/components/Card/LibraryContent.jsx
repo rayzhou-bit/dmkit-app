@@ -16,7 +16,7 @@ const LibraryContent = ({
   const cardType = useCardType(cardId);
 
   if (cardType === CARD_TYPES.monster) {
-    return <LibraryMonsterContent cardId={cardId} isExpanded={isExpanded} isSelected={isSelected} />;
+    return <LibraryMonsterContent cardId={cardId} isExpanded={isExpanded} isSelected={isSelected} setEditingCard={setEditingCard} />;
   }
   if (cardType === CARD_TYPES.image) {
     return <LibraryImageContent cardId={cardId} isExpanded={isExpanded} isSelected={isSelected} />;

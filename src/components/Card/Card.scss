@@ -895,7 +895,10 @@ $scrollbar-width: 17px;
   }
 }
 
-// Library monster preview - read-only, no inputs.
+// Library monster preview. Condensed (80px, unselected) stays read-only -
+// no inputs. Expanded is real editable fields (MonsterTextField/
+// MonsterSectionBody, shared with the canvas card) inside CollapsibleSection
+// groups (Stats/Combat/Quick Notes) - see LibraryMonsterContent.jsx.
 .library-monster-condensed {
   flex-flow: row nowrap;
   align-items: center;
@@ -934,105 +937,45 @@ $scrollbar-width: 17px;
   font-size: 11px;
   color: #7E849A;
 }
+// AC/HP/Speed chips - same bordered-chip look as the canvas's
+// .monster-media-fields, written fresh rather than reusing that class since
+// its flex-basis/max-width are sized to sit beside the canvas's small
+// portrait column, not this wider card.
 .library-monster-defenses {
   display: flex;
   flex-flow: row wrap;
   gap: 6px;
-}
-.library-monster-defense-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  border: 1px solid #D7D6D6;
-  border-radius: 6px;
-  padding: 2px 6px;
-  font-family: Roboto;
-  font-size: 11px;
-  font-weight: 600;
-  color: #363B4E;
-}
-.library-monster-defense-icon {
-  width: 12px;
-  height: 12px;
-  display: block;
-}
-.library-monster-abilities {
-  display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
-  gap: 4px;
-}
-.library-monster-ability {
-  display: flex;
-  flex-flow: column nowrap;
-  align-items: center;
-  gap: 1px;
 
-  .library-monster-ability-label {
-    font-family: Roboto;
-    font-size: 9px;
-    font-weight: 600;
-    color: #A0A4B4;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-  }
-  .library-monster-ability-score {
-    font-family: Roboto;
-    font-size: 12px;
-    font-weight: 700;
-    color: #363B4E;
-  }
-  .library-monster-ability-mod {
-    font-family: Roboto;
-    font-size: 10px;
-    color: #7E849A;
-  }
-}
-.library-monster-section {
-  padding: 4px 0;
-  border-bottom: 1px solid #F4F4F4;
-  &:last-child { border-bottom: 0; }
-}
-.library-monster-section-title {
-  font-family: Roboto;
-  font-size: 10px;
-  font-weight: 600;
-  color: #A0A4B4;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin-bottom: 2px;
-}
-.library-monster-field {
-  font-family: Roboto;
-  font-size: 11px;
-  color: #363B4E;
-  display: flex;
-  gap: 4px;
-
-  .library-monster-field-label {
-    font-weight: 600;
+  .monster-field-icon-row {
     flex: 0 0 auto;
-  }
-  .library-monster-field-value.prose {
-    white-space: pre-wrap;
-  }
-}
-.library-monster-entry {
-  font-family: Roboto;
-  font-size: 11px;
-  color: #363B4E;
-  display: flex;
-  flex-flow: column nowrap;
-  gap: 1px;
-  margin-bottom: 4px;
-  &:last-child { margin-bottom: 0; }
+    min-width: 0;
+    border: 1px solid #D7D6D6;
+    border-radius: 6px;
+    padding: 3px 6px;
 
-  .library-monster-entry-name {
-    font-weight: 700;
-  }
-  .library-monster-field-value.prose {
-    white-space: pre-wrap;
+    &:focus-within { border-color: #5BC5FF; }
+
+    .monster-field-input {
+      width: 56px;
+      border: 0;
+      padding: 0;
+      background-color: transparent;
+    }
   }
 }
+
+// Compact spacing for the editable CollapsibleSection groups (Stats/Combat/
+// Quick Notes, each possibly nesting another CollapsibleSection inside) -
+// the canvas's own .monster-section-body padding is enough for one level of
+// nesting; a second border-left accent here makes the nested sections read
+// clearly as "inside" the outer group in the wider Library layout.
+.library-monster-editable {
+  .monster-section .monster-section {
+    border-left: 2px solid #F4F4F4;
+    margin-left: 4px;
+  }
+}
+
 .library-monster-empty {
   margin: auto;
   font-family: Roboto;
