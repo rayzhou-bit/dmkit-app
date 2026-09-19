@@ -7,7 +7,7 @@ import HpHeartIcon from '../assets/icons/hp-heart.svg';
 import SpeedBoltIcon from '../assets/icons/speed-bolt.svg';
 
 export const MONSTER_SECTION_KEYS = [
-  'identity', 'defenses', 'abilities', 'proficiencies',
+  'identity', 'abilities', 'proficiencies',
   'traits', 'actions', 'bonusActions', 'reactions', 'legendaryActions',
 ];
 
@@ -21,7 +21,7 @@ export const MONSTER_COLUMN_KEYS = ['attributes', 'combat'];
 export const MONSTER_COLLAPSIBLE_KEYS = [...MONSTER_SECTION_KEYS, ...MONSTER_COLUMN_KEYS];
 
 export const DEFAULT_SECTION_COLLAPSED = {
-  identity: false, defenses: false, abilities: false, proficiencies: false,
+  identity: false, abilities: false, proficiencies: false,
   traits: false, actions: false,
   bonusActions: true, reactions: true, legendaryActions: true,
 };
@@ -78,9 +78,8 @@ export const MONSTER_FIELDS = {
 };
 
 export const MONSTER_SECTIONS = [
-  { key: 'identity', title: 'Creature', layout: 'lines', column: 'attributes', fields: ['size', 'creatureType', 'alignment'] },
-  { key: 'defenses', title: 'Defenses', layout: 'lines', column: 'attributes', fields: ['armorClass', 'hitPoints', 'speed'] },
   { key: 'abilities', title: 'Ability Scores', layout: 'abilities', column: 'attributes', fields: ['str', 'dex', 'con', 'int', 'wis', 'cha'] },
+  { key: 'identity', title: 'Creature', layout: 'lines', column: 'attributes', fields: ['size', 'creatureType', 'alignment'] },
   {
     key: 'proficiencies', title: 'Proficiencies & Senses', layout: 'lines', column: 'attributes',
     fields: [
@@ -94,6 +93,10 @@ export const MONSTER_SECTIONS = [
   { key: 'reactions', title: 'Reactions', layout: 'prose', column: 'combat', fields: ['reactions'] },
   { key: 'legendaryActions', title: 'Legendary Actions', layout: 'prose', column: 'combat', fields: ['legendaryActions'] },
 ];
+
+// Rendered beside the portrait in the Media column, in this order - not
+// part of any collapsible section/column, so always visible.
+export const MONSTER_MEDIA_FIELDS = ['hitPoints', 'armorClass', 'speed'];
 
 // Left-to-right render order of the two collapsible columns. Media isn't
 // here - it's structural, holding a component + one section-less field.
@@ -131,10 +134,11 @@ export const MONSTER_COLUMN_SECTIONS = MONSTER_COLUMN_KEYS.reduce((acc, key) => 
   [key]: MONSTER_SECTIONS.filter(s => s.column === key),
 }), {});
 
-// Every value key in content. portrait/portraitAlt/notes are likewise
-// section-less (portrait + notes are rendered in the Media column).
+// Every value key in content. portrait/portraitAlt/notes and
+// MONSTER_MEDIA_FIELDS are likewise section-less (all rendered directly in
+// the Media column, not through MONSTER_SECTIONS).
 export const MONSTER_FIELD_KEYS = [
-  'portrait', 'portraitAlt', 'notes',
+  'portrait', 'portraitAlt', 'notes', ...MONSTER_MEDIA_FIELDS,
   ...MONSTER_SECTIONS.flatMap(section => section.fields),
 ];
 

@@ -314,9 +314,27 @@ $scrollbar-width: 17px;
   // needed - otherwise content jitters horizontally by ~17px every time a
   // collapse toggle pushes this column's content just past/under its
   // visible height (e.g. Media growing/shrinking as siblings toggle).
-  // both-edges: a single reserved edge would offset the centered portrait
-  // below (align-self: center centers within the narrowed content box).
-  scrollbar-gutter: stable both-edges;
+  // Single-edge - both-edges was only needed to keep the portrait's old
+  // centered alignment from skewing; it's flex-start now (see .monster-
+  // media-top below), so that concern is gone, and both-edges' extra 17px
+  // was tight enough to wrap .monster-media-fields under the portrait.
+  scrollbar-gutter: stable;
+}
+
+// Portrait + HP/AC/Speed side by side, above the notes field.
+.monster-media-top {
+  display: flex;
+  flex-flow: row wrap; // falls back to stacking only if the column gets too narrow for both
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.monster-media-fields {
+  flex: 1 1 80px;
+  min-width: 80px;
+  display: flex;
+  flex-flow: column nowrap;
+  gap: 4px;
 }
 
 .monster-notes-field {
@@ -609,8 +627,7 @@ $scrollbar-width: 17px;
 
 .monster-portrait {
   position: relative;
-  align-self: center; // sits at the top of the column already (first child) - just center it
-  flex: 0 0 auto;
+  flex: 0 1 auto; // shrinks first, before .monster-media-fields dips below its own min-width
   max-width: min(192px, 100%);
   border-radius: 6px;
   overflow: hidden;

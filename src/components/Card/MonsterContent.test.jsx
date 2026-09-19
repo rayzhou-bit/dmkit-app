@@ -149,9 +149,9 @@ describe('MonsterContent', () => {
   });
 
   it("a collapsed column's fields are absent from the DOM by default", () => {
-    const content = buildMonsterContent({ armorClass: '18' });
+    const content = buildMonsterContent({ size: 'Large' });
     const { queryByLabelText } = renderMonster(content); // no override - both columns default collapsed
-    expect(queryByLabelText('Armor Class')).toBeNull();
+    expect(queryByLabelText('Size')).toBeNull();
     expect(queryByLabelText('Traits')).toBeNull();
   });
 
@@ -162,11 +162,26 @@ describe('MonsterContent', () => {
   });
 
   it('a session override expands a column, overriding its default-collapsed state', () => {
-    const content = buildMonsterContent({ armorClass: '18' }); // armorClass lives in the attributes column
+    const content = buildMonsterContent({ size: 'Large' }); // size lives in the attributes column
     const { getByText, getByLabelText } = renderMonster(content, { attributes: false });
     const attributesColumn = getByText('Stats').closest('.monster-column');
     expect(attributesColumn.className).not.toContain('monster-column-collapsed');
-    expect(getByLabelText('Armor Class')).not.toBeNull();
+    expect(getByLabelText('Size')).not.toBeNull();
+  });
+
+  it('AC/HP/Speed live in the Media column - visible even with both columns collapsed, in HP/AC/Speed order', () => {
+    const content = buildMonsterContent({ armorClass: '18', hitPoints: '195', speed: '40 ft.' });
+    const { getByLabelText, container } = renderMonster(content); // no override - both columns default collapsed
+    expect(getByLabelText('Armor Class').value).toBe('18');
+    expect(getByLabelText('Hit Points').value).toBe('195');
+    expect(getByLabelText('Speed').value).toBe('40 ft.');
+
+    const order = Array.from(container.querySelectorAll('.monster-media-fields input')).map(el => el.id);
+    expect(order).toEqual([
+      'monster-field-c1-hitPoints',
+      'monster-field-c1-armorClass',
+      'monster-field-c1-speed',
+    ]);
   });
 
   it('toggling a column dispatches only the collapse action - width grows/shrinks live, nothing is persisted', () => {

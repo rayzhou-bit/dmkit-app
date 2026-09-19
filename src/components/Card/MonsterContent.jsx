@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
 import { useMonsterSectionHooks } from './hooks';
-import { MONSTER_COLUMNS, MONSTER_COLUMN_SECTIONS, MONSTER_FIELDS, abilityModifier, formatModifier } from '../../constants/monster';
+import { MONSTER_COLUMNS, MONSTER_COLUMN_SECTIONS, MONSTER_FIELDS, MONSTER_MEDIA_FIELDS, abilityModifier, formatModifier } from '../../constants/monster';
 import CollapsibleColumn from './CollapsibleColumn';
 import CollapsibleSection from './CollapsibleSection';
 import MonsterTextField from './MonsterTextField';
@@ -29,7 +29,14 @@ const MonsterContent = ({
       onDragOver={(e) => e.preventDefault()}
     >
       <div className='monster-column-media'>
-        <MonsterPortrait cardId={cardId} />
+        <div className='monster-media-top'>
+          <MonsterPortrait cardId={cardId} />
+          <div className='monster-media-fields'>
+            {MONSTER_MEDIA_FIELDS.map(fieldKey => (
+              <MonsterTextField key={fieldKey} cardId={cardId} fieldKey={fieldKey} {...MONSTER_FIELDS[fieldKey]} />
+            ))}
+          </div>
+        </div>
         <MonsterTextField cardId={cardId} fieldKey='notes' {...MONSTER_FIELDS.notes} className='monster-notes-field' />
       </div>
       {MONSTER_COLUMNS.map(column => (
