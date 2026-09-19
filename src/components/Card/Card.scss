@@ -325,7 +325,7 @@ $scrollbar-width: 17px;
 .monster-media-top {
   display: flex;
   flex-flow: row wrap; // falls back to stacking only if the column gets too narrow for both
-  gap: 8px;
+  gap: 14px;
   align-items: flex-start;
 }
 
@@ -334,7 +334,30 @@ $scrollbar-width: 17px;
   min-width: 80px;
   display: flex;
   flex-flow: column nowrap;
-  gap: 4px;
+  gap: 6px;
+
+  // A bordered "chip" around the icon+value together, not just the input -
+  // distinguishes these from the plain fields elsewhere now that they sit
+  // on their own in the Media column.
+  .monster-field-icon-row {
+    min-width: 0; // else the chip's own icon+padding+border floor can overflow .monster-media-fields
+    border: 1px solid #D7D6D6;
+    border-radius: 6px;
+    padding: 3px 6px;
+
+    // The input's own border is 0 here, so its :focus border-color change
+    // (Card.scss's .monster-field rule) is invisible - show it on the chip
+    // itself instead.
+    &:focus-within {
+      border-color: #5BC5FF;
+    }
+
+    .monster-field-input {
+      border: 0;
+      padding: 0;
+      background-color: transparent;
+    }
+  }
 }
 
 .monster-notes-field {
