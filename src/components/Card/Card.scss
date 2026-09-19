@@ -308,6 +308,11 @@ $scrollbar-width: 17px;
   min-height: 0;
   overflow-x: hidden;
   overflow-y: auto;
+  // Always reserve the scrollbar's width, whether or not it's currently
+  // needed - otherwise content jitters horizontally by ~17px every time a
+  // collapse toggle pushes this column's content just past/under its
+  // visible height (e.g. Media growing/shrinking as siblings toggle).
+  scrollbar-gutter: stable;
 }
 
 .monster-notes-field {
@@ -385,6 +390,7 @@ $scrollbar-width: 17px;
   min-height: 0;
   overflow-x: hidden;
   overflow-y: auto;
+  scrollbar-gutter: stable; // see .monster-column-media
   padding-right: 8px;
 }
 
