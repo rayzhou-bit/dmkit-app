@@ -35,6 +35,13 @@ describe('MonsterContent', () => {
     expect(getByLabelText('Armor Class').value).toBe('18');
   });
 
+  it('the Quick Notes label is visible (not sr-only), unlike the other icon fields', () => {
+    const { container } = renderMonster(buildMonsterContent());
+    const notesLabel = container.querySelector('label[for*="-notes"]');
+    expect(notesLabel.textContent).toBe('Quick Notes');
+    expect(notesLabel.className).not.toContain('sr-only');
+  });
+
   it('typing dispatches nothing; blurring dispatches exactly one updateCardMonsterFields', () => {
     const content = buildMonsterContent({ creatureType: 'dragon' });
     const { getByLabelText, store } = renderMonster(content, { attributes: false });

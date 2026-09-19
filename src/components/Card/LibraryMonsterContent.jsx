@@ -10,11 +10,12 @@ import MonsterSectionBody from './MonsterSectionBody';
 
 import './Card.scss';
 
-// The Library's own top-level grouping - 'attributes'/'combat' reuse the
-// canvas's column keys (same sections inside), 'notes' is Library-only
-// (Quick Notes isn't collapsible at all on the canvas - always-visible in
-// the Media column there; the Library groups it for the same reason it
-// groups Stats/Combat, there's no room to show everything at once).
+// The Library's own top-level grouping for Stats/Combat - 'attributes'/
+// 'combat' reuse the canvas's column keys (same sections inside). Quick
+// Notes is handled separately, right below (see LibraryMonsterExpanded) -
+// still collapsible (unlike the canvas, where it's always-visible), but
+// positioned next to the picture like on the canvas, not listed as a third
+// group here.
 const LIBRARY_GROUPS = [
   { key: 'attributes', title: 'Stats' },
   { key: 'combat', title: 'Combat' },
@@ -90,13 +91,24 @@ const LibraryMonsterExpanded = ({ cardId, content, portrait, portraitAlt, subtit
       style={{ minHeight: '80px', maxHeight: '60vh', height: 'auto' }}
       onDragOver={(e) => e.preventDefault()}
     >
-      {portrait && <img className='library-monster-thumb' src={portrait} alt={portraitAlt} draggable='false' />}
       {subtitle && <div className='library-monster-subtitle'>{subtitle}</div>}
-      <div className='library-monster-defenses'>
-        {MONSTER_MEDIA_FIELDS.map(fieldKey => (
-          <MonsterTextField key={fieldKey} cardId={cardId} fieldKey={fieldKey} {...MONSTER_FIELDS[fieldKey]} setEditingCard={setEditingCard} />
-        ))}
+      <div className='library-monster-media-top'>
+        {portrait && <img className='library-monster-thumb' src={portrait} alt={portraitAlt} draggable='false' />}
+        <div className='library-monster-defenses'>
+          {MONSTER_MEDIA_FIELDS.map(fieldKey => (
+            <MonsterTextField key={fieldKey} cardId={cardId} fieldKey={fieldKey} {...MONSTER_FIELDS[fieldKey]} setEditingCard={setEditingCard} />
+          ))}
+        </div>
       </div>
+
+      <CollapsibleSection
+        title='Quick Notes'
+        isCollapsed={isCollapsed('notes')}
+        dotCount={notesDotCount}
+        onToggle={() => toggleSection('notes')}
+      >
+        <MonsterTextField cardId={cardId} fieldKey='notes' {...MONSTER_FIELDS.notes} hideLabel setEditingCard={setEditingCard} />
+      </CollapsibleSection>
 
       {LIBRARY_GROUPS.map(group => (
         <CollapsibleSection
@@ -119,15 +131,6 @@ const LibraryMonsterExpanded = ({ cardId, content, portrait, portraitAlt, subtit
           ))}
         </CollapsibleSection>
       ))}
-
-      <CollapsibleSection
-        title='Quick Notes'
-        isCollapsed={isCollapsed('notes')}
-        dotCount={notesDotCount}
-        onToggle={() => toggleSection('notes')}
-      >
-        <MonsterTextField cardId={cardId} fieldKey='notes' {...MONSTER_FIELDS.notes} setEditingCard={setEditingCard} />
-      </CollapsibleSection>
     </div>
   );
 };

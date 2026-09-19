@@ -937,14 +937,22 @@ $scrollbar-width: 17px;
   font-size: 11px;
   color: #7E849A;
 }
-// AC/HP/Speed chips - same bordered-chip look as the canvas's
-// .monster-media-fields, written fresh rather than reusing that class since
-// its flex-basis/max-width are sized to sit beside the canvas's small
-// portrait column, not this wider card.
+// Portrait + AC/HP/Speed side by side, matching the canvas card's own
+// .monster-media-top/.monster-media-fields layout.
+.library-monster-media-top {
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: flex-start;
+  gap: 8px;
+}
+// Same bordered-chip look as the canvas's .monster-media-fields, written
+// fresh rather than reusing that class since its flex-basis/max-width are
+// sized to sit beside the canvas's small portrait column, not this one.
 .library-monster-defenses {
   display: flex;
-  flex-flow: row wrap;
-  gap: 6px;
+  flex-flow: column nowrap;
+  gap: 4px;
+  min-width: 0;
 
   .monster-field-icon-row {
     flex: 0 0 auto;

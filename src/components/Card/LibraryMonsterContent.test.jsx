@@ -95,6 +95,32 @@ describe('LibraryMonsterContent - expanded view: rendering', () => {
     expect(getByRole('button', { name: /Quick Notes/ })).not.toBeNull();
   });
 
+  it('Quick Notes renders right after the picture/chips row, before Stats and Combat', () => {
+    const { getByRole } = renderLibraryMonster(buildMonsterContent({ armorClass: '18' }), {}, { isExpanded: true });
+    const headers = Array.from(document.querySelectorAll('.monster-section-header, .library-monster-media-top'))
+      .map(el => el.className.includes('media-top') ? 'media-top' : el.textContent.replace(/[▾▸]/g, ''));
+    const mediaIndex = headers.indexOf('media-top');
+    const notesIndex = headers.findIndex(h => h.includes('Quick Notes'));
+    const statsIndex = headers.findIndex(h => h === 'Stats');
+    expect(mediaIndex).toBeLessThan(notesIndex);
+    expect(notesIndex).toBeLessThan(statsIndex);
+    expect(getByRole('button', { name: /Quick Notes/ })).not.toBeNull();
+  });
+
+  it('HP/AC/Speed sit beside the picture, not stacked below it', () => {
+    const content = buildMonsterContent({ armorClass: '18', portrait: 'data:image/jpeg;base64,x' });
+    const { container } = renderLibraryMonster(content, {}, { isExpanded: true });
+    const mediaTop = container.querySelector('.library-monster-media-top');
+    expect(mediaTop.querySelector('.library-monster-thumb')).not.toBeNull();
+    expect(mediaTop.querySelector('.library-monster-defenses')).not.toBeNull();
+  });
+
+  it("the Library's Quick Notes field label is hidden - the CollapsibleSection header already says \"Quick Notes\"", () => {
+    const { container } = renderLibraryMonster(buildMonsterContent({ armorClass: '18' }), {}, { isExpanded: true });
+    const notesLabel = container.querySelector('label[for="monster-field-c1-notes"]');
+    expect(notesLabel.className).toContain('sr-only');
+  });
+
   it('groups default open - nested section fields (e.g. Size) are visible with no collapse override', () => {
     const { getByLabelText } = renderLibraryMonster(buildMonsterContent({ armorClass: '18' }), {}, { isExpanded: true });
     expect(getByLabelText('Size')).not.toBeNull();

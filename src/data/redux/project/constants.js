@@ -2,8 +2,10 @@ import {
   GRID_SIZE,
   DEFAULT_CANVAS_POSITION,
   DEFAULT_CANVAS_SCALE,
+  MONSTER_CARD_SIZE,
 } from '../../../constants/dimensions';
 import { CARD_TYPES } from '../../../constants/cards';
+import { buildMonsterContent } from '../../../constants/monster';
 
 export const DEFAULT_CARD = {
   views: {},
@@ -76,6 +78,50 @@ export const INTRO_CARDS = {
       },
     },
   },
+  // Sample stat block (5e SRD content) showcasing the monster card type
+  // right where a new user first lands.
+  'card4': {
+    title: 'Goblin',
+    color: 'forest',
+    type: CARD_TYPES.monster,
+    content: buildMonsterContent({
+      size: 'Small',
+      creatureType: 'humanoid (goblinoid)',
+      alignment: 'neutral evil',
+      armorClass: '15 (leather armor, shield)',
+      hitPoints: '7 (2d6)',
+      speed: '30 ft.',
+      str: '8', dex: '14', con: '10', int: '10', wis: '8', cha: '8',
+      skills: 'Stealth +6',
+      senses: 'darkvision 60 ft., passive Perception 9',
+      languages: 'Common, Goblin',
+      challengeRating: '1/4',
+      xp: '50',
+      traits: [{
+        id: 'goblin-trait-nimble-escape',
+        name: 'Nimble Escape',
+        description: 'The goblin can take the Disengage or Hide action as a bonus action on each of its turns.',
+      }],
+      actions: [
+        {
+          id: 'goblin-action-scimitar',
+          name: 'Scimitar',
+          description: 'Melee Weapon Attack: +4 to hit, reach 5 ft., one target. Hit: 5 (1d6 + 2) slashing damage.',
+        },
+        {
+          id: 'goblin-action-shortbow',
+          name: 'Shortbow',
+          description: 'Ranged Weapon Attack: +4 to hit, range 80/320 ft., one target. Hit: 5 (1d6 + 2) piercing damage.',
+        },
+      ],
+    }),
+    views: {
+      'tab0': {
+        pos: {x: 45*GRID_SIZE, y: 7*GRID_SIZE},
+        size: MONSTER_CARD_SIZE,
+      },
+    },
+  },
 };
 
 export const INTRO_TABS = {
@@ -83,7 +129,7 @@ export const INTRO_TABS = {
     title: 'Welcome!',
     pos: DEFAULT_CANVAS_POSITION,
     scale: 1,
-    cards: ['card0'],
+    cards: ['card0', 'card4'],
   },
   'tab1': {
     title: 'READ ME',

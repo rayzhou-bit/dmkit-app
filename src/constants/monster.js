@@ -68,7 +68,7 @@ export const MONSTER_MAX_ENTRIES_PER_SECTION = 50;
 export const MONSTER_MAX_DOTS = 5;
 
 export const MONSTER_FIELDS = {
-  notes: { label: 'Quick Notes', placeholder: 'Scratch notes…', maxLength: MONSTER_NOTES_MAX_LENGTH, multiline: true, hideLabel: true },
+  notes: { label: 'Quick Notes', placeholder: 'Scratch notes…', maxLength: MONSTER_NOTES_MAX_LENGTH, multiline: true },
 
   size: { label: 'Size', placeholder: 'Large', maxLength: 60 },
   creatureType: { label: 'Type', placeholder: 'dragon (chromatic)', maxLength: 60 },
