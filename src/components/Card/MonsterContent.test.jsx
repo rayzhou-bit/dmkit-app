@@ -143,22 +143,23 @@ describe('MonsterContent', () => {
   });
 
   it("a collapsed section's fields are absent from the DOM", () => {
-    const content = buildMonsterContent({ bonusActions: 'Some bonus action text' });
+    const content = buildMonsterContent({ bonusActions: [{ id: 'e1', name: 'Cunning Action', description: 'Dash.' }] });
     const { queryByLabelText } = renderMonster(content, { combat: false }); // column open, section still defaults collapsed
-    expect(queryByLabelText('Bonus Actions')).toBeNull();
+    expect(queryByLabelText('Bonus Action 1 name')).toBeNull();
   });
 
   it("a collapsed column's fields are absent from the DOM by default", () => {
-    const content = buildMonsterContent({ size: 'Large' });
+    const content = buildMonsterContent({ size: 'Large', traits: [{ id: 'e1', name: 'Amphibious', description: '' }] });
     const { queryByLabelText } = renderMonster(content); // no override - both columns default collapsed
     expect(queryByLabelText('Size')).toBeNull();
-    expect(queryByLabelText('Traits')).toBeNull();
+    expect(queryByLabelText('Trait 1 name')).toBeNull();
   });
 
   it('a session override drives isCollapsed: expands a normally-default-collapsed section', () => {
-    const content = buildMonsterContent({ bonusActions: 'Some bonus action text' });
+    const content = buildMonsterContent({ bonusActions: [{ id: 'e1', name: 'Cunning Action', description: 'Dash.' }] });
     const { getByLabelText } = renderMonster(content, { combat: false, bonusActions: false });
-    expect(getByLabelText('Bonus Actions')).not.toBeNull();
+    expect(getByLabelText('Bonus Action 1 name').value).toBe('Cunning Action');
+    expect(getByLabelText('Bonus Action 1 description').value).toBe('Dash.');
   });
 
   it('a session override expands a column, overriding its default-collapsed state', () => {
@@ -211,5 +212,117 @@ describe('MonsterContent', () => {
     expect(dispatched).toEqual([
       { type: 'session/setMonsterCollapsed', payload: { id: 'c1', key: 'combat', collapsed: false } },
     ]);
+  });
+});
+
+describe('MonsterContent - Combat entry lists', () => {
+  it('an empty section renders no entry boxes, just the add button', () => {
+    const content = buildMonsterContent();
+    const { container, getByText } = renderMonster(content, { combat: false });
+
+    expect(container.querySelectorAll('.monster-entry').length).toBe(0);
+    expect(getByText('+ Add Action')).not.toBeNull();
+  });
+
+  it('clicking add dispatches exactly one addMonsterEntry with a generated entryId', () => {
+    const content = buildMonsterContent();
+    const { getByText, store } = renderMonster(content, { combat: false });
+
+    fireEvent.click(getByText('+ Add Action'));
+
+    expect(store.dispatched).toHaveLength(1);
+    const action = store.dispatched[0];
+    expect(action.type).toBe('project/addMonsterEntry');
+    expect(action.payload.id).toBe('c1');
+    expect(action.payload.field).toBe('actions');
+    expect(typeof action.payload.entryId).toBe('string');
+    expect(action.payload.entryId.length).toBeGreaterThan(0);
+  });
+
+  it('with two entries, duplicate/delete target only the clicked entry', () => {
+    const content = buildMonsterContent({
+      actions: [
+        { id: 'e1', name: 'Scimitar', description: 'Slash.' },
+        { id: 'e2', name: 'Bow', description: 'Pierce.' },
+      ],
+    });
+    const { getByRole, store } = renderMonster(content, { combat: false });
+
+    fireEvent.click(getByRole('button', { name: 'Duplicate Action 2' }));
+    expect(store.dispatched).toHaveLength(1);
+    let action = store.dispatched[0];
+    expect(action.type).toBe('project/duplicateMonsterEntry');
+    expect(action.payload).toMatchObject({ id: 'c1', field: 'actions', entryId: 'e2' });
+    expect(typeof action.payload.newEntryId).toBe('string');
+    expect(action.payload.newEntryId).not.toBe('e2');
+
+    fireEvent.click(getByRole('button', { name: 'Delete Action 1' }));
+    expect(store.dispatched).toHaveLength(2);
+    action = store.dispatched[1];
+    expect(action).toEqual({
+      type: 'project/deleteMonsterEntry',
+      payload: { id: 'c1', field: 'actions', entryId: 'e1' },
+    });
+  });
+
+  it('typing dispatches nothing; blurring dispatches exactly one updateMonsterEntry', () => {
+    const content = buildMonsterContent({ actions: [{ id: 'e1', name: 'Scimitar', description: '' }] });
+    const { getByLabelText, store } = renderMonster(content, { combat: false });
+    const nameInput = getByLabelText('Action 1 name');
+
+    fireEvent.change(nameInput, { target: { value: 'Longsword' } });
+    expect(store.dispatched).toHaveLength(0);
+
+    fireEvent.blur(nameInput);
+    expect(store.dispatched).toEqual([{
+      type: 'project/updateMonsterEntry',
+      payload: { id: 'c1', field: 'actions', entryId: 'e1', changes: { name: 'Longsword' } },
+    }]);
+  });
+
+  it('blur with no net change dispatches nothing (equality guard)', () => {
+    const content = buildMonsterContent({ actions: [{ id: 'e1', name: 'Scimitar', description: '' }] });
+    const { getByLabelText, store } = renderMonster(content, { combat: false });
+    const nameInput = getByLabelText('Action 1 name');
+
+    fireEvent.change(nameInput, { target: { value: 'Longsword' } });
+    fireEvent.change(nameInput, { target: { value: 'Scimitar' } });
+    fireEvent.blur(nameInput);
+
+    expect(store.dispatched).toHaveLength(0);
+  });
+
+  it('Escape reverts the name without dispatching; Enter commits it', () => {
+    const content = buildMonsterContent({ actions: [{ id: 'e1', name: 'Scimitar', description: '' }] });
+    const { getByLabelText, store } = renderMonster(content, { combat: false });
+    const nameInput = getByLabelText('Action 1 name');
+
+    fireEvent.change(nameInput, { target: { value: 'Longsword' } });
+    fireEvent.keyDown(nameInput, { key: 'Escape' });
+    fireEvent.blur(nameInput);
+    expect(nameInput.value).toBe('Scimitar');
+    expect(store.dispatched).toHaveLength(0);
+
+    fireEvent.change(nameInput, { target: { value: 'Longsword' } });
+    fireEvent.keyDown(nameInput, { key: 'Enter' });
+    expect(store.dispatched).toEqual([{
+      type: 'project/updateMonsterEntry',
+      payload: { id: 'c1', field: 'actions', entryId: 'e1', changes: { name: 'Longsword' } },
+    }]);
+  });
+
+  it('a section holding only an all-blank entry is treated as empty (dims when collapsed, no dot)', () => {
+    const content = buildMonsterContent({ actions: [{ id: 'e1', name: '', description: '' }] });
+    const { getByText } = renderMonster(content); // both columns collapsed by default
+    const header = getByText('Combat').closest('button');
+    expect(header.className).toContain('monster-column-header-empty');
+  });
+
+  it('a section holding a filled entry is NOT empty (dot when collapsed)', () => {
+    const content = buildMonsterContent({ actions: [{ id: 'e1', name: 'Scimitar', description: '' }] });
+    const { getByText, container } = renderMonster(content);
+    const header = getByText('Combat').closest('button');
+    expect(header.className).not.toContain('monster-column-header-empty');
+    expect(container.querySelector('.monster-column-dot')).not.toBeNull();
   });
 });

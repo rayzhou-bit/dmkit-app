@@ -25,8 +25,14 @@ describe('hasCardContent', () => {
     ['non-empty text', { text: 'x' }, true],
     ['image set', { image: 'data:...' }, true],
     ['default monster content', buildMonsterContent(), false],
-    ['monster with one trait filled', buildMonsterContent({ traits: 'Amphibious.' }), true],
+    ['monster with one trait filled (legacy string)', buildMonsterContent({ traits: 'Amphibious.' }), true],
     ['monster with a portrait set', buildMonsterContent({ portrait: 'data:...' }), true],
+    // Regression: hasCardContent used to do String(content[key]).trim() for
+    // every field - String([{...}]) is "[object Object]" (truthy), which
+    // would have falsely reported an empty entry list as "has content".
+    ['monster with an empty actions entry list', buildMonsterContent({ actions: [] }), false],
+    ['monster with one all-blank actions entry', buildMonsterContent({ actions: [{ id: 'e1', name: '', description: '' }] }), false],
+    ['monster with one filled actions entry', buildMonsterContent({ actions: [{ id: 'e1', name: 'Scimitar', description: '' }] }), true],
   ])('%s', (_, content, expected) => {
     expect(hasCardContent(content)).toBe(expected);
   });

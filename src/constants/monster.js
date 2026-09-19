@@ -34,9 +34,13 @@ export const DEFAULT_COLUMN_COLLAPSED = { attributes: true, combat: true };
 // view metadata, not part of card content.
 export const DEFAULT_COLLAPSED = { ...DEFAULT_SECTION_COLLAPSED, ...DEFAULT_COLUMN_COLLAPSED };
 
-export const MONSTER_TEXT_MAX_LENGTH = 4000;
 export const MONSTER_NOTES_MAX_LENGTH = 500; // scratchpad, not a sixth action block
-const PROSE_PLACEHOLDER = '**Multiattack.** The dragon makes three attacks…';
+export const MONSTER_ENTRY_NAME_MAX_LENGTH = 120;
+export const MONSTER_ENTRY_TEXT_MAX_LENGTH = 1000;
+// Firestore's 1MB doc limit is otherwise only guarded by the portrait's own
+// cap - 50 entries * 5 sections * (name+text caps) stays well under that
+// even alongside a portrait, but is otherwise an arbitrary sanity ceiling.
+export const MONSTER_MAX_ENTRIES_PER_SECTION = 50;
 
 export const MONSTER_FIELDS = {
   notes: { label: 'Quick Notes', placeholder: 'Scratch notes…', maxLength: MONSTER_NOTES_MAX_LENGTH, multiline: true, hideLabel: true },
@@ -70,12 +74,52 @@ export const MONSTER_FIELDS = {
   xp: { label: 'XP', placeholder: '18,000', maxLength: 20 },
   proficiencyBonus: { label: 'Proficiency Bonus', placeholder: '+6', maxLength: 10 },
 
-  traits: { label: 'Traits', placeholder: PROSE_PLACEHOLDER, maxLength: MONSTER_TEXT_MAX_LENGTH, multiline: true },
-  actions: { label: 'Actions', placeholder: PROSE_PLACEHOLDER, maxLength: MONSTER_TEXT_MAX_LENGTH, multiline: true },
-  bonusActions: { label: 'Bonus Actions', placeholder: PROSE_PLACEHOLDER, maxLength: MONSTER_TEXT_MAX_LENGTH, multiline: true },
-  reactions: { label: 'Reactions', placeholder: PROSE_PLACEHOLDER, maxLength: MONSTER_TEXT_MAX_LENGTH, multiline: true },
-  legendaryActions: { label: 'Legendary Actions', placeholder: PROSE_PLACEHOLDER, maxLength: MONSTER_TEXT_MAX_LENGTH, multiline: true },
+  // singular/namePlaceholder/textPlaceholder drive MonsterEntry's per-entry
+  // labels and placeholders (see the 'entries' layout below) - these 5 are
+  // lists of little boxes now, not one big free-text field.
+  traits: { label: 'Traits', singular: 'Trait', namePlaceholder: 'Amphibious', textPlaceholder: 'Can breathe air and water.' },
+  actions: { label: 'Actions', singular: 'Action', namePlaceholder: 'Scimitar', textPlaceholder: 'Melee Weapon Attack: +7 to hit, reach 5 ft., one target. Hit: 6 (1d6 + 3) slashing damage.' },
+  bonusActions: { label: 'Bonus Actions', singular: 'Bonus Action', namePlaceholder: 'Cunning Action', textPlaceholder: 'Dash, Disengage, or Hide.' },
+  reactions: { label: 'Reactions', singular: 'Reaction', namePlaceholder: 'Parry', textPlaceholder: 'Adds 2 to its AC against one melee attack that would hit it.' },
+  legendaryActions: { label: 'Legendary Actions', singular: 'Legendary Action', namePlaceholder: 'Detect', textPlaceholder: 'Makes a Wisdom (Perception) check.' },
 };
+
+// The 5 Combat sections above - each a list of {id, name, description}
+// entries instead of one free-text field. Field key === section key for
+// all five (see MONSTER_SECTIONS below).
+export const MONSTER_ENTRY_FIELD_KEYS = ['traits', 'actions', 'bonusActions', 'reactions', 'legendaryActions'];
+export const isMonsterEntryField = (key) => MONSTER_ENTRY_FIELD_KEYS.includes(key);
+
+// Always a FRESH array (never the same reference twice, even for the same
+// input) - buildMonsterContent/DEFAULT_MONSTER_CONTENT rely on this so
+// cards never share one mutable array. Tolerates a legacy plain-string
+// value (this field's shape before entries existed) by wrapping it in one
+// description-only entry with a fixed id, rather than discarding it -
+// loadCards/loadProject write Firestore docs into state unnormalized, so
+// this is also the read-side guard for that path, not just a migration nicety.
+export const normalizeMonsterEntries = (value) => {
+  if (Array.isArray(value)) {
+    return value
+      .filter(entry => entry && typeof entry === 'object')
+      .map(entry => ({
+        id: String(entry.id ?? ''),
+        name: String(entry.name ?? ''),
+        description: String(entry.description ?? ''),
+      }));
+  }
+  if (typeof value === 'string' && value.trim()) {
+    return [{ id: 'legacy', name: '', description: value }];
+  }
+  return [];
+};
+
+export const entryHasContent = (entry) => Boolean(entry.name.trim() || entry.description.trim());
+
+// One predicate for both string fields and entry-list fields - callers
+// (hasCardContent, sectionHasContent) don't need to know which is which.
+export const monsterFieldHasContent = (content, key) => isMonsterEntryField(key)
+  ? normalizeMonsterEntries(content?.[key]).some(entryHasContent)
+  : String(content?.[key] ?? '').trim().length > 0;
 
 export const MONSTER_SECTIONS = [
   { key: 'abilities', title: 'Ability Scores', layout: 'abilities', column: 'attributes', fields: ['str', 'dex', 'con', 'int', 'wis', 'cha'] },
@@ -87,11 +131,11 @@ export const MONSTER_SECTIONS = [
       'conditionImmunities', 'senses', 'languages', 'challengeRating', 'xp', 'proficiencyBonus',
     ],
   },
-  { key: 'traits', title: 'Traits', layout: 'prose', column: 'combat', fields: ['traits'] },
-  { key: 'actions', title: 'Actions', layout: 'prose', column: 'combat', fields: ['actions'] },
-  { key: 'bonusActions', title: 'Bonus Actions', layout: 'prose', column: 'combat', fields: ['bonusActions'] },
-  { key: 'reactions', title: 'Reactions', layout: 'prose', column: 'combat', fields: ['reactions'] },
-  { key: 'legendaryActions', title: 'Legendary Actions', layout: 'prose', column: 'combat', fields: ['legendaryActions'] },
+  { key: 'traits', title: 'Traits', layout: 'entries', column: 'combat', fields: ['traits'] },
+  { key: 'actions', title: 'Actions', layout: 'entries', column: 'combat', fields: ['actions'] },
+  { key: 'bonusActions', title: 'Bonus Actions', layout: 'entries', column: 'combat', fields: ['bonusActions'] },
+  { key: 'reactions', title: 'Reactions', layout: 'entries', column: 'combat', fields: ['reactions'] },
+  { key: 'legendaryActions', title: 'Legendary Actions', layout: 'entries', column: 'combat', fields: ['legendaryActions'] },
 ];
 
 // Rendered beside the portrait in the Media column, in this order - not
@@ -143,15 +187,22 @@ export const MONSTER_FIELD_KEYS = [
 ];
 
 export const DEFAULT_MONSTER_CONTENT = {
-  ...MONSTER_FIELD_KEYS.reduce((content, key) => ({ ...content, [key]: '' }), {}),
+  ...MONSTER_FIELD_KEYS.reduce((content, key) => ({
+    ...content,
+    [key]: isMonsterEntryField(key) ? [] : '',
+  }), {}),
 };
 
 // The one funnel every write path (createCard, copySelectedCard(s)) goes
-// through, so a field can never land as undefined/null in the store.
+// through, so a field can never land as undefined/null in the store, and an
+// entry-list field always lands as a fresh, normalized array (never shared,
+// never the raw/possibly-legacy-string source value).
 export const buildMonsterContent = (source) => {
   const content = { ...DEFAULT_MONSTER_CONTENT };
   for (const key of MONSTER_FIELD_KEYS) {
-    content[key] = String(source?.[key] ?? '');
+    content[key] = isMonsterEntryField(key)
+      ? normalizeMonsterEntries(source?.[key])
+      : String(source?.[key] ?? '');
   }
   return content;
 };

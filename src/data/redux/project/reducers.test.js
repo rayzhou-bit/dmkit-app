@@ -252,3 +252,162 @@ describe('destroyTab', () => {
     expect(next.cards.c2.views).toEqual({ tabB: {} }); // unrelated card untouched
   });
 });
+
+describe('monster entry-list reducers', () => {
+  const baseMonsterState = {
+    cards: {
+      c1: {
+        views: {},
+        content: {
+          ...buildMonsterContent(),
+          actions: [
+            { id: 'e1', name: 'Scimitar', description: 'Slash.' },
+            { id: 'e2', name: 'Bow', description: 'Pierce.' },
+          ],
+        },
+        editedOn: 1,
+      },
+    },
+    views: {},
+    viewOrder: [],
+    activeViewId: 'tabA',
+  };
+
+  describe('addMonsterEntry', () => {
+    it('appends a blank entry, leaves siblings/other cards untouched, bumps editedOn', () => {
+      const next = reducer(baseMonsterState, {
+        type: 'project/addMonsterEntry',
+        payload: { id: 'c1', field: 'actions', entryId: 'e3' },
+      });
+      expect(next.cards.c1.content.actions).toEqual([
+        { id: 'e1', name: 'Scimitar', description: 'Slash.' },
+        { id: 'e2', name: 'Bow', description: 'Pierce.' },
+        { id: 'e3', name: '', description: '' },
+      ]);
+      expect(next.cards.c1.content.traits).toEqual([]); // untouched sibling field
+      expect(next.cards.c1.editedOn).toBeGreaterThanOrEqual(1);
+    });
+
+    it('is a no-op for an unknown field (not an entry field)', () => {
+      const next = reducer(baseMonsterState, {
+        type: 'project/addMonsterEntry',
+        payload: { id: 'c1', field: 'size', entryId: 'e3' },
+      });
+      expect(next).toBe(baseMonsterState);
+    });
+
+    it('is a no-op for an unknown card id', () => {
+      const next = reducer(baseMonsterState, {
+        type: 'project/addMonsterEntry',
+        payload: { id: 'nope', field: 'actions', entryId: 'e3' },
+      });
+      expect(next).toBe(baseMonsterState);
+    });
+
+    it('is a no-op at the per-section cap', () => {
+      const manyEntries = Array.from({ length: 50 }, (_, i) => ({ id: `e${i}`, name: '', description: '' }));
+      const atCapState = { ...baseMonsterState, cards: { c1: { ...baseMonsterState.cards.c1, content: { ...baseMonsterState.cards.c1.content, actions: manyEntries } } } };
+      const next = reducer(atCapState, {
+        type: 'project/addMonsterEntry',
+        payload: { id: 'c1', field: 'actions', entryId: 'overflow' },
+      });
+      expect(next).toBe(atCapState);
+    });
+
+    it('normalizes a legacy string field before appending', () => {
+      const legacyState = { ...baseMonsterState, cards: { c1: { ...baseMonsterState.cards.c1, content: { ...baseMonsterState.cards.c1.content, actions: 'Old free text' } } } };
+      const next = reducer(legacyState, {
+        type: 'project/addMonsterEntry',
+        payload: { id: 'c1', field: 'actions', entryId: 'e3' },
+      });
+      expect(next.cards.c1.content.actions).toEqual([
+        { id: 'legacy', name: '', description: 'Old free text' },
+        { id: 'e3', name: '', description: '' },
+      ]);
+    });
+  });
+
+  describe('duplicateMonsterEntry', () => {
+    it('inserts a copy right after the source, with the new id', () => {
+      const next = reducer(baseMonsterState, {
+        type: 'project/duplicateMonsterEntry',
+        payload: { id: 'c1', field: 'actions', entryId: 'e1', newEntryId: 'e1-copy' },
+      });
+      expect(next.cards.c1.content.actions).toEqual([
+        { id: 'e1', name: 'Scimitar', description: 'Slash.' },
+        { id: 'e1-copy', name: 'Scimitar', description: 'Slash.' },
+        { id: 'e2', name: 'Bow', description: 'Pierce.' },
+      ]);
+      // source untouched
+      expect(baseMonsterState.cards.c1.content.actions).toEqual([
+        { id: 'e1', name: 'Scimitar', description: 'Slash.' },
+        { id: 'e2', name: 'Bow', description: 'Pierce.' },
+      ]);
+    });
+
+    it('is a no-op for an unknown entryId', () => {
+      const next = reducer(baseMonsterState, {
+        type: 'project/duplicateMonsterEntry',
+        payload: { id: 'c1', field: 'actions', entryId: 'nope', newEntryId: 'e3' },
+      });
+      expect(next).toBe(baseMonsterState);
+    });
+  });
+
+  describe('deleteMonsterEntry', () => {
+    it('removes only the targeted entry, preserving order of the rest', () => {
+      const next = reducer(baseMonsterState, {
+        type: 'project/deleteMonsterEntry',
+        payload: { id: 'c1', field: 'actions', entryId: 'e1' },
+      });
+      expect(next.cards.c1.content.actions).toEqual([
+        { id: 'e2', name: 'Bow', description: 'Pierce.' },
+      ]);
+    });
+
+    it('is a no-op for an unknown entryId', () => {
+      const next = reducer(baseMonsterState, {
+        type: 'project/deleteMonsterEntry',
+        payload: { id: 'c1', field: 'actions', entryId: 'nope' },
+      });
+      expect(next).toBe(baseMonsterState);
+    });
+  });
+
+  describe('updateMonsterEntry', () => {
+    it('patches only the named key on only the named entry', () => {
+      const next = reducer(baseMonsterState, {
+        type: 'project/updateMonsterEntry',
+        payload: { id: 'c1', field: 'actions', entryId: 'e2', changes: { name: 'Longbow' } },
+      });
+      expect(next.cards.c1.content.actions).toEqual([
+        { id: 'e1', name: 'Scimitar', description: 'Slash.' },
+        { id: 'e2', name: 'Longbow', description: 'Pierce.' },
+      ]);
+    });
+
+    it('ignores keys other than name/description', () => {
+      const next = reducer(baseMonsterState, {
+        type: 'project/updateMonsterEntry',
+        payload: { id: 'c1', field: 'actions', entryId: 'e1', changes: { id: 'hacked', name: 'Rapier' } },
+      });
+      expect(next.cards.c1.content.actions[0]).toEqual({ id: 'e1', name: 'Rapier', description: 'Slash.' });
+    });
+
+    it('coerces an undefined value to ""', () => {
+      const next = reducer(baseMonsterState, {
+        type: 'project/updateMonsterEntry',
+        payload: { id: 'c1', field: 'actions', entryId: 'e1', changes: { description: undefined } },
+      });
+      expect(next.cards.c1.content.actions[0].description).toBe('');
+    });
+
+    it('is a no-op for an unknown entryId', () => {
+      const next = reducer(baseMonsterState, {
+        type: 'project/updateMonsterEntry',
+        payload: { id: 'c1', field: 'actions', entryId: 'nope', changes: { name: 'x' } },
+      });
+      expect(next).toBe(baseMonsterState);
+    });
+  });
+});

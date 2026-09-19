@@ -5,6 +5,7 @@ import { MONSTER_COLUMNS, MONSTER_COLUMN_SECTIONS, MONSTER_FIELDS, MONSTER_MEDIA
 import CollapsibleColumn from './CollapsibleColumn';
 import CollapsibleSection from './CollapsibleSection';
 import MonsterTextField from './MonsterTextField';
+import MonsterEntryList from './MonsterEntryList';
 import MonsterPortrait from './MonsterPortrait';
 
 import './Card.scss';
@@ -75,10 +76,9 @@ const SectionBody = ({ cardId, section }) => {
     );
   }
 
-  if (section.layout === 'prose') {
-    return section.fields.map(fieldKey => (
-      <MonsterTextField key={fieldKey} cardId={cardId} fieldKey={fieldKey} {...MONSTER_FIELDS[fieldKey]} className='monster-field-prose' />
-    ));
+  if (section.layout === 'entries') {
+    // One field per section for all 5 (field key === section key).
+    return <MonsterEntryList cardId={cardId} fieldKey={section.fields[0]} />;
   }
 
   // 'lines'

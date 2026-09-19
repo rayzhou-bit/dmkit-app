@@ -621,9 +621,104 @@ $scrollbar-width: 17px;
   }
 }
 
-.monster-field-prose .monster-field-textarea {
-  min-height: 90px;
-  white-space: pre-wrap;
+// One Combat-section entry ("box") - name + description + duplicate/delete
+// controls. Self-contained (not `.monster-field`-based) - its two inputs
+// need their own font/border rules rather than fighting the ancestor-scoped
+// .monster-field ones for a div that isn't semantically one field.
+.monster-entry-list {
+  display: flex;
+  flex-flow: column nowrap;
+  gap: 8px;
+}
+
+.monster-entry {
+  position: relative;
+  min-width: 0;
+  border: 1px solid #D7D6D6;
+  border-radius: 6px;
+  padding: 6px 8px;
+  display: flex;
+  flex-flow: column nowrap;
+  gap: 4px;
+
+  &:focus-within { border-color: #5BC5FF; }
+
+  .monster-entry-name {
+    width: 100%;
+    box-sizing: border-box;
+    border: 0;
+    padding: 0;
+    padding-right: 44px; // room for the controls, top-right
+    background-color: transparent;
+    font-family: Roboto;
+    font-size: 12px;
+    font-weight: 700;
+    color: #363B4E;
+
+    &:focus { outline: none; }
+    &::placeholder { font-weight: 400; color: #A0A4B4; }
+  }
+
+  .monster-field-textarea {
+    width: 100%;
+    box-sizing: border-box;
+    border: 0;
+    padding: 0;
+    background-color: transparent;
+    font-family: Roboto;
+    font-size: 12px;
+    color: #363B4E;
+    min-height: 40px;
+    resize: vertical;
+
+    &:focus { outline: none; }
+  }
+}
+
+.monster-entry-controls {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  display: flex;
+  gap: 4px;
+  opacity: 0;
+  transition: opacity .15s;
+
+  button {
+    width: 18px;
+    height: 18px;
+    padding: 0;
+    border: 0;
+    border-radius: 4px;
+    background-color: transparent;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover { background-color: #F4F4F4; }
+    img { width: 12px; height: 12px; }
+  }
+}
+.monster-entry:hover .monster-entry-controls,
+.monster-entry-controls:focus-within {
+  opacity: 1;
+}
+
+.monster-entry-add {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 6px;
+  border: 1px dashed #D7D6D6;
+  border-radius: 6px;
+  background-color: transparent;
+  color: #A0A4B4;
+  font-family: Roboto;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+
+  &:hover { background-color: #F4F4F4; }
 }
 
 .monster-lines {
@@ -808,6 +903,23 @@ $scrollbar-width: 17px;
   .library-monster-field-label {
     font-weight: 600;
     flex: 0 0 auto;
+  }
+  .library-monster-field-value.prose {
+    white-space: pre-wrap;
+  }
+}
+.library-monster-entry {
+  font-family: Roboto;
+  font-size: 11px;
+  color: #363B4E;
+  display: flex;
+  flex-flow: column nowrap;
+  gap: 1px;
+  margin-bottom: 4px;
+  &:last-child { margin-bottom: 0; }
+
+  .library-monster-entry-name {
+    font-weight: 700;
   }
   .library-monster-field-value.prose {
     white-space: pre-wrap;

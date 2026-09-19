@@ -1,7 +1,7 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 
-import { MONSTER_SECTIONS, MONSTER_FIELDS, abilityModifier, formatModifier } from '../../constants/monster';
+import { MONSTER_SECTIONS, MONSTER_FIELDS, normalizeMonsterEntries, entryHasContent, abilityModifier, formatModifier } from '../../constants/monster';
 import { hasCardContent } from '../../constants/cards';
 
 import './Card.scss';
@@ -61,6 +61,24 @@ const LibraryMonsterContent = ({
 };
 
 const LibrarySection = ({ content, section }) => {
+  if (section.layout === 'entries') {
+    const fieldKey = section.fields[0];
+    const entries = normalizeMonsterEntries(content?.[fieldKey]).filter(entryHasContent);
+    if (entries.length === 0) return null;
+
+    return (
+      <div className='library-monster-section'>
+        <div className='library-monster-section-title'>{section.title}</div>
+        {entries.map(entry => (
+          <div key={entry.id} className='library-monster-entry'>
+            {entry.name && <span className='library-monster-entry-name'>{entry.name}</span>}
+            {entry.description && <span className='library-monster-field-value prose'>{entry.description}</span>}
+          </div>
+        ))}
+      </div>
+    );
+  }
+
   const filledFields = section.fields.filter(fieldKey => (content?.[fieldKey] ?? '').trim().length > 0);
   if (filledFields.length === 0) return null;
 

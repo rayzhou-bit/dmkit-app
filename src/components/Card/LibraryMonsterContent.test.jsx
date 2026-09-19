@@ -77,6 +77,22 @@ describe('LibraryMonsterContent', () => {
     expect(queryByText('Quick Notes')).toBeNull();
   });
 
+  it('expanded view renders an entry-list section\'s name and description', () => {
+    const content = buildMonsterContent({
+      actions: [{ id: 'e1', name: 'Scimitar', description: 'Melee Weapon Attack: +7 to hit.' }],
+    });
+    const { getByText } = renderLibraryMonster(content, { isExpanded: true });
+    expect(getByText('Actions')).not.toBeNull();
+    expect(getByText('Scimitar')).not.toBeNull();
+    expect(getByText('Melee Weapon Attack: +7 to hit.')).not.toBeNull();
+  });
+
+  it('expanded view omits an entry-list section whose only entry is all-blank', () => {
+    const content = buildMonsterContent({ actions: [{ id: 'e1', name: '', description: '' }] });
+    const { queryByText } = renderLibraryMonster(content, { isExpanded: true });
+    expect(queryByText('Actions')).toBeNull();
+  });
+
   it('condensed view does not show notes', () => {
     const content = buildMonsterContent({ notes: 'lair is flooded' });
     const { container, queryByText } = renderLibraryMonster(content, { isExpanded: false });

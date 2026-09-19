@@ -7,7 +7,10 @@ import {
 } from './constants';
 import { GRID_SIZE, DEFAULT_CARD_POSITION, DEFAULT_CARD_SIZE, MONSTER_CARD_SIZE } from '../../../constants/dimensions';
 import { CARD_TYPES, getCardType } from '../../../constants/cards';
-import { buildMonsterContent, MONSTER_FIELD_KEYS } from '../../../constants/monster';
+import {
+  buildMonsterContent, MONSTER_FIELD_KEYS,
+  MONSTER_ENTRY_FIELD_KEYS, MONSTER_MAX_ENTRIES_PER_SECTION, normalizeMonsterEntries,
+} from '../../../constants/monster';
 
 // TODO name refactor
 //  view -> tab
@@ -32,6 +35,29 @@ const applyCardSize = (state, { id, size }) => {
             size: newSize,
           },
         },
+      },
+    },
+  };
+};
+
+// Shared by the 4 entry reducers below - normalizes, hands the current
+// entries to `updater`, and writes back only if it actually returned a
+// different array (updater returns the SAME array reference to signal
+// "no-op", e.g. an unknown field/entryId or hitting the per-section cap).
+const applyMonsterEntries = (state, { id, field }, updater) => {
+  const card = state.cards[id];
+  if (!card || !MONSTER_ENTRY_FIELD_KEYS.includes(field)) return state;
+  const entries = normalizeMonsterEntries(card.content?.[field]);
+  const next = updater(entries);
+  if (next === entries) return state;
+  return {
+    ...state,
+    cards: {
+      ...state.cards,
+      [id]: {
+        ...card,
+        content: { ...card.content, [field]: next },
+        editedOn: Date.now(),
       },
     },
   };
@@ -321,6 +347,39 @@ const project = createSlice({
         },
       };
     },
+    // Monster entry-list reducers (traits/actions/bonusActions/reactions/
+    // legendaryActions - each a list of {id, name, description} "boxes").
+    // Ordinary undo-tracked project actions (not in index.js's
+    // actionsToRemove) - add/duplicate/delete are content edits like any
+    // other and should undo/redo like one. entryId/newEntryId are generated
+    // by the caller (useMonsterEntryListHooks), never here, so the reducer
+    // stays a pure function of its payload.
+    addMonsterEntry: (state, { payload }) => applyMonsterEntries(state, payload, (entries) => {
+      if (entries.length >= MONSTER_MAX_ENTRIES_PER_SECTION) return entries;
+      return [...entries, { id: payload.entryId, name: '', description: '' }];
+    }),
+    duplicateMonsterEntry: (state, { payload }) => applyMonsterEntries(state, payload, (entries) => {
+      const index = entries.findIndex(e => e.id === payload.entryId);
+      if (index === -1 || entries.length >= MONSTER_MAX_ENTRIES_PER_SECTION) return entries;
+      const copy = { ...entries[index], id: payload.newEntryId };
+      return [...entries.slice(0, index + 1), copy, ...entries.slice(index + 1)];
+    }),
+    deleteMonsterEntry: (state, { payload }) => applyMonsterEntries(state, payload, (entries) => {
+      const next = entries.filter(e => e.id !== payload.entryId);
+      return next.length === entries.length ? entries : next;
+    }),
+    updateMonsterEntry: (state, { payload }) => applyMonsterEntries(state, payload, (entries) => {
+      const index = entries.findIndex(e => e.id === payload.entryId);
+      if (index === -1) return entries;
+      const { changes } = payload;
+      const next = [...entries];
+      next[index] = {
+        ...next[index],
+        ...('name' in changes ? { name: String(changes.name ?? '') } : {}),
+        ...('description' in changes ? { description: String(changes.description ?? '') } : {}),
+      };
+      return next;
+    }),
     // Tab reducers
     createTab: (state, { payload }) => {
       const { newId } = payload;

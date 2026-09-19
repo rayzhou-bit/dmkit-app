@@ -1,4 +1,4 @@
-import { MONSTER_FIELD_KEYS } from './monster';
+import { MONSTER_FIELD_KEYS, monsterFieldHasContent } from './monster';
 
 export const CARD_TYPES = {
   text: 'text',
@@ -19,5 +19,5 @@ export const getCardType = (card) => {
 export const hasCardContent = (content) => {
   if (content?.text?.length) return true;
   if (content?.image) return true;
-  return MONSTER_FIELD_KEYS.some(key => String(content?.[key] ?? '').trim().length > 0);
+  return MONSTER_FIELD_KEYS.some(key => monsterFieldHasContent(content, key));
 };

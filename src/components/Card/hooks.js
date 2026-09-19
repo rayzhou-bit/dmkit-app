@@ -8,7 +8,10 @@ import { CARD_COLOR_KEYS, LIGHT_COLORS } from '../../constants/colors';
 import { getCardType, hasCardContent, CARD_TYPES } from '../../constants/cards';
 import { processImageFile } from '../../utils/imageUtils';
 import { MAX_PORTRAIT_DATA_URI_LENGTH, PORTRAIT_MAX_EDGE_STEPS } from '../../constants/images';
-import { MONSTER_FIELDS, MONSTER_SECTIONS, MONSTER_COLUMN_SECTIONS, DEFAULT_COLLAPSED, getMonsterExpansionDelta } from '../../constants/monster';
+import {
+  MONSTER_FIELDS, MONSTER_SECTIONS, MONSTER_COLUMN_SECTIONS, DEFAULT_COLLAPSED, getMonsterExpansionDelta,
+  MONSTER_MAX_ENTRIES_PER_SECTION, normalizeMonsterEntries, monsterFieldHasContent,
+} from '../../constants/monster';
 import { POPUP_KEYS } from '../Popup/PopupKey';
 import { ACTION_TYPE } from '../../components-shared/Dropdowns/ActionDropdown';
 import { useGroupDragPosition } from '../Canvas/groupDrag';
@@ -593,6 +596,74 @@ export const useMonsterFieldHooks = ({ cardId, fieldKey }) => {
   };
 };
 
+export const useMonsterEntryListHooks = ({ cardId, fieldKey }) => {
+  const dispatch = useDispatch();
+  // Select the RAW value and normalize outside the selector.
+  // normalizeMonsterEntries always returns a fresh array, and a useSelector
+  // that returns a fresh reference every call defeats react-redux's
+  // equality bail-out -> infinite render loop. Hit this exact class of bug
+  // before on this card type (see MonsterContent.test.jsx's stable-state-
+  // object comment) - not repeating it here.
+  const raw = useSelector(state => state.project.present.cards[cardId].content?.[fieldKey]);
+  const entries = normalizeMonsterEntries(raw);
+
+  return {
+    entries,
+    canAdd: entries.length < MONSTER_MAX_ENTRIES_PER_SECTION,
+    addEntry: () => dispatch(actions.project.addMonsterEntry({
+      id: cardId, field: fieldKey, entryId: generateUID('entry'),
+    })),
+    duplicateEntry: (entryId) => dispatch(actions.project.duplicateMonsterEntry({
+      id: cardId, field: fieldKey, entryId, newEntryId: generateUID('entry'),
+    })),
+    deleteEntry: (entryId) => dispatch(actions.project.deleteMonsterEntry({
+      id: cardId, field: fieldKey, entryId,
+    })),
+  };
+};
+
+// Deliberately a near-duplicate of useMonsterFieldHooks, not shared/
+// parameterized - one entry's one field (name or description) vs. a
+// whole top-level content field; different action (updateMonsterEntry),
+// different Enter/Tab behavior (name commits on Enter, description is a
+// textarea and needs Enter for newlines).
+export const useMonsterEntryFieldHooks = ({ cardId, fieldKey, entry, entryFieldKey }) => {
+  const dispatch = useDispatch();
+  const storeValue = entry[entryFieldKey] ?? '';
+
+  const [ value, setValue ] = useState(storeValue);
+
+  useEffect(() => {
+    setValue(storeValue);
+  }, [storeValue]);
+
+  const commit = () => {
+    if (value !== storeValue) {
+      dispatch(actions.project.updateMonsterEntry({
+        id: cardId, field: fieldKey, entryId: entry.id, changes: { [entryFieldKey]: value },
+      }));
+    }
+  };
+
+  const revert = () => setValue(storeValue);
+
+  return {
+    value,
+    changeValue: setValue,
+    commit,
+    revert,
+    handleKeyDown: (event) => {
+      if (event.key === 'Escape') {
+        revert();
+        return;
+      }
+      if (entryFieldKey === 'name' && (event.key === 'Enter' || event.key === 'Tab')) {
+        commit();
+      }
+    },
+  };
+};
+
 export const useMonsterSectionHooks = ({ cardId }) => {
   const dispatch = useDispatch();
   const content = useSelector(state => state.project.present.cards[cardId].content);
@@ -605,7 +676,7 @@ export const useMonsterSectionHooks = ({ cardId }) => {
   const sectionHasContent = (key) => {
     const section = MONSTER_SECTIONS.find(s => s.key === key);
     if (!section) return false;
-    return section.fields.some(f => (content?.[f] ?? '').trim().length > 0);
+    return section.fields.some(f => monsterFieldHasContent(content, f));
   };
 
   return {

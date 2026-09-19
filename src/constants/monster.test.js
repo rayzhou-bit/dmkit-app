@@ -11,6 +11,11 @@ import {
   MONSTER_SECTIONS,
   MONSTER_FIELDS,
   MONSTER_FIELD_KEYS,
+  MONSTER_ENTRY_FIELD_KEYS,
+  isMonsterEntryField,
+  normalizeMonsterEntries,
+  entryHasContent,
+  monsterFieldHasContent,
 } from './monster';
 
 describe('abilityModifier', () => {
@@ -31,12 +36,28 @@ describe('formatModifier', () => {
 });
 
 describe('buildMonsterContent', () => {
-  it('with no args, every value key is empty and there is no collapsed key', () => {
+  it('with no args, every value key is empty (entry fields: [], others: "") and there is no collapsed key', () => {
     const content = buildMonsterContent();
     for (const key of MONSTER_FIELD_KEYS) {
-      expect(content[key]).toBe('');
+      expect(content[key]).toEqual(isMonsterEntryField(key) ? [] : '');
     }
     expect(content.collapsed).toBeUndefined();
+  });
+
+  it('two calls do not share entry-array identity', () => {
+    const a = buildMonsterContent();
+    const b = buildMonsterContent();
+    for (const key of MONSTER_ENTRY_FIELD_KEYS) {
+      expect(a[key]).not.toBe(b[key]);
+    }
+  });
+
+  it('deep-copies entry objects from the source, not just the array', () => {
+    const source = { actions: [{ id: 'e1', name: 'Scimitar', description: 'Slash.' }] };
+    const content = buildMonsterContent(source);
+    expect(content.actions).toEqual(source.actions);
+    expect(content.actions).not.toBe(source.actions);
+    expect(content.actions[0]).not.toBe(source.actions[0]);
   });
 
   it('round-trips losslessly through JSON (undefined-never-written invariant)', () => {
@@ -126,5 +147,76 @@ describe('section/column metadata', () => {
   it('both Attributes and Combat default to collapsed - a new card starts small', () => {
     expect(DEFAULT_COLLAPSED.attributes).toBe(true);
     expect(DEFAULT_COLLAPSED.combat).toBe(true);
+  });
+
+  it.each(MONSTER_ENTRY_FIELD_KEYS)('%s is an entries-layout section with a singular label', (key) => {
+    const section = MONSTER_SECTIONS.find(s => s.key === key);
+    expect(section.layout).toBe('entries');
+    expect(section.fields).toEqual([key]);
+    expect(MONSTER_FIELDS[key].singular).toBeTruthy();
+  });
+});
+
+describe('normalizeMonsterEntries', () => {
+  it('well-formed entries pass through unchanged, as a new array', () => {
+    const entries = [{ id: 'e1', name: 'Scimitar', description: 'Slash.' }];
+    const result = normalizeMonsterEntries(entries);
+    expect(result).toEqual(entries);
+    expect(result).not.toBe(entries);
+  });
+
+  it('drops unknown keys and coerces missing name/description to ""', () => {
+    const result = normalizeMonsterEntries([{ id: 'e1', extra: 'junk' }]);
+    expect(result).toEqual([{ id: 'e1', name: '', description: '' }]);
+  });
+
+  it('filters out non-object entries', () => {
+    expect(normalizeMonsterEntries([null, 'x', 5, { id: 'e1', name: 'ok', description: '' }]))
+      .toEqual([{ id: 'e1', name: 'ok', description: '' }]);
+  });
+
+  it.each([undefined, null, '', 0, {}])('%p -> []', (value) => {
+    expect(normalizeMonsterEntries(value)).toEqual([]);
+  });
+
+  it('a non-empty legacy string becomes one description-only entry with a fixed id', () => {
+    expect(normalizeMonsterEntries('**Multiattack.** …')).toEqual([
+      { id: 'legacy', name: '', description: '**Multiattack.** …' },
+    ]);
+  });
+
+  it('a blank/whitespace-only legacy string is treated as empty', () => {
+    expect(normalizeMonsterEntries('   ')).toEqual([]);
+  });
+});
+
+describe('entryHasContent', () => {
+  it.each([
+    [{ id: 'e1', name: '', description: '' }, false],
+    [{ id: 'e1', name: '  ', description: '  ' }, false],
+    [{ id: 'e1', name: 'Scimitar', description: '' }, true],
+    [{ id: 'e1', name: '', description: 'Slash.' }, true],
+  ])('%p -> %p', (entry, expected) => {
+    expect(entryHasContent(entry)).toBe(expected);
+  });
+});
+
+describe('monsterFieldHasContent', () => {
+  it('string field: same trim semantics as before', () => {
+    expect(monsterFieldHasContent({ size: '' }, 'size')).toBe(false);
+    expect(monsterFieldHasContent({ size: '  ' }, 'size')).toBe(false);
+    expect(monsterFieldHasContent({ size: 'Large' }, 'size')).toBe(true);
+    expect(monsterFieldHasContent({}, 'size')).toBe(false);
+  });
+
+  it('entry field: empty list or all-blank entries -> false', () => {
+    expect(monsterFieldHasContent({ actions: [] }, 'actions')).toBe(false);
+    expect(monsterFieldHasContent({}, 'actions')).toBe(false);
+    expect(monsterFieldHasContent({ actions: [{ id: 'e1', name: '', description: '' }] }, 'actions')).toBe(false);
+  });
+
+  it('entry field: a name-only or description-only entry -> true', () => {
+    expect(monsterFieldHasContent({ actions: [{ id: 'e1', name: 'Bow', description: '' }] }, 'actions')).toBe(true);
+    expect(monsterFieldHasContent({ actions: [{ id: 'e1', name: '', description: 'Ranged.' }] }, 'actions')).toBe(true);
   });
 });
