@@ -8,7 +8,7 @@ import { CARD_COLOR_KEYS, LIGHT_COLORS } from '../../constants/colors';
 import { getCardType, hasCardContent, CARD_TYPES } from '../../constants/cards';
 import { processImageFile } from '../../utils/imageUtils';
 import { MAX_PORTRAIT_DATA_URI_LENGTH, PORTRAIT_MAX_EDGE_STEPS } from '../../constants/images';
-import { MONSTER_FIELDS, MONSTER_SECTIONS, MONSTER_COLUMN_SECTIONS, DEFAULT_COLLAPSED } from '../../constants/monster';
+import { MONSTER_FIELDS, MONSTER_SECTIONS, MONSTER_COLUMN_SECTIONS, DEFAULT_COLLAPSED, getMonsterExpansionDelta } from '../../constants/monster';
 import { POPUP_KEYS } from '../Popup/PopupKey';
 import { ACTION_TYPE } from '../../components-shared/Dropdowns/ActionDropdown';
 import { useGroupDragPosition } from '../Canvas/groupDrag';
@@ -41,7 +41,19 @@ export const useCardHooks = ({
     size: cardSize,
   } = useSelector(state => state.project.present.cards[cardId].views[activeTab]);
   const cardType = useSelector(state => getCardType(state.project.present.cards[cardId]));
-  const minSize = cardType === CARD_TYPES.monster ? MONSTER_MIN_CARD_SIZE : MIN_CARD_SIZE;
+  const monsterCollapse = useSelector(state => state.session.monsterCollapse?.[cardId]);
+  // The persisted width is always the both-collapsed baseline - an expanded
+  // column's extra width is added here, at render time, purely from session
+  // state, so it's never written to project history and can't desync from
+  // undo (see getMonsterExpansionDelta).
+  const expansionDelta = cardType === CARD_TYPES.monster ? getMonsterExpansionDelta(monsterCollapse) : 0;
+  const minSize = cardType === CARD_TYPES.monster
+    ? { ...MONSTER_MIN_CARD_SIZE, width: MONSTER_MIN_CARD_SIZE.width + expansionDelta }
+    : MIN_CARD_SIZE;
+  const displaySize = expansionDelta === 0 ? cardSize : {
+    ...cardSize,
+    width: (typeof cardSize.width === 'string' ? parseInt(cardSize.width, 10) : cardSize.width) + expansionDelta,
+  };
 
   const [isDragging, setIsDragging] = useState(false);
   const [isSelected, setIsSelected] = useState(false);
@@ -82,7 +94,7 @@ export const useCardHooks = ({
     isActive,
     isSelected: selectedCards.includes(cardId),
     activeTabScale,
-    size: cardSize,
+    size: displaySize,
     minSize,
     position: groupPosition ?? cardPosition,
     rndStyle: { zIndex },
@@ -128,9 +140,13 @@ export const useCardHooks = ({
     },
     onResizeStop: (event, direction, ref, delta, position) => {
       if (delta.width !== 0 || delta.height !== 0) {
+        // ref.style.width reflects the displayed (baseline + expansionDelta)
+        // size - strip the delta back out so what's persisted stays the
+        // both-collapsed baseline, same as displaySize's math in reverse.
+        const draggedWidth = parseInt(ref.style.width, 10) - expansionDelta;
         dispatch(actions.project.updateCardSize({
           id: cardId,
-          size: { width: ref.style.width, height: ref.style.height },
+          size: { width: draggedWidth + 'px', height: ref.style.height },
         }));
         if (["top", "left", "topRight", "bottomLeft", "topLeft"].indexOf(direction) !== -1) {
           dispatch(actions.project.updateCardPosition({
@@ -601,9 +617,9 @@ export const useMonsterSectionHooks = ({ cardId }) => {
       key,
       collapsed: !isCollapsed(key),
     })),
-    // The card itself never resizes here - Media (Card.scss) is the one
-    // flexible column, so it absorbs whatever width Attributes/Combat give
-    // up or need. Keeps this a pure view-state toggle with nothing to undo.
+    // The card's width grows/shrinks with this purely as a rendering-time
+    // effect - see getMonsterExpansionDelta/useCardHooks - not dispatched
+    // here, so it can never be reverted by (or consume) an undo step.
     toggleColumn: (columnKey) => dispatch(actions.session.setMonsterCollapsed({
       id: cardId,
       key: columnKey,

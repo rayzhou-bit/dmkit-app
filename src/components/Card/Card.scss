@@ -272,15 +272,14 @@ $scrollbar-width: 17px;
   }
 }
 
-// Monster stat-block card - 3 columns: Media, Attributes, Combat. Media is
-// the only flexible (1fr) track, so the card's own width never changes when
-// a column collapses/expands - Media just absorbs whatever Attributes/Combat
-// give up or need, and Combat stays flush against the right edge always.
-// Attributes/Combat are fixed pixels (not fr) so collapsing one never moves
-// the other's toggle strip.
+// Monster stat-block card - 3 columns: Media, Attributes, Combat. All three
+// are fixed pixel widths (not fr) - expanding/collapsing Attributes/Combat
+// changes the CARD's own total width instead (useMonsterSectionHooks'
+// toggleColumn), so a column's toggle position only ever depends on what's
+// structurally to its left, never on a sibling's own collapse state.
 .monster-content {
   display: grid;
-  grid-template-columns: minmax(108px, 1fr) 184px 229px;
+  grid-template-columns: 108px 184px 229px;
   gap: 8px;
   padding: 6px 8px;
   height: 100%;
@@ -291,13 +290,13 @@ $scrollbar-width: 17px;
   color: #363B4E;
 }
 .monster-content.monster-content-attributes-collapsed {
-  grid-template-columns: minmax(108px, 1fr) 24px 229px;
+  grid-template-columns: 108px 24px 229px;
 }
 .monster-content.monster-content-combat-collapsed {
-  grid-template-columns: minmax(108px, 1fr) 184px 24px;
+  grid-template-columns: 108px 184px 24px;
 }
 .monster-content.monster-content-attributes-collapsed.monster-content-combat-collapsed {
-  grid-template-columns: minmax(108px, 1fr) 24px 24px;
+  grid-template-columns: 108px 24px 24px;
 }
 
 .monster-column-media {
@@ -345,11 +344,10 @@ $scrollbar-width: 17px;
 }
 
 // The header is always the same vertical strip, collapsed or not - only
-// whether a body sits next to it changes. Sits on the right of its own
-// column's body (order swaps visual position; DOM order keeps the button
-// before the content it controls, for screen readers/tab order).
+// whether a body sits next to it changes. Sits on the left of its own
+// column's body, in natural DOM order (button before the content it
+// controls) - the stable anchor everything grows rightward from.
 .monster-column-header {
-  order: 2;
   flex: 0 0 24px;
   height: 100%;
   padding: 8px 0;
@@ -359,7 +357,7 @@ $scrollbar-width: 17px;
   gap: 6px;
   cursor: pointer;
   writing-mode: vertical-rl;
-  border-left: 1px solid #D7D6D6;
+  border-right: 1px solid #D7D6D6;
 
   &:hover { background-color: #F4F4F4; }
 
@@ -384,14 +382,13 @@ $scrollbar-width: 17px;
 }
 
 .monster-column-body {
-  order: 1;
   flex: 1 1 auto;
   min-width: 0;
   min-height: 0;
   overflow-x: hidden;
   overflow-y: auto;
   scrollbar-gutter: stable; // see .monster-column-media
-  padding-right: 8px;
+  padding-left: 8px;
 }
 
 .monster-column-collapsed {
@@ -401,7 +398,7 @@ $scrollbar-width: 17px;
   .monster-column-header {
     flex: 1 1 auto;
     width: 100%;
-    border-left: 0;
+    border-right: 0;
   }
 }
 

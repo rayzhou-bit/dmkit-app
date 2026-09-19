@@ -30,19 +30,18 @@ export const MIN_CARD_SIZE = {
   width: 12 * GRID_SIZE,
   height: 10 * GRID_SIZE,
 };
+// Width both Attributes/Combat need collapsed to strips - Card.scss's
+// .monster-content padding(8*2) + gaps(8*2) + media(108) + two 24px strips =
+// 188px, grid-snapped up (never down, or content clips) to 192px. Doubles as
+// both the default/created size and the hard resize floor (see
+// MONSTER_MIN_CARD_SIZE) - expanding a column grows the card past this, it
+// never needs to start any wider.
 export const MONSTER_CARD_SIZE = {
-  // Matches MONSTER_MIN_CARD_SIZE.width - see its comment. Starts at the
-  // narrowest non-squished width; the user can grow it from there.
-  width: 47 * GRID_SIZE,
+  width: 16 * GRID_SIZE,
   height: 36 * GRID_SIZE,
 };
-// Narrower than this and Media (Card.scss's minmax(108px, 1fr) column)
-// would have to shrink below its own floor to fit Attributes (184px) and
-// Combat (229px) at their fixed widths, which pushed the card into a
-// horizontal-scroll/overflow state - source of the "small jitter" bug.
-// 108 + 184 + 229 + 2*8 gap + 2*8 padding = 553, grid-rounded up to 564.
 export const MONSTER_MIN_CARD_SIZE = {
-  width: 47 * GRID_SIZE,
+  width: MONSTER_CARD_SIZE.width,
   height: MIN_CARD_SIZE.height,
 };
 

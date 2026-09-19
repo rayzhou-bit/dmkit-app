@@ -22,7 +22,9 @@ export const DEFAULT_SECTION_COLLAPSED = {
   bonusActions: true, reactions: true, legendaryActions: true,
 };
 
-export const DEFAULT_COLUMN_COLLAPSED = { attributes: false, combat: false };
+// Both start collapsed - a new card is small, and expanding a column grows
+// the card to fit it (see MONSTER_COLUMN_WIDTH_DELTA below).
+export const DEFAULT_COLUMN_COLLAPSED = { attributes: true, combat: true };
 
 // Fallback map for session.monsterCollapse lookups (useMonsterSectionHooks) -
 // view metadata, not part of card content.
@@ -93,6 +95,26 @@ export const MONSTER_COLUMNS = [
   { key: 'attributes', title: 'Attributes' },
   { key: 'combat', title: 'Combat' },
 ];
+
+// How much a card's rendered width grows on top of its persisted/base size
+// while a column is expanded - each column's fixed Card.scss width minus
+// the 24px collapsed-strip width (184-24, 229-24). Must match Card.scss's
+// grid-template-columns exactly.
+export const MONSTER_COLUMN_WIDTH_DELTA = {
+  attributes: 160,
+  combat: 205,
+};
+
+// Sum of MONSTER_COLUMN_WIDTH_DELTA for every currently-expanded column.
+// Deliberately a pure function of session state, not a stored/dispatched
+// value - useCardHooks adds this to the card's persisted width at render
+// time, so expansion can never desync from undo history (nothing about it
+// is ever written to project state). `collapse` is a card's raw
+// session.monsterCollapse[cardId] entry (may be undefined).
+export const getMonsterExpansionDelta = (collapse) => MONSTER_COLUMN_KEYS.reduce((sum, key) => {
+  const isCollapsed = collapse?.[key] ?? DEFAULT_COLUMN_COLLAPSED[key];
+  return isCollapsed ? sum : sum + (MONSTER_COLUMN_WIDTH_DELTA[key] ?? 0);
+}, 0);
 
 // Derived, not hand-listed - preserves MONSTER_SECTIONS' canonical order within each column.
 export const MONSTER_COLUMN_SECTIONS = MONSTER_COLUMN_KEYS.reduce((acc, key) => ({

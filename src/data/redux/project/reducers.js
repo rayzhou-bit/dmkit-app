@@ -13,6 +13,30 @@ import { buildMonsterContent, MONSTER_FIELD_KEYS } from '../../../constants/mons
 //  view -> tab
 //  pos -> position
 
+const applyCardSize = (state, { id, size }) => {
+  if (!state.activeViewId) return state;
+  const newSize = {
+    height: (Math.round(size.height.split('px').shift() / GRID_SIZE) * GRID_SIZE) + 'px',
+    width: (Math.round(size.width.split('px').shift() / GRID_SIZE) * GRID_SIZE) + 'px',
+  };
+  return {
+    ...state,
+    cards: {
+      ...state.cards,
+      [id]: {
+        ...state.cards[id],
+        views: {
+          ...state.cards[id].views,
+          [state.activeViewId]: {
+            ...state.cards[id].views[state.activeViewId],
+            size: newSize,
+          },
+        },
+      },
+    },
+  };
+};
+
 const initialState = {
   title: '',
   viewOrder: [],
@@ -196,30 +220,7 @@ const project = createSlice({
       }
       return { ...state, cards: newCards };
     },
-    updateCardSize: (state, { payload }) => {
-      const { id, size } = payload;
-      if (!state.activeViewId) return state;
-      const newSize = {
-        height: (Math.round(size.height.split('px').shift() / GRID_SIZE) * GRID_SIZE) + 'px',
-        width: (Math.round(size.width.split('px').shift() / GRID_SIZE) * GRID_SIZE) + 'px',
-      };
-      return {
-        ...state,
-        cards: {
-          ...state.cards,
-          [id]: {
-            ...state.cards[id],
-            views: {
-              ...state.cards[id].views,
-              [state.activeViewId]: {
-                ...state.cards[id].views[state.activeViewId],
-                size: newSize,
-              },
-            },
-          },
-        },
-      };
-    },
+    updateCardSize: (state, { payload }) => applyCardSize(state, payload),
     updateCardTitle: (state, { payload }) => {
       const { id, title } = payload;
       return {

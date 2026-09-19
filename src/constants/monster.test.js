@@ -123,4 +123,9 @@ describe('section/column metadata', () => {
   it('DEFAULT_COLLAPSED has exactly one entry per MONSTER_COLLAPSIBLE_KEYS entry', () => {
     expect(Object.keys(DEFAULT_COLLAPSED).sort()).toEqual([...MONSTER_COLLAPSIBLE_KEYS].sort());
   });
+
+  it('both Attributes and Combat default to collapsed - a new card starts small', () => {
+    expect(DEFAULT_COLLAPSED.attributes).toBe(true);
+    expect(DEFAULT_COLLAPSED.combat).toBe(true);
+  });
 });
