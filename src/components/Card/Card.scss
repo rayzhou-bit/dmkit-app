@@ -306,6 +306,7 @@ $scrollbar-width: 17px;
   gap: 8px;
   min-width: 0;
   min-height: 0;
+  overflow-x: hidden;
   overflow-y: auto;
 }
 
@@ -382,6 +383,7 @@ $scrollbar-width: 17px;
   flex: 1 1 auto;
   min-width: 0;
   min-height: 0;
+  overflow-x: hidden;
   overflow-y: auto;
   padding-right: 8px;
 }
@@ -453,6 +455,8 @@ $scrollbar-width: 17px;
 
   .monster-field-input,
   .monster-field-textarea {
+    width: 100%;
+    box-sizing: border-box;
     border: 1px solid #F4F4F4;
     border-radius: 4px;
     padding: 4px 6px;
@@ -483,7 +487,10 @@ $scrollbar-width: 17px;
 
 .monster-abilities {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  // minmax(0, 1fr), not bare 1fr - a bare 1fr track won't shrink below its
+  // content's intrinsic min-width (an <input>'s default is wide), which is
+  // exactly what was forcing this column to scroll horizontally.
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 6px;
 }
 .monster-ability-cell {
@@ -491,9 +498,11 @@ $scrollbar-width: 17px;
   flex-flow: column nowrap;
   align-items: center;
   gap: 2px;
+  min-width: 0; // grid items default to min-width:auto, same trap as the track
 
   .monster-ability-score {
     width: 100%;
+    min-width: 0;
     .monster-field-label { text-align: center; }
     .monster-field-input { text-align: center; }
   }
