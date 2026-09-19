@@ -429,4 +429,73 @@ describe('useMultiSelectHooks', () => {
     fireEvent.mouseDown(canvas, { button: 0 });
     expect(hooksRef.current.selectStyle).toEqual({ border: null });
   });
+
+  // Regression: checkCardInSelection did `pos.x + size.width` directly.
+  // size.width is a plain number for a never-resized card, but a "Npx"
+  // string once a card has been manually resized (applyCardSize) - adding a
+  // number and a string is concatenation, not a sum, so the NaN-poisoned
+  // comparison silently treated the card as always in-bounds, selecting it
+  // on a click anywhere near/right of its position, not just an actual
+  // overlapping click.
+  it('a click well outside a resized (string-size) card does not select it', () => {
+    const state = makeState({
+      project: {
+        present: {
+          activeViewId: 'v1',
+          viewOrder: ['v1'],
+          views: { v1: { pos: { x: 0, y: 0 }, scale: 1, cards: [] } },
+          cards: {
+            c1: { views: { v1: { pos: { x: 100, y: 100 }, size: { width: '200px', height: '200px' } } } },
+          },
+        },
+      },
+    });
+    const store = makeStore(state);
+    const hooksRef = { current: null };
+    const { getByTestId } = render(
+      <Provider store={store}>
+        <MultiSelectHarness hooksRef={hooksRef} panModifierRef={{ current: false }} />
+      </Provider>,
+    );
+    const container = getByTestId('container');
+    const canvas = getByTestId('canvas');
+    stubRect(container, { left: 0, top: 0, width: 1000, height: 1000 });
+
+    // Card's world bounds are x:[100,300], y:[100,300] - well clear of this click.
+    fireEvent.mouseDown(canvas, { button: 0, clientX: 600, clientY: 550 });
+
+    const selectActions = store.dispatched.filter((a) => a.type === 'session/setSelectedCards');
+    expect(selectActions.length).toBeGreaterThan(0);
+    expect(selectActions.at(-1).payload.cards).toEqual([]);
+  });
+
+  it('a click actually inside a resized (string-size) card still selects it', () => {
+    const state = makeState({
+      project: {
+        present: {
+          activeViewId: 'v1',
+          viewOrder: ['v1'],
+          views: { v1: { pos: { x: 0, y: 0 }, scale: 1, cards: [] } },
+          cards: {
+            c1: { views: { v1: { pos: { x: 100, y: 100 }, size: { width: '200px', height: '200px' } } } },
+          },
+        },
+      },
+    });
+    const store = makeStore(state);
+    const hooksRef = { current: null };
+    const { getByTestId } = render(
+      <Provider store={store}>
+        <MultiSelectHarness hooksRef={hooksRef} panModifierRef={{ current: false }} />
+      </Provider>,
+    );
+    const container = getByTestId('container');
+    const canvas = getByTestId('canvas');
+    stubRect(container, { left: 0, top: 0, width: 1000, height: 1000 });
+
+    fireEvent.mouseDown(canvas, { button: 0, clientX: 150, clientY: 150 });
+
+    const selectActions = store.dispatched.filter((a) => a.type === 'session/setSelectedCards');
+    expect(selectActions.at(-1).payload.cards).toEqual(['c1']);
+  });
 });

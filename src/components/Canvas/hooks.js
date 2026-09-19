@@ -29,6 +29,13 @@ import { isTextEntryTarget, isSpaceActivatedTarget } from '../../utils/focusUtil
 import { useGroupDragStore } from './groupDrag';
 import { useDeleteCardsHooks } from '../ToolMenu/hooks';
 
+// Persisted size is a plain number for a never-manually-resized card, or a
+// "Npx" string after a real react-rnd drag (see applyCardSize) - coercing
+// pos.x + "288px" gives a NaN-poisoned string concat, not a sum, which was
+// silently making every bounds check below pass regardless of the actual
+// click position.
+const sizeToNumber = (value) => typeof value === 'string' ? parseFloat(value) : value;
+
 const checkCardInSelection = (selectArea, cardArea) => {
   const {start, end} = selectArea;
   const {pos, size} = cardArea;
@@ -47,13 +54,15 @@ const checkCardInSelection = (selectArea, cardArea) => {
     topBound = end.y;
     bottomBound = start.y;
   }
+  const width = sizeToNumber(size.width);
+  const height = sizeToNumber(size.height);
   // The following checks if the card is outside of the bounds.
   // check if card is left or right of bounds
-  if (pos.x + size.width < leftBound || pos.x > rightBound) {
+  if (pos.x + width < leftBound || pos.x > rightBound) {
     return false;
   }
   // check if card is top or bottom of bounds
-  if (pos.y + size.height < topBound || pos.y > bottomBound) {
+  if (pos.y + height < topBound || pos.y > bottomBound) {
     return false;
   }
   return true;
