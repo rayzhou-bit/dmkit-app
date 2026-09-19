@@ -540,6 +540,7 @@ $scrollbar-width: 17px;
   .monster-portrait-placeholder {
     width: 100%;
     height: 100%;
+    box-sizing: border-box; // else the border pushes it to 98x98, clipped by overflow:hidden
     border: 1px dashed #D7D6D6;
     background-color: white;
     cursor: pointer;
