@@ -529,12 +529,13 @@ $scrollbar-width: 17px;
   overflow: hidden;
   background-color: #F4F4F4;
 
-  // Sized to the image's own aspect ratio, capped at 2x the old fixed
-  // 96x96 box - not stretched/cropped to fill a fixed square.
+  // Sized to the image's own aspect ratio - not stretched/cropped to fill
+  // a fixed square. Width capped at 2x the old fixed 96x96 box; height
+  // gets 1.5x that (288px) of headroom for portrait-oriented art.
   .monster-portrait-image {
     display: block;
     max-width: min(192px, 100%);
-    max-height: 192px;
+    max-height: 288px;
     width: auto;
     height: auto;
   }
@@ -573,6 +574,12 @@ $scrollbar-width: 17px;
     display: flex;
     align-items: center;
     justify-content: center;
+    opacity: 0;
+    transition: opacity .15s;
+  }
+  &:hover .monster-portrait-clear,
+  .monster-portrait-clear:focus-visible {
+    opacity: 1;
   }
 
   .monster-portrait-status,
