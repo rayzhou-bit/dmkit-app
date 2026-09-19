@@ -272,14 +272,17 @@ $scrollbar-width: 17px;
   }
 }
 
-// Monster stat-block card - 3 columns: Media, Attributes, Combat. All three
-// are fixed pixel widths (not fr) - expanding/collapsing Attributes/Combat
-// changes the CARD's own total width instead (useMonsterSectionHooks'
-// toggleColumn), so a column's toggle position only ever depends on what's
-// structurally to its left, never on a sibling's own collapse state.
+// Monster stat-block card - 3 columns: Media, Attributes, Combat. Media is
+// the only flexible (1fr) track - it absorbs any width beyond what
+// Attributes/Combat need, whether from manually resizing the card wider or
+// the 1.5x default width (MONSTER_CARD_SIZE), instead of leaving dead
+// space. Attributes/Combat stay fixed pixels - expanding/collapsing one
+// grows the CARD's own width instead (useMonsterSectionHooks' toggleColumn),
+// so a column's toggle position only ever depends on what's structurally to
+// its left, never on a sibling's own collapse state or Media's flex size.
 .monster-content {
   display: grid;
-  grid-template-columns: 108px 184px 229px;
+  grid-template-columns: minmax(108px, 1fr) 184px 229px;
   gap: 8px;
   padding: 6px 8px;
   height: 100%;
@@ -290,13 +293,13 @@ $scrollbar-width: 17px;
   color: #363B4E;
 }
 .monster-content.monster-content-attributes-collapsed {
-  grid-template-columns: 108px 24px 229px;
+  grid-template-columns: minmax(108px, 1fr) 24px 229px;
 }
 .monster-content.monster-content-combat-collapsed {
-  grid-template-columns: 108px 184px 24px;
+  grid-template-columns: minmax(108px, 1fr) 184px 24px;
 }
 .monster-content.monster-content-attributes-collapsed.monster-content-combat-collapsed {
-  grid-template-columns: 108px 24px 24px;
+  grid-template-columns: minmax(108px, 1fr) 24px 24px;
 }
 
 .monster-column-media {
@@ -311,7 +314,9 @@ $scrollbar-width: 17px;
   // needed - otherwise content jitters horizontally by ~17px every time a
   // collapse toggle pushes this column's content just past/under its
   // visible height (e.g. Media growing/shrinking as siblings toggle).
-  scrollbar-gutter: stable;
+  // both-edges: a single reserved edge would offset the centered portrait
+  // below (align-self: center centers within the narrowed content box).
+  scrollbar-gutter: stable both-edges;
 }
 
 .monster-notes-field {
@@ -517,6 +522,7 @@ $scrollbar-width: 17px;
 
 .monster-portrait {
   position: relative;
+  align-self: center; // sits at the top of the column already (first child) - just center it
   flex: 0 0 96px;
   width: 96px;
   height: 96px;

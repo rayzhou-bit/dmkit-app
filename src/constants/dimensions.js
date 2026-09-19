@@ -32,17 +32,18 @@ export const MIN_CARD_SIZE = {
 };
 // Width both Attributes/Combat need collapsed to strips - Card.scss's
 // .monster-content padding(8*2) + gaps(8*2) + media(108) + two 24px strips =
-// 188px, grid-snapped up (never down, or content clips) to 192px. Doubles as
-// both the default/created size and the hard resize floor (see
-// MONSTER_MIN_CARD_SIZE) - expanding a column grows the card past this, it
-// never needs to start any wider.
-export const MONSTER_CARD_SIZE = {
-  width: 16 * GRID_SIZE,
-  height: 36 * GRID_SIZE,
-};
+// 188px, grid-snapped up (never down, or content clips) to 192px. The hard
+// resize floor (react-rnd's minWidth, see useCardHooks) - Media's
+// minmax(108px, 1fr) column absorbs any width above this.
 export const MONSTER_MIN_CARD_SIZE = {
-  width: MONSTER_CARD_SIZE.width,
+  width: 16 * GRID_SIZE,
   height: MIN_CARD_SIZE.height,
+};
+// Default/created size - 1.5x the min width, giving Media some breathing
+// room from the start instead of sitting at its bare floor.
+export const MONSTER_CARD_SIZE = {
+  width: 1.5 * MONSTER_MIN_CARD_SIZE.width,
+  height: 36 * GRID_SIZE,
 };
 
 export const ZOOM_STEP = 0.1;                 // additive step, buttons + keyboard
