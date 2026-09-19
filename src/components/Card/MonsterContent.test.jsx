@@ -325,4 +325,50 @@ describe('MonsterContent - Combat entry lists', () => {
     expect(header.className).not.toContain('monster-column-header-empty');
     expect(container.querySelector('.monster-column-dot')).not.toBeNull();
   });
+
+  it('a lines section shows one dot per filled field', () => {
+    // 'identity'/Creature has 3 fields (size, creatureType, alignment) - fill 2.
+    const content = buildMonsterContent({ size: 'Large', creatureType: 'dragon' });
+    // Stats collapsed (default), Creature section itself defaults uncollapsed but
+    // that doesn't matter for the column-level dot count on the collapsed column.
+    const { getByText, container } = renderMonster(content);
+    const header = getByText('Stats').closest('button');
+    // Only one section (identity) has content, so the column shows 1 dot -
+    // the per-section dot count is checked directly below via the hook.
+    expect(container.querySelectorAll('.monster-column-dot').length).toBe(1);
+    expect(header.className).not.toContain('monster-column-header-empty');
+  });
+
+  it('a section with more than 5 filled fields caps at 5 dots', () => {
+    // Proficiencies & Senses has 11 fields - fill 7 of them.
+    const content = buildMonsterContent({
+      savingThrows: 'Dex +6', skills: 'Perception +13', damageVulnerabilities: 'fire',
+      damageResistances: 'cold', damageImmunities: 'poison', senses: 'darkvision 60 ft.',
+      languages: 'Common',
+    });
+    const { getByText } = renderMonster(content, { attributes: false, proficiencies: true });
+    const header = getByText('Proficiencies & Senses').closest('button');
+    expect(header.querySelectorAll('.monster-section-dot').length).toBe(5);
+  });
+
+  it('an entries section shows one dot per content-bearing entry', () => {
+    const content = buildMonsterContent({
+      actions: [
+        { id: 'e1', name: 'Scimitar', description: '' },
+        { id: 'e2', name: 'Bow', description: '' },
+        { id: 'e3', name: '', description: '' }, // blank - doesn't count
+      ],
+    });
+    const { getByText } = renderMonster(content, { combat: false, actions: true });
+    const header = getByText('Actions').closest('button');
+    expect(header.querySelectorAll('.monster-section-dot').length).toBe(2);
+  });
+
+  it('a column shows one dot per section with content (not per field)', () => {
+    // Two sections filled (identity + proficiencies) - column dot count is 2, not the field total.
+    const content = buildMonsterContent({ size: 'Large', savingThrows: 'Dex +6' });
+    const { getByText } = renderMonster(content);
+    const header = getByText('Stats').closest('button');
+    expect(header.querySelectorAll('.monster-column-dot').length).toBe(2);
+  });
 });

@@ -41,6 +41,9 @@ export const MONSTER_ENTRY_TEXT_MAX_LENGTH = 1000;
 // cap - 50 entries * 5 sections * (name+text caps) stays well under that
 // even alongside a portrait, but is otherwise an arbitrary sanity ceiling.
 export const MONSTER_MAX_ENTRIES_PER_SECTION = 50;
+// Collapsed column/section dots (useMonsterSectionHooks) - one per item
+// with content, capped so a big section doesn't become a wall of dots.
+export const MONSTER_MAX_DOTS = 5;
 
 export const MONSTER_FIELDS = {
   notes: { label: 'Quick Notes', placeholder: 'Scratch notes…', maxLength: MONSTER_NOTES_MAX_LENGTH, multiline: true, hideLabel: true },

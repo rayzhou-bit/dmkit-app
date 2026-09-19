@@ -10,7 +10,7 @@ import { processImageFile } from '../../utils/imageUtils';
 import { MAX_PORTRAIT_DATA_URI_LENGTH, PORTRAIT_MAX_EDGE_STEPS } from '../../constants/images';
 import {
   MONSTER_FIELDS, MONSTER_SECTIONS, MONSTER_COLUMN_SECTIONS, DEFAULT_COLLAPSED, getMonsterExpansionDelta,
-  MONSTER_MAX_ENTRIES_PER_SECTION, normalizeMonsterEntries, monsterFieldHasContent,
+  MONSTER_MAX_ENTRIES_PER_SECTION, MONSTER_MAX_DOTS, normalizeMonsterEntries, entryHasContent, monsterFieldHasContent,
 } from '../../constants/monster';
 import { POPUP_KEYS } from '../Popup/PopupKey';
 import { ACTION_TYPE } from '../../components-shared/Dropdowns/ActionDropdown';
@@ -673,16 +673,28 @@ export const useMonsterSectionHooks = ({ cardId }) => {
 
   const isCollapsed = (key) => collapse?.[key] ?? DEFAULT_COLLAPSED[key] ?? false;
 
-  const sectionHasContent = (key) => {
+  // One dot per item with content - a filled field for lines/abilities
+  // sections, a filled entry for entries sections - capped so a big section
+  // (Proficiencies & Senses can have up to 11 filled fields) doesn't turn
+  // into a wall of dots.
+  const sectionContentCount = (key) => {
     const section = MONSTER_SECTIONS.find(s => s.key === key);
-    if (!section) return false;
-    return section.fields.some(f => monsterFieldHasContent(content, f));
+    if (!section) return 0;
+    const count = section.layout === 'entries'
+      ? normalizeMonsterEntries(content?.[section.fields[0]]).filter(entryHasContent).length
+      : section.fields.filter(f => monsterFieldHasContent(content, f)).length;
+    return Math.min(count, MONSTER_MAX_DOTS);
   };
 
   return {
     isCollapsed,
-    sectionHasContent,
-    columnHasContent: (columnKey) => (MONSTER_COLUMN_SECTIONS[columnKey] ?? []).some(s => sectionHasContent(s.key)),
+    sectionContentCount,
+    // A column's own "item" is a section - one dot per section with any
+    // content inside, same cap.
+    columnContentCount: (columnKey) => Math.min(
+      (MONSTER_COLUMN_SECTIONS[columnKey] ?? []).filter(s => sectionContentCount(s.key) > 0).length,
+      MONSTER_MAX_DOTS,
+    ),
     toggleSection: (key) => dispatch(actions.session.setMonsterCollapsed({
       id: cardId,
       key,

@@ -325,13 +325,15 @@ $scrollbar-width: 17px;
 .monster-media-top {
   display: flex;
   flex-flow: row wrap; // falls back to stacking only if the column gets too narrow for both
+  justify-content: center;
   gap: 14px;
   align-items: flex-start;
 }
 
 .monster-media-fields {
-  flex: 1 1 80px;
+  flex: 0 1 110px;
   min-width: 80px;
+  max-width: 110px;
   display: flex;
   flex-flow: column nowrap;
   gap: 6px;
@@ -374,6 +376,14 @@ $scrollbar-width: 17px;
     resize: none;
     overflow-x: hidden;
     overflow-y: auto;
+    // field-sizing/max-height are separate properties from height - the
+    // generic .monster-field-textarea rule's field-sizing: content and
+    // max-height: 200px (for Saving Throws etc.) aren't overridden by this
+    // rule's own height:100% (different properties, cascade independently),
+    // and DO apply here too unless reset - they were silently capping notes
+    // back to a fixed content-fit size, undoing "fills the card" above.
+    field-sizing: fixed;
+    max-height: none;
   }
 }
 
@@ -424,6 +434,7 @@ $scrollbar-width: 17px;
 
   .monster-column-caret {
     writing-mode: horizontal-tb;
+    flex-shrink: 0;
     width: 10px;
     font-size: 10px;
     color: #A0A4B4;
@@ -435,7 +446,16 @@ $scrollbar-width: 17px;
     letter-spacing: 0.06em;
     text-align: left;
   }
+  .monster-column-dots {
+    writing-mode: horizontal-tb;
+    flex-shrink: 0;
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: center;
+    gap: 3px;
+  }
   .monster-column-dot {
+    flex-shrink: 0;
     width: 6px;
     height: 6px;
     border-radius: 50%;
@@ -496,17 +516,32 @@ $scrollbar-width: 17px;
   &:hover { background-color: #F4F4F4; }
 
   .monster-section-caret {
+    flex-shrink: 0;
     width: 10px;
     font-size: 10px;
     color: #A0A4B4;
   }
   .monster-section-title {
+    // flex:1 1 auto + min-width:0 - takes the remaining space and wraps
+    // cleanly there, instead of the caret/dots (fixed-size, non-text)
+    // getting squeezed by the flex algorithm's default even-shrink
+    // behavior (that was squishing the dot into an oval on long titles
+    // like "Proficiencies & Senses").
+    flex: 1 1 auto;
+    min-width: 0;
     font-size: 12px;
     font-weight: 600;
     letter-spacing: 0.05em;
     text-align: left;
   }
+  .monster-section-dots {
+    flex-shrink: 0;
+    display: flex;
+    flex-flow: row nowrap;
+    gap: 3px;
+  }
   .monster-section-dot {
+    flex-shrink: 0;
     width: 6px;
     height: 6px;
     border-radius: 50%;

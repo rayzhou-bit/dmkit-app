@@ -6,7 +6,7 @@ import CollapsibleColumn from './CollapsibleColumn';
 describe('CollapsibleColumn', () => {
   it('renders the title and a real button header', () => {
     const { getByText, container } = render(
-      <CollapsibleColumn title='Combat' isCollapsed={false} hasContent={false} onToggle={() => {}}>
+      <CollapsibleColumn title='Combat' isCollapsed={false} dotCount={0} onToggle={() => {}}>
         <span>body</span>
       </CollapsibleColumn>
     );
@@ -16,14 +16,14 @@ describe('CollapsibleColumn', () => {
 
   it('aria-expanded mirrors !isCollapsed', () => {
     const { container, rerender } = render(
-      <CollapsibleColumn title='Combat' isCollapsed={false} hasContent={false} onToggle={() => {}}>
+      <CollapsibleColumn title='Combat' isCollapsed={false} dotCount={0} onToggle={() => {}}>
         <span>body</span>
       </CollapsibleColumn>
     );
     expect(container.querySelector('.monster-column-header').getAttribute('aria-expanded')).toBe('true');
 
     rerender(
-      <CollapsibleColumn title='Combat' isCollapsed={true} hasContent={false} onToggle={() => {}}>
+      <CollapsibleColumn title='Combat' isCollapsed={true} dotCount={0} onToggle={() => {}}>
         <span>body</span>
       </CollapsibleColumn>
     );
@@ -32,14 +32,14 @@ describe('CollapsibleColumn', () => {
 
   it('children are present only when expanded', () => {
     const { container, queryByText, rerender } = render(
-      <CollapsibleColumn title='Combat' isCollapsed={false} hasContent={false} onToggle={() => {}}>
+      <CollapsibleColumn title='Combat' isCollapsed={false} dotCount={0} onToggle={() => {}}>
         <span>body</span>
       </CollapsibleColumn>
     );
     expect(queryByText('body')).not.toBeNull();
 
     rerender(
-      <CollapsibleColumn title='Combat' isCollapsed={true} hasContent={false} onToggle={() => {}}>
+      <CollapsibleColumn title='Combat' isCollapsed={true} dotCount={0} onToggle={() => {}}>
         <span>body</span>
       </CollapsibleColumn>
     );
@@ -50,7 +50,7 @@ describe('CollapsibleColumn', () => {
   it('click calls onToggle once', () => {
     const onToggle = vi.fn();
     const { container } = render(
-      <CollapsibleColumn title='Combat' isCollapsed={false} hasContent={false} onToggle={onToggle}>
+      <CollapsibleColumn title='Combat' isCollapsed={false} dotCount={0} onToggle={onToggle}>
         <span>body</span>
       </CollapsibleColumn>
     );
@@ -58,27 +58,28 @@ describe('CollapsibleColumn', () => {
     expect(onToggle).toHaveBeenCalledTimes(1);
   });
 
-  it('the dot renders only when collapsed AND hasContent', () => {
+  it('dots render only when collapsed AND dotCount > 0, one per count', () => {
     const cases = [
-      [false, false, false],
-      [false, true, false],
-      [true, false, false],
-      [true, true, true],
+      [false, 0, 0],
+      [false, 3, 0],
+      [true, 0, 0],
+      [true, 1, 1],
+      [true, 3, 3],
     ];
-    for (const [isCollapsed, hasContent, expectDot] of cases) {
+    for (const [isCollapsed, dotCount, expectedDots] of cases) {
       const { container, unmount } = render(
-        <CollapsibleColumn title='Combat' isCollapsed={isCollapsed} hasContent={hasContent} onToggle={() => {}}>
+        <CollapsibleColumn title='Combat' isCollapsed={isCollapsed} dotCount={dotCount} onToggle={() => {}}>
           <span>body</span>
         </CollapsibleColumn>
       );
-      expect(!!container.querySelector('.monster-column-dot')).toBe(expectDot);
+      expect(container.querySelectorAll('.monster-column-dot').length).toBe(expectedDots);
       unmount();
     }
   });
 
   it('the title text stays in the DOM when collapsed, and the root carries the collapsed class', () => {
     const { getByText, container } = render(
-      <CollapsibleColumn title='Combat' isCollapsed={true} hasContent={false} onToggle={() => {}}>
+      <CollapsibleColumn title='Combat' isCollapsed={true} dotCount={0} onToggle={() => {}}>
         <span>body</span>
       </CollapsibleColumn>
     );

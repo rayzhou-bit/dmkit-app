@@ -16,7 +16,7 @@ import './Card.scss';
 const MonsterContent = ({
   cardId,
 }) => {
-  const { isCollapsed, sectionHasContent, columnHasContent, toggleSection, toggleColumn } = useMonsterSectionHooks({ cardId });
+  const { isCollapsed, sectionContentCount, columnContentCount, toggleSection, toggleColumn } = useMonsterSectionHooks({ cardId });
 
   const collapsedModifierClasses = MONSTER_COLUMNS
     .filter(column => isCollapsed(column.key))
@@ -45,7 +45,7 @@ const MonsterContent = ({
           key={column.key}
           title={column.title}
           isCollapsed={isCollapsed(column.key)}
-          hasContent={columnHasContent(column.key)}
+          dotCount={columnContentCount(column.key)}
           onToggle={() => toggleColumn(column.key)}
         >
           {MONSTER_COLUMN_SECTIONS[column.key].map(section => (
@@ -53,7 +53,7 @@ const MonsterContent = ({
               key={section.key}
               title={section.title}
               isCollapsed={isCollapsed(section.key)}
-              hasContent={sectionHasContent(section.key)}
+              dotCount={sectionContentCount(section.key)}
               onToggle={() => toggleSection(section.key)}
             >
               <SectionBody cardId={cardId} section={section} />

@@ -10,20 +10,24 @@ import './Card.scss';
 const CollapsibleColumn = ({
   title,
   isCollapsed,
-  hasContent,
+  dotCount, // 0 = empty; one dot per section-with-content inside, capped (see useMonsterSectionHooks)
   onToggle,
   children,
 }) => (
   <section className={'monster-column' + (isCollapsed ? ' monster-column-collapsed' : '')}>
     <button
       type='button'
-      className={'monster-column-header' + (isCollapsed && !hasContent ? ' monster-column-header-empty' : '')}
+      className={'monster-column-header' + (isCollapsed && !dotCount ? ' monster-column-header-empty' : '')}
       aria-expanded={!isCollapsed}
       onClick={onToggle}
     >
       <span className='monster-column-caret'>{isCollapsed ? '▸' : '▾'}</span>
       <span className='monster-column-title'>{title}</span>
-      {isCollapsed && hasContent && <span className='monster-column-dot' />}
+      {isCollapsed && dotCount > 0 && (
+        <span className='monster-column-dots'>
+          {Array.from({ length: dotCount }, (_, i) => <span key={i} className='monster-column-dot' />)}
+        </span>
+      )}
     </button>
     {!isCollapsed && <div className='monster-column-body'>{children}</div>}
   </section>
