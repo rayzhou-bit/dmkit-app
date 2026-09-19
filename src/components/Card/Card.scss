@@ -405,10 +405,19 @@ $scrollbar-width: 17px;
   padding: 8px 0;
   background-color: transparent;
   display: flex;
+  // button's global justify-content: center (App.scss) would otherwise
+  // vertically center the caret+title in the strip - start them at the top
+  // instead ("left" as the user reads it, since the text is rotated).
+  justify-content: flex-start;
   align-items: center;
   gap: 6px;
   cursor: pointer;
   writing-mode: vertical-rl;
+  // Left border only when uncollapsed (this rule) - separates the strip
+  // from whatever column/body sits to its left. Collapsed strips get
+  // neither border (see .monster-column-collapsed below); they look like
+  // a self-contained pill instead.
+  border-left: 1px solid #D7D6D6;
   border-right: 1px solid #D7D6D6;
 
   &:hover { background-color: #F4F4F4; }
@@ -424,6 +433,7 @@ $scrollbar-width: 17px;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.06em;
+    text-align: left;
   }
   .monster-column-dot {
     width: 6px;
@@ -460,6 +470,7 @@ $scrollbar-width: 17px;
   .monster-column-header {
     flex: 1 1 auto;
     width: 100%;
+    border-left: 0;
     border-right: 0;
   }
 }

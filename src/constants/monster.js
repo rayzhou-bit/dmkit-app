@@ -47,9 +47,9 @@ export const MONSTER_FIELDS = {
 
   // icon: label doubles as the sr-only accessible name AND the hover
   // tooltip text (MonsterTextField) - replaces the inline text label.
-  armorClass: { label: 'Armor Class', placeholder: '18 (natural armor)', maxLength: 60, icon: AcShieldIcon },
-  hitPoints: { label: 'Hit Points', placeholder: '195 (17d12 + 85)', maxLength: 60, icon: HpHeartIcon },
-  speed: { label: 'Speed', placeholder: '40 ft., fly 80 ft.', maxLength: 120, icon: SpeedBoltIcon },
+  armorClass: { label: 'Armor Class', placeholder: '18', maxLength: 60, icon: AcShieldIcon },
+  hitPoints: { label: 'Hit Points', placeholder: '195', maxLength: 60, icon: HpHeartIcon },
+  speed: { label: 'Speed', placeholder: '40 ft.', maxLength: 120, icon: SpeedBoltIcon },
 
   str: { label: 'STR', maxLength: 3, numeric: true },
   dex: { label: 'DEX', maxLength: 3, numeric: true },
@@ -58,13 +58,13 @@ export const MONSTER_FIELDS = {
   wis: { label: 'WIS', maxLength: 3, numeric: true },
   cha: { label: 'CHA', maxLength: 3, numeric: true },
 
-  savingThrows: { label: 'Saving Throws', placeholder: 'Dex +6, Con +11, Wis +7', maxLength: 200 },
-  skills: { label: 'Skills', placeholder: 'Perception +13, Stealth +6', maxLength: 200 },
+  savingThrows: { label: 'Saving Throws', placeholder: 'Dex +6', maxLength: 200 },
+  skills: { label: 'Skills', placeholder: 'Perception +13', maxLength: 200 },
   damageVulnerabilities: { label: 'Vulnerabilities', placeholder: 'fire', maxLength: 200 },
-  damageResistances: { label: 'Resistances', placeholder: 'bludgeoning from nonmagical attacks', maxLength: 200 },
+  damageResistances: { label: 'Resistances', placeholder: 'cold', maxLength: 200 },
   damageImmunities: { label: 'Immunities', placeholder: 'fire', maxLength: 200 },
-  conditionImmunities: { label: 'Condition Immunities', placeholder: 'charmed, frightened', maxLength: 200 },
-  senses: { label: 'Senses', placeholder: 'blindsight 60 ft., passive Perception 23', maxLength: 200 },
+  conditionImmunities: { label: 'Condition Immunities', placeholder: 'charmed', maxLength: 200 },
+  senses: { label: 'Senses', placeholder: 'darkvision 60 ft.', maxLength: 200 },
   languages: { label: 'Languages', placeholder: 'Common, Draconic', maxLength: 200 },
   challengeRating: { label: 'Challenge', placeholder: '17', maxLength: 20 },
   xp: { label: 'XP', placeholder: '18,000', maxLength: 20 },
