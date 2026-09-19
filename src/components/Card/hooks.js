@@ -5,7 +5,7 @@ import useOutsideClick from '../../utils/useOutsideClick';
 import { copySelectedCard } from '../../data/redux/thunkActions';
 import { actions, selectors } from '../../data/redux';
 import { CARD_COLOR_KEYS, LIGHT_COLORS } from '../../constants/colors';
-import { getCardType, hasCardContent } from '../../constants/cards';
+import { getCardType, hasCardContent, CARD_TYPES } from '../../constants/cards';
 import { processImageFile } from '../../utils/imageUtils';
 import { MAX_PORTRAIT_DATA_URI_LENGTH, PORTRAIT_MAX_EDGE_STEPS } from '../../constants/images';
 import { MONSTER_FIELDS, MONSTER_SECTIONS, MONSTER_COLUMN_SECTIONS, DEFAULT_COLLAPSED } from '../../constants/monster';
@@ -15,7 +15,7 @@ import { useGroupDragPosition } from '../Canvas/groupDrag';
 
 import LibraryIcon from '../../assets/icons/library-open.svg';
 import RedTrashIcon from '../../assets/icons/trash-red.svg';
-import { DEFAULT_CARD_POSITION } from '../../constants/dimensions';
+import { DEFAULT_CARD_POSITION, MIN_CARD_SIZE, MONSTER_MIN_CARD_SIZE } from '../../constants/dimensions';
 import generateUID from '../../utils/generateUID';
 
 export const ANIMATION = {
@@ -40,6 +40,8 @@ export const useCardHooks = ({
     pos: cardPosition,
     size: cardSize,
   } = useSelector(state => state.project.present.cards[cardId].views[activeTab]);
+  const cardType = useSelector(state => getCardType(state.project.present.cards[cardId]));
+  const minSize = cardType === CARD_TYPES.monster ? MONSTER_MIN_CARD_SIZE : MIN_CARD_SIZE;
 
   const [isDragging, setIsDragging] = useState(false);
   const [isSelected, setIsSelected] = useState(false);
@@ -81,6 +83,7 @@ export const useCardHooks = ({
     isSelected: selectedCards.includes(cardId),
     activeTabScale,
     size: cardSize,
+    minSize,
     position: groupPosition ?? cardPosition,
     rndStyle: { zIndex },
     animationStyle: { animation: cardAnimation ? cardAnimation[cardId] : null },
