@@ -562,11 +562,17 @@ $scrollbar-width: 17px;
     right: 2px;
     width: 18px;
     height: 18px;
+    box-sizing: border-box; // it's a <button> - UA padding/border would blow past 18x18, making it an oval, not a circle
+    padding: 0;
+    border: 0;
     line-height: 1;
     border-radius: 50%;
     background-color: rgba(0, 0, 0, 0.55);
     color: white;
     cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .monster-portrait-status,
