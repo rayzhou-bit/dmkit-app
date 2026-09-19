@@ -323,10 +323,16 @@ $scrollbar-width: 17px;
   flex: 1 1 auto;
   min-height: 0;
 
-  .monster-field-textarea {
+  // .monster-field.monster-notes-field (compound, not a plain descendant
+  // selector) - needs to outrank .monster-field .monster-field-textarea's
+  // resize:vertical below, which is otherwise equal specificity and would
+  // win on source order alone.
+  &.monster-field .monster-field-textarea {
     height: 100%;
-    min-height: 60px;
+    min-height: 60px; // scales with the card via flex:1 1 auto/height:100% above, not manually
     resize: none;
+    overflow-x: hidden;
+    overflow-y: auto;
   }
 }
 
