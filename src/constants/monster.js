@@ -62,14 +62,17 @@ export const MONSTER_FIELDS = {
   wis: { label: 'WIS', maxLength: 3, numeric: true },
   cha: { label: 'CHA', maxLength: 3, numeric: true },
 
-  savingThrows: { label: 'Saving Throws', placeholder: 'Dex +6', maxLength: 200 },
-  skills: { label: 'Skills', placeholder: 'Perception +13', maxLength: 200 },
-  damageVulnerabilities: { label: 'Vulnerabilities', placeholder: 'fire', maxLength: 200 },
-  damageResistances: { label: 'Resistances', placeholder: 'cold', maxLength: 200 },
-  damageImmunities: { label: 'Immunities', placeholder: 'fire', maxLength: 200 },
-  conditionImmunities: { label: 'Condition Immunities', placeholder: 'charmed', maxLength: 200 },
-  senses: { label: 'Senses', placeholder: 'darkvision 60 ft.', maxLength: 200 },
-  languages: { label: 'Languages', placeholder: 'Common, Draconic', maxLength: 200 },
+  // multiline: these can run long (comma-separated lists) - grows downward
+  // to fit its content instead of clipping/scrolling internally like a
+  // fixed-height input would (see .monster-field-textarea's field-sizing).
+  savingThrows: { label: 'Saving Throws', placeholder: 'Dex +6', maxLength: 200, multiline: true },
+  skills: { label: 'Skills', placeholder: 'Perception +13', maxLength: 200, multiline: true },
+  damageVulnerabilities: { label: 'Vulnerabilities', placeholder: 'fire', maxLength: 200, multiline: true },
+  damageResistances: { label: 'Resistances', placeholder: 'cold', maxLength: 200, multiline: true },
+  damageImmunities: { label: 'Immunities', placeholder: 'fire', maxLength: 200, multiline: true },
+  conditionImmunities: { label: 'Condition Immunities', placeholder: 'charmed', maxLength: 200, multiline: true },
+  senses: { label: 'Senses', placeholder: 'darkvision 60 ft.', maxLength: 200, multiline: true },
+  languages: { label: 'Languages', placeholder: 'Common, Draconic', maxLength: 200, multiline: true },
   challengeRating: { label: 'Challenge', placeholder: '17', maxLength: 20 },
   xp: { label: 'XP', placeholder: '18,000', maxLength: 20 },
   proficiencyBonus: { label: 'Proficiency Bonus', placeholder: '+6', maxLength: 10 },

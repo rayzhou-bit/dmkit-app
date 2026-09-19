@@ -485,6 +485,10 @@ $scrollbar-width: 17px;
   padding: 6px 0;
   background-color: transparent;
   display: flex;
+  // button's global justify-content: center (App.scss) would otherwise
+  // center the caret+title in the row - left-align them instead, same fix
+  // as .monster-column-header.
+  justify-content: flex-start;
   align-items: center;
   gap: 6px;
   cursor: pointer;
@@ -500,6 +504,7 @@ $scrollbar-width: 17px;
     font-size: 12px;
     font-weight: 600;
     letter-spacing: 0.05em;
+    text-align: left;
   }
   .monster-section-dot {
     width: 6px;
@@ -616,8 +621,17 @@ $scrollbar-width: 17px;
   }
 
   .monster-field-textarea {
-    resize: vertical;
+    resize: none;
     min-height: 40px;
+    max-height: 200px;
+    overflow-y: auto;
+    // Grows downward to fit typed content (a long comma-separated list,
+    // e.g. Saving Throws/Senses) instead of clipping/scrolling like a
+    // fixed-size box - capped by max-height above, scrolls past that.
+    // notes' own override (.monster-notes-field.monster-field, higher
+    // specificity) sets an explicit height:100% instead, which wins over
+    // this regardless - only fields that don't override height get it.
+    field-sizing: content;
   }
 }
 
