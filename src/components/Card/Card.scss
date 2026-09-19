@@ -928,6 +928,65 @@ $scrollbar-width: 17px;
 
   .library-monster-thumb { width: 64px; height: 64px; }
 }
+.library-monster-subtitle {
+  font-family: Roboto;
+  font-style: italic;
+  font-size: 11px;
+  color: #7E849A;
+}
+.library-monster-defenses {
+  display: flex;
+  flex-flow: row wrap;
+  gap: 6px;
+}
+.library-monster-defense-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border: 1px solid #D7D6D6;
+  border-radius: 6px;
+  padding: 2px 6px;
+  font-family: Roboto;
+  font-size: 11px;
+  font-weight: 600;
+  color: #363B4E;
+}
+.library-monster-defense-icon {
+  width: 12px;
+  height: 12px;
+  display: block;
+}
+.library-monster-abilities {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 4px;
+}
+.library-monster-ability {
+  display: flex;
+  flex-flow: column nowrap;
+  align-items: center;
+  gap: 1px;
+
+  .library-monster-ability-label {
+    font-family: Roboto;
+    font-size: 9px;
+    font-weight: 600;
+    color: #A0A4B4;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .library-monster-ability-score {
+    font-family: Roboto;
+    font-size: 12px;
+    font-weight: 700;
+    color: #363B4E;
+  }
+  .library-monster-ability-mod {
+    font-family: Roboto;
+    font-size: 10px;
+    color: #7E849A;
+  }
+}
 .library-monster-section {
   padding: 4px 0;
   border-bottom: 1px solid #F4F4F4;

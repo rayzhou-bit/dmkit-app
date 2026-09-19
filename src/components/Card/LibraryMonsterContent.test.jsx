@@ -93,6 +93,51 @@ describe('LibraryMonsterContent', () => {
     expect(queryByText('Actions')).toBeNull();
   });
 
+  it('expanded view shows one combined subtitle line, not a separate Creature section', () => {
+    const content = buildMonsterContent({ size: 'Huge', creatureType: 'dragon (red)', alignment: 'chaotic evil' });
+    const { getByText, queryByText, container } = renderLibraryMonster(content, { isExpanded: true });
+    expect(getByText('Huge dragon (red), chaotic evil')).not.toBeNull();
+    expect(queryByText('Creature')).toBeNull();
+    expect(queryByText('Size')).toBeNull();
+    expect(container.querySelector('.library-monster-subtitle')).not.toBeNull();
+  });
+
+  it('expanded view shows AC/HP/Speed as icon chips, not label:value lines', () => {
+    const content = buildMonsterContent({ armorClass: '18', hitPoints: '195', speed: '40 ft.' });
+    const { container, getByText, queryByText } = renderLibraryMonster(content, { isExpanded: true });
+    const chips = container.querySelectorAll('.library-monster-defense-chip');
+    expect(chips.length).toBe(3);
+    expect(getByText('18')).not.toBeNull();
+    expect(getByText('195')).not.toBeNull();
+    expect(getByText('40 ft.')).not.toBeNull();
+    // no leftover "Armor Class"/"Hit Points" text labels (those are icon+value chips now)
+    expect(queryByText('Armor Class')).toBeNull();
+    expect(queryByText('Hit Points')).toBeNull();
+  });
+
+  it('expanded view omits the defenses row entirely when AC/HP/Speed are all blank', () => {
+    const content = buildMonsterContent({ creatureType: 'dragon' });
+    const { container } = renderLibraryMonster(content, { isExpanded: true });
+    expect(container.querySelector('.library-monster-defenses')).toBeNull();
+  });
+
+  it('expanded view shows all 6 ability scores as a grid when any is filled, blanks as —', () => {
+    const content = buildMonsterContent({ str: '18', dex: '14' });
+    const { container, getByText } = renderLibraryMonster(content, { isExpanded: true });
+    const abilities = container.querySelectorAll('.library-monster-ability');
+    expect(abilities.length).toBe(6);
+    expect(getByText('18')).not.toBeNull();
+    expect(getByText('+4')).not.toBeNull(); // STR 18 modifier
+    const blankScores = container.querySelectorAll('.library-monster-ability-score');
+    expect(Array.from(blankScores).filter(el => el.textContent === '—').length).toBe(4);
+  });
+
+  it('expanded view omits the ability score grid when all 6 are blank', () => {
+    const content = buildMonsterContent({ creatureType: 'dragon' });
+    const { queryByText } = renderLibraryMonster(content, { isExpanded: true });
+    expect(queryByText('Ability Scores')).toBeNull();
+  });
+
   it('condensed view does not show notes', () => {
     const content = buildMonsterContent({ notes: 'lair is flooded' });
     const { container, queryByText } = renderLibraryMonster(content, { isExpanded: false });
