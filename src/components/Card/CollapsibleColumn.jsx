@@ -17,7 +17,7 @@ const CollapsibleColumn = ({
   <section className={'monster-column' + (isCollapsed ? ' monster-column-collapsed' : '')}>
     <button
       type='button'
-      className='monster-column-header'
+      className={'monster-column-header' + (isCollapsed && !hasContent ? ' monster-column-header-empty' : '')}
       aria-expanded={!isCollapsed}
       onClick={onToggle}
     >

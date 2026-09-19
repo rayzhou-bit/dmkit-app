@@ -14,7 +14,7 @@ const CollapsibleSection = ({
   <section className='monster-section'>
     <button
       type='button'
-      className='monster-section-header'
+      className={'monster-section-header' + (isCollapsed && !hasContent ? ' monster-section-header-empty' : '')}
       aria-expanded={!isCollapsed}
       onClick={onToggle}
     >

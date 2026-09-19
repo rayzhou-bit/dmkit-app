@@ -392,6 +392,16 @@ $scrollbar-width: 17px;
   }
 }
 
+// Collapsed and every field inside is blank - dim the caret/title so it
+// reads as "nothing here yet" without expanding (complements
+// .monster-column-dot, which signals the opposite: collapsed WITH content).
+.monster-column-header-empty {
+  .monster-column-caret,
+  .monster-column-title {
+    opacity: 0.4;
+  }
+}
+
 .monster-column-body {
   flex: 1 1 auto;
   min-width: 0;
@@ -447,6 +457,14 @@ $scrollbar-width: 17px;
   }
 }
 
+// See .monster-column-header-empty above - same idea, one level down.
+.monster-section-header-empty {
+  .monster-section-caret,
+  .monster-section-title {
+    opacity: 0.4;
+  }
+}
+
 .monster-section-body {
   padding: 4px 4px 10px 10px;
   display: flex;
@@ -458,6 +476,24 @@ $scrollbar-width: 17px;
   display: flex;
   flex-flow: column nowrap;
   gap: 2px;
+
+  // Icon fields (armorClass/hitPoints/speed) sit icon-left, input-right
+  // instead of label-above-input - compound selector (both classes are on
+  // this same div) so it reliably outranks the plain .monster-field rule
+  // above, not just by source order (see the notes-field resize bug).
+  &.monster-field-icon-row {
+    flex-flow: row nowrap;
+    align-items: center;
+    gap: 6px;
+
+    .monster-field-icon-label {
+      flex: 0 0 auto;
+    }
+    .monster-field-input {
+      flex: 1 1 auto;
+      min-width: 0;
+    }
+  }
 
   .monster-field-label {
     font-size: 10px;

@@ -28,7 +28,7 @@ const MonsterTextField = ({
   }, [value]);
 
   return (
-    <div className={'monster-field' + (className ? ' ' + className : '')}>
+    <div className={'monster-field' + (icon ? ' monster-field-icon-row' : '') + (className ? ' ' + className : '')}>
       <label className={'monster-field-label' + (hideLabel || icon ? ' sr-only' : '')} htmlFor={id}>{label}</label>
       {icon && (
         <span className='monster-field-icon-label' aria-hidden='true'>

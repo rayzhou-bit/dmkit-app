@@ -5,8 +5,6 @@
 import AcShieldIcon from '../assets/icons/ac-shield.svg';
 import HpHeartIcon from '../assets/icons/hp-heart.svg';
 import SpeedBoltIcon from '../assets/icons/speed-bolt.svg';
-import CrSkullIcon from '../assets/icons/cr-skull.svg';
-import XpStarIcon from '../assets/icons/xp-star.svg';
 
 export const MONSTER_SECTION_KEYS = [
   'identity', 'defenses', 'abilities', 'proficiencies',
@@ -68,8 +66,8 @@ export const MONSTER_FIELDS = {
   conditionImmunities: { label: 'Condition Immunities', placeholder: 'charmed, frightened', maxLength: 200 },
   senses: { label: 'Senses', placeholder: 'blindsight 60 ft., passive Perception 23', maxLength: 200 },
   languages: { label: 'Languages', placeholder: 'Common, Draconic', maxLength: 200 },
-  challengeRating: { label: 'Challenge Rating', placeholder: '17', maxLength: 20, icon: CrSkullIcon },
-  xp: { label: 'XP', placeholder: '18,000', maxLength: 20, icon: XpStarIcon },
+  challengeRating: { label: 'Challenge', placeholder: '17', maxLength: 20 },
+  xp: { label: 'XP', placeholder: '18,000', maxLength: 20 },
   proficiencyBonus: { label: 'Proficiency Bonus', placeholder: '+6', maxLength: 10 },
 
   traits: { label: 'Traits', placeholder: PROSE_PLACEHOLDER, maxLength: MONSTER_TEXT_MAX_LENGTH, multiline: true },
