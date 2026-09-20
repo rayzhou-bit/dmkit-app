@@ -6,8 +6,8 @@ import Title from './Title';
 import LibraryTitle from './LibraryTitle';
 
 // Minimal fake store covering both Title's and LibraryTitle's selector needs
-// (color, title, content, views, activeViewId).
-const makeStore = () => {
+// (color, title, type, content, views, activeViewId).
+const makeStore = ({ type = 'text', content = {} } = {}) => {
   const dispatched = [];
   // A stable state object - react-redux's Provider runs its own
   // useSyncExternalStore off getState identity, so a fresh object on every
@@ -21,7 +21,8 @@ const makeStore = () => {
           c1: {
             title: 'A Long Dragon Name',
             color: 'gray',
-            content: {},
+            type,
+            content,
             views: { tab1: { pos: { x: 0, y: 0 }, size: { width: 1, height: 1 } } },
           },
         },
@@ -37,8 +38,8 @@ const makeStore = () => {
   };
 };
 
-const renderTitle = (Component) => {
-  const store = makeStore();
+const renderTitle = (Component, storeOverrides) => {
+  const store = makeStore(storeOverrides);
   const utils = render(
     <Provider store={store}>
       <Component cardId='c1' setEditingCard={() => {}} />
@@ -57,5 +58,20 @@ describe.each([
     fireEvent.doubleClick(input);
     expect(input.selectionStart).toBe(0);
     expect(input.selectionEnd).toBe('A Long Dragon Name'.length);
+  });
+});
+
+describe.each([
+  ['Title (canvas)', Title],
+  ['LibraryTitle (library)', LibraryTitle],
+])('%s - monster type icon', (name, Component) => {
+  it('shows the monster icon for a monster card', () => {
+    const { container } = renderTitle(Component, { type: 'monster' });
+    expect(container.querySelector('.card-title.has-type-icon .type-icon')).not.toBeNull();
+  });
+
+  it('does not show the icon for a text card', () => {
+    const { container } = renderTitle(Component, { type: 'text' });
+    expect(container.querySelector('.type-icon')).toBeNull();
   });
 });

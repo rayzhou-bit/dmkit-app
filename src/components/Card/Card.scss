@@ -41,6 +41,17 @@ $title-height: 32px;
   grid-template-columns: auto 18px 12px;
   gap: 12px;
 
+  // Monster stat-block cards get a small type badge before the title text,
+  // both on the canvas and in the Library - one extra leading column.
+  &.has-type-icon {
+    grid-template-columns: 16px auto 18px 12px;
+  }
+  .type-icon {
+    display: flex;
+    align-items: center;
+    justify-self: start;
+  }
+
   .dark { color: black; }
   .light { color: white; }
   .input-div {
