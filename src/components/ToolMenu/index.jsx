@@ -8,7 +8,7 @@ import NewCardDisabledIcon from '../../assets/icons/new-card-disabled.svg';
 import CopyCardIcon from '../../assets/icons/copy-card.svg';
 import CopyCardDisabledIcon from '../../assets/icons/copy-card-disabled.svg';
 import AddImageIcon from '../../assets/icons/add-image.svg';
-import StatBlockIcon from '../../assets/icons/stat-block.svg';
+import MonsterIcon from '../../assets/icons/monster-icon.svg';
 import DeleteCardIcon from '../../assets/icons/trash-red.svg';
 
 const ToolMenu = ({
@@ -76,8 +76,9 @@ const ToolMenu = ({
         <div className='btn-highlight'>
           <img
             alt='New stat'
+            className='tool-btn-monster-icon'
             draggable='false'
-            src={StatBlockIcon}
+            src={MonsterIcon}
           />
         </div>
         <span>stat</span>
