@@ -1,6 +1,8 @@
 import React from 'react';
+import { useSelector } from 'react-redux';
 
 import { useTitleHooks, useColorDropdownHooks, useOptionsDropdownLibraryHooks } from './hooks';
+import { getCardType, CARD_TYPES } from '../../constants/cards';
 
 import ColorDropdown from '../../components-shared/Dropdowns/ColorDropdown';
 import ActionDropdown from '../../components-shared/Dropdowns/ActionDropdown';
@@ -11,11 +13,14 @@ import OpenColorBlackIcon from '../../assets/icons/rounded-square.svg';
 import OpenColorWhiteIcon from '../../assets/icons/rounded-square-white.svg';
 import DropdownArrowBlackIcon from '../../assets/icons/dropdown-arrow.svg';
 import DropdownArrowWhiteIcon from '../../assets/icons/dropdown-arrow-white.svg';
+import MonsterIconBlack from '../../assets/icons/monster-icon.svg';
+import MonsterIconWhite from '../../assets/icons/monster-icon-white.svg';
 
 const LibraryTitle = ({
   cardId,
   setEditingCard,
 }) => {
+  const isMonster = useSelector(state => getCardType(state.project.present.cards[cardId])) === CARD_TYPES.monster;
 
   const {
     inputClassName,
@@ -53,7 +58,12 @@ const LibraryTitle = ({
   });
 
   return (
-    <div className={'card-title ' + color}>
+    <div className={'card-title ' + color + (isMonster ? ' has-type-icon' : '')}>
+      {isMonster && (
+        <span className='type-icon' title='Monster stat block'>
+          <img src={isLightColor ? MonsterIconBlack : MonsterIconWhite} alt='' draggable='false' />
+        </span>
+      )}
       <div className={'input-div' + (isLightColor ? ' dark' : ' light')}>
         <input
           className={inputClassName}

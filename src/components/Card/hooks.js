@@ -11,6 +11,7 @@ import { MAX_PORTRAIT_DATA_URI_LENGTH, PORTRAIT_MAX_EDGE_STEPS } from '../../con
 import {
   MONSTER_FIELDS, MONSTER_SECTIONS, MONSTER_COLUMN_SECTIONS, DEFAULT_COLLAPSED, getMonsterExpansionDelta,
   MONSTER_MAX_ENTRIES_PER_SECTION, MONSTER_MAX_DOTS, normalizeMonsterEntries, entryHasContent, monsterFieldHasContent,
+  MONSTER_COLLAPSE_SCOPES, LIBRARY_DEFAULT_COLLAPSED,
 } from '../../constants/monster';
 import { POPUP_KEYS } from '../Popup/PopupKey';
 import { ACTION_TYPE } from '../../components-shared/Dropdowns/ActionDropdown';
@@ -196,6 +197,15 @@ export const useLibraryCardHooks = ({
 
   useOutsideClick([libraryCardRef], isSelected,
     () => {
+      // useOutsideClick fires on mousedown, which precedes blur - if a field
+      // inside this card (e.g. a monster field) is still focused/mid-edit,
+      // deselecting would unmount it before its own onBlur commit ever runs,
+      // silently discarding the edit. Force the blur synchronously first -
+      // its onBlur handler dispatches the commit before the state update
+      // below unmounts anything.
+      if (libraryCardRef.current?.contains(document.activeElement)) {
+        document.activeElement.blur();
+      }
       if (isActive) dispatch(actions.session.setActiveCard({ id: null }));
       setIsSelected(false);
     }
@@ -258,10 +268,7 @@ export const useTitleHooks = ({
       setIsEditing(true);
       setEditingCard(true);
       titleRef.current.focus();
-      titleRef.current.setSelectionRange(
-        titleRef.current.value.length,
-        titleRef.current.value.length,
-      );
+      titleRef.current.select();
     }
   };
 
@@ -557,6 +564,43 @@ export const useImageContentHooks = ({
   };
 };
 
+// Generalizes the read-only-until-clicked pattern already used by
+// useContentHooks/useTitleHooks - needed by any field that might render
+// inside a Library card, whose whole card div is natively `draggable`
+// (unlike the canvas card, whose react-rnd drag handle is scoped to the
+// title bar only - see Card.jsx's dragHandleClassName). A plain click or
+// native drag on a still-`readOnly` field can't fight the card's own drag;
+// beginEdit flips it interactive AND disarms the card's `draggable` via
+// setEditingCard, imperatively focusing the field so the click that
+// triggered it isn't lost to the same mousedown-vs-focus race that
+// `draggable` creates.
+// setEditingCard undefined (the canvas) -> fully inert: always editable,
+// nothing to gate, matching today's canvas behavior exactly.
+export const useDragSafeFieldHooks = ({ setEditingCard }) => {
+  const [ isEditing, setIsEditing ] = useState(false);
+  const editRef = useRef();
+
+  if (!setEditingCard) {
+    return { editRef, readOnly: false, beginEdit: () => {}, endEdit: () => {} };
+  }
+
+  const beginEdit = () => {
+    if (isEditing) return;
+    setIsEditing(true);
+    setEditingCard(true);
+    editRef.current?.focus();
+    editRef.current?.setSelectionRange?.(editRef.current.value.length, editRef.current.value.length);
+  };
+
+  const endEdit = () => {
+    if (!isEditing) return;
+    setIsEditing(false);
+    setEditingCard(false);
+  };
+
+  return { editRef, readOnly: !isEditing, beginEdit, endEdit };
+};
+
 // Commit-on-blur with an equality guard: local `value` only dispatches when
 // it actually differs from the store, one undo step per finished edit.
 export const useMonsterFieldHooks = ({ cardId, fieldKey }) => {
@@ -664,14 +708,20 @@ export const useMonsterEntryFieldHooks = ({ cardId, fieldKey, entry, entryFieldK
   };
 };
 
-export const useMonsterSectionHooks = ({ cardId }) => {
+// scope: 'canvas' (default) reads/writes session.monsterCollapse; 'library'
+// reads/writes session.libraryMonsterCollapse - a deliberately separate
+// state so collapsing a group in the Library sidebar can never resize this
+// same card on the canvas (see MONSTER_COLLAPSE_SCOPES in constants/monster.js).
+export const useMonsterSectionHooks = ({ cardId, scope = MONSTER_COLLAPSE_SCOPES.canvas }) => {
   const dispatch = useDispatch();
   const content = useSelector(state => state.project.present.cards[cardId].content);
+  const isLibrary = scope === MONSTER_COLLAPSE_SCOPES.library;
+  const defaults = isLibrary ? LIBRARY_DEFAULT_COLLAPSED : DEFAULT_COLLAPSED;
   // Raw per-card object, possibly undefined - not defaulted here to avoid a
   // fresh {} every render (would break memoization).
-  const collapse = useSelector(state => state.session.monsterCollapse?.[cardId]);
+  const collapse = useSelector(state => (isLibrary ? state.session.libraryMonsterCollapse : state.session.monsterCollapse)?.[cardId]);
 
-  const isCollapsed = (key) => collapse?.[key] ?? DEFAULT_COLLAPSED[key] ?? false;
+  const isCollapsed = (key) => collapse?.[key] ?? defaults[key] ?? false;
 
   // One dot per item with content - a filled field for lines/abilities
   // sections, a filled entry for entries sections - capped so a big section
@@ -699,14 +749,18 @@ export const useMonsterSectionHooks = ({ cardId }) => {
       id: cardId,
       key,
       collapsed: !isCollapsed(key),
+      scope,
     })),
     // The card's width grows/shrinks with this purely as a rendering-time
     // effect - see getMonsterExpansionDelta/useCardHooks - not dispatched
     // here, so it can never be reverted by (or consume) an undo step.
+    // (getMonsterExpansionDelta only ever reads the canvas scope, so this
+    // is a no-op on card width when scope is 'library' anyway.)
     toggleColumn: (columnKey) => dispatch(actions.session.setMonsterCollapsed({
       id: cardId,
       key: columnKey,
       collapsed: !isCollapsed(columnKey),
+      scope,
     })),
   };
 };

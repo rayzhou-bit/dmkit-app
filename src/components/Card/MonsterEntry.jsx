@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { useMonsterEntryFieldHooks } from './hooks';
+import { useMonsterEntryFieldHooks, useDragSafeFieldHooks } from './hooks';
 import { MONSTER_ENTRY_NAME_MAX_LENGTH, MONSTER_ENTRY_TEXT_MAX_LENGTH } from '../../constants/monster';
 
 import './Card.scss';
@@ -22,9 +22,12 @@ const MonsterEntry = ({
   textPlaceholder,
   onDuplicate,
   onDelete,
+  setEditingCard, // optional - only passed inside a Library card (see useDragSafeFieldHooks); each of the two fields below gates independently
 }) => {
   const nameField = useMonsterEntryFieldHooks({ cardId, fieldKey, entry, entryFieldKey: 'name' });
   const textField = useMonsterEntryFieldHooks({ cardId, fieldKey, entry, entryFieldKey: 'description' });
+  const nameGate = useDragSafeFieldHooks({ setEditingCard });
+  const textGate = useDragSafeFieldHooks({ setEditingCard });
   const nameId = `monster-entry-${cardId}-${fieldKey}-${entry.id}-name`;
   const textId = `monster-entry-${cardId}-${fieldKey}-${entry.id}-description`;
   const ordinal = `${singular} ${index + 1}`;
@@ -53,27 +56,35 @@ const MonsterEntry = ({
       <label className='monster-field-label sr-only' htmlFor={nameId}>{`${ordinal} name`}</label>
       <input
         id={nameId}
+        ref={nameGate.editRef}
         type='text'
         className='monster-entry-name'
         value={nameField.value}
         placeholder={namePlaceholder}
         maxLength={MONSTER_ENTRY_NAME_MAX_LENGTH}
+        readOnly={nameGate.readOnly}
+        onClick={nameGate.beginEdit}
+        onFocus={nameGate.beginEdit}
         onChange={(e) => nameField.changeValue(e.target.value)}
-        onBlur={nameField.commit}
+        onBlur={() => { nameField.commit(); nameGate.endEdit(); }}
         onKeyDown={nameField.handleKeyDown}
       />
 
       <label className='monster-field-label sr-only' htmlFor={textId}>{`${ordinal} description`}</label>
       <textarea
         id={textId}
+        ref={textGate.editRef}
         className='monster-field-textarea'
         value={textField.value}
         placeholder={textPlaceholder}
         maxLength={MONSTER_ENTRY_TEXT_MAX_LENGTH}
+        readOnly={textGate.readOnly}
+        onClick={textGate.beginEdit}
+        onFocus={textGate.beginEdit}
         onChange={(e) => textField.changeValue(e.target.value)}
-        onBlur={textField.commit}
+        onBlur={() => { textField.commit(); textGate.endEdit(); }}
         onKeyDown={textField.handleKeyDown}
-        onWheel={(e) => e.stopPropagation()}
+        onWheel={setEditingCard ? undefined : (e) => e.stopPropagation()}
       />
     </div>
   );

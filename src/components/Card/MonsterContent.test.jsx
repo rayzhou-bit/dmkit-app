@@ -35,6 +35,13 @@ describe('MonsterContent', () => {
     expect(getByLabelText('Armor Class').value).toBe('18');
   });
 
+  it('the Quick Notes label is visible (not sr-only), unlike the other icon fields', () => {
+    const { container } = renderMonster(buildMonsterContent());
+    const notesLabel = container.querySelector('label[for*="-notes"]');
+    expect(notesLabel.textContent).toBe('Quick Notes');
+    expect(notesLabel.className).not.toContain('sr-only');
+  });
+
   it('typing dispatches nothing; blurring dispatches exactly one updateCardMonsterFields', () => {
     const content = buildMonsterContent({ creatureType: 'dragon' });
     const { getByLabelText, store } = renderMonster(content, { attributes: false });
@@ -126,7 +133,7 @@ describe('MonsterContent', () => {
 
     expect(store.dispatched).toContainEqual({
       type: 'session/setMonsterCollapsed',
-      payload: { id: 'c1', key: 'bonusActions', collapsed: false },
+      payload: { id: 'c1', key: 'bonusActions', collapsed: false, scope: 'canvas' },
     });
   });
 
@@ -138,7 +145,7 @@ describe('MonsterContent', () => {
 
     expect(store.dispatched).toContainEqual({
       type: 'session/setMonsterCollapsed',
-      payload: { id: 'c1', key: 'combat', collapsed: false },
+      payload: { id: 'c1', key: 'combat', collapsed: false, scope: 'canvas' },
     });
   });
 
@@ -210,7 +217,7 @@ describe('MonsterContent', () => {
 
     fireEvent.click(getByText('Combat'));
     expect(dispatched).toEqual([
-      { type: 'session/setMonsterCollapsed', payload: { id: 'c1', key: 'combat', collapsed: false } },
+      { type: 'session/setMonsterCollapsed', payload: { id: 'c1', key: 'combat', collapsed: false, scope: 'canvas' } },
     ]);
   });
 });
@@ -339,7 +346,7 @@ describe('MonsterContent - Combat entry lists', () => {
     expect(header.className).not.toContain('monster-column-header-empty');
   });
 
-  it('a section with more than 5 filled fields caps at 5 dots', () => {
+  it('a section with more than 6 filled fields caps at 6 dots', () => {
     // Proficiencies & Senses has 11 fields - fill 7 of them.
     const content = buildMonsterContent({
       savingThrows: 'Dex +6', skills: 'Perception +13', damageVulnerabilities: 'fire',
@@ -348,7 +355,7 @@ describe('MonsterContent - Combat entry lists', () => {
     });
     const { getByText } = renderMonster(content, { attributes: false, proficiencies: true });
     const header = getByText('Proficiencies & Senses').closest('button');
-    expect(header.querySelectorAll('.monster-section-dot').length).toBe(5);
+    expect(header.querySelectorAll('.monster-section-dot').length).toBe(6);
   });
 
   it('an entries section shows one dot per content-bearing entry', () => {

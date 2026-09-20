@@ -128,10 +128,10 @@ describe('section/column metadata', () => {
     expect(MONSTER_FIELD_KEYS).toContain('notes');
   });
 
-  it('MONSTER_FIELDS.notes has the expected metadata', () => {
+  it('MONSTER_FIELDS.notes has the expected metadata, and a visible label (matches the "Quick Notes" heading elsewhere)', () => {
     expect(MONSTER_FIELDS.notes.maxLength).toBe(500);
     expect(MONSTER_FIELDS.notes.multiline).toBe(true);
-    expect(MONSTER_FIELDS.notes.hideLabel).toBe(true);
+    expect(MONSTER_FIELDS.notes.hideLabel).toBeFalsy();
   });
 
   it('no section lists notes in its fields array', () => {

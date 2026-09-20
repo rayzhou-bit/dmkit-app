@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { NETWORK_STATUS } from '../../../constants/states';
 import { DEFAULT_PROJECT } from './constants';
-import { MONSTER_COLLAPSIBLE_KEYS } from '../../../constants/monster';
+import { MONSTER_COLLAPSIBLE_KEYS, LIBRARY_MONSTER_COLLAPSIBLE_KEYS, MONSTER_COLLAPSE_SCOPES } from '../../../constants/monster';
 
 const initialState = {
   status: NETWORK_STATUS.idle,
@@ -24,6 +24,9 @@ const initialState = {
   // are undoable, and cleaning up here would mean undoing a delete brings
   // the card back with its collapse layout silently reset.
   monsterCollapse: {},   // cardId -> { [sectionOrColumnKey]: boolean }
+  // The Library card's own collapse state - separate from monsterCollapse
+  // above on purpose (see MONSTER_COLLAPSE_SCOPES in constants/monster.js).
+  libraryMonsterCollapse: {},
 };
 
 const session = createSlice({
@@ -86,7 +89,18 @@ const session = createSlice({
     setIsProjectEdited: (state, { payload }) => ({ ...state, isProjectEdited: payload }),
 
     setMonsterCollapsed: (state, { payload }) => {
-      const { id, key, collapsed } = payload;
+      const { id, key, collapsed, scope = MONSTER_COLLAPSE_SCOPES.canvas } = payload;
+      if (scope === MONSTER_COLLAPSE_SCOPES.library) {
+        if (!LIBRARY_MONSTER_COLLAPSIBLE_KEYS.includes(key)) return state;
+        return {
+          ...state,
+          libraryMonsterCollapse: {
+            ...state.libraryMonsterCollapse,
+            [id]: { ...state.libraryMonsterCollapse[id], [key]: collapsed },
+          },
+        };
+      }
+      if (scope !== MONSTER_COLLAPSE_SCOPES.canvas) return state;
       if (!MONSTER_COLLAPSIBLE_KEYS.includes(key)) return state;
       return {
         ...state,

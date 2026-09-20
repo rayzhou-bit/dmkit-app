@@ -37,6 +37,14 @@ $border-radius: 5px;
       // }
     }
 
+    // The shared monster-type badge is a small 16x16 icon (sized for a
+    // title-bar chip) - scaled up here to match this toolbar's other,
+    // much larger icons (19-35px).
+    .tool-btn-monster-icon {
+      width: 28px;
+      height: 28px;
+    }
+
     span {
       color: #363B4E;
       font-kerning: none;
