@@ -35,7 +35,7 @@ const ToolMenu = ({
       style={{left: isOpen ? 0 : '-80px'}}
     >
 
-      {/* new card */}
+      {/* new text card */}
       <button
         className='tool-btn'
         disabled={disableNewCard}
@@ -43,12 +43,12 @@ const ToolMenu = ({
       >
         <div className='btn-highlight'>
           <img
-            alt='New'
+            alt='New text'
             draggable='false'
             src={disableNewCard ? NewCardDisabledIcon : NewCardIcon}
           />
         </div>
-        <span>new</span>
+        <span>text</span>
       </button>
 
       {/* new image card */}
@@ -84,9 +84,9 @@ const ToolMenu = ({
         <span>stat</span>
       </button>
 
-      {/* copy card */}
+      {/* copy card - pushed to the bottom of the toolbar, see .tool-btn-copy */}
       <button
-        className='tool-btn'
+        className='tool-btn tool-btn-copy'
         disabled={disableCopyCards}
         onClick={onClickCopyCards}
       >
