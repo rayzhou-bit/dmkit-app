@@ -18,6 +18,13 @@ $border-radius: 5px;
   flex-flow: column nowrap;
   gap: 15px;
 
+  // Copy/delete are a separate "act on selection" group from the create
+  // buttons above - push them down to the bottom of the toolbar instead of
+  // stacking directly under "stat".
+  .tool-btn-copy {
+    margin-top: auto;
+  }
+
   .tool-btn {
     padding: 0;
     background-color: transparent;
