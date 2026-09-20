@@ -346,7 +346,7 @@ describe('MonsterContent - Combat entry lists', () => {
     expect(header.className).not.toContain('monster-column-header-empty');
   });
 
-  it('a section with more than 5 filled fields caps at 5 dots', () => {
+  it('a section with more than 6 filled fields caps at 6 dots', () => {
     // Proficiencies & Senses has 11 fields - fill 7 of them.
     const content = buildMonsterContent({
       savingThrows: 'Dex +6', skills: 'Perception +13', damageVulnerabilities: 'fire',
@@ -355,7 +355,7 @@ describe('MonsterContent - Combat entry lists', () => {
     });
     const { getByText } = renderMonster(content, { attributes: false, proficiencies: true });
     const header = getByText('Proficiencies & Senses').closest('button');
-    expect(header.querySelectorAll('.monster-section-dot').length).toBe(5);
+    expect(header.querySelectorAll('.monster-section-dot').length).toBe(6);
   });
 
   it('an entries section shows one dot per content-bearing entry', () => {
