@@ -268,10 +268,7 @@ export const useTitleHooks = ({
       setIsEditing(true);
       setEditingCard(true);
       titleRef.current.focus();
-      titleRef.current.setSelectionRange(
-        titleRef.current.value.length,
-        titleRef.current.value.length,
-      );
+      titleRef.current.select();
     }
   };
 
