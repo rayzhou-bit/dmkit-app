@@ -6,6 +6,7 @@ import { CARD_TYPES } from '../../constants/cards';
 import LibraryTextContent from './LibraryTextContent';
 import LibraryImageContent from './LibraryImageContent';
 import LibraryMonsterContent from './LibraryMonsterContent';
+import LibraryLocationContent from './LibraryLocationContent';
 
 const LibraryContent = ({
   cardId,
@@ -17,6 +18,9 @@ const LibraryContent = ({
 
   if (cardType === CARD_TYPES.monster) {
     return <LibraryMonsterContent cardId={cardId} isExpanded={isExpanded} isSelected={isSelected} setEditingCard={setEditingCard} />;
+  }
+  if (cardType === CARD_TYPES.location) {
+    return <LibraryLocationContent cardId={cardId} isExpanded={isExpanded} isSelected={isSelected} setEditingCard={setEditingCard} />;
   }
   if (cardType === CARD_TYPES.image) {
     return <LibraryImageContent cardId={cardId} isExpanded={isExpanded} isSelected={isSelected} />;

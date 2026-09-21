@@ -1,7 +1,7 @@
 import { actions } from '../../data/redux';
 import generateUID from '../../utils/generateUID';
 import { getNearestGrid, getValidPositionAndSize } from '../../utils/gridUtils';
-import { DEFAULT_CARD_POSITION, DEFAULT_CARD_SIZE, DEFAULT_CARD_OFFSET, MONSTER_CARD_SIZE } from '../../constants/dimensions';
+import { DEFAULT_CARD_POSITION, DEFAULT_CARD_SIZE, DEFAULT_CARD_OFFSET, MONSTER_CARD_SIZE, LOCATION_CARD_SIZE } from '../../constants/dimensions';
 import { CARD_TYPES, getCardType } from '../../constants/cards';
 
 export const createNewCard = ({
@@ -18,7 +18,9 @@ export const createNewCard = ({
       x: DEFAULT_CARD_POSITION.x - activeTabPosition.x + (offset ?? 0),
       y: DEFAULT_CARD_POSITION.y - activeTabPosition.y + (offset ?? 0),
     }),
-    size: type === CARD_TYPES.monster ? MONSTER_CARD_SIZE : DEFAULT_CARD_SIZE,
+    size: type === CARD_TYPES.monster ? MONSTER_CARD_SIZE
+      : type === CARD_TYPES.location ? LOCATION_CARD_SIZE
+      : DEFAULT_CARD_SIZE,
   });
   dispatch(actions.project.createCard({
     newId,
@@ -49,6 +51,7 @@ export const copySelectedCard = ({
     image: selectedCard?.content?.image,
     alt: selectedCard?.content?.alt,
     monster: selectedCard?.content,
+    location: selectedCard?.content,
   }));
   dispatch(actions.session.setActiveCard({ id: newId }));
 };
@@ -77,6 +80,7 @@ export const copySelectedCards = ({
       image: selectedCard?.content?.image,
       alt: selectedCard?.content?.alt,
       monster: selectedCard?.content,
+      location: selectedCard?.content,
     }));
   }
   // Select the copies (same idea as copySelectedCard activating its new

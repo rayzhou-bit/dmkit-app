@@ -92,3 +92,65 @@ describe('LibraryCard - deselecting mid-edit commits first (useOutsideClick fire
     expect(store.getState().project.present.cards.lcard.content.hitPoints).toBe('250');
   });
 });
+
+// Same crux as the monster describe block above, retargeted at the
+// location card's description field and its one open-ended entry list -
+// the trickiest part of the whole location feature, since it reuses
+// useDragSafeFieldHooks/MonsterEntry's mechanics but through new
+// LocationTextField/LocationEntry components.
+describe('LibraryCard (location) - draggable disarms while a field is being edited', () => {
+  it('draggable: true at rest, false while the description field is focused, true again after blur', () => {
+    store.dispatch(actions.project.createCard({ newId: 'lcard-loc', type: 'location' }));
+    // Same setup pattern as the monster describe block above - an all-empty
+    // card shows the "no content yet" placeholder (hasCardContent gates the
+    // Library's expanded view), so seed a field first.
+    store.dispatch(actions.project.updateCardLocationFields({ id: 'lcard-loc', fields: { description: 'placeholder' } }));
+
+    const { container } = render(
+      <Provider store={store}>
+        <LibraryCard cardId='lcard-loc' isExpanded={false} />
+      </Provider>
+    );
+
+    const card = container.querySelector('.card');
+    fireEvent.click(card);
+    expect(card.draggable).toBe(true);
+
+    const descriptionInput = container.querySelector('#location-field-lcard-loc-description');
+    expect(descriptionInput).not.toBeNull();
+
+    fireEvent.click(descriptionInput);
+    expect(card.draggable).toBe(false);
+
+    fireEvent.change(descriptionInput, { target: { value: 'A dim tavern.' } });
+    fireEvent.blur(descriptionInput);
+    expect(card.draggable).toBe(true);
+    expect(descriptionInput.value).toBe('A dim tavern.');
+  });
+
+  it('draggable disarms while editing an entry field, and a plain click on the add-entry button never disarms it', () => {
+    const { container, getByText } = render(
+      <Provider store={store}>
+        <LibraryCard cardId='lcard-loc' isExpanded={false} />
+      </Provider>
+    );
+    const card = container.querySelector('.card');
+    fireEvent.click(card);
+    expect(card.draggable).toBe(true);
+
+    fireEvent.click(getByText('+ Add Detail'));
+    expect(card.draggable).toBe(true); // plain click never disarms
+
+    const entryId = store.getState().project.present.cards['lcard-loc'].content.entries[0].id;
+    const nameInput = container.querySelector(`#location-entry-lcard-loc-${entryId}-name`);
+    expect(nameInput).not.toBeNull();
+
+    fireEvent.click(nameInput);
+    expect(card.draggable).toBe(false);
+
+    fireEvent.change(nameInput, { target: { value: 'Innkeeper Rosa' } });
+    fireEvent.blur(nameInput);
+    expect(card.draggable).toBe(true);
+    expect(nameInput.value).toBe('Innkeeper Rosa');
+  });
+});

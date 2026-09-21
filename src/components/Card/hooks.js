@@ -13,6 +13,7 @@ import {
   MONSTER_MAX_ENTRIES_PER_SECTION, MONSTER_MAX_DOTS, normalizeMonsterEntries, entryHasContent, monsterFieldHasContent,
   MONSTER_COLLAPSE_SCOPES, LIBRARY_DEFAULT_COLLAPSED,
 } from '../../constants/monster';
+import { LOCATION_MAX_ENTRIES } from '../../constants/location';
 import { POPUP_KEYS } from '../Popup/PopupKey';
 import { ACTION_TYPE } from '../../components-shared/Dropdowns/ActionDropdown';
 import { useGroupDragPosition } from '../Canvas/groupDrag';
@@ -708,6 +709,101 @@ export const useMonsterEntryFieldHooks = ({ cardId, fieldKey, entry, entryFieldK
   };
 };
 
+// Mirrors useMonsterFieldHooks - location has just one scalar field
+// (description) today, going through the same commit-on-blur/equality-guard
+// shape via updateCardLocationFields (kept allowlist-based like the monster
+// version, not a single-field action, so a second scalar field later needs
+// no new action).
+export const useLocationFieldHooks = ({ cardId, fieldKey }) => {
+  const dispatch = useDispatch();
+  const storeValue = useSelector(state => state.project.present.cards[cardId].content?.[fieldKey] ?? '');
+
+  const [ value, setValue ] = useState('');
+
+  useEffect(() => {
+    setValue(storeValue);
+  }, [storeValue]);
+
+  const commit = () => {
+    if (value !== storeValue) {
+      dispatch(actions.project.updateCardLocationFields({ id: cardId, fields: { [fieldKey]: value } }));
+    }
+  };
+
+  const revert = () => setValue(storeValue);
+
+  return {
+    value,
+    changeValue: setValue,
+    commit,
+    revert,
+    handleKeyDown: (event) => {
+      if (event.key === 'Escape') revert();
+    },
+  };
+};
+
+// Mirrors useMonsterEntryListHooks, minus the field/fieldKey concept -
+// location has exactly one entry list (content.entries), not several
+// selected by field key.
+export const useLocationEntryListHooks = ({ cardId }) => {
+  const dispatch = useDispatch();
+  const raw = useSelector(state => state.project.present.cards[cardId].content?.entries);
+  const entries = normalizeMonsterEntries(raw);
+
+  return {
+    entries,
+    canAdd: entries.length < LOCATION_MAX_ENTRIES,
+    addEntry: () => dispatch(actions.project.addLocationEntry({
+      id: cardId, entryId: generateUID('entry'),
+    })),
+    duplicateEntry: (entryId) => dispatch(actions.project.duplicateLocationEntry({
+      id: cardId, entryId, newEntryId: generateUID('entry'),
+    })),
+    deleteEntry: (entryId) => dispatch(actions.project.deleteLocationEntry({
+      id: cardId, entryId,
+    })),
+  };
+};
+
+// Mirrors useMonsterEntryFieldHooks, minus fieldKey (see above).
+export const useLocationEntryFieldHooks = ({ cardId, entry, entryFieldKey }) => {
+  const dispatch = useDispatch();
+  const storeValue = entry[entryFieldKey] ?? '';
+
+  const [ value, setValue ] = useState(storeValue);
+
+  useEffect(() => {
+    setValue(storeValue);
+  }, [storeValue]);
+
+  const commit = () => {
+    if (value !== storeValue) {
+      dispatch(actions.project.updateLocationEntry({
+        id: cardId, entryId: entry.id, changes: { [entryFieldKey]: value },
+      }));
+    }
+  };
+
+  const revert = () => setValue(storeValue);
+
+  return {
+    value,
+    changeValue: setValue,
+    commit,
+    revert,
+    handleKeyDown: (event) => {
+      if (event.key === 'Escape') {
+        revert();
+        return;
+      }
+      if (entryFieldKey === 'name' && (event.key === 'Enter' || event.key === 'Tab')) {
+        commit();
+      }
+    },
+  };
+};
+
 // scope: 'canvas' (default) reads/writes session.monsterCollapse; 'library'
 // reads/writes session.libraryMonsterCollapse - a deliberately separate
 // state so collapsing a group in the Library sidebar can never resize this
@@ -767,7 +863,13 @@ export const useMonsterSectionHooks = ({ cardId, scope = MONSTER_COLLAPSE_SCOPES
 
 // Deliberately duplicated from useImageContentHooks, not shared/parameterized -
 // different content keys (portrait/portraitAlt), action, and compression budget.
-export const useMonsterPortraitHooks = ({ cardId }) => {
+// Shared as-is (not duplicated) between monster and location cards, though -
+// unlike useImageContentHooks, updateCardPortrait never touches `type` and
+// the portrait/portraitAlt keys and compression budget are genuinely the
+// same property of "a card portrait" for both, not something that has ever
+// needed to diverge. useMonsterPortraitHooks is kept as a name so
+// MonsterPortrait.jsx/its test need no changes.
+export const usePortraitHooks = ({ cardId }) => {
   const dispatch = useDispatch();
   const portrait = useSelector(state => state.project.present.cards[cardId].content?.portrait ?? '');
   const portraitAlt = useSelector(state => state.project.present.cards[cardId].content?.portraitAlt ?? '');
@@ -826,3 +928,5 @@ export const useMonsterPortraitHooks = ({ cardId }) => {
     dismissError: () => setErrorMessage(null),
   };
 };
+
+export const useMonsterPortraitHooks = usePortraitHooks;

@@ -909,6 +909,144 @@ $scrollbar-width: 17px;
   }
 }
 
+// Location card - single-column, freeform: portrait strip, description,
+// one open-ended entry list (see LocationContent.jsx). Reuses
+// .monster-entry*/.monster-field-textarea as-is for the entry list and
+// description field (see LocationEntry.jsx/LocationEntryList.jsx) - those
+// rules have no monster-specific coupling.
+.location-content {
+  display: flex;
+  flex-flow: column nowrap;
+  gap: 10px;
+  padding: 10px 15px;
+  overflow-y: auto;
+}
+
+// Unlike .monster-portrait (a small column, aspect-preserving), this is a
+// full-width banner strip at the top of the card - object-fit: cover crops
+// to fill instead of letterboxing, which suits map/location art better.
+.location-portrait {
+  position: relative;
+  border-radius: 6px;
+  overflow: hidden;
+  background-color: #F4F4F4;
+
+  .location-portrait-image {
+    display: block;
+    width: 100%;
+    max-height: 200px;
+    object-fit: cover;
+  }
+
+  .location-portrait-placeholder {
+    width: 100%;
+    height: 96px;
+    box-sizing: border-box;
+    border: 1px dashed #D7D6D6;
+    background-color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover { background-color: #F4F4F4; }
+  }
+
+  .location-portrait-clear {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    width: 18px;
+    height: 18px;
+    box-sizing: border-box;
+    padding: 0;
+    border: 0;
+    line-height: 1;
+    border-radius: 50%;
+    background-color: rgba(0, 0, 0, 0.55);
+    color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity .15s;
+  }
+  &:hover .location-portrait-clear,
+  .location-portrait-clear:focus-visible {
+    opacity: 1;
+  }
+
+  .location-portrait-status,
+  .location-portrait-error {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 2px 4px;
+    font-family: Roboto;
+    font-size: 9px;
+  }
+  .location-portrait-status {
+    background-color: rgba(255, 255, 255, 0.85);
+    color: #363B4E;
+  }
+  .location-portrait-error {
+    background-color: #ed5e31;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 4px;
+
+    button {
+      background-color: transparent;
+      color: white;
+      line-height: 1;
+      cursor: pointer;
+    }
+  }
+}
+
+// Condensed (80px, unselected) Library preview - read-only, no inputs,
+// same idea as .library-monster-condensed.
+.library-location-condensed {
+  flex-flow: row nowrap;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 15px;
+}
+.library-location-thumb {
+  flex: 0 0 48px;
+  width: 48px;
+  height: 48px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+.library-location-summary {
+  overflow: hidden;
+}
+.library-location-line {
+  font-family: Roboto;
+  font-size: 11px;
+  color: #363B4E;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.library-location-expanded {
+  padding: 10px 15px;
+  overflow-y: auto;
+  gap: 10px;
+
+  .location-portrait-image { max-height: 140px; }
+}
+.library-location-empty {
+  font-family: Roboto;
+  font-size: 12px;
+  color: #A0A4B4;
+}
+
 // Library monster preview. Condensed (80px, unselected) stays read-only -
 // no inputs. Expanded is real editable fields (MonsterTextField/
 // MonsterSectionBody, shared with the canvas card) inside CollapsibleSection

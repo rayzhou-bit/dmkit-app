@@ -74,4 +74,9 @@ describe.each([
     const { container } = renderTitle(Component, { type: 'text' });
     expect(container.querySelector('.type-icon')).toBeNull();
   });
+
+  it('shows the location icon for a location card', () => {
+    const { container } = renderTitle(Component, { type: 'location' });
+    expect(container.querySelector('.card-title.has-type-icon .type-icon')).not.toBeNull();
+  });
 });

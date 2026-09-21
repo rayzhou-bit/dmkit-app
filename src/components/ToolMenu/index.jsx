@@ -9,6 +9,7 @@ import CopyCardIcon from '../../assets/icons/copy-card.svg';
 import CopyCardDisabledIcon from '../../assets/icons/copy-card-disabled.svg';
 import AddImageIcon from '../../assets/icons/add-image.svg';
 import MonsterIcon from '../../assets/icons/monster-icon.svg';
+import LocationIcon from '../../assets/icons/location-icon.svg';
 import DeleteCardIcon from '../../assets/icons/trash-red.svg';
 
 const ToolMenu = ({
@@ -22,6 +23,8 @@ const ToolMenu = ({
     onClickNewImageCard,
     disableNewMonsterCard,
     onClickNewMonsterCard,
+    disableNewLocationCard,
+    onClickNewLocationCard,
     disableCopyCards,
     onClickCopyCards,
     disableDeleteCards,
@@ -82,6 +85,23 @@ const ToolMenu = ({
           />
         </div>
         <span>stat</span>
+      </button>
+
+      {/* new location card */}
+      <button
+        className='tool-btn tool-btn-location'
+        disabled={disableNewLocationCard}
+        onClick={onClickNewLocationCard}
+      >
+        <div className='btn-highlight'>
+          <img
+            alt='New location'
+            className='tool-btn-location-icon'
+            draggable='false'
+            src={LocationIcon}
+          />
+        </div>
+        <span>place</span>
       </button>
 
       {/* copy card - pushed to the bottom of the toolbar, see .tool-btn-copy */}

@@ -1,5 +1,6 @@
 import { getCardType, hasCardContent, CARD_TYPES } from './cards';
 import { buildMonsterContent } from './monster';
+import { buildLocationContent } from './location';
 
 describe('getCardType', () => {
   it.each([
@@ -13,6 +14,9 @@ describe('getCardType', () => {
     ['explicit type: monster', { type: 'monster', content: buildMonsterContent() }, CARD_TYPES.monster],
     ['no type, has content.armorClass', { content: { armorClass: '' } }, CARD_TYPES.monster],
     ['no type, has content.portrait, not content.image', { content: { portrait: 'data:...' } }, CARD_TYPES.text],
+    ['explicit type: location', { type: 'location', content: buildLocationContent() }, CARD_TYPES.location],
+    // location is never legacy-inferred - it never existed without an explicit `type`.
+    ['no type, has content.description and entries (no type stamped)', { content: buildLocationContent({ description: 'x' }) }, CARD_TYPES.text],
   ])('%s', (_, card, expected) => {
     expect(getCardType(card)).toBe(expected);
   });
@@ -33,6 +37,12 @@ describe('hasCardContent', () => {
     ['monster with an empty actions entry list', buildMonsterContent({ actions: [] }), false],
     ['monster with one all-blank actions entry', buildMonsterContent({ actions: [{ id: 'e1', name: '', description: '' }] }), false],
     ['monster with one filled actions entry', buildMonsterContent({ actions: [{ id: 'e1', name: 'Scimitar', description: '' }] }), true],
+    ['default location content', buildLocationContent(), false],
+    ['location with a portrait set', buildLocationContent({ portrait: 'data:...' }), true],
+    ['location with a description set', buildLocationContent({ description: 'A dim tavern.' }), true],
+    ['location with an empty entries list', buildLocationContent({ entries: [] }), false],
+    ['location with one all-blank entry', buildLocationContent({ entries: [{ id: 'e1', name: '', description: '' }] }), false],
+    ['location with one filled entry', buildLocationContent({ entries: [{ id: 'e1', name: 'Rosa', description: '' }] }), true],
   ])('%s', (_, content, expected) => {
     expect(hasCardContent(content)).toBe(expected);
   });

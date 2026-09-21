@@ -2,7 +2,7 @@ import React from 'react';
 import { renderHook, act } from '@testing-library/react';
 import { Provider } from 'react-redux';
 
-import { useCardHooks } from './hooks';
+import { useCardHooks, useMonsterPortraitHooks, usePortraitHooks } from './hooks';
 
 // Hand-rolled fake store, matching the pattern in Canvas/testUtils.jsx.
 const makeState = (overrides = {}) => ({
@@ -180,5 +180,14 @@ describe('useCardHooks - cleanup', () => {
     unmount();
 
     expect(groupDrag.calls.end).toBe(0);
+  });
+});
+
+// Regression guard for the location-card portrait sharing decision (see
+// hooks.js's comment on usePortraitHooks) - useMonsterPortraitHooks must
+// stay a re-export, not drift into its own duplicate implementation.
+describe('useMonsterPortraitHooks / usePortraitHooks', () => {
+  it('useMonsterPortraitHooks is the same function as usePortraitHooks', () => {
+    expect(useMonsterPortraitHooks).toBe(usePortraitHooks);
   });
 });
