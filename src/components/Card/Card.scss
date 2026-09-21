@@ -920,6 +920,8 @@ $scrollbar-width: 17px;
   gap: 10px;
   padding: 10px 15px;
   overflow-y: auto;
+  height: 100%;
+  background-color: white;
 }
 
 // Unlike .monster-portrait (a small column, aspect-preserving), this is a
