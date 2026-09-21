@@ -12,7 +12,7 @@ import AddImageIcon from '../../assets/icons/add-image.svg';
 // No setEditingCard/drag-safe gating needed even inside the Library: every
 // interactive bit here is a plain click/dblclick, which HTML5 drag-and-drop
 // never treats as the start of a drag (see LibraryCard.test.jsx).
-const LocationPortrait = ({
+const NotePortrait = ({
   cardId,
 }) => {
   const {
@@ -29,7 +29,7 @@ const LocationPortrait = ({
   } = usePortraitHooks({ cardId });
 
   return (
-    <div className='location-portrait' onDragOver={(e) => e.preventDefault()}>
+    <div className='note-portrait' onDragOver={(e) => e.preventDefault()}>
       <input
         type='file'
         className='card-file-input'
@@ -40,7 +40,7 @@ const LocationPortrait = ({
       {hasPortrait ? (
         <>
           <img
-            className='location-portrait-image'
+            className='note-portrait-image'
             src={portrait}
             alt={portraitAlt}
             title={portraitAlt}
@@ -48,16 +48,16 @@ const LocationPortrait = ({
             onDragStart={(e) => e.preventDefault()}
             onDoubleClick={openFilePicker}
           />
-          <button type='button' className='location-portrait-clear' onClick={clearPortrait}>×</button>
+          <button type='button' className='note-portrait-clear' onClick={clearPortrait}>×</button>
         </>
       ) : (
-        <button type='button' className='location-portrait-placeholder' onClick={openFilePicker}>
+        <button type='button' className='note-portrait-placeholder' onClick={openFilePicker}>
           <img src={AddImageIcon} alt='' draggable='false' />
         </button>
       )}
-      {isProcessing && <div className='location-portrait-status'>Processing…</div>}
+      {isProcessing && <div className='note-portrait-status'>Processing…</div>}
       {errorMessage && (
-        <div className='location-portrait-error' role='alert'>
+        <div className='note-portrait-error' role='alert'>
           <span>{errorMessage}</span>
           <button type='button' onClick={dismissError}>×</button>
         </div>
@@ -66,4 +66,4 @@ const LocationPortrait = ({
   );
 };
 
-export default LocationPortrait;
+export default NotePortrait;

@@ -55,7 +55,7 @@ export const useToolMenuHooks = () => {
   const disableNewCard = !activeTab;
   const disableNewImageCard = !activeTab;
   const disableNewMonsterCard = !activeTab;
-  const disableNewLocationCard = !activeTab;
+  const disableNewNoteCard = !activeTab;
   // Copy uses the multi-selection when there is one, otherwise falls back
   // to the single active card (a plain click doesn't add to selectedCards).
   const hasSelection = !!(selectedCardsData && selectedCardsData.length > 0);
@@ -104,13 +104,13 @@ export const useToolMenuHooks = () => {
         setOffset(offset + DEFAULT_CARD_OFFSET);
       }
     },
-    disableNewLocationCard,
-    onClickNewLocationCard: () => {
-      if (!disableNewLocationCard) {
+    disableNewNoteCard,
+    onClickNewNoteCard: () => {
+      if (!disableNewNoteCard) {
         dispatch(createNewCard({
           activeTabPosition,
           offset,
-          type: CARD_TYPES.location,
+          type: CARD_TYPES.note,
         }));
         setOffset(offset + DEFAULT_CARD_OFFSET);
       }

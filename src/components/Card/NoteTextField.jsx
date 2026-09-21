@@ -1,16 +1,16 @@
 import React from 'react';
 
-import { useLocationFieldHooks, useDragSafeFieldHooks } from './hooks';
+import { useNoteFieldHooks, useDragSafeFieldHooks } from './hooks';
 
 import './Card.scss';
 
-// Location's one scalar field (description) - not generalized like
+// Note's one scalar field (description) - not generalized like
 // MonsterTextField (no icon/numeric/multiline-toggle needs here), but kept
 // as its own small component rather than inlined twice, since both
-// LocationContent.jsx (canvas) and LibraryLocationContent.jsx (Library)
+// NoteContent.jsx (canvas) and LibraryNoteContent.jsx (Library)
 // need the exact same markup. Reuses .monster-field*/.monster-field-textarea
 // CSS as-is.
-const LocationTextField = ({
+const NoteTextField = ({
   cardId,
   fieldKey,
   label,
@@ -18,9 +18,9 @@ const LocationTextField = ({
   hideLabel,
   setEditingCard, // optional - only passed inside a Library card (see useDragSafeFieldHooks)
 }) => {
-  const { value, changeValue, commit, handleKeyDown } = useLocationFieldHooks({ cardId, fieldKey });
+  const { value, changeValue, commit, handleKeyDown } = useNoteFieldHooks({ cardId, fieldKey });
   const { editRef, readOnly, beginEdit, endEdit } = useDragSafeFieldHooks({ setEditingCard });
-  const id = `location-field-${cardId}-${fieldKey}`;
+  const id = `note-field-${cardId}-${fieldKey}`;
 
   return (
     <div className='monster-field'>
@@ -45,4 +45,4 @@ const LocationTextField = ({
   );
 };
 
-export default LocationTextField;
+export default NoteTextField;

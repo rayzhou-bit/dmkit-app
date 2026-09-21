@@ -46,13 +46,13 @@ export const MONSTER_CARD_SIZE = {
   height: 36 * GRID_SIZE,
 };
 
-// Location cards stack a single column (portrait, description, entries) -
+// Note cards stack a single column (portrait, description, entries) -
 // no width floor like monster's two-column layout needs, so this only
 // bumps height over DEFAULT_CARD_SIZE. 384px gives enough room to see the
 // portrait placeholder, a few lines of description, and one entry without
 // immediately needing to resize (visually checked - DEFAULT_CARD_SIZE's
 // 240px was too cramped).
-export const LOCATION_CARD_SIZE = {
+export const NOTE_CARD_SIZE = {
   width: DEFAULT_CARD_SIZE.width,
   height: 32 * GRID_SIZE,
 };

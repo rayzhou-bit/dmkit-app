@@ -1,17 +1,17 @@
 import React from 'react';
 
-import { useLocationEntryFieldHooks, useDragSafeFieldHooks } from './hooks';
-import { LOCATION_ENTRY_NAME_MAX_LENGTH, LOCATION_ENTRY_TEXT_MAX_LENGTH } from '../../constants/location';
+import { useNoteEntryFieldHooks, useDragSafeFieldHooks } from './hooks';
+import { NOTE_ENTRY_NAME_MAX_LENGTH, NOTE_ENTRY_TEXT_MAX_LENGTH } from '../../constants/note';
 
 import './Card.scss';
 import DuplicateIcon from '../../assets/icons/entry-duplicate.svg';
 import TrashIcon from '../../assets/icons/trash-red.svg';
 
-// Near-identical to MonsterEntry.jsx, minus the fieldKey concept (location
+// Near-identical to MonsterEntry.jsx, minus the fieldKey concept (note
 // only ever has one entry list) - reuses its .monster-entry* CSS classes
 // as-is, they have no monster-specific coupling. See MonsterEntry.jsx for
 // the fuller explanation of index/ordinal/id-keying.
-const LocationEntry = ({
+const NoteEntry = ({
   cardId,
   entry,
   index,
@@ -22,12 +22,12 @@ const LocationEntry = ({
   onDelete,
   setEditingCard, // optional - only passed inside a Library card (see useDragSafeFieldHooks); each of the two fields below gates independently
 }) => {
-  const nameField = useLocationEntryFieldHooks({ cardId, entry, entryFieldKey: 'name' });
-  const textField = useLocationEntryFieldHooks({ cardId, entry, entryFieldKey: 'description' });
+  const nameField = useNoteEntryFieldHooks({ cardId, entry, entryFieldKey: 'name' });
+  const textField = useNoteEntryFieldHooks({ cardId, entry, entryFieldKey: 'description' });
   const nameGate = useDragSafeFieldHooks({ setEditingCard });
   const textGate = useDragSafeFieldHooks({ setEditingCard });
-  const nameId = `location-entry-${cardId}-${entry.id}-name`;
-  const textId = `location-entry-${cardId}-${entry.id}-description`;
+  const nameId = `note-entry-${cardId}-${entry.id}-name`;
+  const textId = `note-entry-${cardId}-${entry.id}-description`;
   const ordinal = `${singular} ${index + 1}`;
 
   return (
@@ -59,7 +59,7 @@ const LocationEntry = ({
         className='monster-entry-name'
         value={nameField.value}
         placeholder={namePlaceholder}
-        maxLength={LOCATION_ENTRY_NAME_MAX_LENGTH}
+        maxLength={NOTE_ENTRY_NAME_MAX_LENGTH}
         readOnly={nameGate.readOnly}
         onClick={nameGate.beginEdit}
         onFocus={nameGate.beginEdit}
@@ -75,7 +75,7 @@ const LocationEntry = ({
         className='monster-field-textarea'
         value={textField.value}
         placeholder={textPlaceholder}
-        maxLength={LOCATION_ENTRY_TEXT_MAX_LENGTH}
+        maxLength={NOTE_ENTRY_TEXT_MAX_LENGTH}
         readOnly={textGate.readOnly}
         onClick={textGate.beginEdit}
         onFocus={textGate.beginEdit}
@@ -88,4 +88,4 @@ const LocationEntry = ({
   );
 };
 
-export default LocationEntry;
+export default NoteEntry;

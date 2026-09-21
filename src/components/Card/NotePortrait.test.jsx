@@ -8,12 +8,12 @@ import { Provider } from 'react-redux';
 
 import { processImageFile } from '../../utils/imageUtils';
 import { PORTRAIT_MAX_EDGE_STEPS, MAX_PORTRAIT_DATA_URI_LENGTH } from '../../constants/images';
-import LocationPortrait from './LocationPortrait';
+import NotePortrait from './NotePortrait';
 
 // Hand-rolled fake store, matching the pattern in MonsterPortrait.test.jsx -
-// LocationPortrait shares usePortraitHooks with MonsterPortrait (see
+// NotePortrait shares usePortraitHooks with MonsterPortrait (see
 // hooks.js), so this is largely the same coverage retargeted at the
-// location-specific view markup (.location-portrait* classes).
+// note-specific view markup (.note-portrait* classes).
 const makeStore = (content) => {
   const dispatched = [];
   return {
@@ -26,15 +26,15 @@ const makeStore = (content) => {
 
 const renderPortrait = (content) => {
   const store = makeStore(content);
-  const utils = render(<Provider store={store}><LocationPortrait cardId='c1' /></Provider>);
+  const utils = render(<Provider store={store}><NotePortrait cardId='c1' /></Provider>);
   return { ...utils, store };
 };
 
-describe('LocationPortrait', () => {
+describe('NotePortrait', () => {
   it('placeholder click opens the file picker', () => {
     const clickSpy = vi.spyOn(HTMLInputElement.prototype, 'click').mockImplementation(() => {});
     const { container } = renderPortrait({ portrait: '', portraitAlt: '' });
-    fireEvent.click(container.querySelector('.location-portrait-placeholder'));
+    fireEvent.click(container.querySelector('.note-portrait-placeholder'));
     expect(clickSpy).toHaveBeenCalledTimes(1);
   });
 
@@ -67,13 +67,13 @@ describe('LocationPortrait', () => {
 
     await act(async () => { fireEvent.change(input); });
 
-    expect(container.querySelector('.location-portrait-error').textContent).toContain('nope');
+    expect(container.querySelector('.note-portrait-error').textContent).toContain('nope');
     expect(store.dispatched.some(a => a.type === 'project/updateCardPortrait')).toBe(false);
   });
 
   it('clear button dispatches empty strings', () => {
     const { container, store } = renderPortrait({ portrait: 'data:image/jpeg;base64,xxx', portraitAlt: 'map.png' });
-    fireEvent.click(container.querySelector('.location-portrait-clear'));
+    fireEvent.click(container.querySelector('.note-portrait-clear'));
 
     expect(store.dispatched).toContainEqual({
       type: 'project/updateCardPortrait',

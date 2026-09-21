@@ -183,7 +183,7 @@ describe('useCardHooks - cleanup', () => {
   });
 });
 
-// Regression guard for the location-card portrait sharing decision (see
+// Regression guard for the note-card portrait sharing decision (see
 // hooks.js's comment on usePortraitHooks) - useMonsterPortraitHooks must
 // stay a re-export, not drift into its own duplicate implementation.
 describe('useMonsterPortraitHooks / usePortraitHooks', () => {

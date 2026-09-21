@@ -48,7 +48,7 @@ $border-radius: 5px;
     // title-bar chip) - scaled up here to match this toolbar's other,
     // much larger icons (19-35px).
     .tool-btn-monster-icon,
-    .tool-btn-location-icon {
+    .tool-btn-note-icon {
       width: 28px;
       height: 28px;
     }
@@ -69,7 +69,7 @@ $border-radius: 5px;
   // (scoped so it doesn't double up with the icon swap on the other buttons).
   .tool-btn-image:disabled,
   .tool-btn-monster:disabled,
-  .tool-btn-location:disabled,
+  .tool-btn-note:disabled,
   .tool-btn-delete:disabled {
     img { opacity: 0.35; }
     span { color: #A0A4B4; }

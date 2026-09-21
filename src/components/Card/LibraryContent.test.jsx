@@ -4,7 +4,7 @@ import { Provider } from 'react-redux';
 
 import LibraryContent from './LibraryContent';
 import { buildMonsterContent } from '../../constants/monster';
-import { buildLocationContent } from '../../constants/location';
+import { buildNoteContent } from '../../constants/note';
 
 // Hand-rolled fake store, matching the pattern in Content.test.jsx -
 // libraryMonsterCollapse is read unconditionally by useMonsterSectionHooks
@@ -22,7 +22,7 @@ describe('LibraryContent (dispatcher)', () => {
       <Provider store={store}><LibraryContent cardId='c1' isExpanded={false} isSelected={false} setEditingCard={() => {}} /></Provider>
     );
     expect(container.querySelector('.library-monster-condensed')).toBeNull();
-    expect(container.querySelector('.library-location-condensed')).toBeNull();
+    expect(container.querySelector('.library-note-condensed')).toBeNull();
   });
 
   it('renders LibraryImageContent for an image card', () => {
@@ -31,7 +31,7 @@ describe('LibraryContent (dispatcher)', () => {
       <Provider store={store}><LibraryContent cardId='c2' isExpanded={false} isSelected={false} setEditingCard={() => {}} /></Provider>
     );
     expect(container.querySelector('.library-monster-condensed')).toBeNull();
-    expect(container.querySelector('.library-location-condensed')).toBeNull();
+    expect(container.querySelector('.library-note-condensed')).toBeNull();
   });
 
   it('renders LibraryMonsterContent for a monster card', () => {
@@ -42,12 +42,12 @@ describe('LibraryContent (dispatcher)', () => {
     expect(container.querySelector('.library-monster-condensed')).not.toBeNull();
   });
 
-  it('renders LibraryLocationContent for a location card', () => {
-    const store = makeStore({ c4: { type: 'location', content: buildLocationContent({ description: 'A dim tavern.' }) } });
+  it('renders LibraryNoteContent for a note card', () => {
+    const store = makeStore({ c4: { type: 'note', content: buildNoteContent({ description: 'A dim tavern.' }) } });
     const { container } = render(
       <Provider store={store}><LibraryContent cardId='c4' isExpanded={false} isSelected={false} setEditingCard={() => {}} /></Provider>
     );
-    expect(container.querySelector('.library-location-condensed')).not.toBeNull();
+    expect(container.querySelector('.library-note-condensed')).not.toBeNull();
     expect(container.querySelector('.library-monster-condensed')).toBeNull();
   });
 });

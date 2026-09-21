@@ -1,19 +1,19 @@
 import React, { useRef } from 'react';
 
-import { useLocationEntryListHooks } from './hooks';
-import { LOCATION_FIELDS } from '../../constants/location';
-import LocationEntry from './LocationEntry';
+import { useNoteEntryListHooks } from './hooks';
+import { NOTE_FIELDS } from '../../constants/note';
+import NoteEntry from './NoteEntry';
 
 import './Card.scss';
 
 // One open-ended list of "detail" entries - no fixed categories, unlike the
 // monster card's Traits/Actions/etc. Near-identical to MonsterEntryList.jsx
-// minus the fieldKey/section concept (location only ever has this one
+// minus the fieldKey/section concept (note only ever has this one
 // list), reusing its .monster-entry-list CSS. Starts empty - just the add
 // button - no blank starter entry.
-const LocationEntryList = ({ cardId, setEditingCard }) => {
-  const { entries, canAdd, addEntry, duplicateEntry, deleteEntry } = useLocationEntryListHooks({ cardId });
-  const { singular, namePlaceholder, textPlaceholder } = LOCATION_FIELDS.entries;
+const NoteEntryList = ({ cardId, setEditingCard }) => {
+  const { entries, canAdd, addEntry, duplicateEntry, deleteEntry } = useNoteEntryListHooks({ cardId });
+  const { singular, namePlaceholder, textPlaceholder } = NOTE_FIELDS.entries;
   const addButtonRef = useRef(null);
 
   // Deleting an entry unmounts its own delete button - without moving focus
@@ -28,7 +28,7 @@ const LocationEntryList = ({ cardId, setEditingCard }) => {
   return (
     <div className='monster-entry-list'>
       {entries.map((entry, index) => (
-        <LocationEntry
+        <NoteEntry
           key={entry.id}
           cardId={cardId}
           entry={entry}
@@ -50,4 +50,4 @@ const LocationEntryList = ({ cardId, setEditingCard }) => {
   );
 };
 
-export default LocationEntryList;
+export default NoteEntryList;

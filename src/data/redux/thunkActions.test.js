@@ -2,9 +2,9 @@
 // Firebase; thunkActions.js itself has no such import, so no mock is needed
 // here.
 import { copySelectedCard, copySelectedCards, createNewCard, destroySelectedCards } from './thunkActions';
-import { MONSTER_CARD_SIZE, LOCATION_CARD_SIZE } from '../../constants/dimensions';
+import { MONSTER_CARD_SIZE, NOTE_CARD_SIZE } from '../../constants/dimensions';
 import { buildMonsterContent } from '../../constants/monster';
-import { buildLocationContent } from '../../constants/location';
+import { buildNoteContent } from '../../constants/note';
 
 // Hand-rolled dispatch recorder - thunkActions dispatch plain actions
 // synchronously, no store/state read-back needed.
@@ -24,13 +24,13 @@ describe('createNewCard', () => {
     expect(createAction.payload.size).toEqual(MONSTER_CARD_SIZE);
   });
 
-  it('creates a location card sized LOCATION_CARD_SIZE', () => {
+  it('creates a note card sized NOTE_CARD_SIZE', () => {
     const { dispatch, dispatched } = makeDispatch();
-    createNewCard({ activeTabPosition: { x: 0, y: 0 }, offset: 0, type: 'location' })(dispatch);
+    createNewCard({ activeTabPosition: { x: 0, y: 0 }, offset: 0, type: 'note' })(dispatch);
 
     const createAction = dispatched.find(a => a.type === 'project/createCard');
-    expect(createAction.payload.type).toBe('location');
-    expect(createAction.payload.size).toEqual(LOCATION_CARD_SIZE);
+    expect(createAction.payload.type).toBe('note');
+    expect(createAction.payload.size).toEqual(NOTE_CARD_SIZE);
   });
 });
 
@@ -70,9 +70,9 @@ describe('copySelectedCard', () => {
     expect(createAction.payload.monster).toEqual(monsterContent);
   });
 
-  it('round-trips location content (description + entries) through the location payload key', () => {
+  it('round-trips note content (description + entries) through the note payload key', () => {
     const { dispatch, dispatched } = makeDispatch();
-    const locationContent = buildLocationContent({
+    const noteContent = buildNoteContent({
       description: 'A dim tavern that smells of salt and old ale.',
       entries: [{ id: 'e1', name: 'Innkeeper Rosa', description: 'Gruff but fair.' }],
     });
@@ -80,14 +80,14 @@ describe('copySelectedCard', () => {
       views: { tab1: { pos: { x: 10, y: 20 }, size: { width: 240, height: 240 } } },
       color: 'gray',
       title: 'The Rusty Anchor Inn',
-      type: 'location',
-      content: locationContent,
+      type: 'note',
+      content: noteContent,
     };
 
     copySelectedCard({ selectedCard, activeTab: 'tab1' })(dispatch);
 
     const createAction = dispatched.find(a => a.type === 'project/createCard');
-    expect(createAction.payload.location).toEqual(locationContent);
+    expect(createAction.payload.note).toEqual(noteContent);
   });
 });
 

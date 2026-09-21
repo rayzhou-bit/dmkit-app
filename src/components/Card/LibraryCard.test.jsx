@@ -94,21 +94,21 @@ describe('LibraryCard - deselecting mid-edit commits first (useOutsideClick fire
 });
 
 // Same crux as the monster describe block above, retargeted at the
-// location card's description field and its one open-ended entry list -
-// the trickiest part of the whole location feature, since it reuses
+// note card's description field and its one open-ended entry list -
+// the trickiest part of the whole note feature, since it reuses
 // useDragSafeFieldHooks/MonsterEntry's mechanics but through new
-// LocationTextField/LocationEntry components.
-describe('LibraryCard (location) - draggable disarms while a field is being edited', () => {
+// NoteTextField/NoteEntry components.
+describe('LibraryCard (note) - draggable disarms while a field is being edited', () => {
   it('draggable: true at rest, false while the description field is focused, true again after blur', () => {
-    store.dispatch(actions.project.createCard({ newId: 'lcard-loc', type: 'location' }));
+    store.dispatch(actions.project.createCard({ newId: 'lcard-note', type: 'note' }));
     // Same setup pattern as the monster describe block above - an all-empty
     // card shows the "no content yet" placeholder (hasCardContent gates the
     // Library's expanded view), so seed a field first.
-    store.dispatch(actions.project.updateCardLocationFields({ id: 'lcard-loc', fields: { description: 'placeholder' } }));
+    store.dispatch(actions.project.updateCardNoteFields({ id: 'lcard-note', fields: { description: 'placeholder' } }));
 
     const { container } = render(
       <Provider store={store}>
-        <LibraryCard cardId='lcard-loc' isExpanded={false} />
+        <LibraryCard cardId='lcard-note' isExpanded={false} />
       </Provider>
     );
 
@@ -116,7 +116,7 @@ describe('LibraryCard (location) - draggable disarms while a field is being edit
     fireEvent.click(card);
     expect(card.draggable).toBe(true);
 
-    const descriptionInput = container.querySelector('#location-field-lcard-loc-description');
+    const descriptionInput = container.querySelector('#note-field-lcard-note-description');
     expect(descriptionInput).not.toBeNull();
 
     fireEvent.click(descriptionInput);
@@ -131,7 +131,7 @@ describe('LibraryCard (location) - draggable disarms while a field is being edit
   it('draggable disarms while editing an entry field, and a plain click on the add-entry button never disarms it', () => {
     const { container, getByText } = render(
       <Provider store={store}>
-        <LibraryCard cardId='lcard-loc' isExpanded={false} />
+        <LibraryCard cardId='lcard-note' isExpanded={false} />
       </Provider>
     );
     const card = container.querySelector('.card');
@@ -141,8 +141,8 @@ describe('LibraryCard (location) - draggable disarms while a field is being edit
     fireEvent.click(getByText('+ Add Detail'));
     expect(card.draggable).toBe(true); // plain click never disarms
 
-    const entryId = store.getState().project.present.cards['lcard-loc'].content.entries[0].id;
-    const nameInput = container.querySelector(`#location-entry-lcard-loc-${entryId}-name`);
+    const entryId = store.getState().project.present.cards['lcard-note'].content.entries[0].id;
+    const nameInput = container.querySelector(`#note-entry-lcard-note-${entryId}-name`);
     expect(nameInput).not.toBeNull();
 
     fireEvent.click(nameInput);

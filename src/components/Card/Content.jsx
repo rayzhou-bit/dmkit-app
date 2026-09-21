@@ -6,7 +6,7 @@ import { CARD_TYPES } from '../../constants/cards';
 import TextContent from './TextContent';
 import ImageContent from './ImageContent';
 import MonsterContent from './MonsterContent';
-import LocationContent from './LocationContent';
+import NoteContent from './NoteContent';
 
 const Content = ({
   cardId,
@@ -17,8 +17,8 @@ const Content = ({
   if (cardType === CARD_TYPES.monster) {
     return <MonsterContent cardId={cardId} />;
   }
-  if (cardType === CARD_TYPES.location) {
-    return <LocationContent cardId={cardId} />;
+  if (cardType === CARD_TYPES.note) {
+    return <NoteContent cardId={cardId} />;
   }
   if (cardType === CARD_TYPES.image) {
     return <ImageContent cardId={cardId} />;

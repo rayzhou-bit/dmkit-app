@@ -13,7 +13,7 @@ import {
   MONSTER_MAX_ENTRIES_PER_SECTION, MONSTER_MAX_DOTS, normalizeMonsterEntries, entryHasContent, monsterFieldHasContent,
   MONSTER_COLLAPSE_SCOPES, LIBRARY_DEFAULT_COLLAPSED,
 } from '../../constants/monster';
-import { LOCATION_MAX_ENTRIES } from '../../constants/location';
+import { NOTE_MAX_ENTRIES } from '../../constants/note';
 import { POPUP_KEYS } from '../Popup/PopupKey';
 import { ACTION_TYPE } from '../../components-shared/Dropdowns/ActionDropdown';
 import { useGroupDragPosition } from '../Canvas/groupDrag';
@@ -709,12 +709,12 @@ export const useMonsterEntryFieldHooks = ({ cardId, fieldKey, entry, entryFieldK
   };
 };
 
-// Mirrors useMonsterFieldHooks - location has just one scalar field
+// Mirrors useMonsterFieldHooks - note has just one scalar field
 // (description) today, going through the same commit-on-blur/equality-guard
-// shape via updateCardLocationFields (kept allowlist-based like the monster
+// shape via updateCardNoteFields (kept allowlist-based like the monster
 // version, not a single-field action, so a second scalar field later needs
 // no new action).
-export const useLocationFieldHooks = ({ cardId, fieldKey }) => {
+export const useNoteFieldHooks = ({ cardId, fieldKey }) => {
   const dispatch = useDispatch();
   const storeValue = useSelector(state => state.project.present.cards[cardId].content?.[fieldKey] ?? '');
 
@@ -726,7 +726,7 @@ export const useLocationFieldHooks = ({ cardId, fieldKey }) => {
 
   const commit = () => {
     if (value !== storeValue) {
-      dispatch(actions.project.updateCardLocationFields({ id: cardId, fields: { [fieldKey]: value } }));
+      dispatch(actions.project.updateCardNoteFields({ id: cardId, fields: { [fieldKey]: value } }));
     }
   };
 
@@ -744,30 +744,30 @@ export const useLocationFieldHooks = ({ cardId, fieldKey }) => {
 };
 
 // Mirrors useMonsterEntryListHooks, minus the field/fieldKey concept -
-// location has exactly one entry list (content.entries), not several
+// note has exactly one entry list (content.entries), not several
 // selected by field key.
-export const useLocationEntryListHooks = ({ cardId }) => {
+export const useNoteEntryListHooks = ({ cardId }) => {
   const dispatch = useDispatch();
   const raw = useSelector(state => state.project.present.cards[cardId].content?.entries);
   const entries = normalizeMonsterEntries(raw);
 
   return {
     entries,
-    canAdd: entries.length < LOCATION_MAX_ENTRIES,
-    addEntry: () => dispatch(actions.project.addLocationEntry({
+    canAdd: entries.length < NOTE_MAX_ENTRIES,
+    addEntry: () => dispatch(actions.project.addNoteEntry({
       id: cardId, entryId: generateUID('entry'),
     })),
-    duplicateEntry: (entryId) => dispatch(actions.project.duplicateLocationEntry({
+    duplicateEntry: (entryId) => dispatch(actions.project.duplicateNoteEntry({
       id: cardId, entryId, newEntryId: generateUID('entry'),
     })),
-    deleteEntry: (entryId) => dispatch(actions.project.deleteLocationEntry({
+    deleteEntry: (entryId) => dispatch(actions.project.deleteNoteEntry({
       id: cardId, entryId,
     })),
   };
 };
 
 // Mirrors useMonsterEntryFieldHooks, minus fieldKey (see above).
-export const useLocationEntryFieldHooks = ({ cardId, entry, entryFieldKey }) => {
+export const useNoteEntryFieldHooks = ({ cardId, entry, entryFieldKey }) => {
   const dispatch = useDispatch();
   const storeValue = entry[entryFieldKey] ?? '';
 
@@ -779,7 +779,7 @@ export const useLocationEntryFieldHooks = ({ cardId, entry, entryFieldKey }) => 
 
   const commit = () => {
     if (value !== storeValue) {
-      dispatch(actions.project.updateLocationEntry({
+      dispatch(actions.project.updateNoteEntry({
         id: cardId, entryId: entry.id, changes: { [entryFieldKey]: value },
       }));
     }
@@ -863,7 +863,7 @@ export const useMonsterSectionHooks = ({ cardId, scope = MONSTER_COLLAPSE_SCOPES
 
 // Deliberately duplicated from useImageContentHooks, not shared/parameterized -
 // different content keys (portrait/portraitAlt), action, and compression budget.
-// Shared as-is (not duplicated) between monster and location cards, though -
+// Shared as-is (not duplicated) between monster and note cards, though -
 // unlike useImageContentHooks, updateCardPortrait never touches `type` and
 // the portrait/portraitAlt keys and compression budget are genuinely the
 // same property of "a card portrait" for both, not something that has ever

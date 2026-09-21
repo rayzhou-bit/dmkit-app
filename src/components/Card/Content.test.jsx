@@ -4,7 +4,7 @@ import { Provider } from 'react-redux';
 
 import Content from './Content';
 import { buildMonsterContent } from '../../constants/monster';
-import { buildLocationContent } from '../../constants/location';
+import { buildNoteContent } from '../../constants/note';
 
 // Hand-rolled fake store, matching the pattern in Canvas/testUtils.jsx.
 // session.monsterCollapse is read unconditionally by useMonsterSectionHooks.
@@ -45,13 +45,13 @@ describe('Content (dispatcher)', () => {
     expect(container.querySelector('.image-placeholder')).toBeNull();
   });
 
-  it('renders location content (portrait/description/entries, no textarea.text) for a location card', () => {
-    const store = makeStore({ c4: { type: 'location', content: buildLocationContent() } });
+  it('renders note content (portrait/description/entries, no textarea.text) for a note card', () => {
+    const store = makeStore({ c4: { type: 'note', content: buildNoteContent() } });
     const { container } = render(
       <Provider store={store}><Content cardId='c4' setEditingCard={() => {}} /></Provider>
     );
-    expect(container.querySelector('.location-content')).not.toBeNull();
-    expect(container.querySelector('.location-portrait')).not.toBeNull();
+    expect(container.querySelector('.note-content')).not.toBeNull();
+    expect(container.querySelector('.note-portrait')).not.toBeNull();
     expect(container.querySelector('textarea.text')).toBeNull();
     expect(container.querySelector('.image-placeholder')).toBeNull();
   });

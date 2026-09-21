@@ -5,13 +5,13 @@ import {
   INTRO_PROJECT,
   BLANK_PROJECT,
 } from './constants';
-import { GRID_SIZE, DEFAULT_CARD_POSITION, DEFAULT_CARD_SIZE, MONSTER_CARD_SIZE, LOCATION_CARD_SIZE } from '../../../constants/dimensions';
+import { GRID_SIZE, DEFAULT_CARD_POSITION, DEFAULT_CARD_SIZE, MONSTER_CARD_SIZE, NOTE_CARD_SIZE } from '../../../constants/dimensions';
 import { CARD_TYPES, getCardType } from '../../../constants/cards';
 import {
   buildMonsterContent, MONSTER_FIELD_KEYS,
   MONSTER_ENTRY_FIELD_KEYS, MONSTER_MAX_ENTRIES_PER_SECTION, normalizeMonsterEntries,
 } from '../../../constants/monster';
-import { buildLocationContent, LOCATION_FIELD_KEYS, LOCATION_MAX_ENTRIES } from '../../../constants/location';
+import { buildNoteContent, NOTE_FIELD_KEYS, NOTE_MAX_ENTRIES } from '../../../constants/note';
 
 // TODO name refactor
 //  view -> tab
@@ -64,9 +64,9 @@ const applyMonsterEntries = (state, { id, field }, updater) => {
   };
 };
 
-// Same shape as applyMonsterEntries, but location has exactly one entry
+// Same shape as applyMonsterEntries, but note has exactly one entry
 // list (content.entries) - no field/fieldKey to validate against.
-const applyLocationEntries = (state, { id }, updater) => {
+const applyNoteEntries = (state, { id }, updater) => {
   const card = state.cards[id];
   if (!card) return state;
   const entries = normalizeMonsterEntries(card.content?.entries);
@@ -120,7 +120,7 @@ const project = createSlice({
 
     // Card reducers
     createCard: (state, { payload }) => {
-      const { newId, position, size, color, title, text, type, image, alt, monster, location } = payload;
+      const { newId, position, size, color, title, text, type, image, alt, monster, note } = payload;
       if (!state.activeViewId) return state;
       return {
         ...state,
@@ -138,7 +138,7 @@ const project = createSlice({
             title: title ?? DEFAULT_CARD.title,
             type: type ?? DEFAULT_CARD.type,
             content: type === CARD_TYPES.monster ? buildMonsterContent(monster)
-              : type === CARD_TYPES.location ? buildLocationContent(location)
+              : type === CARD_TYPES.note ? buildNoteContent(note)
               : type === CARD_TYPES.image ? { image: image ?? '', alt: alt ?? '' }
               : { text: text ?? DEFAULT_CARD.content.text },
             createdOn: Date.now(),
@@ -192,7 +192,7 @@ const project = createSlice({
               [state.activeViewId]: {
                 pos: position,
                 size: getCardType(state.cards[id]) === CARD_TYPES.monster ? MONSTER_CARD_SIZE
-                  : getCardType(state.cards[id]) === CARD_TYPES.location ? LOCATION_CARD_SIZE
+                  : getCardType(state.cards[id]) === CARD_TYPES.note ? NOTE_CARD_SIZE
                   : DEFAULT_CARD_SIZE,
               },
             },
@@ -374,12 +374,12 @@ const project = createSlice({
     },
     // Only `description` goes through here today (entries has its own 4
     // reducers below, portrait its own action) - mirrors
-    // updateCardMonsterFields' allowlist-by-LOCATION_FIELD_KEYS shape so a
+    // updateCardMonsterFields' allowlist-by-NOTE_FIELD_KEYS shape so a
     // second scalar field later needs no new action, just a new key.
-    updateCardLocationFields: (state, { payload }) => {
+    updateCardNoteFields: (state, { payload }) => {
       const { id, fields } = payload;
       const newContent = { ...state.cards[id].content };
-      for (const key of LOCATION_FIELD_KEYS) {
+      for (const key of NOTE_FIELD_KEYS) {
         if (key in fields) newContent[key] = fields[key] ?? '';
       }
       return {
@@ -427,24 +427,24 @@ const project = createSlice({
       };
       return next;
     }),
-    // Location's single entry list (content.entries) - same shape as the
+    // Note's single entry list (content.entries) - same shape as the
     // monster entry reducers above, minus the field/fieldKey concept (only
     // ever one list, so nothing to select between).
-    addLocationEntry: (state, { payload }) => applyLocationEntries(state, payload, (entries) => {
-      if (entries.length >= LOCATION_MAX_ENTRIES) return entries;
+    addNoteEntry: (state, { payload }) => applyNoteEntries(state, payload, (entries) => {
+      if (entries.length >= NOTE_MAX_ENTRIES) return entries;
       return [...entries, { id: payload.entryId, name: '', description: '' }];
     }),
-    duplicateLocationEntry: (state, { payload }) => applyLocationEntries(state, payload, (entries) => {
+    duplicateNoteEntry: (state, { payload }) => applyNoteEntries(state, payload, (entries) => {
       const index = entries.findIndex(e => e.id === payload.entryId);
-      if (index === -1 || entries.length >= LOCATION_MAX_ENTRIES) return entries;
+      if (index === -1 || entries.length >= NOTE_MAX_ENTRIES) return entries;
       const copy = { ...entries[index], id: payload.newEntryId };
       return [...entries.slice(0, index + 1), copy, ...entries.slice(index + 1)];
     }),
-    deleteLocationEntry: (state, { payload }) => applyLocationEntries(state, payload, (entries) => {
+    deleteNoteEntry: (state, { payload }) => applyNoteEntries(state, payload, (entries) => {
       const next = entries.filter(e => e.id !== payload.entryId);
       return next.length === entries.length ? entries : next;
     }),
-    updateLocationEntry: (state, { payload }) => applyLocationEntries(state, payload, (entries) => {
+    updateNoteEntry: (state, { payload }) => applyNoteEntries(state, payload, (entries) => {
       const index = entries.findIndex(e => e.id === payload.entryId);
       if (index === -1) return entries;
       const { changes } = payload;
