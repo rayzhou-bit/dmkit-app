@@ -1,6 +1,7 @@
 import { reducer } from './reducers';
 import { buildMonsterContent } from '../../../constants/monster';
 import { buildNoteContent } from '../../../constants/note';
+import { buildCustomContent } from '../../../constants/custom';
 import { DEFAULT_CARD_SIZE, MONSTER_CARD_SIZE, NOTE_CARD_SIZE } from '../../../constants/dimensions';
 
 const baseState = {
@@ -81,6 +82,26 @@ describe('createCard - note', () => {
     });
     expect(next.cards.c1.content.description).toBe('A dim tavern.');
     expect(next.cards.c1.content.entries).toEqual([{ id: 'e1', name: 'Rosa', description: 'Gruff.' }]);
+  });
+});
+
+describe('createCard - custom', () => {
+  it('stamps type and content matches buildCustomContent(), no text/image keys', () => {
+    const next = reducer(baseState, { type: 'project/createCard', payload: { newId: 'c1', type: 'custom' } });
+    const card = next.cards.c1;
+    expect(card.type).toBe('custom');
+    expect(card.content).toEqual(buildCustomContent());
+    expect(card.content.text).toBeUndefined();
+    expect(card.content.image).toBeUndefined();
+    expect(JSON.parse(JSON.stringify(card))).toEqual(card);
+  });
+
+  it('copies fields from the custom payload', () => {
+    const next = reducer(baseState, {
+      type: 'project/createCard',
+      payload: { newId: 'c1', type: 'custom', custom: { blocks: [{ id: 'b1', type: 'text', text: 'hi' }] } },
+    });
+    expect(next.cards.c1.content.blocks).toEqual([{ id: 'b1', type: 'text', text: 'hi', image: '', alt: '' }]);
   });
 });
 
@@ -232,6 +253,7 @@ describe('linkCardToView', () => {
     ['text', { type: 'text', content: {} }, DEFAULT_CARD_SIZE],
     ['monster', { type: 'monster', content: buildMonsterContent() }, MONSTER_CARD_SIZE],
     ['note', { type: 'note', content: buildNoteContent() }, NOTE_CARD_SIZE],
+    ['custom', { type: 'custom', content: buildCustomContent() }, DEFAULT_CARD_SIZE],
   ])('sizes a %s card by its type', (_, card, expectedSize) => {
     const state = { ...baseState, cards: { c1: { ...card, views: {} } } };
     const next = reducer(state, {
@@ -612,6 +634,176 @@ describe('note entry-list reducers', () => {
         payload: { id: 'c1', entryId: 'nope', changes: { name: 'x' } },
       });
       expect(next).toBe(baseNoteState);
+    });
+  });
+});
+
+describe('custom block reducers', () => {
+  const baseCustomState = {
+    cards: {
+      c1: {
+        views: {},
+        type: 'custom',
+        content: {
+          ...buildCustomContent(),
+          blocks: [
+            { id: 'b1', type: 'text', text: 'Some notes.', image: '', alt: '' },
+            { id: 'b2', type: 'image', text: '', image: 'data:image/jpeg;base64,xxx', alt: 'photo.png' },
+          ],
+        },
+        editedOn: 1,
+      },
+    },
+    views: {},
+    viewOrder: [],
+    activeViewId: 'tabA',
+  };
+
+  describe('addCustomBlock', () => {
+    it('appends a blank text block, bumps editedOn', () => {
+      const next = reducer(baseCustomState, {
+        type: 'project/addCustomBlock',
+        payload: { id: 'c1', blockId: 'b3', blockType: 'text' },
+      });
+      expect(next.cards.c1.content.blocks).toEqual([
+        { id: 'b1', type: 'text', text: 'Some notes.', image: '', alt: '' },
+        { id: 'b2', type: 'image', text: '', image: 'data:image/jpeg;base64,xxx', alt: 'photo.png' },
+        { id: 'b3', type: 'text', text: '', image: '', alt: '' },
+      ]);
+      expect(next.cards.c1.editedOn).toBeGreaterThanOrEqual(1);
+    });
+
+    it('appends a blank image block', () => {
+      const next = reducer(baseCustomState, {
+        type: 'project/addCustomBlock',
+        payload: { id: 'c1', blockId: 'b3', blockType: 'image' },
+      });
+      expect(next.cards.c1.content.blocks[2]).toEqual({ id: 'b3', type: 'image', text: '', image: '', alt: '' });
+    });
+
+    it('is a no-op for an unknown card id', () => {
+      const next = reducer(baseCustomState, {
+        type: 'project/addCustomBlock',
+        payload: { id: 'nope', blockId: 'b3', blockType: 'text' },
+      });
+      expect(next).toBe(baseCustomState);
+    });
+
+    it('is a no-op at the block cap (combined across both types)', () => {
+      const manyBlocks = Array.from({ length: 50 }, (_, i) => ({ id: `b${i}`, type: 'text', text: '', image: '', alt: '' }));
+      const atCapState = { ...baseCustomState, cards: { c1: { ...baseCustomState.cards.c1, content: { ...baseCustomState.cards.c1.content, blocks: manyBlocks } } } };
+      const next = reducer(atCapState, {
+        type: 'project/addCustomBlock',
+        payload: { id: 'c1', blockId: 'overflow', blockType: 'image' },
+      });
+      expect(next).toBe(atCapState);
+    });
+  });
+
+  describe('duplicateCustomBlock', () => {
+    it('inserts a copy right after the source, with the new id, preserving its type', () => {
+      const next = reducer(baseCustomState, {
+        type: 'project/duplicateCustomBlock',
+        payload: { id: 'c1', blockId: 'b2', newBlockId: 'b2-copy' },
+      });
+      expect(next.cards.c1.content.blocks).toEqual([
+        { id: 'b1', type: 'text', text: 'Some notes.', image: '', alt: '' },
+        { id: 'b2', type: 'image', text: '', image: 'data:image/jpeg;base64,xxx', alt: 'photo.png' },
+        { id: 'b2-copy', type: 'image', text: '', image: 'data:image/jpeg;base64,xxx', alt: 'photo.png' },
+      ]);
+      // source untouched
+      expect(baseCustomState.cards.c1.content.blocks).toHaveLength(2);
+    });
+
+    it('is a no-op for an unknown blockId', () => {
+      const next = reducer(baseCustomState, {
+        type: 'project/duplicateCustomBlock',
+        payload: { id: 'c1', blockId: 'nope', newBlockId: 'b3' },
+      });
+      expect(next).toBe(baseCustomState);
+    });
+  });
+
+  describe('deleteCustomBlock', () => {
+    it('removes only the targeted block, preserving order of the rest', () => {
+      const next = reducer(baseCustomState, {
+        type: 'project/deleteCustomBlock',
+        payload: { id: 'c1', blockId: 'b1' },
+      });
+      expect(next.cards.c1.content.blocks).toEqual([
+        { id: 'b2', type: 'image', text: '', image: 'data:image/jpeg;base64,xxx', alt: 'photo.png' },
+      ]);
+    });
+
+    it('is a no-op for an unknown blockId', () => {
+      const next = reducer(baseCustomState, {
+        type: 'project/deleteCustomBlock',
+        payload: { id: 'c1', blockId: 'nope' },
+      });
+      expect(next).toBe(baseCustomState);
+    });
+  });
+
+  describe('updateCustomTextBlock', () => {
+    it('patches the text on a text block', () => {
+      const next = reducer(baseCustomState, {
+        type: 'project/updateCustomTextBlock',
+        payload: { id: 'c1', blockId: 'b1', text: 'Updated notes.' },
+      });
+      expect(next.cards.c1.content.blocks[0].text).toBe('Updated notes.');
+    });
+
+    it('is a no-op when the targeted block is an image block (wrong type)', () => {
+      const next = reducer(baseCustomState, {
+        type: 'project/updateCustomTextBlock',
+        payload: { id: 'c1', blockId: 'b2', text: 'should not apply' },
+      });
+      expect(next).toBe(baseCustomState);
+    });
+
+    it('coerces an undefined value to ""', () => {
+      const next = reducer(baseCustomState, {
+        type: 'project/updateCustomTextBlock',
+        payload: { id: 'c1', blockId: 'b1', text: undefined },
+      });
+      expect(next.cards.c1.content.blocks[0].text).toBe('');
+    });
+
+    it('is a no-op for an unknown blockId', () => {
+      const next = reducer(baseCustomState, {
+        type: 'project/updateCustomTextBlock',
+        payload: { id: 'c1', blockId: 'nope', text: 'x' },
+      });
+      expect(next).toBe(baseCustomState);
+    });
+  });
+
+  describe('updateCustomImageBlock', () => {
+    it('patches image/alt on an image block, and never touches the card\'s own type', () => {
+      const next = reducer(baseCustomState, {
+        type: 'project/updateCustomImageBlock',
+        payload: { id: 'c1', blockId: 'b2', image: 'data:image/jpeg;base64,new', alt: 'new.png' },
+      });
+      expect(next.cards.c1.content.blocks[1]).toEqual({ id: 'b2', type: 'image', text: '', image: 'data:image/jpeg;base64,new', alt: 'new.png' });
+      // The regression this whole feature exists to prevent: unlike
+      // updateCardImage, this must never stamp the card's own `type`.
+      expect(next.cards.c1.type).toBe('custom');
+    });
+
+    it('is a no-op when the targeted block is a text block (wrong type)', () => {
+      const next = reducer(baseCustomState, {
+        type: 'project/updateCustomImageBlock',
+        payload: { id: 'c1', blockId: 'b1', image: 'data:...', alt: 'x' },
+      });
+      expect(next).toBe(baseCustomState);
+    });
+
+    it('is a no-op for an unknown blockId', () => {
+      const next = reducer(baseCustomState, {
+        type: 'project/updateCustomImageBlock',
+        payload: { id: 'c1', blockId: 'nope', image: 'data:...', alt: 'x' },
+      });
+      expect(next).toBe(baseCustomState);
     });
   });
 });

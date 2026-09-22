@@ -12,6 +12,7 @@ import {
   MONSTER_ENTRY_FIELD_KEYS, MONSTER_MAX_ENTRIES_PER_SECTION, normalizeMonsterEntries,
 } from '../../../constants/monster';
 import { buildNoteContent, NOTE_FIELD_KEYS, NOTE_MAX_ENTRIES } from '../../../constants/note';
+import { buildCustomContent, normalizeCustomBlocks, CUSTOM_MAX_BLOCKS, CUSTOM_BLOCK_TYPES } from '../../../constants/custom';
 
 // TODO name refactor
 //  view -> tab
@@ -85,6 +86,28 @@ const applyNoteEntries = (state, { id }, updater) => {
   };
 };
 
+// Same shape as applyNoteEntries - custom has exactly one blocks list
+// (content.blocks), mixing text/image blocks freely, no field/fieldKey to
+// validate against.
+const applyCustomBlocks = (state, { id }, updater) => {
+  const card = state.cards[id];
+  if (!card) return state;
+  const blocks = normalizeCustomBlocks(card.content?.blocks);
+  const next = updater(blocks);
+  if (next === blocks) return state;
+  return {
+    ...state,
+    cards: {
+      ...state.cards,
+      [id]: {
+        ...card,
+        content: { ...card.content, blocks: next },
+        editedOn: Date.now(),
+      },
+    },
+  };
+};
+
 const initialState = {
   title: '',
   viewOrder: [],
@@ -120,7 +143,7 @@ const project = createSlice({
 
     // Card reducers
     createCard: (state, { payload }) => {
-      const { newId, position, size, color, title, text, type, image, alt, monster, note } = payload;
+      const { newId, position, size, color, title, text, type, image, alt, monster, note, custom } = payload;
       if (!state.activeViewId) return state;
       return {
         ...state,
@@ -139,6 +162,7 @@ const project = createSlice({
             type: type ?? DEFAULT_CARD.type,
             content: type === CARD_TYPES.monster ? buildMonsterContent(monster)
               : type === CARD_TYPES.note ? buildNoteContent(note)
+              : type === CARD_TYPES.custom ? buildCustomContent(custom)
               : type === CARD_TYPES.image ? { image: image ?? '', alt: alt ?? '' }
               : { text: text ?? DEFAULT_CARD.content.text },
             createdOn: Date.now(),
@@ -454,6 +478,47 @@ const project = createSlice({
         ...('name' in changes ? { name: String(changes.name ?? '') } : {}),
         ...('description' in changes ? { description: String(changes.description ?? '') } : {}),
       };
+      return next;
+    }),
+    // Custom card's single blocks list (content.blocks) - a freely mixed
+    // sequence of text/image blocks, same shape as the note entry reducers
+    // above. add/duplicate/delete are type-agnostic (a block carries its
+    // own `type`); the two update reducers are each scoped to one type so
+    // a stale/mistargeted dispatch against the wrong block type is a no-op
+    // rather than corrupting a block's shape - and neither one ever
+    // touches the card's own `type` (unlike updateCardImage, which the
+    // plain image card's hook uses and which stamps `type: 'image'` on
+    // every write - custom blocks are deliberately NOT routed through
+    // that action; see useCustomImageBlockHooks).
+    addCustomBlock: (state, { payload }) => applyCustomBlocks(state, payload, (blocks) => {
+      if (blocks.length >= CUSTOM_MAX_BLOCKS) return blocks;
+      const newBlock = payload.blockType === CUSTOM_BLOCK_TYPES.image
+        ? { id: payload.blockId, type: CUSTOM_BLOCK_TYPES.image, text: '', image: '', alt: '' }
+        : { id: payload.blockId, type: CUSTOM_BLOCK_TYPES.text, text: '', image: '', alt: '' };
+      return [...blocks, newBlock];
+    }),
+    duplicateCustomBlock: (state, { payload }) => applyCustomBlocks(state, payload, (blocks) => {
+      const index = blocks.findIndex(b => b.id === payload.blockId);
+      if (index === -1 || blocks.length >= CUSTOM_MAX_BLOCKS) return blocks;
+      const copy = { ...blocks[index], id: payload.newBlockId };
+      return [...blocks.slice(0, index + 1), copy, ...blocks.slice(index + 1)];
+    }),
+    deleteCustomBlock: (state, { payload }) => applyCustomBlocks(state, payload, (blocks) => {
+      const next = blocks.filter(b => b.id !== payload.blockId);
+      return next.length === blocks.length ? blocks : next;
+    }),
+    updateCustomTextBlock: (state, { payload }) => applyCustomBlocks(state, payload, (blocks) => {
+      const index = blocks.findIndex(b => b.id === payload.blockId && b.type === CUSTOM_BLOCK_TYPES.text);
+      if (index === -1) return blocks;
+      const next = [...blocks];
+      next[index] = { ...next[index], text: String(payload.text ?? '') };
+      return next;
+    }),
+    updateCustomImageBlock: (state, { payload }) => applyCustomBlocks(state, payload, (blocks) => {
+      const index = blocks.findIndex(b => b.id === payload.blockId && b.type === CUSTOM_BLOCK_TYPES.image);
+      if (index === -1) return blocks;
+      const next = [...blocks];
+      next[index] = { ...next[index], image: payload.image, alt: payload.alt };
       return next;
     }),
     // Tab reducers

@@ -5,6 +5,7 @@ import { Provider } from 'react-redux';
 import LibraryContent from './LibraryContent';
 import { buildMonsterContent } from '../../constants/monster';
 import { buildNoteContent } from '../../constants/note';
+import { buildCustomContent } from '../../constants/custom';
 
 // Hand-rolled fake store, matching the pattern in Content.test.jsx -
 // libraryMonsterCollapse is read unconditionally by useMonsterSectionHooks
@@ -48,6 +49,15 @@ describe('LibraryContent (dispatcher)', () => {
       <Provider store={store}><LibraryContent cardId='c4' isExpanded={false} isSelected={false} setEditingCard={() => {}} /></Provider>
     );
     expect(container.querySelector('.library-note-condensed')).not.toBeNull();
+    expect(container.querySelector('.library-monster-condensed')).toBeNull();
+  });
+
+  it('renders LibraryCustomContent for a custom card', () => {
+    const store = makeStore({ c5: { type: 'custom', content: buildCustomContent({ blocks: [{ id: 'b1', type: 'text', text: 'hi' }] }) } });
+    const { container } = render(
+      <Provider store={store}><LibraryContent cardId='c5' isExpanded={false} isSelected={false} setEditingCard={() => {}} /></Provider>
+    );
+    expect(container.querySelector('.library-custom-condensed')).not.toBeNull();
     expect(container.querySelector('.library-monster-condensed')).toBeNull();
   });
 });

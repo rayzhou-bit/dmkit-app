@@ -44,11 +44,12 @@ $border-radius: 5px;
       // }
     }
 
-    // The shared monster-type badge is a small 16x16 icon (sized for a
-    // title-bar chip) - scaled up here to match this toolbar's other,
-    // much larger icons (19-35px).
+    // The shared monster/note/custom-type badges are small 16x16 icons
+    // (sized for a title-bar chip) - scaled up here to match this
+    // toolbar's other, much larger icons (19-35px).
     .tool-btn-monster-icon,
-    .tool-btn-note-icon {
+    .tool-btn-note-icon,
+    .tool-btn-custom-icon {
       width: 28px;
       height: 28px;
     }
@@ -64,12 +65,12 @@ $border-radius: 5px;
     }
   }
 
-  // The new/copy buttons dim via an -disabled icon swap instead; the image
-  // and monster buttons have no such asset, so dim them directly here
-  // (scoped so it doesn't double up with the icon swap on the other buttons).
-  .tool-btn-image:disabled,
+  // The copy button dims via an -disabled icon swap instead; these buttons
+  // have no such asset, so dim them directly here (scoped so it doesn't
+  // double up with the icon swap on that other button).
   .tool-btn-monster:disabled,
   .tool-btn-note:disabled,
+  .tool-btn-custom:disabled,
   .tool-btn-delete:disabled {
     img { opacity: 0.35; }
     span { color: #A0A4B4; }

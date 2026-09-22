@@ -3,13 +3,11 @@ import React from 'react';
 import { useToolMenuHooks } from './hooks';
 
 import './index.scss';
-import NewCardIcon from '../../assets/icons/new-card.svg';
-import NewCardDisabledIcon from '../../assets/icons/new-card-disabled.svg';
 import CopyCardIcon from '../../assets/icons/copy-card.svg';
 import CopyCardDisabledIcon from '../../assets/icons/copy-card-disabled.svg';
-import AddImageIcon from '../../assets/icons/add-image.svg';
 import MonsterIcon from '../../assets/icons/monster-icon.svg';
 import NoteIcon from '../../assets/icons/note-icon.svg';
+import CustomIcon from '../../assets/icons/custom-icon.svg';
 import DeleteCardIcon from '../../assets/icons/trash-red.svg';
 
 const ToolMenu = ({
@@ -17,14 +15,12 @@ const ToolMenu = ({
   toolMenuRef,
 }) => {
   const {
-    disableNewCard,
-    onClickNewCard,
-    disableNewImageCard,
-    onClickNewImageCard,
     disableNewMonsterCard,
     onClickNewMonsterCard,
     disableNewNoteCard,
     onClickNewNoteCard,
+    disableNewCustomCard,
+    onClickNewCustomCard,
     disableCopyCards,
     onClickCopyCards,
     disableDeleteCards,
@@ -37,38 +33,6 @@ const ToolMenu = ({
       ref={toolMenuRef}
       style={{left: isOpen ? 0 : '-80px'}}
     >
-
-      {/* new text card */}
-      <button
-        className='tool-btn'
-        disabled={disableNewCard}
-        onClick={onClickNewCard}
-      >
-        <div className='btn-highlight'>
-          <img
-            alt='New text'
-            draggable='false'
-            src={disableNewCard ? NewCardDisabledIcon : NewCardIcon}
-          />
-        </div>
-        <span>text</span>
-      </button>
-
-      {/* new image card */}
-      <button
-        className='tool-btn tool-btn-image'
-        disabled={disableNewImageCard}
-        onClick={onClickNewImageCard}
-      >
-        <div className='btn-highlight'>
-          <img
-            alt='New image'
-            draggable='false'
-            src={AddImageIcon}
-          />
-        </div>
-        <span>image</span>
-      </button>
 
       {/* new monster card */}
       <button
@@ -102,6 +66,25 @@ const ToolMenu = ({
           />
         </div>
         <span>note</span>
+      </button>
+
+      {/* new custom card - the direct successor to the old text/image
+          buttons removed above: a blank card that lets you add as many
+          text/image blocks as you want (see CustomContent.jsx). */}
+      <button
+        className='tool-btn tool-btn-custom'
+        disabled={disableNewCustomCard}
+        onClick={onClickNewCustomCard}
+      >
+        <div className='btn-highlight'>
+          <img
+            alt='New custom'
+            className='tool-btn-custom-icon'
+            draggable='false'
+            src={CustomIcon}
+          />
+        </div>
+        <span>custom</span>
       </button>
 
       {/* copy card - pushed to the bottom of the toolbar, see .tool-btn-copy */}

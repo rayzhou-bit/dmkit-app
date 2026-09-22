@@ -14,6 +14,7 @@ import {
   MONSTER_COLLAPSE_SCOPES, LIBRARY_DEFAULT_COLLAPSED,
 } from '../../constants/monster';
 import { NOTE_MAX_ENTRIES } from '../../constants/note';
+import { CUSTOM_MAX_BLOCKS, CUSTOM_BLOCK_TYPES, normalizeCustomBlocks } from '../../constants/custom';
 import { POPUP_KEYS } from '../Popup/PopupKey';
 import { ACTION_TYPE } from '../../components-shared/Dropdowns/ActionDropdown';
 import { useGroupDragPosition } from '../Canvas/groupDrag';
@@ -801,6 +802,136 @@ export const useNoteEntryFieldHooks = ({ cardId, entry, entryFieldKey }) => {
         commit();
       }
     },
+  };
+};
+
+// Mirrors useNoteEntryListHooks's shape, minus the fixed {name,description}
+// entry shape - a custom block carries its own `type` (text/image), so
+// there are two convenience add-dispatchers instead of one, both funneling
+// into the single addCustomBlock action (mirrors addMonsterEntry's
+// field-selector shape - one action, payload picks the variant - rather
+// than two near-duplicate actions for a switch-sized difference).
+export const useCustomBlockListHooks = ({ cardId }) => {
+  const dispatch = useDispatch();
+  const raw = useSelector(state => state.project.present.cards[cardId].content?.blocks);
+  const blocks = normalizeCustomBlocks(raw);
+
+  return {
+    blocks,
+    canAdd: blocks.length < CUSTOM_MAX_BLOCKS,
+    addTextBlock: () => dispatch(actions.project.addCustomBlock({
+      id: cardId, blockId: generateUID('block'), blockType: CUSTOM_BLOCK_TYPES.text,
+    })),
+    addImageBlock: () => dispatch(actions.project.addCustomBlock({
+      id: cardId, blockId: generateUID('block'), blockType: CUSTOM_BLOCK_TYPES.image,
+    })),
+    duplicateBlock: (blockId) => dispatch(actions.project.duplicateCustomBlock({
+      id: cardId, blockId, newBlockId: generateUID('block'),
+    })),
+    deleteBlock: (blockId) => dispatch(actions.project.deleteCustomBlock({
+      id: cardId, blockId,
+    })),
+  };
+};
+
+// Mirrors useNoteFieldHooks's commit-on-blur/equality-guard shape, keyed by
+// blockId instead of fieldKey, dispatching updateCustomTextBlock (which
+// itself no-ops if the targeted block isn't a text block).
+export const useCustomTextBlockHooks = ({ cardId, blockId }) => {
+  const dispatch = useDispatch();
+  // Raw select + find, not a selector that normalizes/maps - normalizeCustomBlocks
+  // always returns fresh objects, and a useSelector returning a fresh
+  // reference every call defeats react-redux's equality bail-out. Only
+  // scalar fields (text) ever escape this hook, so the fresh-object cost of
+  // .find() per render is harmless - see useCustomBlockListHooks/
+  // normalizeCustomBlocks for the same reasoning applied to the list.
+  const block = useSelector(state => state.project.present.cards[cardId].content?.blocks)?.find(b => b.id === blockId);
+  const storeValue = block?.text ?? '';
+
+  const [ value, setValue ] = useState('');
+
+  useEffect(() => {
+    setValue(storeValue);
+  }, [storeValue]);
+
+  const commit = () => {
+    if (value !== storeValue) {
+      dispatch(actions.project.updateCustomTextBlock({ id: cardId, blockId, text: value }));
+    }
+  };
+
+  const revert = () => setValue(storeValue);
+
+  return {
+    value,
+    changeValue: setValue,
+    commit,
+    revert,
+    handleKeyDown: (event) => {
+      if (event.key === 'Escape') revert();
+    },
+  };
+};
+
+// Mirrors useImageContentHooks's file-picker/compression flow exactly (same
+// default processImageFile(file) budget as the plain image card, NOT
+// usePortraitHooks' tighter one) but dispatches updateCustomImageBlock
+// instead of updateCardImage - updateCardImage unconditionally stamps
+// `type: 'image'` on the card, which would corrupt a custom card's own
+// type. This is the one pitfall this whole feature exists to avoid; see
+// updateCustomImageBlock's comment in reducers.js.
+export const useCustomImageBlockHooks = ({ cardId, blockId }) => {
+  const dispatch = useDispatch();
+  const block = useSelector(state => state.project.present.cards[cardId].content?.blocks)?.find(b => b.id === blockId);
+  const image = block?.image ?? '';
+  const alt = block?.alt ?? '';
+
+  const [ isProcessing, setIsProcessing ] = useState(false);
+  const [ errorMessage, setErrorMessage ] = useState(null);
+  const fileInputRef = useRef();
+  const isMountedRef = useRef(true);
+
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => { isMountedRef.current = false; };
+  }, []);
+
+  const openFilePicker = () => {
+    setErrorMessage(null);
+    fileInputRef.current?.click();
+  };
+
+  const onFileChange = async (event) => {
+    const file = event.target.files?.[0];
+    event.target.value = '';
+    if (!file) return;
+
+    setIsProcessing(true);
+    try {
+      const result = await processImageFile(file);
+      if (!isMountedRef.current) return;
+      dispatch(actions.project.updateCustomImageBlock({
+        id: cardId, blockId, image: result.image, alt: result.alt,
+      }));
+    } catch (err) {
+      if (!isMountedRef.current) return;
+      setErrorMessage(err.message);
+    } finally {
+      if (isMountedRef.current) setIsProcessing(false);
+    }
+  };
+
+  return {
+    image,
+    alt,
+    hasImage: !!image,
+    fileInputRef,
+    isProcessing,
+    errorMessage,
+    openFilePicker,
+    onFileChange,
+    clearImage: () => dispatch(actions.project.updateCustomImageBlock({ id: cardId, blockId, image: '', alt: '' })),
+    dismissError: () => setErrorMessage(null),
   };
 };
 

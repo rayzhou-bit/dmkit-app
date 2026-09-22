@@ -52,10 +52,9 @@ export const useToolMenuHooks = () => {
   const [ offset, setOffset ] = useState(0);
   const offsetTimerRef = useRef(null);
 
-  const disableNewCard = !activeTab;
-  const disableNewImageCard = !activeTab;
   const disableNewMonsterCard = !activeTab;
   const disableNewNoteCard = !activeTab;
+  const disableNewCustomCard = !activeTab;
   // Copy uses the multi-selection when there is one, otherwise falls back
   // to the single active card (a plain click doesn't add to selectedCards).
   const hasSelection = !!(selectedCardsData && selectedCardsData.length > 0);
@@ -72,27 +71,6 @@ export const useToolMenuHooks = () => {
   }, [offset])
 
   return {
-    disableNewCard,
-    onClickNewCard: () => {
-      if (!disableNewCard) {
-        dispatch(createNewCard({
-          activeTabPosition,
-          offset,
-        }));
-        setOffset(offset + DEFAULT_CARD_OFFSET);
-      }
-    },
-    disableNewImageCard,
-    onClickNewImageCard: () => {
-      if (!disableNewImageCard) {
-        dispatch(createNewCard({
-          activeTabPosition,
-          offset,
-          type: CARD_TYPES.image,
-        }));
-        setOffset(offset + DEFAULT_CARD_OFFSET);
-      }
-    },
     disableNewMonsterCard,
     onClickNewMonsterCard: () => {
       if (!disableNewMonsterCard) {
@@ -111,6 +89,17 @@ export const useToolMenuHooks = () => {
           activeTabPosition,
           offset,
           type: CARD_TYPES.note,
+        }));
+        setOffset(offset + DEFAULT_CARD_OFFSET);
+      }
+    },
+    disableNewCustomCard,
+    onClickNewCustomCard: () => {
+      if (!disableNewCustomCard) {
+        dispatch(createNewCard({
+          activeTabPosition,
+          offset,
+          type: CARD_TYPES.custom,
         }));
         setOffset(offset + DEFAULT_CARD_OFFSET);
       }

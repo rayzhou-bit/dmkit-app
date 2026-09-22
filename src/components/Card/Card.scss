@@ -1050,6 +1050,226 @@ $scrollbar-width: 17px;
   color: #A0A4B4;
 }
 
+// Custom card - a freely mixed, open-ended list of text/image blocks (see
+// CustomContent.jsx/CustomBlockList.jsx). The direct successor to the
+// plain text/image cards. Reuses .monster-field-textarea as-is for text
+// block content - it has no monster-specific coupling (see NoteTextField
+// for the same reuse).
+.custom-content {
+  display: flex;
+  flex-flow: column nowrap;
+  gap: 8px;
+  padding: 10px 15px;
+  overflow-y: auto;
+  height: 100%;
+  background-color: white;
+}
+
+// Unlike .monster-entry/.note's entries, a block has no name/label field -
+// its controls sit in their own in-flow header strip (not an absolutely-
+// positioned overlay like .monster-entry-controls, which relies on
+// .monster-entry-name's padding-right to avoid colliding with the first
+// line of text; a block has no such line to reserve room in).
+.custom-block {
+  position: relative;
+  min-width: 0;
+  border: 1px solid #D7D6D6;
+  border-radius: 6px;
+  padding: 4px 8px 8px;
+  display: flex;
+  flex-flow: column nowrap;
+  gap: 4px;
+
+  &:focus-within { border-color: #5BC5FF; }
+
+  .monster-field-textarea {
+    width: 100%;
+    box-sizing: border-box;
+    border: 0;
+    padding: 0;
+    background-color: transparent;
+    font-family: Roboto;
+    font-size: 12px;
+    color: #363B4E;
+    min-height: 40px;
+    resize: vertical;
+
+    &:focus { outline: none; }
+  }
+}
+
+.custom-block-controls {
+  display: flex;
+  justify-content: flex-end;
+  gap: 4px;
+  height: 18px;
+  opacity: 0;
+  transition: opacity .15s;
+
+  button {
+    width: 18px;
+    height: 18px;
+    padding: 0;
+    border: 0;
+    border-radius: 4px;
+    background-color: transparent;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover { background-color: #F4F4F4; }
+    img { width: 12px; height: 12px; }
+  }
+}
+.custom-block:hover .custom-block-controls,
+.custom-block-controls:focus-within {
+  opacity: 1;
+}
+
+// Same upload/clear/status/error pattern as .note-portrait, but sized to
+// sit inside a .custom-block instead of as a full-width top-of-card banner.
+.custom-image-block {
+  position: relative;
+  border-radius: 4px;
+  overflow: hidden;
+  background-color: #F4F4F4;
+
+  .custom-image-block-image {
+    display: block;
+    width: 100%;
+    max-height: 200px;
+    object-fit: cover;
+  }
+
+  .custom-image-block-placeholder {
+    width: 100%;
+    height: 80px;
+    box-sizing: border-box;
+    border: 1px dashed #D7D6D6;
+    background-color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover { background-color: #F4F4F4; }
+  }
+
+  .custom-image-block-clear {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    width: 18px;
+    height: 18px;
+    box-sizing: border-box;
+    padding: 0;
+    border: 0;
+    line-height: 1;
+    border-radius: 50%;
+    background-color: rgba(0, 0, 0, 0.55);
+    color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity .15s;
+  }
+  &:hover .custom-image-block-clear,
+  .custom-image-block-clear:focus-visible {
+    opacity: 1;
+  }
+
+  .custom-image-block-status,
+  .custom-image-block-error {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 2px 4px;
+    font-family: Roboto;
+    font-size: 9px;
+  }
+  .custom-image-block-status {
+    background-color: rgba(255, 255, 255, 0.85);
+    color: #363B4E;
+  }
+  .custom-image-block-error {
+    background-color: #ed5e31;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 4px;
+
+    button {
+      background-color: transparent;
+      color: white;
+      line-height: 1;
+      cursor: pointer;
+    }
+  }
+}
+
+.custom-block-add-row {
+  display: flex;
+  flex-flow: row nowrap;
+  gap: 8px;
+}
+.custom-block-add {
+  flex: 1 1 0;
+  box-sizing: border-box;
+  padding: 6px;
+  border: 1px dashed #D7D6D6;
+  border-radius: 6px;
+  background-color: transparent;
+  color: #A0A4B4;
+  font-family: Roboto;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+
+  &:hover { background-color: #F4F4F4; }
+}
+
+// Condensed (80px, unselected) Library preview - read-only, no inputs,
+// same idea as .library-note-condensed.
+.library-custom-condensed {
+  flex-flow: row nowrap;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 15px;
+}
+.library-custom-thumb {
+  flex: 0 0 48px;
+  width: 48px;
+  height: 48px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+.library-custom-summary {
+  overflow: hidden;
+}
+.library-custom-line {
+  font-family: Roboto;
+  font-size: 11px;
+  color: #363B4E;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.library-custom-expanded {
+  padding: 10px 15px;
+  overflow-y: auto;
+  gap: 8px;
+}
+.library-custom-empty {
+  font-family: Roboto;
+  font-size: 12px;
+  color: #A0A4B4;
+}
+
 // Library monster preview. Condensed (80px, unselected) stays read-only -
 // no inputs. Expanded is real editable fields (MonsterTextField/
 // MonsterSectionBody, shared with the canvas card) inside CollapsibleSection
