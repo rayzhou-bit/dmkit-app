@@ -65,6 +65,21 @@ describe('ImageContent', () => {
     expect(input.value).toBe('');
   });
 
+  it('dispatches updateCardImage when a file is dropped onto the card', async () => {
+    processImageFile.mockResolvedValueOnce({ image: 'data:image/jpeg;base64,dropped', alt: 'dropped.png' });
+    const { container, store } = renderImageContent({ image: '', alt: '' });
+    const file = new File(['x'], 'dropped.png', { type: 'image/png' });
+
+    await act(async () => {
+      fireEvent.drop(container.querySelector('.card-content'), { dataTransfer: { files: [file] } });
+    });
+
+    expect(store.dispatched).toContainEqual({
+      type: 'project/updateCardImage',
+      payload: { id: 'c1', image: 'data:image/jpeg;base64,dropped', alt: 'dropped.png' },
+    });
+  });
+
   it('renders the error message and dispatches nothing when processing rejects', async () => {
     processImageFile.mockRejectedValueOnce(new Error('nope'));
     const { container, store } = renderImageContent({ image: '', alt: '' });

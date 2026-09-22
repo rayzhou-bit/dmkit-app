@@ -26,12 +26,13 @@ const CustomImageBlock = ({
     errorMessage,
     openFilePicker,
     onFileChange,
+    onDrop,
     clearImage,
     dismissError,
   } = useCustomImageBlockHooks({ cardId, blockId });
 
   return (
-    <div className='custom-image-block' onDragOver={(e) => e.preventDefault()}>
+    <div className='custom-image-block' onDragOver={(e) => e.preventDefault()} onDrop={onDrop}>
       <input
         type='file'
         className='card-file-input'

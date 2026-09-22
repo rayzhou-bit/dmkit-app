@@ -530,12 +530,8 @@ export const useImageContentHooks = ({
     fileInputRef.current?.click();
   };
 
-  const onFileChange = async (event) => {
-    const file = event.target.files?.[0];
-    // Reset immediately so re-picking the same file after an error still fires `change`.
-    event.target.value = '';
+  const processFile = async (file) => {
     if (!file) return;
-
     setIsProcessing(true);
     try {
       const result = await processImageFile(file);
@@ -553,6 +549,23 @@ export const useImageContentHooks = ({
     }
   };
 
+  const onFileChange = (event) => {
+    const file = event.target.files?.[0];
+    // Reset immediately so re-picking the same file after an error still fires `change`.
+    event.target.value = '';
+    processFile(file);
+  };
+
+  // Drag a file in from the OS straight onto the image - independent of the
+  // Library card's own draggable=true (that's for reordering cards, a
+  // different drag source entirely; dragover/drop on a descendant works
+  // regardless of an ancestor's draggable attribute).
+  const onDrop = (event) => {
+    event.preventDefault();
+    setErrorMessage(null);
+    processFile(event.dataTransfer.files?.[0]);
+  };
+
   return {
     image,
     alt,
@@ -562,6 +575,7 @@ export const useImageContentHooks = ({
     errorMessage,
     openFilePicker,
     onFileChange,
+    onDrop,
     dismissError: () => setErrorMessage(null),
   };
 };
@@ -901,11 +915,8 @@ export const useCustomImageBlockHooks = ({ cardId, blockId }) => {
     fileInputRef.current?.click();
   };
 
-  const onFileChange = async (event) => {
-    const file = event.target.files?.[0];
-    event.target.value = '';
+  const processFile = async (file) => {
     if (!file) return;
-
     setIsProcessing(true);
     try {
       const result = await processImageFile(file);
@@ -921,6 +932,20 @@ export const useCustomImageBlockHooks = ({ cardId, blockId }) => {
     }
   };
 
+  const onFileChange = (event) => {
+    const file = event.target.files?.[0];
+    event.target.value = '';
+    processFile(file);
+  };
+
+  // See useImageContentHooks' onDrop comment - independent of the Library
+  // card's own draggable=true.
+  const onDrop = (event) => {
+    event.preventDefault();
+    setErrorMessage(null);
+    processFile(event.dataTransfer.files?.[0]);
+  };
+
   return {
     image,
     alt,
@@ -930,6 +955,7 @@ export const useCustomImageBlockHooks = ({ cardId, blockId }) => {
     errorMessage,
     openFilePicker,
     onFileChange,
+    onDrop,
     clearImage: () => dispatch(actions.project.updateCustomImageBlock({ id: cardId, blockId, image: '', alt: '' })),
     dismissError: () => setErrorMessage(null),
   };
@@ -1020,12 +1046,8 @@ export const usePortraitHooks = ({ cardId }) => {
     fileInputRef.current?.click();
   };
 
-  const onFileChange = async (event) => {
-    const file = event.target.files?.[0];
-    // Reset immediately so re-picking the same file after an error still fires `change`.
-    event.target.value = '';
+  const processFile = async (file) => {
     if (!file) return;
-
     setIsProcessing(true);
     try {
       const result = await processImageFile(file, {
@@ -1046,6 +1068,21 @@ export const usePortraitHooks = ({ cardId }) => {
     }
   };
 
+  const onFileChange = (event) => {
+    const file = event.target.files?.[0];
+    // Reset immediately so re-picking the same file after an error still fires `change`.
+    event.target.value = '';
+    processFile(file);
+  };
+
+  // See useImageContentHooks' onDrop comment - independent of the Library
+  // card's own draggable=true.
+  const onDrop = (event) => {
+    event.preventDefault();
+    setErrorMessage(null);
+    processFile(event.dataTransfer.files?.[0]);
+  };
+
   return {
     portrait,
     portraitAlt,
@@ -1055,6 +1092,7 @@ export const usePortraitHooks = ({ cardId }) => {
     errorMessage,
     openFilePicker,
     onFileChange,
+    onDrop,
     clearPortrait: () => dispatch(actions.project.updateCardPortrait({ id: cardId, portrait: '', portraitAlt: '' })),
     dismissError: () => setErrorMessage(null),
   };

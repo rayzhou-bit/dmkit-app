@@ -18,11 +18,12 @@ const ImageContent = ({
     errorMessage,
     openFilePicker,
     onFileChange,
+    onDrop,
     dismissError,
   } = useImageContentHooks({ cardId });
 
   return (
-    <div className='card-content' onDragOver={(e) => e.preventDefault()}>
+    <div className='card-content' onDragOver={(e) => e.preventDefault()} onDrop={onDrop}>
       <input
         type='file'
         className='card-file-input'

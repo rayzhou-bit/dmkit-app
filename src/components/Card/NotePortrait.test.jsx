@@ -58,6 +58,21 @@ describe('NotePortrait', () => {
     });
   });
 
+  it('dispatches updateCardPortrait when a file is dropped onto the portrait', async () => {
+    processImageFile.mockResolvedValueOnce({ image: 'data:image/jpeg;base64,dropped', alt: 'dropped.png' });
+    const { container, store } = renderPortrait({ portrait: '', portraitAlt: '' });
+    const file = new File(['x'], 'dropped.png', { type: 'image/png' });
+
+    await act(async () => {
+      fireEvent.drop(container.querySelector('.note-portrait'), { dataTransfer: { files: [file] } });
+    });
+
+    expect(store.dispatched).toContainEqual({
+      type: 'project/updateCardPortrait',
+      payload: { id: 'c1', portrait: 'data:image/jpeg;base64,dropped', portraitAlt: 'dropped.png' },
+    });
+  });
+
   it('renders the error and dispatches nothing when processing rejects', async () => {
     processImageFile.mockRejectedValueOnce(new Error('nope'));
     const { container, store } = renderPortrait({ portrait: '', portraitAlt: '' });

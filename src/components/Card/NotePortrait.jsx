@@ -10,8 +10,10 @@ import AddImageIcon from '../../assets/icons/add-image.svg';
 // canvas layouts around each differ) but sharing usePortraitHooks - see its
 // comment in hooks.js for why that's shared rather than duplicated here.
 // No setEditingCard/drag-safe gating needed even inside the Library: every
-// interactive bit here is a plain click/dblclick, which HTML5 drag-and-drop
-// never treats as the start of a drag (see LibraryCard.test.jsx).
+// click/dblclick interaction here is one HTML5 drag-and-drop never treats
+// as the start of a drag (see LibraryCard.test.jsx), and dropping an OS
+// file onto it is a separate drag source entirely (see onDrop's comment in
+// hooks.js) - neither conflicts with the Library card's own draggable=true.
 const NotePortrait = ({
   cardId,
 }) => {
@@ -24,12 +26,13 @@ const NotePortrait = ({
     errorMessage,
     openFilePicker,
     onFileChange,
+    onDrop,
     clearPortrait,
     dismissError,
   } = usePortraitHooks({ cardId });
 
   return (
-    <div className='note-portrait' onDragOver={(e) => e.preventDefault()}>
+    <div className='note-portrait' onDragOver={(e) => e.preventDefault()} onDrop={onDrop}>
       <input
         type='file'
         className='card-file-input'
