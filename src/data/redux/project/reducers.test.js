@@ -177,13 +177,13 @@ describe('updateCardMonsterFields', () => {
     expect(next.cards.c1.content.speed).toBe('');
   });
 
-  it('patches notes without clobbering other fields', () => {
-    const next = reducer(state, {
+  it('ignores notes - it is a block list now (see the custom block reducers), not a plain string', () => {
+    const stateWithNotes = { ...state, cards: { c1: { ...state.cards.c1, content: { ...state.cards.c1.content, notes: [{ id: 'n1', type: 'text', text: 'wounded', image: '', alt: '' }] } } } };
+    const next = reducer(stateWithNotes, {
       type: 'project/updateCardMonsterFields',
-      payload: { id: 'c1', fields: { notes: 'wounded, flees at 50hp' } },
+      payload: { id: 'c1', fields: { notes: 'clobbered!' } },
     });
-    expect(next.cards.c1.content.notes).toBe('wounded, flees at 50hp');
-    expect(next.cards.c1.content.armorClass).toBe('');
+    expect(next.cards.c1.content.notes).toEqual([{ id: 'n1', type: 'text', text: 'wounded', image: '', alt: '' }]);
   });
 });
 
@@ -804,6 +804,137 @@ describe('custom block reducers', () => {
         payload: { id: 'c1', blockId: 'nope', image: 'data:...', alt: 'x' },
       });
       expect(next).toBe(baseCustomState);
+    });
+  });
+});
+
+// Same 5 actions, targeting content.notes on a monster card via an explicit
+// field: 'notes' payload key - proves the applyCustomBlocks generalization
+// works for a second field/card type, and specifically that it never loses
+// a legacy string value along the way (the one regression this whole
+// feature exists to prevent).
+describe('custom block reducers - field: "notes" on a monster card', () => {
+  const baseMonsterNotesState = {
+    cards: {
+      c1: {
+        views: {},
+        type: 'monster',
+        content: {
+          notes: [
+            { id: 'n1', type: 'text', text: 'Wounded, flees at 50hp.', image: '', alt: '' },
+            { id: 'n2', type: 'image', text: '', image: 'data:image/jpeg;base64,xxx', alt: 'lair.png' },
+          ],
+        },
+        editedOn: 1,
+      },
+    },
+    views: {},
+    viewOrder: [],
+    activeViewId: 'tabA',
+  };
+
+  it('addCustomBlock appends to content.notes, not content.blocks', () => {
+    const next = reducer(baseMonsterNotesState, {
+      type: 'project/addCustomBlock',
+      payload: { id: 'c1', blockId: 'n3', blockType: 'text', field: 'notes' },
+    });
+    expect(next.cards.c1.content.notes).toHaveLength(3);
+    expect(next.cards.c1.content.notes[2]).toEqual({ id: 'n3', type: 'text', text: '', image: '', alt: '' });
+    expect(next.cards.c1.content.blocks).toBeUndefined();
+  });
+
+  it('duplicateCustomBlock/deleteCustomBlock/updateCustomTextBlock/updateCustomImageBlock all target content.notes', () => {
+    let next = reducer(baseMonsterNotesState, {
+      type: 'project/duplicateCustomBlock',
+      payload: { id: 'c1', blockId: 'n1', newBlockId: 'n1-copy', field: 'notes' },
+    });
+    expect(next.cards.c1.content.notes).toHaveLength(3);
+    expect(next.cards.c1.content.notes[1]).toMatchObject({ id: 'n1-copy', text: 'Wounded, flees at 50hp.' });
+
+    next = reducer(baseMonsterNotesState, {
+      type: 'project/deleteCustomBlock',
+      payload: { id: 'c1', blockId: 'n2', field: 'notes' },
+    });
+    expect(next.cards.c1.content.notes).toEqual([{ id: 'n1', type: 'text', text: 'Wounded, flees at 50hp.', image: '', alt: '' }]);
+
+    next = reducer(baseMonsterNotesState, {
+      type: 'project/updateCustomTextBlock',
+      payload: { id: 'c1', blockId: 'n1', text: 'Recovered.', field: 'notes' },
+    });
+    expect(next.cards.c1.content.notes[0].text).toBe('Recovered.');
+
+    next = reducer(baseMonsterNotesState, {
+      type: 'project/updateCustomImageBlock',
+      payload: { id: 'c1', blockId: 'n2', image: 'data:image/jpeg;base64,new', alt: 'new.png', field: 'notes' },
+    });
+    expect(next.cards.c1.content.notes[1]).toEqual({ id: 'n2', type: 'image', text: '', image: 'data:image/jpeg;base64,new', alt: 'new.png' });
+    // Never the regression this feature exists to prevent - the card's own
+    // type is untouched by an image block update.
+    expect(next.cards.c1.type).toBe('monster');
+  });
+
+  it('is a no-op for an unrecognized field (not just missing card/blockId)', () => {
+    const next = reducer(baseMonsterNotesState, {
+      type: 'project/addCustomBlock',
+      payload: { id: 'c1', blockId: 'n3', blockType: 'text', field: 'notARealField' },
+    });
+    expect(next).toBe(baseMonsterNotesState);
+  });
+
+  // The regression the whole feature exists to prevent: a card whose notes
+  // is still a legacy plain string (as it would be straight out of
+  // Firestore, unnormalized, per normalizeMonsterEntries's own doc comment)
+  // must not have that text silently discarded the first time any block
+  // action runs against it.
+  describe('legacy plain-string content.notes is never silently discarded', () => {
+    const legacyState = {
+      ...baseMonsterNotesState,
+      cards: { c1: { ...baseMonsterNotesState.cards.c1, content: { notes: 'Lair is flooded.' } } },
+    };
+
+    it('addCustomBlock preserves the legacy text as the first block', () => {
+      const next = reducer(legacyState, {
+        type: 'project/addCustomBlock',
+        payload: { id: 'c1', blockId: 'n2', blockType: 'text', field: 'notes' },
+      });
+      expect(next.cards.c1.content.notes[0]).toMatchObject({ id: 'legacy', text: 'Lair is flooded.' });
+      expect(next.cards.c1.content.notes).toHaveLength(2);
+    });
+
+    it('duplicateCustomBlock preserves the legacy text', () => {
+      const next = reducer(legacyState, {
+        type: 'project/duplicateCustomBlock',
+        payload: { id: 'c1', blockId: 'legacy', newBlockId: 'copy', field: 'notes' },
+      });
+      expect(next.cards.c1.content.notes[0].text).toBe('Lair is flooded.');
+      expect(next.cards.c1.content.notes[1]).toMatchObject({ id: 'copy', text: 'Lair is flooded.' });
+    });
+
+    it('deleteCustomBlock (of a different, nonexistent id) is a true no-op, leaving the legacy string untouched', () => {
+      const next = reducer(legacyState, {
+        type: 'project/deleteCustomBlock',
+        payload: { id: 'c1', blockId: 'nope', field: 'notes' },
+      });
+      expect(next).toBe(legacyState);
+      expect(next.cards.c1.content.notes).toBe('Lair is flooded.');
+    });
+
+    it('updateCustomTextBlock on the legacy block edits it in place, text preserved through normalization', () => {
+      const next = reducer(legacyState, {
+        type: 'project/updateCustomTextBlock',
+        payload: { id: 'c1', blockId: 'legacy', text: 'Lair is flooded. Watch for eels.', field: 'notes' },
+      });
+      expect(next.cards.c1.content.notes).toEqual([
+        { id: 'legacy', type: 'text', text: 'Lair is flooded. Watch for eels.', image: '', alt: '' },
+      ]);
+    });
+
+    it('updateCustomImageBlock (targeting a nonexistent image block) leaves the legacy text intact, no-ops', () => {
+      const next = reducer(legacyState, {
+        type: 'project/updateCustomImageBlock',
+        payload: { id: 'c1', blockId: 'legacy', image: 'data:...', alt: 'x', field: 'notes' },
+      });
+      expect(next).toBe(legacyState);
     });
   });
 });

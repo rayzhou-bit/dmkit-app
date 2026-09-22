@@ -15,7 +15,7 @@ import TrashIcon from '../../assets/icons/trash-red.svg';
 // normalizeCustomBlocks already drops any block with an unrecognized
 // `type`, but the dispatch below still falls back to nothing rendered for
 // one anyway, rather than assuming only 'text'/'image' can ever reach here.
-const CustomBlock = ({ cardId, block, index, onDuplicate, onDelete, setEditingCard }) => {
+const CustomBlock = ({ cardId, field = 'blocks', block, index, onDuplicate, onDelete, setEditingCard }) => {
   const ordinal = `Block ${index + 1}`;
 
   return (
@@ -40,9 +40,9 @@ const CustomBlock = ({ cardId, block, index, onDuplicate, onDelete, setEditingCa
       </div>
 
       {block.type === CUSTOM_BLOCK_TYPES.image ? (
-        <CustomImageBlock cardId={cardId} blockId={block.id} />
+        <CustomImageBlock cardId={cardId} field={field} blockId={block.id} />
       ) : block.type === CUSTOM_BLOCK_TYPES.text ? (
-        <CustomTextBlock cardId={cardId} blockId={block.id} setEditingCard={setEditingCard} />
+        <CustomTextBlock cardId={cardId} field={field} blockId={block.id} setEditingCard={setEditingCard} />
       ) : null}
     </div>
   );

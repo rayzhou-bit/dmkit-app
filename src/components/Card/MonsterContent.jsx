@@ -7,6 +7,7 @@ import CollapsibleSection from './CollapsibleSection';
 import MonsterTextField from './MonsterTextField';
 import MonsterSectionBody from './MonsterSectionBody';
 import MonsterPortrait from './MonsterPortrait';
+import MonsterNotes from './MonsterNotes';
 
 import './Card.scss';
 
@@ -38,7 +39,7 @@ const MonsterContent = ({
             ))}
           </div>
         </div>
-        <MonsterTextField cardId={cardId} fieldKey='notes' {...MONSTER_FIELDS.notes} className='monster-notes-field' />
+        <MonsterNotes cardId={cardId} className='monster-notes-field' />
       </div>
       {MONSTER_COLUMNS.map(column => (
         <CollapsibleColumn

@@ -10,10 +10,11 @@ import './Card.scss';
 // needed for the text itself - see NoteTextField for the same reuse).
 const CustomTextBlock = ({
   cardId,
+  field = 'blocks',
   blockId,
   setEditingCard, // optional - only passed inside a Library card (see useDragSafeFieldHooks)
 }) => {
-  const { value, changeValue, commit, handleKeyDown } = useCustomTextBlockHooks({ cardId, blockId });
+  const { value, changeValue, commit, handleKeyDown } = useCustomTextBlockHooks({ cardId, blockId, field });
   const { editRef, readOnly, beginEdit, endEdit } = useDragSafeFieldHooks({ setEditingCard });
 
   return (

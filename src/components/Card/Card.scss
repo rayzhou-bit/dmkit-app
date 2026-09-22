@@ -376,29 +376,22 @@ $scrollbar-width: 17px;
   }
 }
 
+// Notes is a real CustomBlockList now (see MonsterNotes.jsx), not one
+// textarea - .monster-notes-field is still the canvas-only sizing modifier
+// (see MonsterContent.jsx), but the "make one field fill the remaining
+// column height" shape from the old single-textarea version doesn't apply
+// to a list of blocks; this is closer to .custom-content's own
+// scrollable-flex-column shape, just nested inside .monster-column-media's
+// layout instead of being the whole card body.
+.monster-notes {
+  display: flex;
+  flex-flow: column nowrap;
+  gap: 6px;
+}
 .monster-notes-field {
   flex: 1 1 auto;
-  min-height: 0;
-
-  // .monster-field.monster-notes-field (compound, not a plain descendant
-  // selector) - needs to outrank .monster-field .monster-field-textarea's
-  // resize:vertical below, which is otherwise equal specificity and would
-  // win on source order alone.
-  &.monster-field .monster-field-textarea {
-    height: 100%;
-    min-height: 60px; // scales with the card via flex:1 1 auto/height:100% above, not manually
-    resize: none;
-    overflow-x: hidden;
-    overflow-y: auto;
-    // field-sizing/max-height are separate properties from height - the
-    // generic .monster-field-textarea rule's field-sizing: content and
-    // max-height: 200px (for Saving Throws etc.) aren't overridden by this
-    // rule's own height:100% (different properties, cascade independently),
-    // and DO apply here too unless reset - they were silently capping notes
-    // back to a fixed content-fit size, undoing "fills the card" above.
-    field-sizing: fixed;
-    max-height: none;
-  }
+  min-height: 60px;
+  overflow-y: auto;
 }
 
 .monster-column-media,
@@ -677,9 +670,8 @@ $scrollbar-width: 17px;
     // Grows downward to fit typed content (a long comma-separated list,
     // e.g. Saving Throws/Senses) instead of clipping/scrolling like a
     // fixed-size box - capped by max-height above, scrolls past that.
-    // notes' own override (.monster-notes-field.monster-field, higher
-    // specificity) sets an explicit height:100% instead, which wins over
-    // this regardless - only fields that don't override height get it.
+    // (notes no longer goes through this rule at all - it's a
+    // CustomBlockList now, see .monster-notes/.custom-block.)
     field-sizing: content;
   }
 }
@@ -1273,7 +1265,7 @@ $scrollbar-width: 17px;
 // Library monster preview. Condensed (80px, unselected) stays read-only -
 // no inputs. Expanded is real editable fields (MonsterTextField/
 // MonsterSectionBody, shared with the canvas card) inside CollapsibleSection
-// groups (Stats/Combat/Quick Notes) - see LibraryMonsterContent.jsx.
+// groups (Stats/Combat/Notes) - see LibraryMonsterContent.jsx.
 .library-monster-condensed {
   flex-flow: row nowrap;
   align-items: center;
@@ -1363,7 +1355,7 @@ $scrollbar-width: 17px;
 }
 
 // Compact spacing for the editable CollapsibleSection groups (Stats/Combat/
-// Quick Notes, each possibly nesting another CollapsibleSection inside) -
+// Notes, each possibly nesting another CollapsibleSection inside) -
 // the canvas's own .monster-section-body padding is enough for one level of
 // nesting; a second border-left accent here makes the nested sections read
 // clearly as "inside" the outer group in the wider Library layout.

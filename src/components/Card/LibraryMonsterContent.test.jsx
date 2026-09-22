@@ -88,23 +88,23 @@ describe('LibraryMonsterContent - expanded view: rendering', () => {
     expect(container.querySelectorAll('.library-monster-defenses input').length).toBe(3);
   });
 
-  it('renders the three top-level groups: Stats, Combat, Quick Notes', () => {
+  it('renders the three top-level groups: Stats, Combat, Notes', () => {
     const { getByText, getByRole } = renderLibraryMonster(buildMonsterContent({ armorClass: '18' }), {}, { isExpanded: true });
     expect(getByText('Stats')).not.toBeNull();
     expect(getByText('Combat')).not.toBeNull();
-    expect(getByRole('button', { name: /Quick Notes/ })).not.toBeNull();
+    expect(getByRole('button', { name: /Notes/ })).not.toBeNull();
   });
 
-  it('Quick Notes renders right after the picture/chips row, before Stats and Combat', () => {
+  it('Notes renders right after the picture/chips row, before Stats and Combat', () => {
     const { getByRole } = renderLibraryMonster(buildMonsterContent({ armorClass: '18' }), {}, { isExpanded: true });
     const headers = Array.from(document.querySelectorAll('.monster-section-header, .library-monster-media-top'))
       .map(el => el.className.includes('media-top') ? 'media-top' : el.textContent.replace(/[▾▸]/g, ''));
     const mediaIndex = headers.indexOf('media-top');
-    const notesIndex = headers.findIndex(h => h.includes('Quick Notes'));
+    const notesIndex = headers.findIndex(h => h.includes('Notes'));
     const statsIndex = headers.findIndex(h => h === 'Stats');
     expect(mediaIndex).toBeLessThan(notesIndex);
     expect(notesIndex).toBeLessThan(statsIndex);
-    expect(getByRole('button', { name: /Quick Notes/ })).not.toBeNull();
+    expect(getByRole('button', { name: /Notes/ })).not.toBeNull();
   });
 
   it('HP/AC/Speed sit beside the picture, not stacked below it', () => {
@@ -134,16 +134,16 @@ describe('LibraryMonsterContent - expanded view: rendering', () => {
     expect(container.querySelector('.monster-portrait-clear')).not.toBeNull();
   });
 
-  it("the Library's Quick Notes field label is hidden - the CollapsibleSection header already says \"Quick Notes\"", () => {
+  it("the Library's Notes label is hidden - the CollapsibleSection header already says \"Notes\"", () => {
     const { container } = renderLibraryMonster(buildMonsterContent({ armorClass: '18' }), {}, { isExpanded: true });
-    const notesLabel = container.querySelector('label[for="monster-field-c1-notes"]');
+    const notesLabel = container.querySelector('.monster-notes .monster-field-label');
     expect(notesLabel.className).toContain('sr-only');
   });
 
   it('groups default open - nested section fields (e.g. Size) are visible with no collapse override', () => {
-    const { getByLabelText } = renderLibraryMonster(buildMonsterContent({ armorClass: '18' }), {}, { isExpanded: true });
+    const { getByLabelText, getByText } = renderLibraryMonster(buildMonsterContent({ armorClass: '18' }), {}, { isExpanded: true });
     expect(getByLabelText('Size')).not.toBeNull();
-    expect(getByLabelText('Quick Notes')).not.toBeNull();
+    expect(getByText('+ Add text')).not.toBeNull(); // Notes' own content, visible - group isn't collapsed
   });
 
   it('an empty field still renders (with its placeholder) - editable means visible even when blank', () => {
@@ -190,9 +190,9 @@ describe('LibraryMonsterContent - collapse behavior', () => {
     });
   });
 
-  it('clicking the Quick Notes header dispatches the library-only "notes" key', () => {
+  it('clicking the Notes header dispatches the library-only "notes" key', () => {
     const { getByRole, store } = renderLibraryMonster(buildMonsterContent({ armorClass: '18' }), {}, { isExpanded: true });
-    fireEvent.click(getByRole('button', { name: /Quick Notes/ }));
+    fireEvent.click(getByRole('button', { name: /Notes/ }));
     expect(store.dispatched).toContainEqual({
       type: 'session/setMonsterCollapsed',
       payload: { id: 'c1', key: 'notes', collapsed: true, scope: 'library' },
@@ -289,17 +289,31 @@ describe('LibraryMonsterContent - editing dispatches (reuses the canvas actions/
     expect(setEditingCard).not.toHaveBeenCalled();
   });
 
-  it('the notes field dispatches updateCardMonsterFields on blur, same as the canvas', () => {
-    const content = buildMonsterContent({ armorClass: '18' });
-    const { getByLabelText, store } = renderLibraryMonster(content, {}, { isExpanded: true });
-    const notes = getByLabelText('Quick Notes');
+  it('a notes text block dispatches updateCustomTextBlock (field: notes) on blur, same mechanism as a custom card', () => {
+    const content = buildMonsterContent({ armorClass: '18', notes: [{ id: 'n1', type: 'text', text: '' }] });
+    const { getByPlaceholderText, store } = renderLibraryMonster(content, {}, { isExpanded: true });
+    const notes = getByPlaceholderText('Type anything...');
+    const blockId = content.notes[0].id;
 
     fireEvent.click(notes);
     fireEvent.change(notes, { target: { value: 'lair is flooded' } });
     fireEvent.blur(notes);
 
     expect(store.dispatched).toEqual([
-      { type: 'project/updateCardMonsterFields', payload: { id: 'c1', fields: { notes: 'lair is flooded' } } },
+      { type: 'project/updateCustomTextBlock', payload: { id: 'c1', blockId, text: 'lair is flooded', field: 'notes' } },
     ]);
+  });
+
+  it('+ Add text / + Add image in Notes dispatch addCustomBlock with field: notes', () => {
+    const content = buildMonsterContent({ armorClass: '18' });
+    const { getByText, store } = renderLibraryMonster(content, {}, { isExpanded: true });
+
+    fireEvent.click(getByText('+ Add image'));
+
+    expect(store.dispatched).toHaveLength(1);
+    expect(store.dispatched[0]).toMatchObject({
+      type: 'project/addCustomBlock',
+      payload: { id: 'c1', blockType: 'image', field: 'notes' },
+    });
   });
 });

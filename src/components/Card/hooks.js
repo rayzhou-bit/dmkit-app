@@ -11,7 +11,7 @@ import { MAX_PORTRAIT_DATA_URI_LENGTH, PORTRAIT_MAX_EDGE_STEPS } from '../../con
 import {
   MONSTER_FIELDS, MONSTER_SECTIONS, MONSTER_COLUMN_SECTIONS, DEFAULT_COLLAPSED, getMonsterExpansionDelta,
   MONSTER_MAX_ENTRIES_PER_SECTION, MONSTER_MAX_DOTS, normalizeMonsterEntries, entryHasContent, monsterFieldHasContent,
-  MONSTER_COLLAPSE_SCOPES, LIBRARY_DEFAULT_COLLAPSED,
+  MONSTER_COLLAPSE_SCOPES, LIBRARY_DEFAULT_COLLAPSED, normalizeNotesBlocks,
 } from '../../constants/monster';
 import { NOTE_MAX_ENTRIES } from '../../constants/note';
 import { CUSTOM_MAX_BLOCKS, CUSTOM_BLOCK_TYPES, normalizeCustomBlocks } from '../../constants/custom';
@@ -825,33 +825,44 @@ export const useNoteEntryFieldHooks = ({ cardId, entry, entryFieldKey }) => {
 // into the single addCustomBlock action (mirrors addMonsterEntry's
 // field-selector shape - one action, payload picks the variant - rather
 // than two near-duplicate actions for a switch-sized difference).
-export const useCustomBlockListHooks = ({ cardId }) => {
+//
+// field: shared by two card types now (see applyCustomBlocks's comment in
+// reducers.js) - 'blocks' (default, the custom card) or 'notes' (the
+// monster card's Notes section, via MonsterNotes.jsx). `field` is only
+// ever included in a dispatched payload when it's NOT the default, so
+// every already-shipped custom-card dispatch/test keeps its exact original
+// shape - don't "simplify" this to always include field, it'll break
+// existing toEqual assertions on the dispatched action shape.
+export const useCustomBlockListHooks = ({ cardId, field = 'blocks' }) => {
   const dispatch = useDispatch();
-  const raw = useSelector(state => state.project.present.cards[cardId].content?.blocks);
-  const blocks = normalizeCustomBlocks(raw);
+  const raw = useSelector(state => state.project.present.cards[cardId].content?.[field]);
+  const blocks = field === 'notes' ? normalizeNotesBlocks(raw) : normalizeCustomBlocks(raw);
+  const fieldPayload = field !== 'blocks' ? { field } : {};
 
   return {
     blocks,
     canAdd: blocks.length < CUSTOM_MAX_BLOCKS,
     addTextBlock: () => dispatch(actions.project.addCustomBlock({
-      id: cardId, blockId: generateUID('block'), blockType: CUSTOM_BLOCK_TYPES.text,
+      id: cardId, blockId: generateUID('block'), blockType: CUSTOM_BLOCK_TYPES.text, ...fieldPayload,
     })),
     addImageBlock: () => dispatch(actions.project.addCustomBlock({
-      id: cardId, blockId: generateUID('block'), blockType: CUSTOM_BLOCK_TYPES.image,
+      id: cardId, blockId: generateUID('block'), blockType: CUSTOM_BLOCK_TYPES.image, ...fieldPayload,
     })),
     duplicateBlock: (blockId) => dispatch(actions.project.duplicateCustomBlock({
-      id: cardId, blockId, newBlockId: generateUID('block'),
+      id: cardId, blockId, newBlockId: generateUID('block'), ...fieldPayload,
     })),
     deleteBlock: (blockId) => dispatch(actions.project.deleteCustomBlock({
-      id: cardId, blockId,
+      id: cardId, blockId, ...fieldPayload,
     })),
   };
 };
 
 // Mirrors useNoteFieldHooks's commit-on-blur/equality-guard shape, keyed by
 // blockId instead of fieldKey, dispatching updateCustomTextBlock (which
-// itself no-ops if the targeted block isn't a text block).
-export const useCustomTextBlockHooks = ({ cardId, blockId }) => {
+// itself no-ops if the targeted block isn't a text block). field: see
+// useCustomBlockListHooks's comment - same 'blocks' default, same
+// only-include-when-non-default dispatch discipline.
+export const useCustomTextBlockHooks = ({ cardId, blockId, field = 'blocks' }) => {
   const dispatch = useDispatch();
   // Raw select + find, not a selector that normalizes/maps - normalizeCustomBlocks
   // always returns fresh objects, and a useSelector returning a fresh
@@ -859,7 +870,8 @@ export const useCustomTextBlockHooks = ({ cardId, blockId }) => {
   // scalar fields (text) ever escape this hook, so the fresh-object cost of
   // .find() per render is harmless - see useCustomBlockListHooks/
   // normalizeCustomBlocks for the same reasoning applied to the list.
-  const block = useSelector(state => state.project.present.cards[cardId].content?.blocks)?.find(b => b.id === blockId);
+  const raw = useSelector(state => state.project.present.cards[cardId].content?.[field]);
+  const block = (field === 'notes' ? normalizeNotesBlocks(raw) : normalizeCustomBlocks(raw)).find(b => b.id === blockId);
   const storeValue = block?.text ?? '';
 
   const [ value, setValue ] = useState('');
@@ -870,7 +882,7 @@ export const useCustomTextBlockHooks = ({ cardId, blockId }) => {
 
   const commit = () => {
     if (value !== storeValue) {
-      dispatch(actions.project.updateCustomTextBlock({ id: cardId, blockId, text: value }));
+      dispatch(actions.project.updateCustomTextBlock({ id: cardId, blockId, text: value, ...(field !== 'blocks' ? { field } : {}) }));
     }
   };
 
@@ -893,10 +905,12 @@ export const useCustomTextBlockHooks = ({ cardId, blockId }) => {
 // instead of updateCardImage - updateCardImage unconditionally stamps
 // `type: 'image'` on the card, which would corrupt a custom card's own
 // type. This is the one pitfall this whole feature exists to avoid; see
-// updateCustomImageBlock's comment in reducers.js.
-export const useCustomImageBlockHooks = ({ cardId, blockId }) => {
+// updateCustomImageBlock's comment in reducers.js. field: see
+// useCustomBlockListHooks's comment.
+export const useCustomImageBlockHooks = ({ cardId, blockId, field = 'blocks' }) => {
   const dispatch = useDispatch();
-  const block = useSelector(state => state.project.present.cards[cardId].content?.blocks)?.find(b => b.id === blockId);
+  const raw = useSelector(state => state.project.present.cards[cardId].content?.[field]);
+  const block = (field === 'notes' ? normalizeNotesBlocks(raw) : normalizeCustomBlocks(raw)).find(b => b.id === blockId);
   const image = block?.image ?? '';
   const alt = block?.alt ?? '';
 
@@ -922,7 +936,7 @@ export const useCustomImageBlockHooks = ({ cardId, blockId }) => {
       const result = await processImageFile(file);
       if (!isMountedRef.current) return;
       dispatch(actions.project.updateCustomImageBlock({
-        id: cardId, blockId, image: result.image, alt: result.alt,
+        id: cardId, blockId, image: result.image, alt: result.alt, ...(field !== 'blocks' ? { field } : {}),
       }));
     } catch (err) {
       if (!isMountedRef.current) return;
@@ -956,7 +970,7 @@ export const useCustomImageBlockHooks = ({ cardId, blockId }) => {
     openFilePicker,
     onFileChange,
     onDrop,
-    clearImage: () => dispatch(actions.project.updateCustomImageBlock({ id: cardId, blockId, image: '', alt: '' })),
+    clearImage: () => dispatch(actions.project.updateCustomImageBlock({ id: cardId, blockId, image: '', alt: '', ...(field !== 'blocks' ? { field } : {}) })),
     dismissError: () => setErrorMessage(null),
   };
 };
