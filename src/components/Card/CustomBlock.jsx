@@ -8,10 +8,9 @@ import './Card.scss';
 import DuplicateIcon from '../../assets/icons/entry-duplicate.svg';
 import TrashIcon from '../../assets/icons/trash-red.svg';
 
-// One block's wrapper: a small in-flow controls header (not an absolutely-
-// positioned overlay like .monster-entry-controls - that one reserves
-// space via .monster-entry-name's padding-right, which a block with no
-// name field has no equivalent of) above either a text or an image block.
+// One block's wrapper: controls sit as an absolutely-positioned overlay
+// (like .monster-entry-controls) above either a text or an image block, so
+// they don't reserve space when hidden.
 // normalizeCustomBlocks already drops any block with an unrecognized
 // `type`, but the dispatch below still falls back to nothing rendered for
 // one anyway, rather than assuming only 'text'/'image' can ever reach here.
