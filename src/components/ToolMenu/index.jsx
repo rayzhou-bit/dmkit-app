@@ -9,6 +9,7 @@ import CopyCardIcon from '../../assets/icons/copy-card.svg';
 import CopyCardDisabledIcon from '../../assets/icons/copy-card-disabled.svg';
 import AddImageIcon from '../../assets/icons/add-image.svg';
 import MonsterIcon from '../../assets/icons/monster-icon.svg';
+import NoteIcon from '../../assets/icons/note-icon.svg';
 import DeleteCardIcon from '../../assets/icons/trash-red.svg';
 
 const ToolMenu = ({
@@ -22,6 +23,8 @@ const ToolMenu = ({
     onClickNewImageCard,
     disableNewMonsterCard,
     onClickNewMonsterCard,
+    disableNewNoteCard,
+    onClickNewNoteCard,
     disableCopyCards,
     onClickCopyCards,
     disableDeleteCards,
@@ -82,6 +85,23 @@ const ToolMenu = ({
           />
         </div>
         <span>stat</span>
+      </button>
+
+      {/* new note card */}
+      <button
+        className='tool-btn tool-btn-note'
+        disabled={disableNewNoteCard}
+        onClick={onClickNewNoteCard}
+      >
+        <div className='btn-highlight'>
+          <img
+            alt='New note'
+            className='tool-btn-note-icon'
+            draggable='false'
+            src={NoteIcon}
+          />
+        </div>
+        <span>note</span>
       </button>
 
       {/* copy card - pushed to the bottom of the toolbar, see .tool-btn-copy */}

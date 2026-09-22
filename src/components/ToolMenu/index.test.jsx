@@ -119,6 +119,34 @@ describe('ToolMenu stat button', () => {
   });
 });
 
+describe('ToolMenu note button', () => {
+  it('is disabled when there is no active tab', () => {
+    const store = makeStore(makeState());
+    const { getByText } = render(<Harness store={store} />);
+    expect(getByText('note').closest('button')).toBeDisabled();
+  });
+
+  it('is enabled when there is an active tab', () => {
+    const store = makeStore(makeState({
+      project: { present: { activeViewId: 'tab1', viewOrder: ['tab1'], views: { tab1: { pos: { x: 0, y: 0 } } }, cards: {} } },
+    }));
+    const { getByText } = render(<Harness store={store} />);
+    expect(getByText('note').closest('button')).not.toBeDisabled();
+  });
+
+  it('dispatches a project/createCard action with type: note on click', () => {
+    const store = makeStore(makeState({
+      project: { present: { activeViewId: 'tab1', viewOrder: ['tab1'], views: { tab1: { pos: { x: 0, y: 0 } } }, cards: {} } },
+    }));
+    const { getByText } = render(<Harness store={store} />);
+    fireEvent.click(getByText('note').closest('button'));
+
+    const createCardAction = store.dispatched.find(a => a.type === 'project/createCard');
+    expect(createCardAction).toBeDefined();
+    expect(createCardAction.payload.type).toBe('note');
+  });
+});
+
 describe('ToolMenu delete button', () => {
   const withTab = (extra = {}) => makeState({
     project: {

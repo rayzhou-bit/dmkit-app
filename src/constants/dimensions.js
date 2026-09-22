@@ -46,6 +46,17 @@ export const MONSTER_CARD_SIZE = {
   height: 36 * GRID_SIZE,
 };
 
+// Note cards stack a single column (portrait, description, entries) -
+// no width floor like monster's two-column layout needs, so this only
+// bumps height over DEFAULT_CARD_SIZE. 384px gives enough room to see the
+// portrait placeholder, a few lines of description, and one entry without
+// immediately needing to resize (visually checked - DEFAULT_CARD_SIZE's
+// 240px was too cramped).
+export const NOTE_CARD_SIZE = {
+  width: DEFAULT_CARD_SIZE.width,
+  height: 32 * GRID_SIZE,
+};
+
 export const ZOOM_STEP = 0.1;                 // additive step, buttons + keyboard
 export const WHEEL_ZOOM_SENSITIVITY = 0.0025; // exponent per normalized px
 export const WHEEL_PAN_SPEED = 1;             // multiplier on normalized px

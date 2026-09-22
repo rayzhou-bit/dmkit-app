@@ -4,6 +4,7 @@ import { Provider } from 'react-redux';
 
 import Content from './Content';
 import { buildMonsterContent } from '../../constants/monster';
+import { buildNoteContent } from '../../constants/note';
 
 // Hand-rolled fake store, matching the pattern in Canvas/testUtils.jsx.
 // session.monsterCollapse is read unconditionally by useMonsterSectionHooks.
@@ -40,6 +41,17 @@ describe('Content (dispatcher)', () => {
       <Provider store={store}><Content cardId='c3' setEditingCard={() => {}} /></Provider>
     );
     expect(container.querySelector('.monster-content')).not.toBeNull();
+    expect(container.querySelector('textarea.text')).toBeNull();
+    expect(container.querySelector('.image-placeholder')).toBeNull();
+  });
+
+  it('renders note content (portrait/description/entries, no textarea.text) for a note card', () => {
+    const store = makeStore({ c4: { type: 'note', content: buildNoteContent() } });
+    const { container } = render(
+      <Provider store={store}><Content cardId='c4' setEditingCard={() => {}} /></Provider>
+    );
+    expect(container.querySelector('.note-content')).not.toBeNull();
+    expect(container.querySelector('.note-portrait')).not.toBeNull();
     expect(container.querySelector('textarea.text')).toBeNull();
     expect(container.querySelector('.image-placeholder')).toBeNull();
   });

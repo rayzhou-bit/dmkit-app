@@ -1,5 +1,7 @@
 import { reducer } from './reducers';
 import { buildMonsterContent } from '../../../constants/monster';
+import { buildNoteContent } from '../../../constants/note';
+import { DEFAULT_CARD_SIZE, MONSTER_CARD_SIZE, NOTE_CARD_SIZE } from '../../../constants/dimensions';
 
 const baseState = {
   cards: {},
@@ -58,6 +60,27 @@ describe('createCard - monster', () => {
     });
     expect(next.cards.c1.content.creatureType).toBe('dragon');
     expect(next.cards.c1.content.armorClass).toBe('18');
+  });
+});
+
+describe('createCard - note', () => {
+  it('stamps type and content matches buildNoteContent(), no text/image keys', () => {
+    const next = reducer(baseState, { type: 'project/createCard', payload: { newId: 'c1', type: 'note' } });
+    const card = next.cards.c1;
+    expect(card.type).toBe('note');
+    expect(card.content).toEqual(buildNoteContent());
+    expect(card.content.text).toBeUndefined();
+    expect(card.content.image).toBeUndefined();
+    expect(JSON.parse(JSON.stringify(card))).toEqual(card);
+  });
+
+  it('copies fields from the note payload', () => {
+    const next = reducer(baseState, {
+      type: 'project/createCard',
+      payload: { newId: 'c1', type: 'note', note: { description: 'A dim tavern.', entries: [{ id: 'e1', name: 'Rosa', description: 'Gruff.' }] } },
+    });
+    expect(next.cards.c1.content.description).toBe('A dim tavern.');
+    expect(next.cards.c1.content.entries).toEqual([{ id: 'e1', name: 'Rosa', description: 'Gruff.' }]);
   });
 });
 
@@ -173,6 +196,49 @@ describe('updateCardPortrait', () => {
     });
     expect(cleared.cards.c1.content.portrait).toBe('');
     expect(cleared.cards.c1.content.portraitAlt).toBe('');
+  });
+});
+
+describe('updateCardNoteFields', () => {
+  const state = {
+    ...baseState,
+    cards: {
+      c1: { views: {}, color: 'gray', title: 'untitled', content: buildNoteContent(), createdOn: 1, editedOn: 1 },
+    },
+  };
+
+  it('patches description, leaves entries untouched, bumps editedOn', () => {
+    const next = reducer(state, {
+      type: 'project/updateCardNoteFields',
+      payload: { id: 'c1', fields: { description: 'A dim tavern.' } },
+    });
+    expect(next.cards.c1.content.description).toBe('A dim tavern.');
+    expect(next.cards.c1.content.entries).toEqual([]);
+    expect(next.cards.c1.editedOn).toBeGreaterThanOrEqual(state.cards.c1.editedOn);
+  });
+
+  it('ignores unknown keys and coerces undefined to empty string', () => {
+    const next = reducer(state, {
+      type: 'project/updateCardNoteFields',
+      payload: { id: 'c1', fields: { notARealField: 'junk', description: undefined } },
+    });
+    expect(next.cards.c1.content.notARealField).toBeUndefined();
+    expect(next.cards.c1.content.description).toBe('');
+  });
+});
+
+describe('linkCardToView', () => {
+  it.each([
+    ['text', { type: 'text', content: {} }, DEFAULT_CARD_SIZE],
+    ['monster', { type: 'monster', content: buildMonsterContent() }, MONSTER_CARD_SIZE],
+    ['note', { type: 'note', content: buildNoteContent() }, NOTE_CARD_SIZE],
+  ])('sizes a %s card by its type', (_, card, expectedSize) => {
+    const state = { ...baseState, cards: { c1: { ...card, views: {} } } };
+    const next = reducer(state, {
+      type: 'project/linkCardToView',
+      payload: { id: 'c1', position: { x: 0, y: 0 } },
+    });
+    expect(next.cards.c1.views.tabA.size).toEqual(expectedSize);
   });
 });
 
@@ -408,6 +474,144 @@ describe('monster entry-list reducers', () => {
         payload: { id: 'c1', field: 'actions', entryId: 'nope', changes: { name: 'x' } },
       });
       expect(next).toBe(baseMonsterState);
+    });
+  });
+});
+
+describe('note entry-list reducers', () => {
+  const baseNoteState = {
+    cards: {
+      c1: {
+        views: {},
+        content: {
+          ...buildNoteContent(),
+          entries: [
+            { id: 'e1', name: 'Innkeeper Rosa', description: 'Gruff but fair.' },
+            { id: 'e2', name: 'Hidden trapdoor', description: 'Behind the bar.' },
+          ],
+        },
+        editedOn: 1,
+      },
+    },
+    views: {},
+    viewOrder: [],
+    activeViewId: 'tabA',
+  };
+
+  describe('addNoteEntry', () => {
+    it('appends a blank entry, bumps editedOn', () => {
+      const next = reducer(baseNoteState, {
+        type: 'project/addNoteEntry',
+        payload: { id: 'c1', entryId: 'e3' },
+      });
+      expect(next.cards.c1.content.entries).toEqual([
+        { id: 'e1', name: 'Innkeeper Rosa', description: 'Gruff but fair.' },
+        { id: 'e2', name: 'Hidden trapdoor', description: 'Behind the bar.' },
+        { id: 'e3', name: '', description: '' },
+      ]);
+      expect(next.cards.c1.editedOn).toBeGreaterThanOrEqual(1);
+    });
+
+    it('is a no-op for an unknown card id', () => {
+      const next = reducer(baseNoteState, {
+        type: 'project/addNoteEntry',
+        payload: { id: 'nope', entryId: 'e3' },
+      });
+      expect(next).toBe(baseNoteState);
+    });
+
+    it('is a no-op at the entry cap', () => {
+      const manyEntries = Array.from({ length: 50 }, (_, i) => ({ id: `e${i}`, name: '', description: '' }));
+      const atCapState = { ...baseNoteState, cards: { c1: { ...baseNoteState.cards.c1, content: { ...baseNoteState.cards.c1.content, entries: manyEntries } } } };
+      const next = reducer(atCapState, {
+        type: 'project/addNoteEntry',
+        payload: { id: 'c1', entryId: 'overflow' },
+      });
+      expect(next).toBe(atCapState);
+    });
+  });
+
+  describe('duplicateNoteEntry', () => {
+    it('inserts a copy right after the source, with the new id', () => {
+      const next = reducer(baseNoteState, {
+        type: 'project/duplicateNoteEntry',
+        payload: { id: 'c1', entryId: 'e1', newEntryId: 'e1-copy' },
+      });
+      expect(next.cards.c1.content.entries).toEqual([
+        { id: 'e1', name: 'Innkeeper Rosa', description: 'Gruff but fair.' },
+        { id: 'e1-copy', name: 'Innkeeper Rosa', description: 'Gruff but fair.' },
+        { id: 'e2', name: 'Hidden trapdoor', description: 'Behind the bar.' },
+      ]);
+      // source untouched
+      expect(baseNoteState.cards.c1.content.entries).toEqual([
+        { id: 'e1', name: 'Innkeeper Rosa', description: 'Gruff but fair.' },
+        { id: 'e2', name: 'Hidden trapdoor', description: 'Behind the bar.' },
+      ]);
+    });
+
+    it('is a no-op for an unknown entryId', () => {
+      const next = reducer(baseNoteState, {
+        type: 'project/duplicateNoteEntry',
+        payload: { id: 'c1', entryId: 'nope', newEntryId: 'e3' },
+      });
+      expect(next).toBe(baseNoteState);
+    });
+  });
+
+  describe('deleteNoteEntry', () => {
+    it('removes only the targeted entry, preserving order of the rest', () => {
+      const next = reducer(baseNoteState, {
+        type: 'project/deleteNoteEntry',
+        payload: { id: 'c1', entryId: 'e1' },
+      });
+      expect(next.cards.c1.content.entries).toEqual([
+        { id: 'e2', name: 'Hidden trapdoor', description: 'Behind the bar.' },
+      ]);
+    });
+
+    it('is a no-op for an unknown entryId', () => {
+      const next = reducer(baseNoteState, {
+        type: 'project/deleteNoteEntry',
+        payload: { id: 'c1', entryId: 'nope' },
+      });
+      expect(next).toBe(baseNoteState);
+    });
+  });
+
+  describe('updateNoteEntry', () => {
+    it('patches only the named key on only the named entry', () => {
+      const next = reducer(baseNoteState, {
+        type: 'project/updateNoteEntry',
+        payload: { id: 'c1', entryId: 'e2', changes: { name: 'Secret trapdoor' } },
+      });
+      expect(next.cards.c1.content.entries).toEqual([
+        { id: 'e1', name: 'Innkeeper Rosa', description: 'Gruff but fair.' },
+        { id: 'e2', name: 'Secret trapdoor', description: 'Behind the bar.' },
+      ]);
+    });
+
+    it('ignores keys other than name/description', () => {
+      const next = reducer(baseNoteState, {
+        type: 'project/updateNoteEntry',
+        payload: { id: 'c1', entryId: 'e1', changes: { id: 'hacked', name: 'Rosa' } },
+      });
+      expect(next.cards.c1.content.entries[0]).toEqual({ id: 'e1', name: 'Rosa', description: 'Gruff but fair.' });
+    });
+
+    it('coerces an undefined value to ""', () => {
+      const next = reducer(baseNoteState, {
+        type: 'project/updateNoteEntry',
+        payload: { id: 'c1', entryId: 'e1', changes: { description: undefined } },
+      });
+      expect(next.cards.c1.content.entries[0].description).toBe('');
+    });
+
+    it('is a no-op for an unknown entryId', () => {
+      const next = reducer(baseNoteState, {
+        type: 'project/updateNoteEntry',
+        payload: { id: 'c1', entryId: 'nope', changes: { name: 'x' } },
+      });
+      expect(next).toBe(baseNoteState);
     });
   });
 });

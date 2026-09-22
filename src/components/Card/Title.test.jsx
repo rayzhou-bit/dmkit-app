@@ -74,4 +74,9 @@ describe.each([
     const { container } = renderTitle(Component, { type: 'text' });
     expect(container.querySelector('.type-icon')).toBeNull();
   });
+
+  it('shows the note icon for a note card', () => {
+    const { container } = renderTitle(Component, { type: 'note' });
+    expect(container.querySelector('.card-title.has-type-icon .type-icon')).not.toBeNull();
+  });
 });
