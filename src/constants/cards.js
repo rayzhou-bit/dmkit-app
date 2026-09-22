@@ -1,6 +1,6 @@
 import { MONSTER_FIELD_KEYS, monsterFieldHasContent } from './monster';
 import { noteHasContent } from './note';
-import { customHasContent } from './custom';
+import { customHasContent, buildCustomContent, CUSTOM_BLOCK_TYPES } from './custom';
 
 import MonsterIconDark from '../assets/icons/monster-icon.svg';
 import MonsterIconLight from '../assets/icons/monster-icon-white.svg';
@@ -46,4 +46,28 @@ export const hasCardContent = (content) => {
   if (noteHasContent(content)) return true;
   if (customHasContent(content)) return true;
   return MONSTER_FIELD_KEYS.some(key => monsterFieldHasContent(content, key));
+};
+
+// The custom card type is the successor to text/image (see ToolMenu -
+// neither has a creation button anymore); this converts a card still in
+// one of those two shapes into a real custom card, one block holding its
+// old content. Idempotent and a pure pass-through (same reference, no new
+// object) for every other type, including a card that's already been
+// migrated - safe to run unconditionally on every load, not just once.
+// Applied at every load path that can hand back old data: loadCards'
+// reducer (real Firestore docs) and loadIntroProject/loadBlankProject's
+// (the tutorial fixture, which predates the custom card type too).
+export const migrateLegacyTextImageCard = (card) => {
+  const type = getCardType(card);
+  if (type !== CARD_TYPES.text && type !== CARD_TYPES.image) return card;
+
+  const blocks = type === CARD_TYPES.image
+    ? (card?.content?.image ? [{ id: 'legacy', type: CUSTOM_BLOCK_TYPES.image, image: card.content.image, alt: card.content?.alt ?? '' }] : [])
+    : (card?.content?.text ? [{ id: 'legacy', type: CUSTOM_BLOCK_TYPES.text, text: card.content.text }] : []);
+
+  return {
+    ...card,
+    type: CARD_TYPES.custom,
+    content: buildCustomContent({ blocks }),
+  };
 };

@@ -105,6 +105,73 @@ describe('createCard - custom', () => {
   });
 });
 
+// Past text/image cards should appear as custom cards - loadCards is the
+// real-Firestore-data path; loadIntroProject/loadBlankProject cover the
+// built-in tutorial fixture, which predates the custom card type the same
+// way real old saved projects do.
+describe('loadCards - migrates legacy text/image cards to custom', () => {
+  it('an explicit type:text card becomes custom, its text as one block', () => {
+    const next = reducer(baseState, {
+      type: 'project/loadCards',
+      payload: { cards: { c1: { title: 'Greetings', type: 'text', content: { text: 'Welcome!' } } } },
+    });
+    expect(next.cards.c1.type).toBe('custom');
+    expect(next.cards.c1.content.blocks).toEqual([{ id: 'legacy', type: 'text', text: 'Welcome!', image: '', alt: '' }]);
+    expect(next.cards.c1.title).toBe('Greetings');
+  });
+
+  it('a legacy no-type card (inferred as text) becomes custom the same way', () => {
+    const next = reducer(baseState, {
+      type: 'project/loadCards',
+      payload: { cards: { c1: { title: 'Tools', content: { text: 'Use the buttons.' } } } },
+    });
+    expect(next.cards.c1.type).toBe('custom');
+    expect(next.cards.c1.content.blocks).toEqual([{ id: 'legacy', type: 'text', text: 'Use the buttons.', image: '', alt: '' }]);
+  });
+
+  it('an explicit type:image card becomes custom, its image as one block', () => {
+    const next = reducer(baseState, {
+      type: 'project/loadCards',
+      payload: { cards: { c1: { type: 'image', content: { image: 'data:image/jpeg;base64,xxx', alt: 'cat.png' } } } },
+    });
+    expect(next.cards.c1.type).toBe('custom');
+    expect(next.cards.c1.content.blocks).toEqual([{ id: 'legacy', type: 'image', text: '', image: 'data:image/jpeg;base64,xxx', alt: 'cat.png' }]);
+  });
+
+  it('leaves monster/note/custom cards untouched, alongside a migrated one', () => {
+    const monsterContent = buildMonsterContent({ creatureType: 'dragon' });
+    const next = reducer(baseState, {
+      type: 'project/loadCards',
+      payload: {
+        cards: {
+          c1: { type: 'text', content: { text: 'hi' } },
+          c2: { type: 'monster', content: monsterContent },
+        },
+      },
+    });
+    expect(next.cards.c1.type).toBe('custom');
+    expect(next.cards.c2.type).toBe('monster');
+    expect(next.cards.c2.content).toEqual(monsterContent);
+  });
+});
+
+describe('loadIntroProject/loadBlankProject - migrate the fixture data too', () => {
+  it('the tutorial text cards (card0-3) load as custom, the sample monster card untouched', () => {
+    const next = reducer(baseState, { type: 'project/loadIntroProject' });
+    expect(next.cards.card0.type).toBe('custom');
+    expect(next.cards.card0.content.blocks[0]).toMatchObject({ type: 'text' });
+    expect(next.cards.card1.type).toBe('custom');
+    expect(next.cards.card2.type).toBe('custom');
+    expect(next.cards.card3.type).toBe('custom');
+    expect(next.cards.card4.type).toBe('monster'); // the sample Goblin card - untouched
+  });
+
+  it('loadBlankProject has no cards to migrate - still returns cleanly', () => {
+    const next = reducer(baseState, { type: 'project/loadBlankProject' });
+    expect(next.cards).toEqual({});
+  });
+});
+
 describe('updateCardImage', () => {
   const state = {
     ...baseState,

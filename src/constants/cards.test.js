@@ -1,4 +1,4 @@
-import { getCardType, hasCardContent, CARD_TYPES } from './cards';
+import { getCardType, hasCardContent, migrateLegacyTextImageCard, CARD_TYPES } from './cards';
 import { buildMonsterContent } from './monster';
 import { buildNoteContent } from './note';
 import { buildCustomContent } from './custom';
@@ -54,5 +54,57 @@ describe('hasCardContent', () => {
     ['custom with one filled image block', buildCustomContent({ blocks: [{ id: 'b1', type: 'image', image: 'data:...' }] }), true],
   ])('%s', (_, content, expected) => {
     expect(hasCardContent(content)).toBe(expected);
+  });
+});
+
+describe('migrateLegacyTextImageCard', () => {
+  it('converts an explicit type:text card into custom, its text as one block', () => {
+    const card = { title: 'Greetings', type: 'text', content: { text: 'Welcome!' } };
+    const migrated = migrateLegacyTextImageCard(card);
+    expect(migrated.type).toBe('custom');
+    expect(migrated.content.blocks).toEqual([{ id: 'legacy', type: 'text', text: 'Welcome!', image: '', alt: '' }]);
+    expect(migrated.title).toBe('Greetings'); // everything else on the card carries over
+  });
+
+  it('converts a legacy no-type card (content.text, inferred as text) the same way', () => {
+    const card = { title: 'Tools', content: { text: 'Use the buttons...' } };
+    const migrated = migrateLegacyTextImageCard(card);
+    expect(migrated.type).toBe('custom');
+    expect(migrated.content.blocks).toEqual([{ id: 'legacy', type: 'text', text: 'Use the buttons...', image: '', alt: '' }]);
+  });
+
+  it('converts an explicit type:image card into custom, its image as one block', () => {
+    const card = { title: 'A photo', type: 'image', content: { image: 'data:image/jpeg;base64,xxx', alt: 'cat.png' } };
+    const migrated = migrateLegacyTextImageCard(card);
+    expect(migrated.type).toBe('custom');
+    expect(migrated.content.blocks).toEqual([{ id: 'legacy', type: 'image', text: '', image: 'data:image/jpeg;base64,xxx', alt: 'cat.png' }]);
+  });
+
+  it('an empty text card converts to an empty custom card (no phantom block)', () => {
+    const migrated = migrateLegacyTextImageCard({ type: 'text', content: { text: '' } });
+    expect(migrated.type).toBe('custom');
+    expect(migrated.content.blocks).toEqual([]);
+  });
+
+  it('an empty image card converts to an empty custom card (no phantom block)', () => {
+    const migrated = migrateLegacyTextImageCard({ type: 'image', content: { image: '', alt: '' } });
+    expect(migrated.type).toBe('custom');
+    expect(migrated.content.blocks).toEqual([]);
+  });
+
+  it('is a no-op (same reference) for monster/note/custom cards', () => {
+    const monsterCard = { type: 'monster', content: buildMonsterContent() };
+    const noteCard = { type: 'note', content: buildNoteContent() };
+    const customCard = { type: 'custom', content: buildCustomContent() };
+    expect(migrateLegacyTextImageCard(monsterCard)).toBe(monsterCard);
+    expect(migrateLegacyTextImageCard(noteCard)).toBe(noteCard);
+    expect(migrateLegacyTextImageCard(customCard)).toBe(customCard);
+  });
+
+  it('is idempotent - migrating an already-migrated card is a no-op', () => {
+    const card = { type: 'text', content: { text: 'Welcome!' } };
+    const once = migrateLegacyTextImageCard(card);
+    const twice = migrateLegacyTextImageCard(once);
+    expect(twice).toBe(once);
   });
 });
