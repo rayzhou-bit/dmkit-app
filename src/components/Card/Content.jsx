@@ -7,6 +7,7 @@ import TextContent from './TextContent';
 import ImageContent from './ImageContent';
 import MonsterContent from './MonsterContent';
 import NoteContent from './NoteContent';
+import CustomContent from './CustomContent';
 
 const Content = ({
   cardId,
@@ -19,6 +20,9 @@ const Content = ({
   }
   if (cardType === CARD_TYPES.note) {
     return <NoteContent cardId={cardId} />;
+  }
+  if (cardType === CARD_TYPES.custom) {
+    return <CustomContent cardId={cardId} />;
   }
   if (cardType === CARD_TYPES.image) {
     return <ImageContent cardId={cardId} />;

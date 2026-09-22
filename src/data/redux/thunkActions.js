@@ -52,6 +52,7 @@ export const copySelectedCard = ({
     alt: selectedCard?.content?.alt,
     monster: selectedCard?.content,
     note: selectedCard?.content,
+    custom: selectedCard?.content,
   }));
   dispatch(actions.session.setActiveCard({ id: newId }));
 };
@@ -81,6 +82,7 @@ export const copySelectedCards = ({
       alt: selectedCard?.content?.alt,
       monster: selectedCard?.content,
       note: selectedCard?.content,
+      custom: selectedCard?.content,
     }));
   }
   // Select the copies (same idea as copySelectedCard activating its new

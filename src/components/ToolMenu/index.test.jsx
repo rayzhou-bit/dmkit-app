@@ -49,34 +49,6 @@ const Harness = ({ store }) => {
   );
 };
 
-describe('ToolMenu image button', () => {
-  it('is disabled when there is no active tab', () => {
-    const store = makeStore(makeState());
-    const { getByText } = render(<Harness store={store} />);
-    expect(getByText('image').closest('button')).toBeDisabled();
-  });
-
-  it('is enabled when there is an active tab', () => {
-    const store = makeStore(makeState({
-      project: { present: { activeViewId: 'tab1', viewOrder: ['tab1'], views: { tab1: { pos: { x: 0, y: 0 } } }, cards: {} } },
-    }));
-    const { getByText } = render(<Harness store={store} />);
-    expect(getByText('image').closest('button')).not.toBeDisabled();
-  });
-
-  it('dispatches a project/createCard action with type: image on click', () => {
-    const store = makeStore(makeState({
-      project: { present: { activeViewId: 'tab1', viewOrder: ['tab1'], views: { tab1: { pos: { x: 0, y: 0 } } }, cards: {} } },
-    }));
-    const { getByText } = render(<Harness store={store} />);
-    fireEvent.click(getByText('image').closest('button'));
-
-    const createCardAction = store.dispatched.find(a => a.type === 'project/createCard');
-    expect(createCardAction).toBeDefined();
-    expect(createCardAction.payload.type).toBe('image');
-  });
-});
-
 describe('ToolMenu stat button', () => {
   it('is disabled when there is no active tab', () => {
     const store = makeStore(makeState());
@@ -144,6 +116,34 @@ describe('ToolMenu note button', () => {
     const createCardAction = store.dispatched.find(a => a.type === 'project/createCard');
     expect(createCardAction).toBeDefined();
     expect(createCardAction.payload.type).toBe('note');
+  });
+});
+
+describe('ToolMenu custom button', () => {
+  it('is disabled when there is no active tab', () => {
+    const store = makeStore(makeState());
+    const { getByText } = render(<Harness store={store} />);
+    expect(getByText('custom').closest('button')).toBeDisabled();
+  });
+
+  it('is enabled when there is an active tab', () => {
+    const store = makeStore(makeState({
+      project: { present: { activeViewId: 'tab1', viewOrder: ['tab1'], views: { tab1: { pos: { x: 0, y: 0 } } }, cards: {} } },
+    }));
+    const { getByText } = render(<Harness store={store} />);
+    expect(getByText('custom').closest('button')).not.toBeDisabled();
+  });
+
+  it('dispatches a project/createCard action with type: custom on click', () => {
+    const store = makeStore(makeState({
+      project: { present: { activeViewId: 'tab1', viewOrder: ['tab1'], views: { tab1: { pos: { x: 0, y: 0 } } }, cards: {} } },
+    }));
+    const { getByText } = render(<Harness store={store} />);
+    fireEvent.click(getByText('custom').closest('button'));
+
+    const createCardAction = store.dispatched.find(a => a.type === 'project/createCard');
+    expect(createCardAction).toBeDefined();
+    expect(createCardAction.payload.type).toBe('custom');
   });
 });
 

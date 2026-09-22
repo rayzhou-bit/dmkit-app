@@ -2,9 +2,10 @@
 // Firebase; thunkActions.js itself has no such import, so no mock is needed
 // here.
 import { copySelectedCard, copySelectedCards, createNewCard, destroySelectedCards } from './thunkActions';
-import { MONSTER_CARD_SIZE, NOTE_CARD_SIZE } from '../../constants/dimensions';
+import { MONSTER_CARD_SIZE, NOTE_CARD_SIZE, DEFAULT_CARD_SIZE } from '../../constants/dimensions';
 import { buildMonsterContent } from '../../constants/monster';
 import { buildNoteContent } from '../../constants/note';
+import { buildCustomContent } from '../../constants/custom';
 
 // Hand-rolled dispatch recorder - thunkActions dispatch plain actions
 // synchronously, no store/state read-back needed.
@@ -31,6 +32,15 @@ describe('createNewCard', () => {
     const createAction = dispatched.find(a => a.type === 'project/createCard');
     expect(createAction.payload.type).toBe('note');
     expect(createAction.payload.size).toEqual(NOTE_CARD_SIZE);
+  });
+
+  it('creates a custom card sized DEFAULT_CARD_SIZE (no dedicated size constant)', () => {
+    const { dispatch, dispatched } = makeDispatch();
+    createNewCard({ activeTabPosition: { x: 0, y: 0 }, offset: 0, type: 'custom' })(dispatch);
+
+    const createAction = dispatched.find(a => a.type === 'project/createCard');
+    expect(createAction.payload.type).toBe('custom');
+    expect(createAction.payload.size).toEqual(DEFAULT_CARD_SIZE);
   });
 });
 
@@ -88,6 +98,28 @@ describe('copySelectedCard', () => {
 
     const createAction = dispatched.find(a => a.type === 'project/createCard');
     expect(createAction.payload.note).toEqual(noteContent);
+  });
+
+  it('round-trips custom content (blocks) through the custom payload key', () => {
+    const { dispatch, dispatched } = makeDispatch();
+    const customContent = buildCustomContent({
+      blocks: [
+        { id: 'b1', type: 'text', text: 'Some notes.' },
+        { id: 'b2', type: 'image', image: 'data:image/jpeg;base64,xxx', alt: 'photo.png' },
+      ],
+    });
+    const selectedCard = {
+      views: { tab1: { pos: { x: 10, y: 20 }, size: { width: 240, height: 240 } } },
+      color: 'gray',
+      title: 'Session 3 planning',
+      type: 'custom',
+      content: customContent,
+    };
+
+    copySelectedCard({ selectedCard, activeTab: 'tab1' })(dispatch);
+
+    const createAction = dispatched.find(a => a.type === 'project/createCard');
+    expect(createAction.payload.custom).toEqual(customContent);
   });
 });
 

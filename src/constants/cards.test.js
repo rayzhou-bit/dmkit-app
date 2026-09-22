@@ -1,6 +1,7 @@
 import { getCardType, hasCardContent, CARD_TYPES } from './cards';
 import { buildMonsterContent } from './monster';
 import { buildNoteContent } from './note';
+import { buildCustomContent } from './custom';
 
 describe('getCardType', () => {
   it.each([
@@ -17,6 +18,9 @@ describe('getCardType', () => {
     ['explicit type: note', { type: 'note', content: buildNoteContent() }, CARD_TYPES.note],
     // note is never legacy-inferred - it never existed without an explicit `type`.
     ['no type, has content.description and entries (no type stamped)', { content: buildNoteContent({ description: 'x' }) }, CARD_TYPES.text],
+    ['explicit type: custom', { type: 'custom', content: buildCustomContent() }, CARD_TYPES.custom],
+    // custom is never legacy-inferred either - it never existed without an explicit `type`.
+    ['no type, has content.blocks (no type stamped)', { content: buildCustomContent({ blocks: [{ id: 'b1', type: 'text', text: 'x' }] }) }, CARD_TYPES.text],
   ])('%s', (_, card, expected) => {
     expect(getCardType(card)).toBe(expected);
   });
@@ -43,6 +47,11 @@ describe('hasCardContent', () => {
     ['note with an empty entries list', buildNoteContent({ entries: [] }), false],
     ['note with one all-blank entry', buildNoteContent({ entries: [{ id: 'e1', name: '', description: '' }] }), false],
     ['note with one filled entry', buildNoteContent({ entries: [{ id: 'e1', name: 'Rosa', description: '' }] }), true],
+    ['default custom content', buildCustomContent(), false],
+    ['custom with an empty blocks list', buildCustomContent({ blocks: [] }), false],
+    ['custom with one blank text block', buildCustomContent({ blocks: [{ id: 'b1', type: 'text', text: '' }] }), false],
+    ['custom with one filled text block', buildCustomContent({ blocks: [{ id: 'b1', type: 'text', text: 'hi' }] }), true],
+    ['custom with one filled image block', buildCustomContent({ blocks: [{ id: 'b1', type: 'image', image: 'data:...' }] }), true],
   ])('%s', (_, content, expected) => {
     expect(hasCardContent(content)).toBe(expected);
   });
