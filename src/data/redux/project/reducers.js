@@ -6,7 +6,7 @@ import {
   BLANK_PROJECT,
 } from './constants';
 import { GRID_SIZE, DEFAULT_CARD_POSITION, DEFAULT_CARD_SIZE, MONSTER_CARD_SIZE, NOTE_CARD_SIZE } from '../../../constants/dimensions';
-import { CARD_TYPES, getCardType } from '../../../constants/cards';
+import { CARD_TYPES, getCardType, migrateLegacyTextImageCard } from '../../../constants/cards';
 import {
   buildMonsterContent, MONSTER_FIELD_KEYS,
   MONSTER_ENTRY_FIELD_KEYS, MONSTER_MAX_ENTRIES_PER_SECTION, normalizeMonsterEntries,
@@ -108,6 +108,15 @@ const applyCustomBlocks = (state, { id }, updater) => {
   };
 };
 
+// Runs every card in a just-loaded cards dict through
+// migrateLegacyTextImageCard - a no-op for anything already monster/note/
+// custom, so safe to apply unconditionally on every load (loadCards, plus
+// loadIntroProject/loadBlankProject's fixture data, which predates the
+// custom card type the same way real old Firestore docs do).
+const migrateCards = (cards) => Object.fromEntries(
+  Object.entries(cards).map(([id, card]) => [id, migrateLegacyTextImageCard(card)])
+);
+
 const initialState = {
   title: '',
   viewOrder: [],
@@ -124,9 +133,9 @@ const project = createSlice({
     initialize: () => ({ ...initialState }),
     unloadProject: () => ({ ...initialState }),
     loadProject: (state, { payload }) => ({ ...state, ...payload.project }),
-    loadIntroProject: () => ({ ...INTRO_PROJECT }),
-    loadBlankProject: () => ({ ...BLANK_PROJECT }),
-    loadCards: (state, { payload }) => ({ ...state, cards: payload.cards }),
+    loadIntroProject: () => ({ ...INTRO_PROJECT, cards: migrateCards(INTRO_PROJECT.cards) }),
+    loadBlankProject: () => ({ ...BLANK_PROJECT, cards: migrateCards(BLANK_PROJECT.cards) }),
+    loadCards: (state, { payload }) => ({ ...state, cards: migrateCards(payload.cards) }),
     loadTabs: (state, { payload }) => ({ ...state, views: payload.tabs }),
     setActiveTab: (state, { payload }) => ({ ...state, activeViewId: payload.id }),
     // Actions above do not affect undo/redo.
