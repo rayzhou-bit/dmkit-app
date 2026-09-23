@@ -1,5 +1,6 @@
 import React from 'react';
 
+import { useCustomImageBlockHooks } from './hooks';
 import { CUSTOM_BLOCK_TYPES } from '../../constants/custom';
 import CustomTextBlock from './CustomTextBlock';
 import CustomImageBlock from './CustomImageBlock';
@@ -16,10 +17,29 @@ import TrashIcon from '../../assets/icons/trash-red.svg';
 // one anyway, rather than assuming only 'text'/'image' can ever reach here.
 const CustomBlock = ({ cardId, field = 'blocks', block, index, onDuplicate, onDelete, setEditingCard }) => {
   const ordinal = `Block ${index + 1}`;
+  const isImageBlock = block.type === CUSTOM_BLOCK_TYPES.image;
+
+  // Always called (blocks never change type after creation, but hooks must
+  // run unconditionally regardless) - only hasImage/clearImage are used
+  // here, so the remove-image button lives in the same controls row as
+  // duplicate/delete instead of overlapping them as an overlay on the
+  // image itself (CustomImageBlock still owns the rest of this hook's
+  // state for its own upload/placeholder rendering).
+  const { hasImage, clearImage } = useCustomImageBlockHooks({ cardId, blockId: block.id, field });
 
   return (
     <div className='custom-block' role='group' aria-label={ordinal}>
       <div className='custom-block-controls'>
+        {isImageBlock && hasImage && (
+          <button
+            type='button'
+            className='custom-block-remove-image'
+            onClick={clearImage}
+            aria-label={`Remove image, ${ordinal}`}
+          >
+            ×
+          </button>
+        )}
         <button
           type='button'
           className='custom-block-duplicate'
@@ -38,7 +58,7 @@ const CustomBlock = ({ cardId, field = 'blocks', block, index, onDuplicate, onDe
         </button>
       </div>
 
-      {block.type === CUSTOM_BLOCK_TYPES.image ? (
+      {isImageBlock ? (
         <CustomImageBlock cardId={cardId} field={field} blockId={block.id} />
       ) : block.type === CUSTOM_BLOCK_TYPES.text ? (
         <CustomTextBlock cardId={cardId} field={field} blockId={block.id} setEditingCard={setEditingCard} />

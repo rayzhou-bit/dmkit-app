@@ -46,6 +46,16 @@ $title-height: 32px;
   &.has-type-icon {
     grid-template-columns: 16px auto 18px 12px;
   }
+  // Custom cards get an extra "+" button (add text/image block) before the
+  // color swatch - combined selector so it outranks the two single-class
+  // rules regardless of source order (custom always has a type icon too,
+  // but this stays correct if that ever changes).
+  &.has-add-block {
+    grid-template-columns: auto 18px 18px 12px;
+  }
+  &.has-type-icon.has-add-block {
+    grid-template-columns: 16px auto 18px 18px 12px;
+  }
   .type-icon {
     display: flex;
     align-items: center;
@@ -86,6 +96,15 @@ $title-height: 32px;
 
       cursor: grab;
     }
+  }
+
+  .add-block-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: transparent;
+    opacity: 0.85;
+    &:hover { opacity: 1; }
   }
 
   .color-btn {
@@ -1057,15 +1076,23 @@ $scrollbar-width: 17px;
   height: 100%;
   background-color: white;
   border-radius: 0 0 $card-radius $card-radius;
+
+  // Programmatic-only focus target (CustomBlockList's delete-focus
+  // fallback, now that blocks are added via the title bar's "+" dropdown
+  // instead of buttons in the list) - no visible ring for it.
+  &:focus { outline: none; }
 }
 
 // Controls sit as an absolutely-positioned overlay (like
 // .monster-entry-controls) instead of reserving in-flow space, so there's
-// no empty header strip above a block's text when it isn't hovered.
+// no empty header strip above a block's text when it isn't hovered. The
+// border is transparent until focused (mirrors the base
+// .monster-field-textarea border/focus-color pair) so an unfocused block
+// with little content reads as plain text on the card, not an empty box.
 .custom-block {
   position: relative;
   min-width: 0;
-  border: 1px solid #D7D6D6;
+  border: 1px solid transparent;
   border-radius: 6px;
   padding: 6px 8px;
   display: flex;
@@ -1094,6 +1121,7 @@ $scrollbar-width: 17px;
   position: absolute;
   top: 6px;
   right: 6px;
+  z-index: 1;
   display: flex;
   gap: 4px;
   opacity: 0;
@@ -1114,25 +1142,34 @@ $scrollbar-width: 17px;
     &:hover { background-color: #F4F4F4; }
     img { width: 12px; height: 12px; }
   }
+
+  .custom-block-remove-image {
+    font-size: 14px;
+    line-height: 1;
+    color: #363B4E;
+  }
 }
 .custom-block:hover .custom-block-controls,
 .custom-block-controls:focus-within {
   opacity: 1;
 }
 
-// Same upload/clear/status/error pattern as .note-portrait, but sized to
-// sit inside a .custom-block instead of as a full-width top-of-card banner.
+// Same upload/status/error pattern as .note-portrait, but sized to sit
+// inside a .custom-block instead of as a full-width top-of-card banner -
+// remove-image itself lives in .custom-block-controls, not here.
 .custom-image-block {
   position: relative;
   border-radius: 4px;
   overflow: hidden;
   background-color: #F4F4F4;
 
+  // width:100%/height:auto (not object-fit: cover) - the whole image
+  // should always show, uncropped, so the block grows to match its
+  // aspect ratio instead of clipping top/bottom to a fixed height.
   .custom-image-block-image {
     display: block;
     width: 100%;
-    max-height: 200px;
-    object-fit: cover;
+    height: auto;
   }
 
   .custom-image-block-placeholder {
@@ -1147,31 +1184,6 @@ $scrollbar-width: 17px;
     justify-content: center;
 
     &:hover { background-color: #F4F4F4; }
-  }
-
-  .custom-image-block-clear {
-    position: absolute;
-    top: 2px;
-    right: 2px;
-    width: 18px;
-    height: 18px;
-    box-sizing: border-box;
-    padding: 0;
-    border: 0;
-    line-height: 1;
-    border-radius: 50%;
-    background-color: rgba(0, 0, 0, 0.55);
-    color: white;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    opacity: 0;
-    transition: opacity .15s;
-  }
-  &:hover .custom-image-block-clear,
-  .custom-image-block-clear:focus-visible {
-    opacity: 1;
   }
 
   .custom-image-block-status,
@@ -1205,6 +1217,11 @@ $scrollbar-width: 17px;
   }
 }
 
+// Monster Notes (field='notes') still shows this always-visible add row -
+// only the custom card (field='blocks') moved adding to the title bar's
+// "+" dropdown, since every custom card already has that dropdown but
+// monster cards don't get one just for Notes. See CustomBlockList's
+// showAddRow.
 .custom-block-add-row {
   display: flex;
   flex-flow: row nowrap;
@@ -1256,6 +1273,9 @@ $scrollbar-width: 17px;
   padding: 10px 15px;
   overflow-y: auto;
   gap: 8px;
+
+  // Programmatic-only focus target - see .custom-content's matching rule.
+  &:focus { outline: none; }
 }
 .library-custom-empty {
   font-family: Roboto;

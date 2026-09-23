@@ -86,13 +86,6 @@ describe('LibraryCustomContent - expanded view (selected or isExpanded)', () => 
     expect(getByPlaceholderText('Type anything...').value).toBe('Some notes.');
   });
 
-  it('shows the two add buttons', () => {
-    const content = buildCustomContent({ blocks: [{ id: 'b1', type: 'text', text: 'x' }] });
-    const { getByText } = renderLibraryCustom(content, { isExpanded: true });
-    expect(getByText('+ Add text')).not.toBeNull();
-    expect(getByText('+ Add image')).not.toBeNull();
-  });
-
   it('typing in a text block dispatches nothing; blurring dispatches exactly one updateCustomTextBlock', () => {
     const content = buildCustomContent({ blocks: [{ id: 'b1', type: 'text', text: 'Some notes.' }] });
     const { getByPlaceholderText, store } = renderLibraryCustom(content, { isExpanded: true });

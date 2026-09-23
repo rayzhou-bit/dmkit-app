@@ -27,35 +27,13 @@ const renderCustom = (content) => {
   return { ...utils, store };
 };
 
+// Adding blocks now happens from the "+" dropdown on the card's title bar
+// (see Title.test.jsx's "add-block dropdown" suite) rather than buttons
+// rendered here - CustomContent itself is just the block list.
 describe('CustomContent - empty state', () => {
-  it('renders no blocks, just the two add buttons', () => {
-    const { container, getByText } = renderCustom(buildCustomContent());
+  it('renders no blocks', () => {
+    const { container } = renderCustom(buildCustomContent());
     expect(container.querySelectorAll('.custom-block').length).toBe(0);
-    expect(getByText('+ Add text')).not.toBeNull();
-    expect(getByText('+ Add image')).not.toBeNull();
-  });
-
-  it('clicking "+ Add text" dispatches exactly one addCustomBlock with blockType: text', () => {
-    const { getByText, store } = renderCustom(buildCustomContent());
-
-    fireEvent.click(getByText('+ Add text'));
-
-    expect(store.dispatched).toHaveLength(1);
-    const action = store.dispatched[0];
-    expect(action.type).toBe('project/addCustomBlock');
-    expect(action.payload.id).toBe('c1');
-    expect(action.payload.blockType).toBe('text');
-    expect(typeof action.payload.blockId).toBe('string');
-    expect(action.payload.blockId.length).toBeGreaterThan(0);
-  });
-
-  it('clicking "+ Add image" dispatches exactly one addCustomBlock with blockType: image', () => {
-    const { getByText, store } = renderCustom(buildCustomContent());
-
-    fireEvent.click(getByText('+ Add image'));
-
-    expect(store.dispatched).toHaveLength(1);
-    expect(store.dispatched[0].payload.blockType).toBe('image');
   });
 });
 
@@ -121,11 +99,11 @@ describe('CustomContent - image block', () => {
     clickSpy.mockRestore();
   });
 
-  it('shows the image and a clear button once set', () => {
+  it('shows the image and a remove-image button (in the controls row) once set', () => {
     const filled = buildCustomContent({ blocks: [{ id: 'b1', type: 'image', image: 'data:image/jpeg;base64,xxx', alt: 'photo.png' }] });
     const { container, getByAltText } = renderCustom(filled);
     expect(getByAltText('photo.png')).not.toBeNull();
-    expect(container.querySelector('.custom-image-block-clear')).not.toBeNull();
+    expect(container.querySelector('.custom-block-remove-image')).not.toBeNull();
   });
 
   it('dispatches updateCustomImageBlock when a file is dropped onto the block', async () => {
@@ -143,10 +121,15 @@ describe('CustomContent - image block', () => {
     });
   });
 
-  it('clear button dispatches empty strings via updateCustomImageBlock', () => {
+  it('empty image block has no remove-image button', () => {
+    const { container } = renderCustom(content);
+    expect(container.querySelector('.custom-block-remove-image')).toBeNull();
+  });
+
+  it('remove-image button dispatches empty strings via updateCustomImageBlock', () => {
     const filled = buildCustomContent({ blocks: [{ id: 'b1', type: 'image', image: 'data:image/jpeg;base64,xxx', alt: 'photo.png' }] });
     const { container, store } = renderCustom(filled);
-    fireEvent.click(container.querySelector('.custom-image-block-clear'));
+    fireEvent.click(container.querySelector('.custom-block-remove-image'));
 
     expect(store.dispatched).toContainEqual({
       type: 'project/updateCustomImageBlock',

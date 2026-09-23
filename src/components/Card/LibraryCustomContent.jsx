@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { useSelector } from 'react-redux';
 
 import { normalizeCustomBlocks, customBlockHasContent, CUSTOM_BLOCK_TYPES } from '../../constants/custom';
@@ -17,6 +17,7 @@ const LibraryCustomContent = ({
 }) => {
   const content = useSelector(state => state.project.present.cards[cardId].content);
   const expanded = isSelected || isExpanded;
+  const contentRef = useRef(null);
 
   if (!hasCardContent(content)) {
     return (
@@ -49,8 +50,10 @@ const LibraryCustomContent = ({
       className='library-card-content-container library-custom-expanded'
       style={{ minHeight: '80px', maxHeight: '60vh', height: 'auto' }}
       onDragOver={(e) => e.preventDefault()}
+      ref={contentRef}
+      tabIndex={-1}
     >
-      <CustomBlockList cardId={cardId} setEditingCard={setEditingCard} />
+      <CustomBlockList cardId={cardId} setEditingCard={setEditingCard} focusFallbackRef={contentRef} />
     </div>
   );
 };

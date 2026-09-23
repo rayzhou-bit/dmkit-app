@@ -7,12 +7,13 @@ import './Card.scss';
 import AddImageIcon from '../../assets/icons/add-image.svg';
 
 // Near-identical to NotePortrait.jsx (own CSS class names - a custom image
-// block sits inside a bordered .custom-block, not a full-width banner
-// strip) but keyed by blockId instead of a single fixed content.portrait
-// pair, via useCustomImageBlockHooks. No setEditingCard/drag-safe gating
-// needed, same reasoning as NotePortrait: every interactive bit here is a
-// plain click/dblclick, which HTML5 drag-and-drop never treats as the
-// start of a drag.
+// block sits inside a .custom-block, not a full-width banner strip) but
+// keyed by blockId instead of a single fixed content.portrait pair, via
+// useCustomImageBlockHooks. No setEditingCard/drag-safe gating needed, same
+// reasoning as NotePortrait: every interactive bit here is a plain
+// click/dblclick, which HTML5 drag-and-drop never treats as the start of a
+// drag. The "remove image" control lives in CustomBlock's own controls row
+// (not here) so it sits beside duplicate/delete instead of overlapping them.
 const CustomImageBlock = ({
   cardId,
   field = 'blocks',
@@ -28,7 +29,6 @@ const CustomImageBlock = ({
     openFilePicker,
     onFileChange,
     onDrop,
-    clearImage,
     dismissError,
   } = useCustomImageBlockHooks({ cardId, blockId, field });
 
@@ -42,18 +42,15 @@ const CustomImageBlock = ({
         onChange={onFileChange}
       />
       {hasImage ? (
-        <>
-          <img
-            className='custom-image-block-image'
-            src={image}
-            alt={alt}
-            title={alt}
-            draggable='false'
-            onDragStart={(e) => e.preventDefault()}
-            onDoubleClick={openFilePicker}
-          />
-          <button type='button' className='custom-image-block-clear' onClick={clearImage}>×</button>
-        </>
+        <img
+          className='custom-image-block-image'
+          src={image}
+          alt={alt}
+          title={alt}
+          draggable='false'
+          onDragStart={(e) => e.preventDefault()}
+          onDoubleClick={openFilePicker}
+        />
       ) : (
         <button type='button' className='custom-image-block-placeholder' onClick={openFilePicker}>
           <img src={AddImageIcon} alt='' draggable='false' />

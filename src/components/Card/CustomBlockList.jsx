@@ -6,30 +6,40 @@ import CustomBlock from './CustomBlock';
 
 import './Card.scss';
 
-// The open-ended block list + the two always-visible "add" buttons -
-// shared between the canvas (CustomContent.jsx) and the Library
-// (LibraryCustomContent.jsx), same split as NoteEntryList.jsx. Starts
-// empty - just the two add buttons - no blank starter block (monster's
-// Notes section, field='notes', is the one exception - see
-// buildMonsterContent's starter block; this component doesn't need to know
-// about that, it just renders whatever blocks the hook gives it).
+// The open-ended block list - shared between the canvas (CustomContent.jsx)
+// and the Library (LibraryCustomContent.jsx), same split as
+// NoteEntryList.jsx, and also reused by MonsterNotes.jsx (field='notes').
 //
 // field: 'blocks' (default, the custom card) or 'notes' (monster's Notes
-// section, via MonsterNotes.jsx) - see useCustomBlockListHooks's comment.
-const CustomBlockList = ({ cardId, field = 'blocks', setEditingCard }) => {
+// section) - see useCustomBlockListHooks's comment. The custom card adds
+// blocks from the "+" dropdown on its own title bar (see
+// useAddBlockDropdownHooks) instead of a row here, since every custom card
+// already has that dropdown; monster cards don't get one just for Notes,
+// so Notes keeps the always-visible add-button row this list used to
+// always render.
+const CustomBlockList = ({ cardId, field = 'blocks', setEditingCard, focusFallbackRef }) => {
   const { blocks, canAdd, addTextBlock, addImageBlock, duplicateBlock, deleteBlock } = useCustomBlockListHooks({ cardId, field });
+  const showAddRow = field !== 'blocks';
   const addTextButtonRef = useRef(null);
   const addImageButtonRef = useRef(null);
 
   // Deleting a block unmounts its own delete button - without moving focus
   // somewhere real, it falls to <body>, and a stray Backspace/Delete right
   // after would be read by the canvas as "delete the selected card"
-  // (useCardShortcutHooks only guards actual text-entry targets). Focuses
-  // whichever add button matches the deleted block's own type.
+  // (useCardShortcutHooks only guards actual text-entry targets). The
+  // custom card (no add row) falls back to its own content container
+  // (focusFallbackRef, from CustomContent/LibraryCustomContent); monster
+  // Notes (still has the add row) falls back to whichever add button
+  // matches the deleted block's own type, same as this used to work for
+  // both cases before the custom card grew its title-bar dropdown.
   const handleDelete = (blockId) => {
     const deletedType = blocks.find(b => b.id === blockId)?.type;
     deleteBlock(blockId);
-    (deletedType === CUSTOM_BLOCK_TYPES.image ? addImageButtonRef : addTextButtonRef).current?.focus();
+    if (showAddRow) {
+      (deletedType === CUSTOM_BLOCK_TYPES.image ? addImageButtonRef : addTextButtonRef).current?.focus();
+    } else {
+      focusFallbackRef?.current?.focus();
+    }
   };
 
   return (
@@ -46,7 +56,7 @@ const CustomBlockList = ({ cardId, field = 'blocks', setEditingCard }) => {
           setEditingCard={setEditingCard}
         />
       ))}
-      {canAdd && (
+      {showAddRow && canAdd && (
         <div className='custom-block-add-row'>
           <button type='button' className='custom-block-add' onClick={addTextBlock} ref={addTextButtonRef}>
             + Add text
