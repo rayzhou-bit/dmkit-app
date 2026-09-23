@@ -1,20 +1,22 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 
-import { MONSTER_COLUMN_SECTIONS, MONSTER_FIELDS, MONSTER_MEDIA_FIELDS } from '../../constants/monster';
+import { MONSTER_COLUMN_SECTIONS, MONSTER_FIELDS, MONSTER_MEDIA_FIELDS, MONSTER_MAX_DOTS, normalizeNotesBlocks } from '../../constants/monster';
+import { customBlockHasContent } from '../../constants/custom';
 import { hasCardContent } from '../../constants/cards';
 import { useMonsterSectionHooks } from './hooks';
 import CollapsibleSection from './CollapsibleSection';
 import MonsterTextField from './MonsterTextField';
 import MonsterSectionBody from './MonsterSectionBody';
 import MonsterPortrait from './MonsterPortrait';
+import MonsterNotes from './MonsterNotes';
 
 import './Card.scss';
 
 // The Library's own top-level grouping for Stats/Combat - 'attributes'/
-// 'combat' reuse the canvas's column keys (same sections inside). Quick
-// Notes is handled separately, right below (see LibraryMonsterExpanded) -
-// still collapsible (unlike the canvas, where it's always-visible), but
+// 'combat' reuse the canvas's column keys (same sections inside). Notes is
+// handled separately, right below (see LibraryMonsterExpanded) - still
+// collapsible (unlike the canvas, where it's always-visible), but
 // positioned next to the picture like on the canvas, not listed as a third
 // group here.
 const LIBRARY_GROUPS = [
@@ -82,7 +84,7 @@ const LibraryMonsterContent = ({
 const LibraryMonsterExpanded = ({ cardId, content, subtitle, setEditingCard }) => {
   const { isCollapsed, sectionContentCount, columnContentCount, toggleSection } =
     useMonsterSectionHooks({ cardId, scope: 'library' });
-  const notesDotCount = content?.notes?.trim() ? 1 : 0;
+  const notesDotCount = Math.min(normalizeNotesBlocks(content?.notes).filter(customBlockHasContent).length, MONSTER_MAX_DOTS);
 
   return (
     <div
@@ -101,12 +103,12 @@ const LibraryMonsterExpanded = ({ cardId, content, subtitle, setEditingCard }) =
       {subtitle && <div className='library-monster-subtitle'>{subtitle}</div>}
 
       <CollapsibleSection
-        title='Quick Notes'
+        title='Notes'
         isCollapsed={isCollapsed('notes')}
         dotCount={notesDotCount}
         onToggle={() => toggleSection('notes')}
       >
-        <MonsterTextField cardId={cardId} fieldKey='notes' {...MONSTER_FIELDS.notes} hideLabel setEditingCard={setEditingCard} />
+        <MonsterNotes cardId={cardId} hideLabel setEditingCard={setEditingCard} />
       </CollapsibleSection>
 
       {LIBRARY_GROUPS.map(group => (

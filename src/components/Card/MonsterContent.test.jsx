@@ -35,11 +35,17 @@ describe('MonsterContent', () => {
     expect(getByLabelText('Armor Class').value).toBe('18');
   });
 
-  it('the Quick Notes label is visible (not sr-only), unlike the other icon fields', () => {
+  it('the Notes label is visible (not sr-only), unlike the other icon fields', () => {
     const { container } = renderMonster(buildMonsterContent());
-    const notesLabel = container.querySelector('label[for*="-notes"]');
-    expect(notesLabel.textContent).toBe('Quick Notes');
+    const notesLabel = container.querySelector('.monster-notes .monster-field-label');
+    expect(notesLabel.textContent).toBe('Notes');
     expect(notesLabel.className).not.toContain('sr-only');
+  });
+
+  it('renders the Notes block list, starting with the one empty text block from buildMonsterContent()', () => {
+    const { container, getByPlaceholderText } = renderMonster(buildMonsterContent());
+    expect(container.querySelectorAll('.monster-notes .custom-block').length).toBe(1);
+    expect(getByPlaceholderText('Type anything...').value).toBe('');
   });
 
   it('typing dispatches nothing; blurring dispatches exactly one updateCardMonsterFields', () => {

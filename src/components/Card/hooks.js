@@ -11,7 +11,7 @@ import { MAX_PORTRAIT_DATA_URI_LENGTH, PORTRAIT_MAX_EDGE_STEPS } from '../../con
 import {
   MONSTER_FIELDS, MONSTER_SECTIONS, MONSTER_COLUMN_SECTIONS, DEFAULT_COLLAPSED, getMonsterExpansionDelta,
   MONSTER_MAX_ENTRIES_PER_SECTION, MONSTER_MAX_DOTS, normalizeMonsterEntries, entryHasContent, monsterFieldHasContent,
-  MONSTER_COLLAPSE_SCOPES, LIBRARY_DEFAULT_COLLAPSED,
+  MONSTER_COLLAPSE_SCOPES, LIBRARY_DEFAULT_COLLAPSED, normalizeNotesBlocks,
 } from '../../constants/monster';
 import { NOTE_MAX_ENTRIES } from '../../constants/note';
 import { CUSTOM_MAX_BLOCKS, CUSTOM_BLOCK_TYPES, normalizeCustomBlocks } from '../../constants/custom';
@@ -530,12 +530,8 @@ export const useImageContentHooks = ({
     fileInputRef.current?.click();
   };
 
-  const onFileChange = async (event) => {
-    const file = event.target.files?.[0];
-    // Reset immediately so re-picking the same file after an error still fires `change`.
-    event.target.value = '';
+  const processFile = async (file) => {
     if (!file) return;
-
     setIsProcessing(true);
     try {
       const result = await processImageFile(file);
@@ -553,6 +549,23 @@ export const useImageContentHooks = ({
     }
   };
 
+  const onFileChange = (event) => {
+    const file = event.target.files?.[0];
+    // Reset immediately so re-picking the same file after an error still fires `change`.
+    event.target.value = '';
+    processFile(file);
+  };
+
+  // Drag a file in from the OS straight onto the image - independent of the
+  // Library card's own draggable=true (that's for reordering cards, a
+  // different drag source entirely; dragover/drop on a descendant works
+  // regardless of an ancestor's draggable attribute).
+  const onDrop = (event) => {
+    event.preventDefault();
+    setErrorMessage(null);
+    processFile(event.dataTransfer.files?.[0]);
+  };
+
   return {
     image,
     alt,
@@ -562,6 +575,7 @@ export const useImageContentHooks = ({
     errorMessage,
     openFilePicker,
     onFileChange,
+    onDrop,
     dismissError: () => setErrorMessage(null),
   };
 };
@@ -811,33 +825,44 @@ export const useNoteEntryFieldHooks = ({ cardId, entry, entryFieldKey }) => {
 // into the single addCustomBlock action (mirrors addMonsterEntry's
 // field-selector shape - one action, payload picks the variant - rather
 // than two near-duplicate actions for a switch-sized difference).
-export const useCustomBlockListHooks = ({ cardId }) => {
+//
+// field: shared by two card types now (see applyCustomBlocks's comment in
+// reducers.js) - 'blocks' (default, the custom card) or 'notes' (the
+// monster card's Notes section, via MonsterNotes.jsx). `field` is only
+// ever included in a dispatched payload when it's NOT the default, so
+// every already-shipped custom-card dispatch/test keeps its exact original
+// shape - don't "simplify" this to always include field, it'll break
+// existing toEqual assertions on the dispatched action shape.
+export const useCustomBlockListHooks = ({ cardId, field = 'blocks' }) => {
   const dispatch = useDispatch();
-  const raw = useSelector(state => state.project.present.cards[cardId].content?.blocks);
-  const blocks = normalizeCustomBlocks(raw);
+  const raw = useSelector(state => state.project.present.cards[cardId].content?.[field]);
+  const blocks = field === 'notes' ? normalizeNotesBlocks(raw) : normalizeCustomBlocks(raw);
+  const fieldPayload = field !== 'blocks' ? { field } : {};
 
   return {
     blocks,
     canAdd: blocks.length < CUSTOM_MAX_BLOCKS,
     addTextBlock: () => dispatch(actions.project.addCustomBlock({
-      id: cardId, blockId: generateUID('block'), blockType: CUSTOM_BLOCK_TYPES.text,
+      id: cardId, blockId: generateUID('block'), blockType: CUSTOM_BLOCK_TYPES.text, ...fieldPayload,
     })),
     addImageBlock: () => dispatch(actions.project.addCustomBlock({
-      id: cardId, blockId: generateUID('block'), blockType: CUSTOM_BLOCK_TYPES.image,
+      id: cardId, blockId: generateUID('block'), blockType: CUSTOM_BLOCK_TYPES.image, ...fieldPayload,
     })),
     duplicateBlock: (blockId) => dispatch(actions.project.duplicateCustomBlock({
-      id: cardId, blockId, newBlockId: generateUID('block'),
+      id: cardId, blockId, newBlockId: generateUID('block'), ...fieldPayload,
     })),
     deleteBlock: (blockId) => dispatch(actions.project.deleteCustomBlock({
-      id: cardId, blockId,
+      id: cardId, blockId, ...fieldPayload,
     })),
   };
 };
 
 // Mirrors useNoteFieldHooks's commit-on-blur/equality-guard shape, keyed by
 // blockId instead of fieldKey, dispatching updateCustomTextBlock (which
-// itself no-ops if the targeted block isn't a text block).
-export const useCustomTextBlockHooks = ({ cardId, blockId }) => {
+// itself no-ops if the targeted block isn't a text block). field: see
+// useCustomBlockListHooks's comment - same 'blocks' default, same
+// only-include-when-non-default dispatch discipline.
+export const useCustomTextBlockHooks = ({ cardId, blockId, field = 'blocks' }) => {
   const dispatch = useDispatch();
   // Raw select + find, not a selector that normalizes/maps - normalizeCustomBlocks
   // always returns fresh objects, and a useSelector returning a fresh
@@ -845,7 +870,8 @@ export const useCustomTextBlockHooks = ({ cardId, blockId }) => {
   // scalar fields (text) ever escape this hook, so the fresh-object cost of
   // .find() per render is harmless - see useCustomBlockListHooks/
   // normalizeCustomBlocks for the same reasoning applied to the list.
-  const block = useSelector(state => state.project.present.cards[cardId].content?.blocks)?.find(b => b.id === blockId);
+  const raw = useSelector(state => state.project.present.cards[cardId].content?.[field]);
+  const block = (field === 'notes' ? normalizeNotesBlocks(raw) : normalizeCustomBlocks(raw)).find(b => b.id === blockId);
   const storeValue = block?.text ?? '';
 
   const [ value, setValue ] = useState('');
@@ -856,7 +882,7 @@ export const useCustomTextBlockHooks = ({ cardId, blockId }) => {
 
   const commit = () => {
     if (value !== storeValue) {
-      dispatch(actions.project.updateCustomTextBlock({ id: cardId, blockId, text: value }));
+      dispatch(actions.project.updateCustomTextBlock({ id: cardId, blockId, text: value, ...(field !== 'blocks' ? { field } : {}) }));
     }
   };
 
@@ -879,10 +905,12 @@ export const useCustomTextBlockHooks = ({ cardId, blockId }) => {
 // instead of updateCardImage - updateCardImage unconditionally stamps
 // `type: 'image'` on the card, which would corrupt a custom card's own
 // type. This is the one pitfall this whole feature exists to avoid; see
-// updateCustomImageBlock's comment in reducers.js.
-export const useCustomImageBlockHooks = ({ cardId, blockId }) => {
+// updateCustomImageBlock's comment in reducers.js. field: see
+// useCustomBlockListHooks's comment.
+export const useCustomImageBlockHooks = ({ cardId, blockId, field = 'blocks' }) => {
   const dispatch = useDispatch();
-  const block = useSelector(state => state.project.present.cards[cardId].content?.blocks)?.find(b => b.id === blockId);
+  const raw = useSelector(state => state.project.present.cards[cardId].content?.[field]);
+  const block = (field === 'notes' ? normalizeNotesBlocks(raw) : normalizeCustomBlocks(raw)).find(b => b.id === blockId);
   const image = block?.image ?? '';
   const alt = block?.alt ?? '';
 
@@ -901,17 +929,14 @@ export const useCustomImageBlockHooks = ({ cardId, blockId }) => {
     fileInputRef.current?.click();
   };
 
-  const onFileChange = async (event) => {
-    const file = event.target.files?.[0];
-    event.target.value = '';
+  const processFile = async (file) => {
     if (!file) return;
-
     setIsProcessing(true);
     try {
       const result = await processImageFile(file);
       if (!isMountedRef.current) return;
       dispatch(actions.project.updateCustomImageBlock({
-        id: cardId, blockId, image: result.image, alt: result.alt,
+        id: cardId, blockId, image: result.image, alt: result.alt, ...(field !== 'blocks' ? { field } : {}),
       }));
     } catch (err) {
       if (!isMountedRef.current) return;
@@ -919,6 +944,20 @@ export const useCustomImageBlockHooks = ({ cardId, blockId }) => {
     } finally {
       if (isMountedRef.current) setIsProcessing(false);
     }
+  };
+
+  const onFileChange = (event) => {
+    const file = event.target.files?.[0];
+    event.target.value = '';
+    processFile(file);
+  };
+
+  // See useImageContentHooks' onDrop comment - independent of the Library
+  // card's own draggable=true.
+  const onDrop = (event) => {
+    event.preventDefault();
+    setErrorMessage(null);
+    processFile(event.dataTransfer.files?.[0]);
   };
 
   return {
@@ -930,7 +969,8 @@ export const useCustomImageBlockHooks = ({ cardId, blockId }) => {
     errorMessage,
     openFilePicker,
     onFileChange,
-    clearImage: () => dispatch(actions.project.updateCustomImageBlock({ id: cardId, blockId, image: '', alt: '' })),
+    onDrop,
+    clearImage: () => dispatch(actions.project.updateCustomImageBlock({ id: cardId, blockId, image: '', alt: '', ...(field !== 'blocks' ? { field } : {}) })),
     dismissError: () => setErrorMessage(null),
   };
 };
@@ -1020,12 +1060,8 @@ export const usePortraitHooks = ({ cardId }) => {
     fileInputRef.current?.click();
   };
 
-  const onFileChange = async (event) => {
-    const file = event.target.files?.[0];
-    // Reset immediately so re-picking the same file after an error still fires `change`.
-    event.target.value = '';
+  const processFile = async (file) => {
     if (!file) return;
-
     setIsProcessing(true);
     try {
       const result = await processImageFile(file, {
@@ -1046,6 +1082,21 @@ export const usePortraitHooks = ({ cardId }) => {
     }
   };
 
+  const onFileChange = (event) => {
+    const file = event.target.files?.[0];
+    // Reset immediately so re-picking the same file after an error still fires `change`.
+    event.target.value = '';
+    processFile(file);
+  };
+
+  // See useImageContentHooks' onDrop comment - independent of the Library
+  // card's own draggable=true.
+  const onDrop = (event) => {
+    event.preventDefault();
+    setErrorMessage(null);
+    processFile(event.dataTransfer.files?.[0]);
+  };
+
   return {
     portrait,
     portraitAlt,
@@ -1055,6 +1106,7 @@ export const usePortraitHooks = ({ cardId }) => {
     errorMessage,
     openFilePicker,
     onFileChange,
+    onDrop,
     clearPortrait: () => dispatch(actions.project.updateCardPortrait({ id: cardId, portrait: '', portraitAlt: '' })),
     dismissError: () => setErrorMessage(null),
   };

@@ -16,6 +16,7 @@ import {
   normalizeMonsterEntries,
   entryHasContent,
   monsterFieldHasContent,
+  normalizeNotesBlocks,
 } from './monster';
 
 describe('abilityModifier', () => {
@@ -36,12 +37,19 @@ describe('formatModifier', () => {
 });
 
 describe('buildMonsterContent', () => {
-  it('with no args, every value key is empty (entry fields: [], others: "") and there is no collapsed key', () => {
+  it('with no args, every value key is empty (entry fields: [], others: "") except notes, which starts with one empty text block', () => {
     const content = buildMonsterContent();
     for (const key of MONSTER_FIELD_KEYS) {
+      if (key === 'notes') continue;
       expect(content[key]).toEqual(isMonsterEntryField(key) ? [] : '');
     }
+    expect(content.notes).toEqual([{ id: 'starter', type: 'text', text: '', image: '', alt: '' }]);
     expect(content.collapsed).toBeUndefined();
+  });
+
+  it('a defined source with no notes key gets an empty notes list, not a starter block - only a truly-new card (no source at all) does', () => {
+    const content = buildMonsterContent({ creatureType: 'dragon' });
+    expect(content.notes).toEqual([]);
   });
 
   it('two calls do not share entry-array identity', () => {
@@ -85,9 +93,14 @@ describe('buildMonsterContent', () => {
     expect(content.collapsed).toBeUndefined();
   });
 
-  it('notes round-trips', () => {
+  it('notes given as a block array round-trips', () => {
+    const content = buildMonsterContent({ notes: [{ id: 'n1', type: 'text', text: 'lair is flooded' }] });
+    expect(content.notes).toEqual([{ id: 'n1', type: 'text', text: 'lair is flooded', image: '', alt: '' }]);
+  });
+
+  it('a legacy plain-string notes value wraps into one text block, text preserved', () => {
     const content = buildMonsterContent({ notes: 'lair is flooded' });
-    expect(content.notes).toBe('lair is flooded');
+    expect(content.notes).toEqual([{ id: 'legacy', type: 'text', text: 'lair is flooded', image: '', alt: '' }]);
   });
 });
 
@@ -128,9 +141,8 @@ describe('section/column metadata', () => {
     expect(MONSTER_FIELD_KEYS).toContain('notes');
   });
 
-  it('MONSTER_FIELDS.notes has the expected metadata, and a visible label (matches the "Quick Notes" heading elsewhere)', () => {
-    expect(MONSTER_FIELDS.notes.maxLength).toBe(500);
-    expect(MONSTER_FIELDS.notes.multiline).toBe(true);
+  it('MONSTER_FIELDS.notes has a visible "Notes" label (matches the heading elsewhere)', () => {
+    expect(MONSTER_FIELDS.notes.label).toBe('Notes');
     expect(MONSTER_FIELDS.notes.hideLabel).toBeFalsy();
   });
 
@@ -218,5 +230,43 @@ describe('monsterFieldHasContent', () => {
   it('entry field: a name-only or description-only entry -> true', () => {
     expect(monsterFieldHasContent({ actions: [{ id: 'e1', name: 'Bow', description: '' }] }, 'actions')).toBe(true);
     expect(monsterFieldHasContent({ actions: [{ id: 'e1', name: '', description: 'Ranged.' }] }, 'actions')).toBe(true);
+  });
+
+  it('notes: empty list, or one all-blank block (the fresh-card starter) -> false', () => {
+    expect(monsterFieldHasContent({ notes: [] }, 'notes')).toBe(false);
+    expect(monsterFieldHasContent({}, 'notes')).toBe(false);
+    expect(monsterFieldHasContent({ notes: [{ id: 'starter', type: 'text', text: '' }] }, 'notes')).toBe(false);
+  });
+
+  it('notes: a filled text or image block -> true', () => {
+    expect(monsterFieldHasContent({ notes: [{ id: 'n1', type: 'text', text: 'wounded' }] }, 'notes')).toBe(true);
+    expect(monsterFieldHasContent({ notes: [{ id: 'n1', type: 'image', image: 'data:...' }] }, 'notes')).toBe(true);
+  });
+
+  it('notes: a legacy plain string is recognized as content too (read-path backward compatibility)', () => {
+    expect(monsterFieldHasContent({ notes: 'wounded, flees at 50hp' }, 'notes')).toBe(true);
+    expect(monsterFieldHasContent({ notes: '   ' }, 'notes')).toBe(false);
+  });
+});
+
+describe('normalizeNotesBlocks', () => {
+  it('a non-empty legacy string wraps into one text block with a fixed id', () => {
+    expect(normalizeNotesBlocks('lair is flooded')).toEqual([
+      { id: 'legacy', type: 'text', text: 'lair is flooded', image: '', alt: '' },
+    ]);
+  });
+
+  it('a whitespace-only legacy string is treated as no content, not a blank block', () => {
+    expect(normalizeNotesBlocks('   ')).toEqual([]);
+  });
+
+  it('an already-array value passes through normalizeCustomBlocks unchanged', () => {
+    const blocks = [{ id: 'n1', type: 'text', text: 'x' }];
+    expect(normalizeNotesBlocks(blocks)).toEqual([{ id: 'n1', type: 'text', text: 'x', image: '', alt: '' }]);
+  });
+
+  it('undefined/null -> []', () => {
+    expect(normalizeNotesBlocks(undefined)).toEqual([]);
+    expect(normalizeNotesBlocks(null)).toEqual([]);
   });
 });

@@ -10,6 +10,7 @@ import { CARD_TYPES, getCardType, migrateLegacyTextImageCard } from '../../../co
 import {
   buildMonsterContent, MONSTER_FIELD_KEYS,
   MONSTER_ENTRY_FIELD_KEYS, MONSTER_MAX_ENTRIES_PER_SECTION, normalizeMonsterEntries,
+  normalizeNotesBlocks,
 } from '../../../constants/monster';
 import { buildNoteContent, NOTE_FIELD_KEYS, NOTE_MAX_ENTRIES } from '../../../constants/note';
 import { buildCustomContent, normalizeCustomBlocks, CUSTOM_MAX_BLOCKS, CUSTOM_BLOCK_TYPES } from '../../../constants/custom';
@@ -86,13 +87,31 @@ const applyNoteEntries = (state, { id }, updater) => {
   };
 };
 
-// Same shape as applyNoteEntries - custom has exactly one blocks list
-// (content.blocks), mixing text/image blocks freely, no field/fieldKey to
-// validate against.
-const applyCustomBlocks = (state, { id }, updater) => {
+// Same shape as applyNoteEntries, generalized with an optional `field`
+// (default 'blocks') - this is now shared by two card types: the custom
+// card's own content.blocks, and the monster card's content.notes (see
+// MonsterNotes.jsx). That's a deliberate departure from this codebase's
+// usual "duplicate near-identical logic per card type" convention (see
+// NoteEntry vs MonsterEntry) - unlike monster's 5 entry fields (genuinely
+// divergent fields of ONE card type, each independently worth allow-
+// listing against typos), this is the exact same mechanism reused across
+// TWO card types with zero behavioral difference. Still validated against
+// a small allowlist below, same precedent as applyMonsterEntries, since
+// the cost of a typo'd field is silent corruption of an unrelated content
+// key either way.
+//
+// notes gets its own normalize (normalizeNotesBlocks, not the plain
+// normalizeCustomBlocks) - content.notes predates this block shape (it
+// used to be a plain string) and normalizeCustomBlocks's non-array -> []
+// fallback would silently discard an old string value the first time any
+// block action runs against it. content.blocks has no such legacy shape
+// (custom cards never existed before this), so it stays on the plain
+// normalizer.
+const CUSTOM_BLOCK_FIELD_KEYS = ['blocks', 'notes'];
+const applyCustomBlocks = (state, { id, field = 'blocks' }, updater) => {
   const card = state.cards[id];
-  if (!card) return state;
-  const blocks = normalizeCustomBlocks(card.content?.blocks);
+  if (!card || !CUSTOM_BLOCK_FIELD_KEYS.includes(field)) return state;
+  const blocks = field === 'notes' ? normalizeNotesBlocks(card.content?.notes) : normalizeCustomBlocks(card.content?.[field]);
   const next = updater(blocks);
   if (next === blocks) return state;
   return {
@@ -101,7 +120,7 @@ const applyCustomBlocks = (state, { id }, updater) => {
       ...state.cards,
       [id]: {
         ...card,
-        content: { ...card.content, blocks: next },
+        content: { ...card.content, [field]: next },
         editedOn: Date.now(),
       },
     },
@@ -373,6 +392,11 @@ const project = createSlice({
       const { id, fields } = payload;
       const newContent = { ...state.cards[id].content };
       for (const key of MONSTER_FIELD_KEYS) {
+        // notes is a block list now (see applyCustomBlocks/MonsterNotes.jsx),
+        // not a plain string - excluded so a stray dispatch here can never
+        // collapse it back into a legacy-shaped string, destroying every
+        // other block.
+        if (key === 'notes') continue;
         if (key in fields) newContent[key] = fields[key] ?? '';
       }
       return {

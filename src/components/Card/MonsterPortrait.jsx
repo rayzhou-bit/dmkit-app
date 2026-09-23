@@ -18,12 +18,13 @@ const MonsterPortrait = ({
     errorMessage,
     openFilePicker,
     onFileChange,
+    onDrop,
     clearPortrait,
     dismissError,
   } = useMonsterPortraitHooks({ cardId });
 
   return (
-    <div className='monster-portrait' onDragOver={(e) => e.preventDefault()}>
+    <div className='monster-portrait' onDragOver={(e) => e.preventDefault()} onDrop={onDrop}>
       <input
         type='file'
         className='card-file-input'

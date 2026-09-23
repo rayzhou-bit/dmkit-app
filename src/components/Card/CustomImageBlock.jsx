@@ -15,6 +15,7 @@ import AddImageIcon from '../../assets/icons/add-image.svg';
 // start of a drag.
 const CustomImageBlock = ({
   cardId,
+  field = 'blocks',
   blockId,
 }) => {
   const {
@@ -26,12 +27,13 @@ const CustomImageBlock = ({
     errorMessage,
     openFilePicker,
     onFileChange,
+    onDrop,
     clearImage,
     dismissError,
-  } = useCustomImageBlockHooks({ cardId, blockId });
+  } = useCustomImageBlockHooks({ cardId, blockId, field });
 
   return (
-    <div className='custom-image-block' onDragOver={(e) => e.preventDefault()}>
+    <div className='custom-image-block' onDragOver={(e) => e.preventDefault()} onDrop={onDrop}>
       <input
         type='file'
         className='card-file-input'

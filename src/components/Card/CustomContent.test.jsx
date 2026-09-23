@@ -1,7 +1,12 @@
+vi.mock('../../utils/imageUtils', () => ({
+  processImageFile: vi.fn(),
+}));
+
 import React from 'react';
-import { render, fireEvent } from '@testing-library/react';
+import { render, fireEvent, act } from '@testing-library/react';
 import { Provider } from 'react-redux';
 
+import { processImageFile } from '../../utils/imageUtils';
 import CustomContent from './CustomContent';
 import { buildCustomContent } from '../../constants/custom';
 
@@ -121,6 +126,21 @@ describe('CustomContent - image block', () => {
     const { container, getByAltText } = renderCustom(filled);
     expect(getByAltText('photo.png')).not.toBeNull();
     expect(container.querySelector('.custom-image-block-clear')).not.toBeNull();
+  });
+
+  it('dispatches updateCustomImageBlock when a file is dropped onto the block', async () => {
+    processImageFile.mockResolvedValueOnce({ image: 'data:image/jpeg;base64,dropped', alt: 'dropped.png' });
+    const { container, store } = renderCustom(content);
+    const file = new File(['x'], 'dropped.png', { type: 'image/png' });
+
+    await act(async () => {
+      fireEvent.drop(container.querySelector('.custom-image-block'), { dataTransfer: { files: [file] } });
+    });
+
+    expect(store.dispatched).toContainEqual({
+      type: 'project/updateCustomImageBlock',
+      payload: { id: 'c1', blockId: 'b1', image: 'data:image/jpeg;base64,dropped', alt: 'dropped.png' },
+    });
   });
 
   it('clear button dispatches empty strings via updateCustomImageBlock', () => {

@@ -5,6 +5,7 @@
 import AcShieldIcon from '../assets/icons/ac-shield.svg';
 import HpHeartIcon from '../assets/icons/hp-heart.svg';
 import SpeedBoltIcon from '../assets/icons/speed-bolt.svg';
+import { normalizeCustomBlocks, customBlockHasContent, CUSTOM_BLOCK_TYPES } from './custom';
 
 export const MONSTER_SECTION_KEYS = [
   'identity', 'abilities', 'proficiencies',
@@ -56,7 +57,6 @@ export const LIBRARY_DEFAULT_COLLAPSED = {
   attributes: false, combat: false, notes: false,
 };
 
-export const MONSTER_NOTES_MAX_LENGTH = 500; // scratchpad, not a sixth action block
 export const MONSTER_ENTRY_NAME_MAX_LENGTH = 120;
 export const MONSTER_ENTRY_TEXT_MAX_LENGTH = 1000;
 // Firestore's 1MB doc limit is otherwise only guarded by the portrait's own
@@ -68,7 +68,10 @@ export const MONSTER_MAX_ENTRIES_PER_SECTION = 50;
 export const MONSTER_MAX_DOTS = 6;
 
 export const MONSTER_FIELDS = {
-  notes: { label: 'Quick Notes', placeholder: 'Scratch notes…', maxLength: MONSTER_NOTES_MAX_LENGTH, multiline: true },
+  // No placeholder/maxLength/multiline - notes is a CustomBlockList now (see
+  // MonsterNotes.jsx), not a single textarea; per-block caps come from
+  // CUSTOM_MAX_BLOCKS/CustomTextBlock instead.
+  notes: { label: 'Notes' },
 
   size: { label: 'Size', placeholder: 'Large', maxLength: 60 },
   creatureType: { label: 'Type', placeholder: 'dragon (chromatic)', maxLength: 60 },
@@ -143,9 +146,28 @@ export const normalizeMonsterEntries = (value) => {
 
 export const entryHasContent = (entry) => Boolean(entry.name.trim() || entry.description.trim());
 
-// One predicate for both string fields and entry-list fields - callers
-// (hasCardContent, sectionHasContent) don't need to know which is which.
-export const monsterFieldHasContent = (content, key) => isMonsterEntryField(key)
+// notes' own normalizer, not a branch inside the shared normalizeCustomBlocks -
+// content.blocks (the custom card type) has no legacy-string precedent (it
+// never existed as anything but an array), so the fallback belongs here,
+// scoped to the one field that actually predates this shape. Exact mirror
+// of normalizeMonsterEntries's legacy-string handling above, fixed id
+// included - every write path that touches content.notes (not just reads)
+// must go through this, or a block action on an old string-shaped notes
+// value would silently discard it via normalizeCustomBlocks's plain
+// non-array -> [] fallback (see applyCustomBlocks in reducers.js).
+export const normalizeNotesBlocks = (value) => {
+  if (typeof value === 'string' && value.trim()) {
+    return [{ id: 'legacy', type: CUSTOM_BLOCK_TYPES.text, text: value, image: '', alt: '' }];
+  }
+  return normalizeCustomBlocks(value);
+};
+
+// One predicate for string fields, entry-list fields, and the notes block
+// list - callers (hasCardContent, sectionHasContent) don't need to know
+// which is which.
+export const monsterFieldHasContent = (content, key) => key === 'notes'
+  ? normalizeNotesBlocks(content?.notes).some(customBlockHasContent)
+  : isMonsterEntryField(key)
   ? normalizeMonsterEntries(content?.[key]).some(entryHasContent)
   : String(content?.[key] ?? '').trim().length > 0;
 
@@ -217,7 +239,7 @@ export const MONSTER_FIELD_KEYS = [
 export const DEFAULT_MONSTER_CONTENT = {
   ...MONSTER_FIELD_KEYS.reduce((content, key) => ({
     ...content,
-    [key]: isMonsterEntryField(key) ? [] : '',
+    [key]: isMonsterEntryField(key) || key === 'notes' ? [] : '',
   }), {}),
 };
 
@@ -225,12 +247,27 @@ export const DEFAULT_MONSTER_CONTENT = {
 // through, so a field can never land as undefined/null in the store, and an
 // entry-list field always lands as a fresh, normalized array (never shared,
 // never the raw/possibly-legacy-string source value).
+//
+// notes gets one further special case: a truly brand-new card (source is
+// strictly undefined - only createCard's no-monster-payload path) starts
+// with one empty text block, ready to type into, instead of the
+// empty-list-plus-two-add-buttons a fresh custom card starts with. This
+// must NOT fire for copySelectedCard(s) (source is always a real object
+// there, even for a card that never touched notes) or the intro fixture
+// (also a real, defined object) - either would silently inject an extra
+// block into content that was never meant to have one.
 export const buildMonsterContent = (source) => {
   const content = { ...DEFAULT_MONSTER_CONTENT };
   for (const key of MONSTER_FIELD_KEYS) {
-    content[key] = isMonsterEntryField(key)
-      ? normalizeMonsterEntries(source?.[key])
-      : String(source?.[key] ?? '');
+    if (key === 'notes') {
+      content.notes = source === undefined
+        ? [{ id: 'starter', type: CUSTOM_BLOCK_TYPES.text, text: '', image: '', alt: '' }]
+        : normalizeNotesBlocks(source?.notes);
+    } else if (isMonsterEntryField(key)) {
+      content[key] = normalizeMonsterEntries(source?.[key]);
+    } else {
+      content[key] = String(source?.[key] ?? '');
+    }
   }
   return content;
 };
