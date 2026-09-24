@@ -854,6 +854,12 @@ export const useCustomBlockListHooks = ({ cardId, field = 'blocks' }) => {
     deleteBlock: (blockId) => dispatch(actions.project.deleteCustomBlock({
       id: cardId, blockId, ...fieldPayload,
     })),
+    moveBlockUp: (blockId) => dispatch(actions.project.moveCustomBlock({
+      id: cardId, blockId, direction: 'up', ...fieldPayload,
+    })),
+    moveBlockDown: (blockId) => dispatch(actions.project.moveCustomBlock({
+      id: cardId, blockId, direction: 'down', ...fieldPayload,
+    })),
   };
 };
 

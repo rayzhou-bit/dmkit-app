@@ -8,16 +8,13 @@ import './Card.scss';
 
 // The open-ended block list + the two always-visible "add" buttons -
 // shared between the canvas (CustomContent.jsx) and the Library
-// (LibraryCustomContent.jsx), same split as NoteEntryList.jsx. Starts
-// empty - just the two add buttons - no blank starter block (monster's
-// Notes section, field='notes', is the one exception - see
-// buildMonsterContent's starter block; this component doesn't need to know
-// about that, it just renders whatever blocks the hook gives it).
+// (LibraryCustomContent.jsx), same split as NoteEntryList.jsx, and also
+// reused by MonsterNotes.jsx (field='notes').
 //
 // field: 'blocks' (default, the custom card) or 'notes' (monster's Notes
-// section, via MonsterNotes.jsx) - see useCustomBlockListHooks's comment.
+// section) - see useCustomBlockListHooks's comment.
 const CustomBlockList = ({ cardId, field = 'blocks', setEditingCard }) => {
-  const { blocks, canAdd, addTextBlock, addImageBlock, duplicateBlock, deleteBlock } = useCustomBlockListHooks({ cardId, field });
+  const { blocks, canAdd, addTextBlock, addImageBlock, duplicateBlock, deleteBlock, moveBlockUp, moveBlockDown } = useCustomBlockListHooks({ cardId, field });
   const addTextButtonRef = useRef(null);
   const addImageButtonRef = useRef(null);
 
@@ -41,6 +38,10 @@ const CustomBlockList = ({ cardId, field = 'blocks', setEditingCard }) => {
           field={field}
           block={block}
           index={index}
+          canMoveUp={index > 0}
+          canMoveDown={index < blocks.length - 1}
+          onMoveUp={moveBlockUp}
+          onMoveDown={moveBlockDown}
           onDuplicate={duplicateBlock}
           onDelete={handleDelete}
           setEditingCard={setEditingCard}

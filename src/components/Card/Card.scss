@@ -914,6 +914,7 @@ $scrollbar-width: 17px;
   overflow-y: auto;
   height: 100%;
   background-color: white;
+  border-radius: 0 0 $card-radius $card-radius;
 }
 
 // Unlike .monster-portrait (a small column, aspect-preserving), this is a
@@ -1055,22 +1056,23 @@ $scrollbar-width: 17px;
   overflow-y: auto;
   height: 100%;
   background-color: white;
+  border-radius: 0 0 $card-radius $card-radius;
 }
 
-// Unlike .monster-entry/.note's entries, a block has no name/label field -
-// its controls sit in their own in-flow header strip (not an absolutely-
-// positioned overlay like .monster-entry-controls, which relies on
-// .monster-entry-name's padding-right to avoid colliding with the first
-// line of text; a block has no such line to reserve room in).
+// Controls sit as an absolutely-positioned overlay (like
+// .monster-entry-controls) instead of reserving in-flow space, so there's
+// no empty header strip above a block's text when it isn't hovered. The
+// border is transparent until focused (mirrors the base
+// .monster-field-textarea border/focus-color pair) so an unfocused block
+// with little content reads as plain text on the card, not an empty box.
 .custom-block {
   position: relative;
   min-width: 0;
-  border: 1px solid #D7D6D6;
+  border: 1px solid transparent;
   border-radius: 6px;
-  padding: 4px 8px 8px;
+  padding: 6px 8px;
   display: flex;
   flex-flow: column nowrap;
-  gap: 4px;
 
   &:focus-within { border-color: #5BC5FF; }
 
@@ -1083,18 +1085,21 @@ $scrollbar-width: 17px;
     font-family: Roboto;
     font-size: 12px;
     color: #363B4E;
-    min-height: 40px;
-    resize: vertical;
+    min-height: 20px;
+    resize: none;
+    field-sizing: content;
 
     &:focus { outline: none; }
   }
 }
 
 .custom-block-controls {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  z-index: 1;
   display: flex;
-  justify-content: flex-end;
   gap: 4px;
-  height: 18px;
   opacity: 0;
   transition: opacity .15s;
 
@@ -1119,19 +1124,54 @@ $scrollbar-width: 17px;
   opacity: 1;
 }
 
-// Same upload/clear/status/error pattern as .note-portrait, but sized to
-// sit inside a .custom-block instead of as a full-width top-of-card banner.
+// Same upload/status/error pattern as .note-portrait, but sized to sit
+// inside a .custom-block instead of as a full-width top-of-card banner.
 .custom-image-block {
   position: relative;
   border-radius: 4px;
   overflow: hidden;
   background-color: #F4F4F4;
 
+  // width:100%/height:auto (not object-fit: cover) - the whole image
+  // should always show, uncropped, so the block grows to match its
+  // aspect ratio instead of clipping top/bottom to a fixed height.
   .custom-image-block-image {
     display: block;
     width: 100%;
-    max-height: 200px;
-    object-fit: cover;
+    height: auto;
+  }
+
+  // Centered rather than corner-pinned (like .note-portrait-clear) - this
+  // clears the image but keeps the block, a different action than
+  // duplicate/delete in the controls row above, so it gets its own
+  // distinct placement instead of looking like a third block-level button.
+  .custom-image-block-clear {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 32px;
+    height: 32px;
+    box-sizing: border-box;
+    padding: 0;
+    border: 0;
+    line-height: 1;
+    font-size: 20px;
+    border-radius: 50%;
+    background-color: rgba(0, 0, 0, 0.55);
+    color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity .15s;
+
+    &:hover { background-color: rgba(0, 0, 0, 0.72); }
+  }
+  &:hover .custom-image-block-clear,
+  .custom-image-block-clear:focus-visible {
+    opacity: 1;
   }
 
   .custom-image-block-placeholder {
@@ -1146,31 +1186,6 @@ $scrollbar-width: 17px;
     justify-content: center;
 
     &:hover { background-color: #F4F4F4; }
-  }
-
-  .custom-image-block-clear {
-    position: absolute;
-    top: 2px;
-    right: 2px;
-    width: 18px;
-    height: 18px;
-    box-sizing: border-box;
-    padding: 0;
-    border: 0;
-    line-height: 1;
-    border-radius: 50%;
-    background-color: rgba(0, 0, 0, 0.55);
-    color: white;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    opacity: 0;
-    transition: opacity .15s;
-  }
-  &:hover .custom-image-block-clear,
-  .custom-image-block-clear:focus-visible {
-    opacity: 1;
   }
 
   .custom-image-block-status,

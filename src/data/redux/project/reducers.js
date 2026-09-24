@@ -540,6 +540,17 @@ const project = createSlice({
       const next = blocks.filter(b => b.id !== payload.blockId);
       return next.length === blocks.length ? blocks : next;
     }),
+    // direction: 'up' or 'down'. No-ops (same reference) for an unknown
+    // blockId or a block already at that end of the list, same as
+    // duplicate/delete's out-of-range guards.
+    moveCustomBlock: (state, { payload }) => applyCustomBlocks(state, payload, (blocks) => {
+      const index = blocks.findIndex(b => b.id === payload.blockId);
+      const target = index + (payload.direction === 'up' ? -1 : 1);
+      if (index === -1 || target < 0 || target >= blocks.length) return blocks;
+      const next = [...blocks];
+      [next[index], next[target]] = [next[target], next[index]];
+      return next;
+    }),
     updateCustomTextBlock: (state, { payload }) => applyCustomBlocks(state, payload, (blocks) => {
       const index = blocks.findIndex(b => b.id === payload.blockId && b.type === CUSTOM_BLOCK_TYPES.text);
       if (index === -1) return blocks;

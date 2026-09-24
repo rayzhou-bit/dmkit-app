@@ -121,7 +121,7 @@ describe('CustomContent - image block', () => {
     clickSpy.mockRestore();
   });
 
-  it('shows the image and a clear button once set', () => {
+  it('shows the image and a centered remove-image button once set', () => {
     const filled = buildCustomContent({ blocks: [{ id: 'b1', type: 'image', image: 'data:image/jpeg;base64,xxx', alt: 'photo.png' }] });
     const { container, getByAltText } = renderCustom(filled);
     expect(getByAltText('photo.png')).not.toBeNull();
@@ -143,7 +143,12 @@ describe('CustomContent - image block', () => {
     });
   });
 
-  it('clear button dispatches empty strings via updateCustomImageBlock', () => {
+  it('empty image block has no remove-image button', () => {
+    const { container } = renderCustom(content);
+    expect(container.querySelector('.custom-image-block-clear')).toBeNull();
+  });
+
+  it('remove-image button dispatches empty strings via updateCustomImageBlock', () => {
     const filled = buildCustomContent({ blocks: [{ id: 'b1', type: 'image', image: 'data:image/jpeg;base64,xxx', alt: 'photo.png' }] });
     const { container, store } = renderCustom(filled);
     fireEvent.click(container.querySelector('.custom-image-block-clear'));
@@ -188,5 +193,28 @@ describe('CustomContent - mixed blocks, duplicate/delete', () => {
       type: 'project/deleteCustomBlock',
       payload: { id: 'c1', blockId: 'b1' },
     });
+  });
+
+  it('the first block has no move-up button, the last has no move-down button', () => {
+    const { getByRole, queryByRole } = renderCustom(content);
+    expect(queryByRole('button', { name: 'Move Block 1 up' })).toBeNull();
+    expect(getByRole('button', { name: 'Move Block 1 down' })).not.toBeNull();
+    expect(getByRole('button', { name: 'Move Block 2 up' })).not.toBeNull();
+    expect(queryByRole('button', { name: 'Move Block 2 down' })).toBeNull();
+  });
+
+  it('move up/down dispatches moveCustomBlock with the right direction', () => {
+    const { getByRole, store } = renderCustom(content);
+
+    fireEvent.click(getByRole('button', { name: 'Move Block 2 up' }));
+    expect(store.dispatched).toEqual([
+      { type: 'project/moveCustomBlock', payload: { id: 'c1', blockId: 'b2', direction: 'up' } },
+    ]);
+
+    fireEvent.click(getByRole('button', { name: 'Move Block 1 down' }));
+    expect(store.dispatched).toEqual([
+      { type: 'project/moveCustomBlock', payload: { id: 'c1', blockId: 'b2', direction: 'up' } },
+      { type: 'project/moveCustomBlock', payload: { id: 'c1', blockId: 'b1', direction: 'down' } },
+    ]);
   });
 });
