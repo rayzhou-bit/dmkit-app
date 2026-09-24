@@ -78,13 +78,13 @@ const ToolMenu = ({
       >
         <div className='btn-highlight'>
           <img
-            alt='New custom'
+            alt='New freeform'
             className='tool-btn-custom-icon'
             draggable='false'
             src={CustomIcon}
           />
         </div>
-        <span>custom</span>
+        <span>freeform</span>
       </button>
 
       {/* copy card - pushed to the bottom of the toolbar, see .tool-btn-copy */}

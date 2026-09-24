@@ -811,6 +811,48 @@ describe('custom block reducers', () => {
     });
   });
 
+  describe('moveCustomBlock', () => {
+    it('swaps the block with its predecessor when direction is up', () => {
+      const next = reducer(baseCustomState, {
+        type: 'project/moveCustomBlock',
+        payload: { id: 'c1', blockId: 'b2', direction: 'up' },
+      });
+      expect(next.cards.c1.content.blocks.map(b => b.id)).toEqual(['b2', 'b1']);
+    });
+
+    it('swaps the block with its successor when direction is down', () => {
+      const next = reducer(baseCustomState, {
+        type: 'project/moveCustomBlock',
+        payload: { id: 'c1', blockId: 'b1', direction: 'down' },
+      });
+      expect(next.cards.c1.content.blocks.map(b => b.id)).toEqual(['b2', 'b1']);
+    });
+
+    it('is a no-op moving the first block up', () => {
+      const next = reducer(baseCustomState, {
+        type: 'project/moveCustomBlock',
+        payload: { id: 'c1', blockId: 'b1', direction: 'up' },
+      });
+      expect(next).toBe(baseCustomState);
+    });
+
+    it('is a no-op moving the last block down', () => {
+      const next = reducer(baseCustomState, {
+        type: 'project/moveCustomBlock',
+        payload: { id: 'c1', blockId: 'b2', direction: 'down' },
+      });
+      expect(next).toBe(baseCustomState);
+    });
+
+    it('is a no-op for an unknown blockId', () => {
+      const next = reducer(baseCustomState, {
+        type: 'project/moveCustomBlock',
+        payload: { id: 'c1', blockId: 'nope', direction: 'up' },
+      });
+      expect(next).toBe(baseCustomState);
+    });
+  });
+
   describe('updateCustomTextBlock', () => {
     it('patches the text on a text block', () => {
       const next = reducer(baseCustomState, {
@@ -910,7 +952,7 @@ describe('custom block reducers - field: "notes" on a monster card', () => {
     expect(next.cards.c1.content.blocks).toBeUndefined();
   });
 
-  it('duplicateCustomBlock/deleteCustomBlock/updateCustomTextBlock/updateCustomImageBlock all target content.notes', () => {
+  it('duplicateCustomBlock/deleteCustomBlock/moveCustomBlock/updateCustomTextBlock/updateCustomImageBlock all target content.notes', () => {
     let next = reducer(baseMonsterNotesState, {
       type: 'project/duplicateCustomBlock',
       payload: { id: 'c1', blockId: 'n1', newBlockId: 'n1-copy', field: 'notes' },
@@ -923,6 +965,12 @@ describe('custom block reducers - field: "notes" on a monster card', () => {
       payload: { id: 'c1', blockId: 'n2', field: 'notes' },
     });
     expect(next.cards.c1.content.notes).toEqual([{ id: 'n1', type: 'text', text: 'Wounded, flees at 50hp.', image: '', alt: '' }]);
+
+    next = reducer(baseMonsterNotesState, {
+      type: 'project/moveCustomBlock',
+      payload: { id: 'c1', blockId: 'n2', direction: 'up', field: 'notes' },
+    });
+    expect(next.cards.c1.content.notes.map(b => b.id)).toEqual(['n2', 'n1']);
 
     next = reducer(baseMonsterNotesState, {
       type: 'project/updateCustomTextBlock',
@@ -981,6 +1029,15 @@ describe('custom block reducers - field: "notes" on a monster card', () => {
       const next = reducer(legacyState, {
         type: 'project/deleteCustomBlock',
         payload: { id: 'c1', blockId: 'nope', field: 'notes' },
+      });
+      expect(next).toBe(legacyState);
+      expect(next.cards.c1.content.notes).toBe('Lair is flooded.');
+    });
+
+    it('moveCustomBlock (the sole legacy block has nowhere to go) is a true no-op, leaving the legacy string untouched', () => {
+      const next = reducer(legacyState, {
+        type: 'project/moveCustomBlock',
+        payload: { id: 'c1', blockId: 'legacy', direction: 'up', field: 'notes' },
       });
       expect(next).toBe(legacyState);
       expect(next.cards.c1.content.notes).toBe('Lair is flooded.');

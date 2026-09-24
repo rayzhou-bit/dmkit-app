@@ -854,37 +854,12 @@ export const useCustomBlockListHooks = ({ cardId, field = 'blocks' }) => {
     deleteBlock: (blockId) => dispatch(actions.project.deleteCustomBlock({
       id: cardId, blockId, ...fieldPayload,
     })),
-  };
-};
-
-// The "+" button beside the color swatch on a custom card's title bar
-// (Title.jsx/LibraryTitle.jsx) - opens a small dropdown with Add text/Add
-// image, replacing the always-visible add-button row that used to sit at
-// the bottom of the block list itself. addCustomBlock already no-ops past
-// CUSTOM_MAX_BLOCKS, so a disabled item here is cosmetic only, same as the
-// Add/Remove-from-tab pair in useOptionsDropdownHooks.
-export const useAddBlockDropdownHooks = ({ cardId }) => {
-  const { canAdd, addTextBlock, addImageBlock } = useCustomBlockListHooks({ cardId });
-  const [ isAddBlockDropdownOpen, setIsAddBlockDropdownOpen ] = useState(false);
-  const addBlockDropdownBtnRef = useRef();
-
-  return {
-    isAddBlockDropdownOpen,
-    addBlockDropdownBtnRef,
-    openAddBlockDropdown: () => setIsAddBlockDropdownOpen(!isAddBlockDropdownOpen),
-    closeAddBlockDropdown: () => setIsAddBlockDropdownOpen(false),
-    addBlockOptions: [
-      {
-        title: 'Add text',
-        type: canAdd ? null : ACTION_TYPE.disabled,
-        callback: addTextBlock,
-      },
-      {
-        title: 'Add image',
-        type: canAdd ? null : ACTION_TYPE.disabled,
-        callback: addImageBlock,
-      },
-    ],
+    moveBlockUp: (blockId) => dispatch(actions.project.moveCustomBlock({
+      id: cardId, blockId, direction: 'up', ...fieldPayload,
+    })),
+    moveBlockDown: (blockId) => dispatch(actions.project.moveCustomBlock({
+      id: cardId, blockId, direction: 'down', ...fieldPayload,
+    })),
   };
 };
 

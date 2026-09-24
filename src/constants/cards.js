@@ -23,7 +23,7 @@ export const CARD_TYPES = {
 export const CARD_TYPE_ICONS = {
   [CARD_TYPES.monster]: { darkIcon: MonsterIconDark, lightIcon: MonsterIconLight, label: 'Monster stat block' },
   [CARD_TYPES.note]: { darkIcon: NoteIconDark, lightIcon: NoteIconLight, label: 'Note' },
-  [CARD_TYPES.custom]: { darkIcon: CustomIconDark, lightIcon: CustomIconLight, label: 'Custom' },
+  [CARD_TYPES.custom]: { darkIcon: CustomIconDark, lightIcon: CustomIconLight, label: 'Freeform' },
 };
 
 // Explicit `type` wins; legacy cards (no `type`) infer from content shape.

@@ -119,11 +119,11 @@ describe('ToolMenu note button', () => {
   });
 });
 
-describe('ToolMenu custom button', () => {
+describe('ToolMenu custom button (labeled "freeform")', () => {
   it('is disabled when there is no active tab', () => {
     const store = makeStore(makeState());
     const { getByText } = render(<Harness store={store} />);
-    expect(getByText('custom').closest('button')).toBeDisabled();
+    expect(getByText('freeform').closest('button')).toBeDisabled();
   });
 
   it('is enabled when there is an active tab', () => {
@@ -131,7 +131,7 @@ describe('ToolMenu custom button', () => {
       project: { present: { activeViewId: 'tab1', viewOrder: ['tab1'], views: { tab1: { pos: { x: 0, y: 0 } } }, cards: {} } },
     }));
     const { getByText } = render(<Harness store={store} />);
-    expect(getByText('custom').closest('button')).not.toBeDisabled();
+    expect(getByText('freeform').closest('button')).not.toBeDisabled();
   });
 
   it('dispatches a project/createCard action with type: custom on click', () => {
@@ -139,7 +139,7 @@ describe('ToolMenu custom button', () => {
       project: { present: { activeViewId: 'tab1', viewOrder: ['tab1'], views: { tab1: { pos: { x: 0, y: 0 } } }, cards: {} } },
     }));
     const { getByText } = render(<Harness store={store} />);
-    fireEvent.click(getByText('custom').closest('button'));
+    fireEvent.click(getByText('freeform').closest('button'));
 
     const createCardAction = store.dispatched.find(a => a.type === 'project/createCard');
     expect(createCardAction).toBeDefined();

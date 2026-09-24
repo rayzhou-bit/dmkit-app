@@ -12,8 +12,11 @@ import AddImageIcon from '../../assets/icons/add-image.svg';
 // useCustomImageBlockHooks. No setEditingCard/drag-safe gating needed, same
 // reasoning as NotePortrait: every interactive bit here is a plain
 // click/dblclick, which HTML5 drag-and-drop never treats as the start of a
-// drag. The "remove image" control lives in CustomBlock's own controls row
-// (not here) so it sits beside duplicate/delete instead of overlapping them.
+// drag. "Remove image" is centered over the image itself (not grouped with
+// duplicate/delete in CustomBlock's controls row) - it clears the image but
+// keeps the block, a different kind of action than those two, and center
+// placement makes that distinction visible instead of implying a third
+// "manage this block" button.
 const CustomImageBlock = ({
   cardId,
   field = 'blocks',
@@ -29,6 +32,7 @@ const CustomImageBlock = ({
     openFilePicker,
     onFileChange,
     onDrop,
+    clearImage,
     dismissError,
   } = useCustomImageBlockHooks({ cardId, blockId, field });
 
@@ -42,15 +46,18 @@ const CustomImageBlock = ({
         onChange={onFileChange}
       />
       {hasImage ? (
-        <img
-          className='custom-image-block-image'
-          src={image}
-          alt={alt}
-          title={alt}
-          draggable='false'
-          onDragStart={(e) => e.preventDefault()}
-          onDoubleClick={openFilePicker}
-        />
+        <>
+          <img
+            className='custom-image-block-image'
+            src={image}
+            alt={alt}
+            title={alt}
+            draggable='false'
+            onDragStart={(e) => e.preventDefault()}
+            onDoubleClick={openFilePicker}
+          />
+          <button type='button' className='custom-image-block-clear' onClick={clearImage} aria-label='Remove image'>×</button>
+        </>
       ) : (
         <button type='button' className='custom-image-block-placeholder' onClick={openFilePicker}>
           <img src={AddImageIcon} alt='' draggable='false' />
