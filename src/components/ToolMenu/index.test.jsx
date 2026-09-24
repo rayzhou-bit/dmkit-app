@@ -220,3 +220,134 @@ describe('ToolMenu delete button', () => {
     expect(store.dispatched.some(a => a.type === 'session/setPopup')).toBe(false);
   });
 });
+
+describe('ToolMenu select all button', () => {
+  const withCards = () => makeState({
+    project: {
+      present: {
+        activeViewId: 'tab1',
+        viewOrder: ['tab1'],
+        views: { tab1: { pos: { x: 0, y: 0 } } },
+        cards: {
+          c1: { views: { tab1: { pos: { x: 0, y: 0 }, size: { width: 240, height: 240 } } } },
+          c2: { views: { tab1: { pos: { x: 300, y: 0 }, size: { width: 240, height: 240 } } } },
+        },
+      },
+    },
+  });
+
+  it('is disabled when there is no active tab', () => {
+    const store = makeStore(makeState());
+    const { getByText } = render(<Harness store={store} />);
+    expect(getByText('select all').closest('button')).toBeDisabled();
+  });
+
+  it('is disabled when the active tab has no cards', () => {
+    const store = makeStore(makeState({
+      project: { present: { activeViewId: 'tab1', viewOrder: ['tab1'], views: { tab1: { pos: { x: 0, y: 0 } } }, cards: {} } },
+    }));
+    const { getByText } = render(<Harness store={store} />);
+    expect(getByText('select all').closest('button')).toBeDisabled();
+  });
+
+  it('is enabled with cards in the tab, even with nothing currently selected', () => {
+    const store = makeStore(withCards());
+    const { getByText } = render(<Harness store={store} />);
+    expect(getByText('select all').closest('button')).not.toBeDisabled();
+  });
+
+  it('stays enabled when a selection already exists - it never gates on current selection', () => {
+    const state = withCards();
+    state.session.selectedCards = ['c1'];
+    const store = makeStore(state);
+    const { getByText } = render(<Harness store={store} />);
+    expect(getByText('select all').closest('button')).not.toBeDisabled();
+  });
+
+  it('dispatches setSelectedCards with every card id in the active tab', () => {
+    const store = makeStore(withCards());
+    const { getByText } = render(<Harness store={store} />);
+    fireEvent.click(getByText('select all').closest('button'));
+
+    expect(store.dispatched).toContainEqual({
+      type: 'session/setSelectedCards',
+      payload: { cards: ['c1', 'c2'] },
+    });
+  });
+});
+
+describe('ToolMenu group button', () => {
+  // Grid-aligned fixture values (multiples of GRID_SIZE=12 and
+  // DEFAULT_CARD_OFFSET=36) so the expected output needs no rounding.
+  const withCards = () => makeState({
+    project: {
+      present: {
+        activeViewId: 'tab1',
+        viewOrder: ['tab1'],
+        views: { tab1: { pos: { x: 0, y: 0 } } },
+        cards: {
+          c1: { views: { tab1: { pos: { x: 120, y: 240 }, size: { width: 240, height: 120 } } } },
+          c2: { views: { tab1: { pos: { x: 600, y: 0 }, size: { width: 240, height: 120 } } } },
+        },
+      },
+    },
+  });
+
+  it('is disabled when there is no active tab', () => {
+    const store = makeStore(makeState());
+    const { getByText } = render(<Harness store={store} />);
+    expect(getByText('group').closest('button')).toBeDisabled();
+  });
+
+  it('is disabled with nothing selected', () => {
+    const store = makeStore(withCards());
+    const { getByText } = render(<Harness store={store} />);
+    expect(getByText('group').closest('button')).toBeDisabled();
+  });
+
+  it('is disabled with only 1 card selected - unlike copy/delete, it never falls back to the active card', () => {
+    const state = withCards();
+    state.session.selectedCards = ['c1'];
+    const store = makeStore(state);
+    const { getByText } = render(<Harness store={store} />);
+    expect(getByText('group').closest('button')).toBeDisabled();
+  });
+
+  it('is enabled with 2+ selected cards', () => {
+    const state = withCards();
+    state.session.selectedCards = ['c1', 'c2'];
+    const store = makeStore(state);
+    const { getByText } = render(<Harness store={store} />);
+    expect(getByText('group').closest('button')).not.toBeDisabled();
+  });
+
+  it('dispatches setCardPositions covering both selected cards, anchored at the original selection\'s top-left', () => {
+    const state = withCards();
+    state.session.selectedCards = ['c1', 'c2'];
+    const store = makeStore(state);
+    const { getByText } = render(<Harness store={store} />);
+    fireEvent.click(getByText('group').closest('button'));
+
+    const action = store.dispatched.find(a => a.type === 'project/setCardPositions');
+    expect(action).toBeDefined();
+    expect(action.payload.positions).toHaveLength(2);
+    expect(action.payload.positions.map(p => p.id).sort()).toEqual(['c1', 'c2']);
+    // Original bounding box: min(120,600)=120, min(240,0)=0 - the exact
+    // per-card grid math is covered by gridUtils.test.js.
+    const xs = action.payload.positions.map(p => p.pos.x);
+    const ys = action.payload.positions.map(p => p.pos.y);
+    expect(Math.min(...xs)).toBe(120);
+    expect(Math.min(...ys)).toBe(0);
+  });
+
+  it('drops a selected card with no view on the active tab, and no-ops entirely if that leaves fewer than 2', () => {
+    const state = withCards();
+    state.project.present.cards.c3 = { views: {} }; // no tab1 view
+    state.session.selectedCards = ['c1', 'c3'];
+    const store = makeStore(state);
+    const { getByText } = render(<Harness store={store} />);
+    fireEvent.click(getByText('group').closest('button'));
+
+    expect(store.dispatched.some(a => a.type === 'project/setCardPositions')).toBe(false);
+  });
+});

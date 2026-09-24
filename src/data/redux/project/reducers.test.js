@@ -387,6 +387,56 @@ describe('moveCards', () => {
   });
 });
 
+describe('setCardPositions', () => {
+  const state = {
+    ...baseState,
+    cards: {
+      c1: { views: { tabA: { pos: { x: 0, y: 0 }, size: {} } } },
+      c2: { views: { tabA: { pos: { x: 100, y: 100 }, size: {} } } },
+      c3: { views: {} }, // not on the active tab - must be skipped
+    },
+  };
+
+  it('applies a distinct target position per id, grid-snapped', () => {
+    const next = reducer(state, {
+      type: 'project/setCardPositions',
+      payload: { positions: [
+        { id: 'c1', pos: { x: 10, y: 5 } },
+        { id: 'c2', pos: { x: 200, y: 300 } },
+      ] },
+    });
+    // (10, 5) snapped to GRID_SIZE(12) -> (12, 0)
+    expect(next.cards.c1.views.tabA.pos).toEqual({ x: 12, y: 0 });
+    // (200, 300) snapped -> (204, 300)
+    expect(next.cards.c2.views.tabA.pos).toEqual({ x: 204, y: 300 });
+  });
+
+  it('leaves cards not named in positions untouched', () => {
+    const next = reducer(state, {
+      type: 'project/setCardPositions',
+      payload: { positions: [{ id: 'c1', pos: { x: 12, y: 12 } }] },
+    });
+    expect(next.cards.c2).toBe(state.cards.c2);
+  });
+
+  it('skips an id with no view on the active tab', () => {
+    const next = reducer(state, {
+      type: 'project/setCardPositions',
+      payload: { positions: [{ id: 'c3', pos: { x: 10, y: 10 } }] },
+    });
+    expect(next.cards.c3).toEqual(state.cards.c3);
+  });
+
+  it('is a no-op when there is no active tab', () => {
+    const noTabState = { ...state, activeViewId: null };
+    const next = reducer(noTabState, {
+      type: 'project/setCardPositions',
+      payload: { positions: [{ id: 'c1', pos: { x: 10, y: 10 } }] },
+    });
+    expect(next).toBe(noTabState);
+  });
+});
+
 describe('destroyTab', () => {
   it('cascades: removes the tab from every card that referenced it', () => {
     const state = {

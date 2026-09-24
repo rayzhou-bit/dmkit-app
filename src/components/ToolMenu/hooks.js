@@ -7,6 +7,7 @@ import { POPUP_KEYS } from '../Popup/PopupKey';
 
 import { DEFAULT_CARD_OFFSET } from '../../constants/dimensions';
 import { CARD_TYPES, hasCardContent } from '../../constants/cards';
+import { getGroupedPositions } from '../../utils/gridUtils';
 
 const OFFSET_TIMEOUT = 3000;
 
@@ -40,6 +41,54 @@ export const useDeleteCardsHooks = () => {
   };
 };
 
+// Requires a real 2+ card multi-selection - unlike copy/delete, grouping a
+// single card is meaningless, so this deliberately does NOT fall back to
+// the single active card.
+export const useGroupCardsHooks = () => {
+  const dispatch = useDispatch();
+  const activeTab = useSelector(selectors.project.activeTab);
+  const selectedCards = useSelector(selectors.session.selectedCards);
+  const selectedCardsData = useSelector(selectors.project.selectedCardsData);
+
+  const disableGroupCards = !activeTab || !selectedCardsData || selectedCardsData.length < 2;
+
+  return {
+    disableGroupCards,
+    onClickGroupCards: () => {
+      if (disableGroupCards) return;
+      // selectedCardsData is built by zipping selectedCards (ids) against
+      // state.project.cards in the same order - card objects have no own
+      // `id` field, so pairing back up by index is required (same as
+      // useDeleteCardsHooks's ids/cards pairing).
+      const cards = selectedCards
+        .map((id, i) => ({ id, view: selectedCardsData[i]?.views?.[activeTab] }))
+        .filter(c => c.view)
+        .map(c => ({ id: c.id, pos: c.view.pos, size: c.view.size }));
+      if (cards.length < 2) return;
+      dispatch(actions.project.setCardPositions({ positions: getGroupedPositions(cards) }));
+    },
+  };
+};
+
+// Enabled whenever the active tab has any cards at all - unlike copy/
+// delete/group, this never depends on the CURRENT selection.
+export const useSelectAllHooks = () => {
+  const dispatch = useDispatch();
+  const activeTab = useSelector(selectors.project.activeTab);
+  const activeTabCardsDimensions = useSelector(selectors.project.activeTabCardsDimensions);
+  const cardIds = Object.keys(activeTabCardsDimensions);
+
+  const disableSelectAll = !activeTab || cardIds.length === 0;
+
+  return {
+    disableSelectAll,
+    onClickSelectAll: () => {
+      if (disableSelectAll) return;
+      dispatch(actions.session.setSelectedCards({ cards: cardIds }));
+    },
+  };
+};
+
 export const useToolMenuHooks = () => {
   const dispatch = useDispatch();
   const activeTab = useSelector(selectors.project.activeTab);
@@ -48,6 +97,8 @@ export const useToolMenuHooks = () => {
   const activeTabPosition = useSelector(selectors.project.activeTabPosition);
 
   const { disableDeleteCards, onClickDeleteCards } = useDeleteCardsHooks();
+  const { disableGroupCards, onClickGroupCards } = useGroupCardsHooks();
+  const { disableSelectAll, onClickSelectAll } = useSelectAllHooks();
 
   const [ offset, setOffset ] = useState(0);
   const offsetTimerRef = useRef(null);
@@ -119,6 +170,10 @@ export const useToolMenuHooks = () => {
         }));
       }
     },
+    disableSelectAll,
+    onClickSelectAll,
+    disableGroupCards,
+    onClickGroupCards,
     disableDeleteCards,
     onClickDeleteCards,
   };

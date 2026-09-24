@@ -323,6 +323,31 @@ const project = createSlice({
       }
       return { ...state, cards: newCards };
     },
+    // Distinct target positions per card (unlike moveCards' uniform delta) -
+    // the "group" toolbar button's write path. positions:
+    // Array<{ id, pos: {x, y} }>; ids missing a view on the active tab, or
+    // not present at all, are silently skipped, same as moveCards.
+    setCardPositions: (state, { payload }) => {
+      const { positions } = payload;
+      if (!state.activeViewId) return state;
+      let newCards = { ...state.cards };
+      for (const { id, pos } of positions) {
+        const view = newCards[id]?.views?.[state.activeViewId];
+        if (!view) continue;
+        const newPos = {
+          x: Math.round(pos.x / GRID_SIZE) * GRID_SIZE,
+          y: Math.round(pos.y / GRID_SIZE) * GRID_SIZE,
+        };
+        newCards[id] = {
+          ...newCards[id],
+          views: {
+            ...newCards[id].views,
+            [state.activeViewId]: { ...view, pos: newPos },
+          },
+        };
+      }
+      return { ...state, cards: newCards };
+    },
     updateCardSize: (state, { payload }) => applyCardSize(state, payload),
     updateCardTitle: (state, { payload }) => {
       const { id, title } = payload;

@@ -22,6 +22,10 @@ export const DEFAULT_CARD_POSITION = {
   y: 7 * GRID_SIZE,
 };
 export const DEFAULT_CARD_OFFSET = 3 * GRID_SIZE;
+// Gap between cells in the "group" toolbar button's grid layout - its own
+// constant (not DEFAULT_CARD_OFFSET) so it can be tuned independently of
+// the new-card-placement offset above.
+export const GROUP_LAYOUT_GAP = 2 * GRID_SIZE;
 export const DEFAULT_CARD_SIZE = {
   width: 20 * GRID_SIZE,
   height: 20 * GRID_SIZE,
