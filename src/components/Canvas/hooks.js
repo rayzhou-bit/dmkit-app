@@ -408,6 +408,7 @@ export const useMultiSelectHooks = ({
   canvasRef,
   selectRef,
   panModifierRef,
+  canvasState,
 }) => {
   const dispatch = useDispatch();
   const activeTabPosition = useSelector(selectors.project.activeTabPosition);
@@ -460,7 +461,19 @@ export const useMultiSelectHooks = ({
     });
   };
 
-  // set up mousedown and mouseup events
+  // set up mousedown and mouseup events. canvasState is the real trigger
+  // here, not just canvasRef.current/activeTabPosition/activeTabScale - the
+  // .canvas element only exists in the DOM once canvasState reaches
+  // CANVAS_STATES.loaded (see Canvas/index.jsx's switch), and a ref's
+  // .current mutating on its own is not something React re-renders for, so
+  // an effect that depends only on canvasRef.current can miss the exact
+  // render where it first goes from null to the real element - which is
+  // exactly what happened on first launch (the effect fired earlier, while
+  // canvasRef.current was still null and canvasState hadn't reached
+  // loaded yet, and had no reason to fire again once it did, since neither
+  // activeTabPosition nor activeTabScale necessarily change on that same
+  // render). canvasState changing to 'loaded' is the actual reactive
+  // signal that the element now exists.
   useEffect(() => {
     const canvasElement = canvasRef.current;
     if (canvasElement) {
@@ -472,7 +485,7 @@ export const useMultiSelectHooks = ({
         document.removeEventListener('mouseup', canvasMouseUpHandler);
       };
     }
-  }, [canvasRef.current, activeTabPosition, activeTabScale]);
+  }, [canvasRef.current, activeTabPosition, activeTabScale, canvasState]);
 
   // update selection area style when selection area state changes
   useEffect(() => {
