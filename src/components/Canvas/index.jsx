@@ -74,6 +74,7 @@ const Canvas = ({ toolMenuRef }) => {
     canvasRef,
     selectRef,
     panModifierRef,
+    canvasState,
   });
 
   useCardShortcutHooks({ groupDrag });

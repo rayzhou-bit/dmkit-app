@@ -83,7 +83,7 @@ export const activeTabCardsDimensions = createSelector(
     let cardsInTab = [];
     for (let cardId in cards) {
       const card = cards[cardId];
-      if (card.views[activeTab]) {
+      if (card.views?.[activeTab]) {
         cardsInTab = {
           ...cardsInTab,
           [cardId]: card.views[activeTab],

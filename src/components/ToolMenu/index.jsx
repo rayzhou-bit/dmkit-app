@@ -8,6 +8,8 @@ import CopyCardDisabledIcon from '../../assets/icons/copy-card-disabled.svg';
 import MonsterIcon from '../../assets/icons/monster-icon.svg';
 import NoteIcon from '../../assets/icons/note-icon.svg';
 import CustomIcon from '../../assets/icons/custom-icon.svg';
+import SelectAllIcon from '../../assets/icons/select-all-icon.svg';
+import GroupIcon from '../../assets/icons/group-icon.svg';
 import DeleteCardIcon from '../../assets/icons/trash-red.svg';
 
 const ToolMenu = ({
@@ -21,6 +23,10 @@ const ToolMenu = ({
     onClickNewNoteCard,
     disableNewCustomCard,
     onClickNewCustomCard,
+    disableSelectAll,
+    onClickSelectAll,
+    disableGroupCards,
+    onClickGroupCards,
     disableCopyCards,
     onClickCopyCards,
     disableDeleteCards,
@@ -87,7 +93,42 @@ const ToolMenu = ({
         <span>freeform</span>
       </button>
 
-      {/* copy card - pushed to the bottom of the toolbar, see .tool-btn-copy */}
+      {/* select all cards in the active tab - not gated on the current
+          selection, unlike group/copy/delete below. Pushed to the
+          bottom of the toolbar, see .tool-btn-select-all */}
+      <button
+        className='tool-btn tool-btn-select-all'
+        disabled={disableSelectAll}
+        onClick={onClickSelectAll}
+      >
+        <div className='btn-highlight'>
+          <img
+            alt='Select all'
+            draggable='false'
+            src={SelectAllIcon}
+          />
+        </div>
+        <span>select all</span>
+      </button>
+
+      {/* lay the 2+ selected cards out in an even, non-overlapping grid
+          anchored at the original selection's top-left */}
+      <button
+        className='tool-btn tool-btn-group'
+        disabled={disableGroupCards}
+        onClick={onClickGroupCards}
+      >
+        <div className='btn-highlight'>
+          <img
+            alt='Group'
+            draggable='false'
+            src={GroupIcon}
+          />
+        </div>
+        <span>group</span>
+      </button>
+
+      {/* copy card */}
       <button
         className='tool-btn tool-btn-copy'
         disabled={disableCopyCards}

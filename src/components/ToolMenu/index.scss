@@ -18,10 +18,11 @@ $border-radius: 5px;
   flex-flow: column nowrap;
   gap: 15px;
 
-  // Copy/delete are a separate "act on selection" group from the create
-  // buttons above - push them down to the bottom of the toolbar instead of
-  // stacking directly under "stat".
-  .tool-btn-copy {
+  // Select-all/group/copy/delete are a separate "act on selection" group
+  // from the create buttons above - push them down to the bottom of the
+  // toolbar instead of stacking directly under "stat". Only the first one
+  // needs the auto margin.
+  .tool-btn-select-all {
     margin-top: auto;
   }
 
@@ -71,6 +72,8 @@ $border-radius: 5px;
   .tool-btn-monster:disabled,
   .tool-btn-note:disabled,
   .tool-btn-custom:disabled,
+  .tool-btn-select-all:disabled,
+  .tool-btn-group:disabled,
   .tool-btn-delete:disabled {
     img { opacity: 0.35; }
     span { color: #A0A4B4; }
