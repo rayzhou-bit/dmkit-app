@@ -775,6 +775,19 @@ $scrollbar-width: 17px;
 
   &:hover { background-color: #F4F4F4; }
 }
+// Note card's own add-detail button (canvas only) - hidden until the card
+// is hovered or selected. Monster's own entry-add buttons (Traits/Actions/
+// etc, the unscoped rule above) are unaffected and stay always-visible -
+// only note's usage of this shared class gets this treatment. The
+// Library's note view is untouched too - it only renders this button once
+// the card is already expanded/selected, so it's already gated by that.
+.note-content .monster-entry-add {
+  display: none;
+}
+.card:hover .note-content .monster-entry-add,
+.active-card .note-content .monster-entry-add {
+  display: block;
+}
 
 .monster-lines {
   display: flex;
@@ -1219,10 +1232,19 @@ $scrollbar-width: 17px;
   }
 }
 
+// Hidden until the card is hovered or selected (canvas only) - the
+// Library's expanded custom/notes view is unaffected, since it only
+// renders this row once the card is already expanded/selected, so it's
+// already gated by that.
 .custom-block-add-row {
-  display: flex;
+  display: none;
   flex-flow: row nowrap;
   gap: 8px;
+}
+.card:hover .custom-block-add-row,
+.active-card .custom-block-add-row,
+.library-custom-expanded .custom-block-add-row {
+  display: flex;
 }
 .custom-block-add {
   flex: 1 1 0;
