@@ -37,6 +37,24 @@ export const zoomAtPoint = ({ position, scale, nextScale, anchor }) => {
 
 export const getWheelScale = (scale, dy) => clampScale(roundScale(scale * Math.exp(-dy * WHEEL_ZOOM_SENSITIVITY)));
 
+// Persisted card size is a plain number until a real react-rnd drag turns it
+// into a "Npx" string (see Canvas/hooks.js's sizeToNumber) - coerce here too
+// so this stays correct called either directly or already-coerced.
+const sizeToNumber = (value) => typeof value === 'string' ? parseFloat(value) : value;
+
+// Pan position that puts a card's center at the viewport's center, at the
+// current scale. An unmeasured (0x0) viewport isn't special-cased - it just
+// falls out as "card center at the origin", and clampPosition is itself a
+// no-op at that size, so the result is harmless rather than correct.
+export const getCenteredPosition = ({ cardPos, cardSize, viewportWidth, viewportHeight, scale }) => {
+  const cx = cardPos.x + sizeToNumber(cardSize.width) / 2;
+  const cy = cardPos.y + sizeToNumber(cardSize.height) / 2;
+  return {
+    x: viewportWidth / 2 - cx * scale,
+    y: viewportHeight / 2 - cy * scale,
+  };
+};
+
 export const applyTransform = (node, { position, scale, animate }) => {
   if (!node) return;
   node.style.transition = animate ? `transform ${CANVAS_TRANSITION_MS}ms ease` : 'none';

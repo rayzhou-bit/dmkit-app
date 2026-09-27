@@ -40,6 +40,7 @@ export const useCardHooks = ({
 
   const activeCard = useSelector(state => state.session.activeCardId);
   const selectedCards = useSelector(state => state.session.selectedCards);
+  const cardFocus = useSelector(state => state.session.cardFocus);
   const activeTab = useSelector(state => state.project.present.activeViewId);
   const activeTabScale = useSelector(state => activeTab ? state.project.present.views[activeTab]?.scale : null);
   const {
@@ -95,6 +96,8 @@ export const useCardHooks = ({
     zIndex = 20000 * (cardPosition.y + cardPosition.x + 10);
   }
 
+  const isFocusTarget = cardFocus?.cardId === cardId;
+
   return {
     cardRef,
     isActive,
@@ -104,7 +107,7 @@ export const useCardHooks = ({
     minSize,
     position: groupPosition ?? cardPosition,
     rndStyle: { zIndex },
-    animationStyle: { animation: cardAnimation ? cardAnimation[cardId] : null },
+    animationStyle: { animation: isFocusTarget ? ANIMATION.cardBlink : (cardAnimation ? cardAnimation[cardId] : null) },
     isEditing,
     setIsEditing,
     onDragStart: () => {
@@ -174,10 +177,13 @@ export const useCardHooks = ({
         setIsSelected(true);
       }
     },
-    onAnimationEnd: () => setCardAnimation({
-      ...cardAnimation,
-      [cardId]: null,
-    }),
+    onAnimationEnd: () => {
+      setCardAnimation({
+        ...cardAnimation,
+        [cardId]: null,
+      });
+      if (isFocusTarget) dispatch(actions.session.clearCardFocus());
+    },
   };
 };
 
@@ -189,6 +195,7 @@ export const useLibraryCardHooks = ({
   const activeCard = useSelector(state => state.session.activeCardId);
   const activeTab = useSelector(state => state.project.present.activeViewId);
   const cardTabs = useSelector(state => state.project.present.cards[cardId].views);
+  const cardFocus = useSelector(state => state.session.cardFocus);
 
   const [isSelected, setIsSelected] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -196,6 +203,7 @@ export const useLibraryCardHooks = ({
   const [useAnimation, setUseAnimation] = useState(false);
   const libraryCardRef = useRef();
   const isActive = cardId === activeCard;
+  const isFocusTarget = cardFocus?.cardId === cardId;
 
   useOutsideClick([libraryCardRef], isSelected,
     () => {
@@ -213,12 +221,18 @@ export const useLibraryCardHooks = ({
     }
   );
 
+  // Card-reference navigation to a card that's off the current tab lands
+  // here (see useLibraryHooks) - scroll it into view alongside the blink.
+  useEffect(() => {
+    if (isFocusTarget) libraryCardRef.current?.scrollIntoView({ block: 'nearest' });
+  }, [cardFocus?.nonce]);
+
   return {
     libraryCardRef,
     isActive,
     isSelected,
     isEditing,
-    cardAnimation: { animation: cardAnimation[cardId] },
+    cardAnimation: { animation: isFocusTarget ? ANIMATION.libraryCardBlink : cardAnimation[cardId] },
     setIsEditing,
     onDragStart: (event) => {
       event.dataTransfer.setData('text', cardId);
@@ -235,10 +249,13 @@ export const useLibraryCardHooks = ({
         setUseAnimation(false);
       }
     },
-    onAnimationEnd: () => setCardAnimation({
-      ...cardAnimation,
-      [cardId]: null,
-    }),
+    onAnimationEnd: () => {
+      setCardAnimation({
+        ...cardAnimation,
+        [cardId]: null,
+      });
+      if (isFocusTarget) dispatch(actions.session.clearCardFocus());
+    },
     onClick: () => {
       if (!isSelected) {
         if (cardId !== activeCard) dispatch(actions.session.setActiveCard({ id: cardId }));

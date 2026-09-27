@@ -128,3 +128,47 @@ describe('initialize', () => {
     expect(next.monsterCollapse).toEqual({});
   });
 });
+
+describe('setLibraryOpen', () => {
+  it('opens the library', () => {
+    const next = reducer(initialState, { type: 'session/setLibraryOpen', payload: { isOpen: true } });
+    expect(next.isLibraryOpen).toBe(true);
+  });
+
+  it('closes the library', () => {
+    const state = { ...initialState, isLibraryOpen: true };
+    const next = reducer(state, { type: 'session/setLibraryOpen', payload: { isOpen: false } });
+    expect(next.isLibraryOpen).toBe(false);
+  });
+});
+
+describe('focusCard', () => {
+  it('starts null', () => {
+    expect(initialState.cardFocus).toBe(null);
+  });
+
+  it('sets cardId and starts the nonce at 1', () => {
+    const next = reducer(initialState, { type: 'session/focusCard', payload: { cardId: 'c1' } });
+    expect(next.cardFocus).toEqual({ cardId: 'c1', nonce: 1 });
+  });
+
+  it('increments the nonce on a repeated focus of the same card', () => {
+    let state = reducer(initialState, { type: 'session/focusCard', payload: { cardId: 'c1' } });
+    state = reducer(state, { type: 'session/focusCard', payload: { cardId: 'c1' } });
+    expect(state.cardFocus).toEqual({ cardId: 'c1', nonce: 2 });
+  });
+
+  it('keeps incrementing the nonce when the target switches to a different card', () => {
+    let state = reducer(initialState, { type: 'session/focusCard', payload: { cardId: 'c1' } });
+    state = reducer(state, { type: 'session/focusCard', payload: { cardId: 'c2' } });
+    expect(state.cardFocus).toEqual({ cardId: 'c2', nonce: 2 });
+  });
+});
+
+describe('clearCardFocus', () => {
+  it('resets cardFocus back to null', () => {
+    const state = { ...initialState, cardFocus: { cardId: 'c1', nonce: 1 } };
+    const next = reducer(state, { type: 'session/clearCardFocus' });
+    expect(next.cardFocus).toBe(null);
+  });
+});

@@ -16,6 +16,12 @@ const initialState = {
   activeCardId: null,
   selectedCards: [],
 
+  isLibraryOpen: false,
+  // { cardId, nonce } when a card-reference navigation targets a card, else
+  // null. nonce lets the same target be re-focused (e.g. clicking the same
+  // link twice) since the payload would otherwise be identical.
+  cardFocus: null,
+
   isProjectEdited: false, // flag for unsaved changes
 
   // Sparse per-card overrides for monster-card section/column collapse -
@@ -87,6 +93,14 @@ const session = createSlice({
     setSelectedCards: (state, { payload }) => ({ ...state, selectedCards: payload.cards }),
 
     setIsProjectEdited: (state, { payload }) => ({ ...state, isProjectEdited: payload }),
+
+    setLibraryOpen: (state, { payload }) => ({ ...state, isLibraryOpen: payload.isOpen }),
+
+    focusCard: (state, { payload }) => ({
+      ...state,
+      cardFocus: { cardId: payload.cardId, nonce: (state.cardFocus?.nonce ?? 0) + 1 },
+    }),
+    clearCardFocus: (state) => ({ ...state, cardFocus: null }),
 
     setMonsterCollapsed: (state, { payload }) => {
       const { id, key, collapsed, scope = MONSTER_COLLAPSE_SCOPES.canvas } = payload;

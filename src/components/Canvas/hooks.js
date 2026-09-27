@@ -24,6 +24,7 @@ import {
   applyTransform,
   clampPosition,
   getViewportPoint,
+  getCenteredPosition,
 } from '../../utils/canvasTransform';
 import { isTextEntryTarget, isSpaceActivatedTarget } from '../../utils/focusUtils';
 import { useGroupDragStore } from './groupDrag';
@@ -76,7 +77,9 @@ export const useCanvasHooks = ({ containerRef, canvasRef }) => {
   const activeTab = useSelector(state => state.project.present.activeViewId || '');
   const activeTabPosition = useSelector(selectors.project.activeTabPosition);
   const activeTabScale = useSelector(selectors.project.activeTabScale);
+  const activeTabCardsDimensions = useSelector(selectors.project.activeTabCardsDimensions);
   const popupType = useSelector(state => state.session.popup?.type);
+  const cardFocus = useSelector(selectors.session.cardFocus);
 
   const [ canvasState, setCanvasState ] = useState(CANVAS_STATES.empty);
   const [ isPanning, setIsPanning ] = useState(false);
@@ -197,6 +200,27 @@ export const useCanvasHooks = ({ containerRef, canvasRef }) => {
     commitTransform();
   };
 
+  const centerOnCard = (cardId) => {
+    const cardDimensions = activeTabCardsDimensions[cardId];
+    if (!cardDimensions) return;
+    // Same null-safe read as zoomByStep - a focus can land while the canvas
+    // is still between CANVAS_STATES (the .canvas node, and so this ref,
+    // only exists once it's loaded).
+    const node = containerRef.current;
+    const rect = node ? node.getBoundingClientRect() : { width: 0, height: 0 };
+    const scale = liveTransformRef.current.scale;
+    const position = getCenteredPosition({
+      cardPos: cardDimensions.pos,
+      cardSize: cardDimensions.size,
+      viewportWidth: rect.width,
+      viewportHeight: rect.height,
+      scale,
+    });
+    liveTransformRef.current = { position: clampToViewport(position, scale), scale, animate: true };
+    flushApply();
+    commitTransform();
+  };
+
   // Layout writer — re-applies the live transform after every render, so an
   // unrelated re-render never reverts the canvas to a stale value.
   useLayoutEffect(() => {
@@ -230,6 +254,16 @@ export const useCanvasHooks = ({ containerRef, canvasRef }) => {
     syncFromRedux();
     scheduleApply();
   }, [activeTab]);
+
+  // Card-reference navigation - only acts when the target is on this tab;
+  // otherwise the Library branch (useLibraryHooks) handles it. Doesn't clear
+  // cardFocus - whichever card actually renders the blink owns that (see
+  // useCardHooks/useLibraryCardHooks's onAnimationEnd).
+  useEffect(() => {
+    if (!cardFocus) return;
+    if (!activeTabCardsDimensions[cardFocus.cardId]) return;
+    centerOnCard(cardFocus.cardId);
+  }, [cardFocus?.nonce]);
 
   // Native wheel listener.
   useEffect(() => {
