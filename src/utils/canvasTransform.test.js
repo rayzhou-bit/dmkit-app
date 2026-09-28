@@ -8,6 +8,7 @@ import {
   applyTransform,
   formatZoomPercent,
   clampPosition,
+  getCenteredPosition,
 } from './canvasTransform';
 import {
   MIN_CANVAS_SCALE,
@@ -264,6 +265,33 @@ describe('formatZoomPercent', () => {
 
   it('formats 0.5 as 50%', () => {
     expect(formatZoomPercent(0.5)).toBe('50%');
+  });
+});
+
+describe('getCenteredPosition', () => {
+  const base = { viewportWidth: 800, viewportHeight: 600, scale: 1 };
+
+  it('centers a card at scale 1: viewport/2 minus the card center', () => {
+    const result = getCenteredPosition({ ...base, cardPos: { x: 100, y: 50 }, cardSize: { width: 200, height: 100 } });
+    // card center = (200, 100)
+    expect(result).toEqual({ x: 400 - 200, y: 300 - 100 });
+  });
+
+  it('scales the card center before subtracting it from the viewport center', () => {
+    const result = getCenteredPosition({ ...base, scale: 2, cardPos: { x: 100, y: 50 }, cardSize: { width: 200, height: 100 } });
+    // card center = (200, 100), scaled = (400, 200)
+    expect(result).toEqual({ x: 400 - 400, y: 300 - 200 });
+  });
+
+  it('accepts a "288px"-style string size (post-drag persisted size), same as a plain number', () => {
+    const withString = getCenteredPosition({ ...base, cardPos: { x: 0, y: 0 }, cardSize: { width: '288px', height: '240px' } });
+    const withNumber = getCenteredPosition({ ...base, cardPos: { x: 0, y: 0 }, cardSize: { width: 288, height: 240 } });
+    expect(withString).toEqual(withNumber);
+  });
+
+  it('degrades to a finite, deterministic value against a not-yet-measured (0x0) viewport', () => {
+    const result = getCenteredPosition({ viewportWidth: 0, viewportHeight: 0, scale: 1, cardPos: { x: 100, y: 50 }, cardSize: { width: 200, height: 100 } });
+    expect(result).toEqual({ x: -200, y: -100 });
   });
 });
 

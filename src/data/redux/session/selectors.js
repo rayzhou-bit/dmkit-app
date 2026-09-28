@@ -13,6 +13,8 @@ export const simpleSelectors = {
   selectedCards: mkSimpleSelector(session => session.selectedCards),
   isCampaignEdited: mkSimpleSelector(session => session.isProjectEdited),
   monsterCollapse: mkSimpleSelector(session => session.monsterCollapse),
+  isLibraryOpen: mkSimpleSelector(session => session.isLibraryOpen),
+  cardFocus: mkSimpleSelector(session => session.cardFocus),
 };
 
 export default {

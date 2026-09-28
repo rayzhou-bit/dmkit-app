@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { actions, selectors } from '../../data/redux';
 import { CARD_COLOR_KEYS } from '../../constants/colors';
 
 export const FILTER_OPTIONS = {
@@ -99,13 +100,15 @@ const sortCards = (cards, sort, cardData) => {
 };
 
 export const useLibraryHooks = () => {
+  const dispatch = useDispatch();
   const activeTab = useSelector(state => state.project.present.activeViewId);
   const tabOrder = useSelector(state => state.project.present.viewOrder);
   const cardCollection = useSelector(state => state.project.present.cards);
   const activeProject = useSelector(state => state.session.activeCampaignId || '');
+  const isOpen = useSelector(selectors.session.isLibraryOpen);
+  const cardFocus = useSelector(selectors.session.cardFocus);
 
   const [ showButton, setShowButton ] = useState(!!activeProject);
-  const [ isOpen, setIsOpen ] = useState(false);
   const [ searchString, setSearchString ] = useState('');
   const [ isColorFiltered, setIsColorFiltered ] = useState(false);
   const [ filterColorOption, setFilterColorOption ] = useState(CARD_COLOR_KEYS.gray);
@@ -116,8 +119,21 @@ export const useLibraryHooks = () => {
   // Reset when project changes
   useEffect(() => {
     setShowButton(!!activeProject);
-    setIsOpen(false);
+    dispatch(actions.session.setLibraryOpen({ isOpen: false }));
   }, [activeProject]);
+
+  // Card-reference navigation to a card not on the current tab (the canvas
+  // branch in Canvas/hooks.js handles the on-tab case instead - we never
+  // auto-switch tabs). Resetting the filters is load-bearing: otherwise the
+  // target card can be filtered out of libraryCards below and never render,
+  // so the blink this is chasing would silently never happen.
+  useEffect(() => {
+    if (!cardFocus) return;
+    if (cardCollection[cardFocus.cardId]?.views?.[activeTab]) return;
+    dispatch(actions.session.setLibraryOpen({ isOpen: true }));
+    setSearchString('');
+    setFilterTabOption(FILTER_OPTIONS.allTab);
+  }, [cardFocus?.nonce]);
 
   let libraryCards = [];
   for (let id in cardCollection) {
@@ -134,7 +150,7 @@ export const useLibraryHooks = () => {
   return {
     showButton,
     isOpen,
-    toggleLibrary: () => setIsOpen(!isOpen),
+    toggleLibrary: () => dispatch(actions.session.setLibraryOpen({ isOpen: !isOpen })),
     countDisplay: (libraryCards?.length ?? 0) + '/' + (cardCollection ? Object.keys(cardCollection).length : 0),
     searchString,
     setSearchString,
