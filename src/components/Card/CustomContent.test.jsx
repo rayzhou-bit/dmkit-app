@@ -333,7 +333,16 @@ describe('CustomContent - card references (# trigger)', () => {
     expect(textarea.value).toBe('#zzz');
   });
 
-  it('ArrowDown/ArrowUp move the highlighted result', () => {
+  // Every arrow press is keydown THEN keyup. The keyup re-syncs the caret,
+  // which used to reset the highlight to the first result - so the
+  // highlight sprang back to the top the moment it was moved. Firing both
+  // halves here is what makes this a real regression test.
+  const pressArrow = (textarea, key) => {
+    fireEvent.keyDown(textarea, { key });
+    fireEvent.keyUp(textarea, { key });
+  };
+
+  it('ArrowDown/ArrowUp move the highlighted result, and it stays put on keyup', () => {
     const { getByText, getByPlaceholderText } = renderRefCustom(makeRefStore());
     const textarea = enterEditAndGetTextarea(getByText, getByPlaceholderText);
 
@@ -341,10 +350,23 @@ describe('CustomContent - card references (# trigger)', () => {
     // Tavern (editedOn 10) sorts first, so it starts highlighted.
     expect(screen.getByText('Tavern').className).toMatch(/highlighted/);
 
-    fireEvent.keyDown(textarea, { key: 'ArrowDown' });
+    pressArrow(textarea, 'ArrowDown');
     expect(screen.getByText('Goblin Camp').className).toMatch(/highlighted/);
 
-    fireEvent.keyDown(textarea, { key: 'ArrowUp' });
+    pressArrow(textarea, 'ArrowUp');
+    expect(screen.getByText('Tavern').className).toMatch(/highlighted/);
+  });
+
+  it('editing the query does restart the highlight, since the results changed', () => {
+    const { getByText, getByPlaceholderText } = renderRefCustom(makeRefStore());
+    const textarea = enterEditAndGetTextarea(getByText, getByPlaceholderText);
+
+    fireEvent.change(textarea, { target: { value: '#', selectionStart: 1, selectionEnd: 1 } });
+    pressArrow(textarea, 'ArrowDown');
+    expect(screen.getByText('Goblin Camp').className).toMatch(/highlighted/);
+
+    // Narrowing to a different result list should highlight its first entry.
+    fireEvent.change(textarea, { target: { value: '#tav', selectionStart: 4, selectionEnd: 4 } });
     expect(screen.getByText('Tavern').className).toMatch(/highlighted/);
   });
 });

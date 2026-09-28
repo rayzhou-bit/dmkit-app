@@ -1181,8 +1181,12 @@ export const useCardRefTrigger = ({ cardId, editRef, value, changeValue, handleK
       setMatch(null);
       return;
     }
+    // Only restart the highlight when the query itself changed, i.e. when
+    // the result list is actually different. Arrow keys fire a keyup as
+    // well as a keydown, and resetting on every caret sync would snap the
+    // highlight back to the first result the instant the user moved it.
+    if (!match || match.query !== next.query) setHighlightedIndex(0);
     setMatch({ ...next, end: caretIndex });
-    setHighlightedIndex(0);
     setRect(editRef.current?.getBoundingClientRect() ?? null);
   };
 
