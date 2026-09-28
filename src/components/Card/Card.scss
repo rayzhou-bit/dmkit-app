@@ -102,6 +102,65 @@ $title-height: 32px;
   }
 }
 
+// A square strip directly under the title bar, above .card-content - no
+// corner rounding of its own to worry about (unlike .card-content, whose
+// bottom rounding across the 5 body types was hand-fixed recently).
+.card-refs {
+  flex: 0 0 auto;
+  display: flex;
+  flex-flow: row wrap;
+  gap: 4px;
+  padding: 6px 9px;
+  box-sizing: border-box;
+  // Opaque, so the strip reads as the top of the card body rather than a
+  // band of the card's own (grey/blue) backing showing through the gap
+  // between the title bar and .card-content.
+  background-color: white;
+}
+
+.card-ref-chip {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  max-width: 100%;
+  padding: 2px 4px 2px 8px;
+  border-radius: 10px;
+  background-color: #F4F4F4;
+
+  &.card-ref-chip-dangling {
+    background-color: transparent;
+    border: 1px solid #D7D6D6;
+  }
+}
+
+.card-ref-chip-label {
+  min-width: 0;
+  background-color: transparent;
+  color: #363B4E;
+  font-family: Roboto;
+  font-size: 12px;
+  cursor: pointer;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  .card-ref-chip-dangling & {
+    color: #A0A4B4;
+    font-style: italic;
+    cursor: default;
+  }
+}
+
+.card-ref-chip-remove {
+  flex-shrink: 0;
+  background-color: transparent;
+  color: #A0A4B4;
+  font-size: 12px;
+  line-height: 1;
+  cursor: pointer;
+  &:hover { color: #363B4E; }
+}
+
 $scrollbar-width: 17px;
 // Hidden file inputs behind MonsterPortrait/ImageContent's upload buttons -
 // top-level, not scoped to .card-content, since the Library wraps its

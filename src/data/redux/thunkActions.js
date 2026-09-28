@@ -53,6 +53,7 @@ export const copySelectedCard = ({
     monster: selectedCard?.content,
     note: selectedCard?.content,
     custom: selectedCard?.content,
+    refs: selectedCard?.refs,
   }));
   dispatch(actions.session.setActiveCard({ id: newId }));
 };
@@ -83,6 +84,7 @@ export const copySelectedCards = ({
       monster: selectedCard?.content,
       note: selectedCard?.content,
       custom: selectedCard?.content,
+      refs: selectedCard?.refs,
     }));
   }
   // Select the copies (same idea as copySelectedCard activating its new
