@@ -29,6 +29,27 @@ describe('CardRefPicker', () => {
     expect(getByText('Tavern')).not.toBeNull();
   });
 
+  // The result list is uncapped, so the highlight can be walked past the
+  // bottom of the scroll box. jsdom has no scrollIntoView at all, hence the
+  // stub - which is also why the component has to call it optionally.
+  it('scrolls the highlighted result into view as the highlight moves', () => {
+    const results = [{ id: 'c1', title: 'Goblin' }, { id: 'c2', title: 'Tavern' }];
+    const calls = [];
+    window.HTMLElement.prototype.scrollIntoView = function () { calls.push(this.textContent); };
+
+    const { rerender } = render(
+      <CardRefPicker rect={RECT} results={results} highlightedIndex={0} onSelect={() => {}} onHighlight={() => {}} />
+    );
+    expect(calls).toEqual(['Goblin']);
+
+    rerender(
+      <CardRefPicker rect={RECT} results={results} highlightedIndex={1} onSelect={() => {}} onHighlight={() => {}} />
+    );
+    expect(calls).toEqual(['Goblin', 'Tavern']);
+
+    delete window.HTMLElement.prototype.scrollIntoView;
+  });
+
   it('marks the highlighted result', () => {
     const results = [{ id: 'c1', title: 'Goblin' }, { id: 'c2', title: 'Tavern' }];
     const { getByText } = render(

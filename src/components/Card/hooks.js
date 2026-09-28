@@ -1141,8 +1141,6 @@ export const usePortraitHooks = ({ cardId }) => {
 
 export const useMonsterPortraitHooks = usePortraitHooks;
 
-const CARD_REF_PICKER_MAX_RESULTS = 8;
-
 // The "#" trigger shared by every multiline field that supports card
 // references (see CardRefPicker.jsx and cardRefQuery.js). Wraps a field's
 // own value/changeValue/handleKeyDown rather than replacing them - a field
@@ -1200,8 +1198,7 @@ export const useCardRefTrigger = ({ cardId, editRef, value, changeValue, handleK
       .filter(([id]) => id !== cardId)
       .map(([id, card]) => ({ id, title: card.title || 'untitled', editedOn: card.editedOn || 0 }))
       .filter(card => !query || card.title.toLowerCase().includes(query))
-      .sort((a, b) => b.editedOn - a.editedOn)
-      .slice(0, CARD_REF_PICKER_MAX_RESULTS);
+      .sort((a, b) => b.editedOn - a.editedOn);
   }, [match, store, cardId]);
 
   const selectResult = (card) => {
