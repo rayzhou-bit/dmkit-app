@@ -3,7 +3,7 @@ vi.mock('../../utils/imageUtils', () => ({
 }));
 
 import React from 'react';
-import { render, fireEvent, act } from '@testing-library/react';
+import { render, fireEvent, act, screen } from '@testing-library/react';
 import { Provider } from 'react-redux';
 
 import { processImageFile } from '../../utils/imageUtils';
@@ -216,5 +216,106 @@ describe('CustomContent - mixed blocks, duplicate/delete', () => {
       { type: 'project/moveCustomBlock', payload: { id: 'c1', blockId: 'b2', direction: 'up' } },
       { type: 'project/moveCustomBlock', payload: { id: 'c1', blockId: 'b1', direction: 'down' } },
     ]);
+  });
+});
+
+// Integration coverage for the "#" trigger (useCardRefTrigger/CardRefPicker)
+// through a real field - CustomTextBlock is the best candidate per the spec
+// since it covers both the custom card and (via field='notes') the monster
+// card's Notes section. Needs a richer store than makeStore above (other
+// cards to search over, with titles/editedOn), so it builds its own.
+describe('CustomContent - card references (# trigger)', () => {
+  const makeRefStore = () => {
+    const dispatched = [];
+    const state = {
+      project: {
+        present: {
+          cards: {
+            c1: { title: 'Current Card', content: buildCustomContent({ blocks: [{ id: 'b1', type: 'text', text: '' }] }) },
+            c2: { title: 'Goblin Camp', content: {}, editedOn: 5 },
+            c3: { title: 'Tavern', content: {}, editedOn: 10 },
+          },
+        },
+      },
+    };
+    return {
+      getState: () => state,
+      dispatched,
+      dispatch: (action) => { dispatched.push(action); return action; },
+      subscribe: () => () => {},
+    };
+  };
+
+  const renderRefCustom = (store) => {
+    const utils = render(<Provider store={store}><CustomContent cardId='c1' /></Provider>);
+    return { ...utils, store };
+  };
+
+  it('typing "#" opens the picker; selecting a result inserts the title and dispatches addCardRef', () => {
+    const { getByPlaceholderText, store } = renderRefCustom(makeRefStore());
+    const textarea = getByPlaceholderText('Type anything...');
+
+    fireEvent.change(textarea, { target: { value: '#gob', selectionStart: 4, selectionEnd: 4 } });
+    expect(screen.getByText('Goblin Camp')).not.toBeNull();
+    expect(screen.queryByText('Current Card')).toBeNull(); // host card excluded
+    expect(screen.queryByText('Tavern')).toBeNull(); // doesn't match the query
+
+    fireEvent.keyDown(textarea, { key: 'Enter' });
+
+    expect(textarea.value).toBe('Goblin Camp');
+    expect(store.dispatched).toContainEqual({ type: 'project/addCardRef', payload: { id: 'c1', refId: 'c2' } });
+    expect(screen.queryByRole('button', { name: 'Goblin Camp' })).toBeNull(); // picker closes on select
+
+    fireEvent.blur(textarea);
+    expect(store.dispatched).toContainEqual({
+      type: 'project/updateCustomTextBlock',
+      payload: { id: 'c1', blockId: 'b1', text: 'Goblin Camp' },
+    });
+  });
+
+  it('an empty query after "#" lists cards, most recently edited first', () => {
+    const { getByPlaceholderText } = renderRefCustom(makeRefStore());
+    const textarea = getByPlaceholderText('Type anything...');
+
+    fireEvent.change(textarea, { target: { value: '#', selectionStart: 1, selectionEnd: 1 } });
+
+    const options = document.querySelectorAll('.card-ref-picker-option');
+    expect(Array.from(options).map(o => o.textContent)).toEqual(['Tavern', 'Goblin Camp']);
+  });
+
+  it('shows an empty state for a query that matches nothing', () => {
+    const { getByPlaceholderText } = renderRefCustom(makeRefStore());
+    const textarea = getByPlaceholderText('Type anything...');
+
+    fireEvent.change(textarea, { target: { value: '#zzz', selectionStart: 4, selectionEnd: 4 } });
+    expect(screen.getByText('No matching cards')).not.toBeNull();
+  });
+
+  it('Escape closes the picker without reverting the typed text', () => {
+    const { getByPlaceholderText } = renderRefCustom(makeRefStore());
+    const textarea = getByPlaceholderText('Type anything...');
+
+    fireEvent.change(textarea, { target: { value: '#zzz', selectionStart: 4, selectionEnd: 4 } });
+    expect(screen.getByText('No matching cards')).not.toBeNull();
+
+    fireEvent.keyDown(textarea, { key: 'Escape' });
+
+    expect(screen.queryByText('No matching cards')).toBeNull();
+    expect(textarea.value).toBe('#zzz');
+  });
+
+  it('ArrowDown/ArrowUp move the highlighted result', () => {
+    const { getByPlaceholderText } = renderRefCustom(makeRefStore());
+    const textarea = getByPlaceholderText('Type anything...');
+
+    fireEvent.change(textarea, { target: { value: '#', selectionStart: 1, selectionEnd: 1 } });
+    // Tavern (editedOn 10) sorts first, so it starts highlighted.
+    expect(screen.getByText('Tavern').className).toMatch(/highlighted/);
+
+    fireEvent.keyDown(textarea, { key: 'ArrowDown' });
+    expect(screen.getByText('Goblin Camp').className).toMatch(/highlighted/);
+
+    fireEvent.keyDown(textarea, { key: 'ArrowUp' });
+    expect(screen.getByText('Tavern').className).toMatch(/highlighted/);
   });
 });

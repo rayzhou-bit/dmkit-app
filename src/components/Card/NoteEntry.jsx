@@ -1,7 +1,8 @@
 import React from 'react';
 
-import { useNoteEntryFieldHooks, useDragSafeFieldHooks } from './hooks';
+import { useNoteEntryFieldHooks, useDragSafeFieldHooks, useCardRefTrigger } from './hooks';
 import { NOTE_ENTRY_NAME_MAX_LENGTH, NOTE_ENTRY_TEXT_MAX_LENGTH } from '../../constants/note';
+import CardRefPicker from './CardRefPicker';
 
 import './Card.scss';
 import DuplicateIcon from '../../assets/icons/entry-duplicate.svg';
@@ -26,6 +27,9 @@ const NoteEntry = ({
   const textField = useNoteEntryFieldHooks({ cardId, entry, entryFieldKey: 'description' });
   const nameGate = useDragSafeFieldHooks({ setEditingCard });
   const textGate = useDragSafeFieldHooks({ setEditingCard });
+  const refTrigger = useCardRefTrigger({
+    cardId, editRef: textGate.editRef, value: textField.value, changeValue: textField.changeValue, handleKeyDown: textField.handleKeyDown,
+  });
   const nameId = `note-entry-${cardId}-${entry.id}-name`;
   const textId = `note-entry-${cardId}-${entry.id}-description`;
   const ordinal = `${singular} ${index + 1}`;
@@ -79,11 +83,13 @@ const NoteEntry = ({
         readOnly={textGate.readOnly}
         onClick={textGate.beginEdit}
         onFocus={textGate.beginEdit}
-        onChange={(e) => textField.changeValue(e.target.value)}
-        onBlur={() => { textField.commit(); textGate.endEdit(); }}
-        onKeyDown={textField.handleKeyDown}
+        onChange={refTrigger.onChange}
+        onBlur={() => { textField.commit(); textGate.endEdit(); refTrigger.onBlur(); }}
+        onKeyDown={refTrigger.onKeyDown}
+        onKeyUp={refTrigger.onKeyUp}
         onWheel={setEditingCard ? undefined : (e) => e.stopPropagation()}
       />
+      {refTrigger.picker && <CardRefPicker {...refTrigger.picker} />}
     </div>
   );
 };

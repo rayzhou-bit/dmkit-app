@@ -1,6 +1,7 @@
 import React from 'react';
 
-import { useCustomTextBlockHooks, useDragSafeFieldHooks } from './hooks';
+import { useCustomTextBlockHooks, useDragSafeFieldHooks, useCardRefTrigger } from './hooks';
+import CardRefPicker from './CardRefPicker';
 
 import './Card.scss';
 
@@ -16,23 +17,28 @@ const CustomTextBlock = ({
 }) => {
   const { value, changeValue, commit, handleKeyDown } = useCustomTextBlockHooks({ cardId, blockId, field });
   const { editRef, readOnly, beginEdit, endEdit } = useDragSafeFieldHooks({ setEditingCard });
+  const refTrigger = useCardRefTrigger({ cardId, editRef, value, changeValue, handleKeyDown });
 
   return (
-    <textarea
-      ref={editRef}
-      className='monster-field-textarea'
-      value={value}
-      placeholder='Type anything...'
-      readOnly={readOnly}
-      onClick={beginEdit}
-      onFocus={beginEdit}
-      onChange={(e) => changeValue(e.target.value)}
-      onBlur={() => { commit(); endEdit(); }}
-      onKeyDown={handleKeyDown}
-      // Only needed on the canvas, to stop a scroll-to-zoom gesture over
-      // the field from also zooming the canvas - see MonsterTextField.
-      onWheel={setEditingCard ? undefined : (e) => e.stopPropagation()}
-    />
+    <>
+      <textarea
+        ref={editRef}
+        className='monster-field-textarea'
+        value={value}
+        placeholder='Type anything...'
+        readOnly={readOnly}
+        onClick={beginEdit}
+        onFocus={beginEdit}
+        onChange={refTrigger.onChange}
+        onBlur={() => { commit(); endEdit(); refTrigger.onBlur(); }}
+        onKeyDown={refTrigger.onKeyDown}
+        onKeyUp={refTrigger.onKeyUp}
+        // Only needed on the canvas, to stop a scroll-to-zoom gesture over
+        // the field from also zooming the canvas - see MonsterTextField.
+        onWheel={setEditingCard ? undefined : (e) => e.stopPropagation()}
+      />
+      {refTrigger.picker && <CardRefPicker {...refTrigger.picker} />}
+    </>
   );
 };
 

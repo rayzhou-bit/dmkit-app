@@ -1,7 +1,8 @@
 import React from 'react';
 
-import { useMonsterEntryFieldHooks, useDragSafeFieldHooks } from './hooks';
+import { useMonsterEntryFieldHooks, useDragSafeFieldHooks, useCardRefTrigger } from './hooks';
 import { MONSTER_ENTRY_NAME_MAX_LENGTH, MONSTER_ENTRY_TEXT_MAX_LENGTH } from '../../constants/monster';
+import CardRefPicker from './CardRefPicker';
 
 import './Card.scss';
 import DuplicateIcon from '../../assets/icons/entry-duplicate.svg';
@@ -28,6 +29,9 @@ const MonsterEntry = ({
   const textField = useMonsterEntryFieldHooks({ cardId, fieldKey, entry, entryFieldKey: 'description' });
   const nameGate = useDragSafeFieldHooks({ setEditingCard });
   const textGate = useDragSafeFieldHooks({ setEditingCard });
+  const refTrigger = useCardRefTrigger({
+    cardId, editRef: textGate.editRef, value: textField.value, changeValue: textField.changeValue, handleKeyDown: textField.handleKeyDown,
+  });
   const nameId = `monster-entry-${cardId}-${fieldKey}-${entry.id}-name`;
   const textId = `monster-entry-${cardId}-${fieldKey}-${entry.id}-description`;
   const ordinal = `${singular} ${index + 1}`;
@@ -81,11 +85,13 @@ const MonsterEntry = ({
         readOnly={textGate.readOnly}
         onClick={textGate.beginEdit}
         onFocus={textGate.beginEdit}
-        onChange={(e) => textField.changeValue(e.target.value)}
-        onBlur={() => { textField.commit(); textGate.endEdit(); }}
-        onKeyDown={textField.handleKeyDown}
+        onChange={refTrigger.onChange}
+        onBlur={() => { textField.commit(); textGate.endEdit(); refTrigger.onBlur(); }}
+        onKeyDown={refTrigger.onKeyDown}
+        onKeyUp={refTrigger.onKeyUp}
         onWheel={setEditingCard ? undefined : (e) => e.stopPropagation()}
       />
+      {refTrigger.picker && <CardRefPicker {...refTrigger.picker} />}
     </div>
   );
 };

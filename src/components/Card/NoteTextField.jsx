@@ -1,6 +1,7 @@
 import React from 'react';
 
-import { useNoteFieldHooks, useDragSafeFieldHooks } from './hooks';
+import { useNoteFieldHooks, useDragSafeFieldHooks, useCardRefTrigger } from './hooks';
+import CardRefPicker from './CardRefPicker';
 
 import './Card.scss';
 
@@ -20,6 +21,7 @@ const NoteTextField = ({
 }) => {
   const { value, changeValue, commit, handleKeyDown } = useNoteFieldHooks({ cardId, fieldKey });
   const { editRef, readOnly, beginEdit, endEdit } = useDragSafeFieldHooks({ setEditingCard });
+  const refTrigger = useCardRefTrigger({ cardId, editRef, value, changeValue, handleKeyDown });
   const id = `note-field-${cardId}-${fieldKey}`;
 
   return (
@@ -34,13 +36,15 @@ const NoteTextField = ({
         readOnly={readOnly}
         onClick={beginEdit}
         onFocus={beginEdit}
-        onChange={(e) => changeValue(e.target.value)}
-        onBlur={() => { commit(); endEdit(); }}
-        onKeyDown={handleKeyDown}
+        onChange={refTrigger.onChange}
+        onBlur={() => { commit(); endEdit(); refTrigger.onBlur(); }}
+        onKeyDown={refTrigger.onKeyDown}
+        onKeyUp={refTrigger.onKeyUp}
         // Only needed on the canvas, to stop a scroll-to-zoom gesture over
         // the field from also zooming the canvas - see MonsterTextField.
         onWheel={setEditingCard ? undefined : (e) => e.stopPropagation()}
       />
+      {refTrigger.picker && <CardRefPicker {...refTrigger.picker} />}
     </div>
   );
 };

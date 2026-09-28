@@ -1,11 +1,12 @@
-import { useEffect, useRef, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { useDispatch, useSelector, useStore } from 'react-redux';
 import useOutsideClick from '../../utils/useOutsideClick';
 
 import { copySelectedCard } from '../../data/redux/thunkActions';
 import { actions, selectors } from '../../data/redux';
 import { CARD_COLOR_KEYS, LIGHT_COLORS } from '../../constants/colors';
 import { getCardType, hasCardContent, CARD_TYPES } from '../../constants/cards';
+import { getActiveRefQuery } from '../../utils/cardRefQuery';
 import { processImageFile } from '../../utils/imageUtils';
 import { MAX_PORTRAIT_DATA_URI_LENGTH, PORTRAIT_MAX_EDGE_STEPS } from '../../constants/images';
 import {
@@ -1136,3 +1137,121 @@ export const usePortraitHooks = ({ cardId }) => {
 };
 
 export const useMonsterPortraitHooks = usePortraitHooks;
+
+const CARD_REF_PICKER_MAX_RESULTS = 8;
+
+// The "#" trigger shared by every multiline field that supports card
+// references (see CardRefPicker.jsx and cardRefQuery.js). Wraps a field's
+// own value/changeValue/handleKeyDown rather than replacing them - a field
+// wires onChange/onKeyDown/onKeyUp/onBlur to the versions returned here
+// instead of its own, and renders <CardRefPicker {...picker} /> when
+// `picker` is non-null. Insertion goes through the field's own changeValue
+// (not a direct dispatch) so the normal commit-on-blur path is what
+// actually persists the text - this hook only adds the addCardRef dispatch
+// and the caret restore on top of that.
+export const useCardRefTrigger = ({ cardId, editRef, value, changeValue, handleKeyDown }) => {
+  const dispatch = useDispatch();
+  // Reads the store imperatively (via useStore, not useSelector) - this only
+  // needs a snapshot at the moment the query changes, not a live
+  // subscription, and several hand-rolled fake stores in this repo's tests
+  // rebuild `cards` as a fresh object on every getState() call, which would
+  // defeat useSelector's reference-equality bail-out and infinite-loop (see
+  // useMonsterEntryListHooks's comment on the same class of bug).
+  const store = useStore();
+
+  const [match, setMatch] = useState(null); // { query, start, end } or null
+  const [highlightedIndex, setHighlightedIndex] = useState(0);
+  const [rect, setRect] = useState(null);
+  const pendingCaretRef = useRef(null);
+
+  // Runs after `value` (and therefore the DOM textarea.value) has actually
+  // updated - setSelectionRange before that would clamp against the old,
+  // shorter string.
+  useEffect(() => {
+    if (pendingCaretRef.current == null || !editRef.current) return;
+    editRef.current.setSelectionRange(pendingCaretRef.current, pendingCaretRef.current);
+    pendingCaretRef.current = null;
+  }, [value]);
+
+  const syncMatch = (text, caretIndex) => {
+    const next = getActiveRefQuery(text, caretIndex);
+    if (!next) {
+      setMatch(null);
+      return;
+    }
+    setMatch({ ...next, end: caretIndex });
+    setHighlightedIndex(0);
+    setRect(editRef.current?.getBoundingClientRect() ?? null);
+  };
+
+  const closePicker = () => setMatch(null);
+
+  const results = useMemo(() => {
+    if (!match) return [];
+    const cards = store.getState().project.present.cards;
+    const query = match.query.trim().toLowerCase();
+    return Object.entries(cards)
+      .filter(([id]) => id !== cardId)
+      .map(([id, card]) => ({ id, title: card.title || 'untitled', editedOn: card.editedOn || 0 }))
+      .filter(card => !query || card.title.toLowerCase().includes(query))
+      .sort((a, b) => b.editedOn - a.editedOn)
+      .slice(0, CARD_REF_PICKER_MAX_RESULTS);
+  }, [match, store, cardId]);
+
+  const selectResult = (card) => {
+    if (!match) return;
+    const before = value.slice(0, match.start);
+    const after = value.slice(match.end);
+    pendingCaretRef.current = before.length + card.title.length;
+    changeValue(before + card.title + after);
+    dispatch(actions.project.addCardRef({ id: cardId, refId: card.id }));
+    closePicker();
+  };
+
+  return {
+    picker: match ? { rect, results, highlightedIndex, onSelect: selectResult, onHighlight: setHighlightedIndex } : null,
+    onChange: (e) => {
+      changeValue(e.target.value);
+      syncMatch(e.target.value, e.target.selectionStart);
+    },
+    // Catches caret moves that don't fire a change event (arrow keys,
+    // Home/End) - typing itself is already covered by onChange.
+    onKeyUp: (e) => {
+      if (match) syncMatch(e.target.value, e.target.selectionStart);
+    },
+    onKeyDown: (e) => {
+      if (match) {
+        if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+          e.preventDefault();
+          e.stopPropagation();
+          if (results.length) {
+            const delta = e.key === 'ArrowDown' ? 1 : -1;
+            setHighlightedIndex(i => (i + delta + results.length) % results.length);
+          }
+          return;
+        }
+        if (e.key === 'Enter' || e.key === 'Tab') {
+          if (results[highlightedIndex]) {
+            e.preventDefault();
+            e.stopPropagation();
+            selectResult(results[highlightedIndex]);
+            return;
+          }
+          // No match to select - close and let Enter/Tab do whatever they
+          // normally do (newline, focus move) instead of eating the keystroke.
+          closePicker();
+        } else if (e.key === 'Escape') {
+          // Takes precedence over the field's own Escape-reverts-to-store
+          // handling below - closing the picker should never also wipe
+          // whatever the user has typed.
+          e.preventDefault();
+          e.stopPropagation();
+          closePicker();
+          return;
+        }
+      }
+      handleKeyDown?.(e);
+    },
+    onBlur: closePicker,
+  };
+};
