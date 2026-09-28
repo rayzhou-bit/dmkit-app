@@ -62,14 +62,29 @@ describe('CustomContent - empty state', () => {
 describe('CustomContent - text block', () => {
   const content = buildCustomContent({ blocks: [{ id: 'b1', type: 'text', text: 'Some notes.' }] });
 
-  it('renders a plain textarea with the block value, no name/label field', () => {
-    const { container, getByPlaceholderText } = renderCustom(content);
+  // A block starts in display mode (not editing) - clicking its rendered
+  // text swaps in the real textarea (see CardRefField). jsdom has neither
+  // caretPositionFromPoint nor caretRangeFromPoint, so the caret always
+  // falls back to end-of-text here; real caret placement is a Playwright
+  // concern, not a unit-test one.
+  const enterEdit = (getByText) => fireEvent.mouseDown(getByText('Some notes.'));
+
+  it('renders the block value inline, no name/label field, no textarea yet', () => {
+    const { container, getByText } = renderCustom(content);
     expect(container.querySelectorAll('.custom-block').length).toBe(1);
+    expect(getByText('Some notes.')).not.toBeNull();
+    expect(container.querySelector('textarea')).toBeNull();
+  });
+
+  it('clicking the display swaps in the real textarea with the same value', () => {
+    const { getByText, getByPlaceholderText } = renderCustom(content);
+    enterEdit(getByText);
     expect(getByPlaceholderText('Type anything...').value).toBe('Some notes.');
   });
 
   it('typing dispatches nothing; blurring dispatches exactly one updateCustomTextBlock', () => {
-    const { getByPlaceholderText, store } = renderCustom(content);
+    const { getByText, getByPlaceholderText, store } = renderCustom(content);
+    enterEdit(getByText);
     const textarea = getByPlaceholderText('Type anything...');
 
     fireEvent.change(textarea, { target: { value: 'Updated notes.' } });
@@ -82,7 +97,8 @@ describe('CustomContent - text block', () => {
   });
 
   it('blur with no net change dispatches nothing (equality guard)', () => {
-    const { getByPlaceholderText, store } = renderCustom(content);
+    const { getByText, getByPlaceholderText, store } = renderCustom(content);
+    enterEdit(getByText);
     const textarea = getByPlaceholderText('Type anything...');
 
     fireEvent.change(textarea, { target: { value: 'Something else' } });
@@ -93,7 +109,8 @@ describe('CustomContent - text block', () => {
   });
 
   it('Escape reverts without dispatching', () => {
-    const { getByPlaceholderText, store } = renderCustom(content);
+    const { getByText, getByPlaceholderText, store } = renderCustom(content);
+    enterEdit(getByText);
     const textarea = getByPlaceholderText('Type anything...');
 
     fireEvent.change(textarea, { target: { value: 'Something else' } });
@@ -171,7 +188,7 @@ describe('CustomContent - mixed blocks, duplicate/delete', () => {
   it('renders both a text block and an image block, correctly typed', () => {
     const { container } = renderCustom(content);
     expect(container.querySelectorAll('.custom-block').length).toBe(2);
-    expect(container.querySelector('.custom-block:nth-child(1) textarea')).not.toBeNull();
+    expect(container.querySelector('.custom-block:nth-child(1) .card-ref-display')).not.toBeNull();
     expect(container.querySelector('.custom-block:nth-child(2) .custom-image-block')).not.toBeNull();
   });
 
@@ -251,9 +268,17 @@ describe('CustomContent - card references (# trigger)', () => {
     return { ...utils, store };
   };
 
-  it('typing "#" opens the picker; selecting a result inserts the title and dispatches addCardRef', () => {
-    const { getByPlaceholderText, store } = renderRefCustom(makeRefStore());
-    const textarea = getByPlaceholderText('Type anything...');
+  // The block starts empty, so display mode shows the placeholder text -
+  // click it to swap in the real textarea, same as the "text block" describe
+  // block above.
+  const enterEditAndGetTextarea = (getByText, getByPlaceholderText) => {
+    fireEvent.mouseDown(getByText('Type anything...'));
+    return getByPlaceholderText('Type anything...');
+  };
+
+  it('typing "#" opens the picker; selecting a result inserts a #[Title](id) token', () => {
+    const { getByText, getByPlaceholderText, store } = renderRefCustom(makeRefStore());
+    const textarea = enterEditAndGetTextarea(getByText, getByPlaceholderText);
 
     fireEvent.change(textarea, { target: { value: '#gob', selectionStart: 4, selectionEnd: 4 } });
     expect(screen.getByText('Goblin Camp')).not.toBeNull();
@@ -262,20 +287,24 @@ describe('CustomContent - card references (# trigger)', () => {
 
     fireEvent.keyDown(textarea, { key: 'Enter' });
 
-    expect(textarea.value).toBe('Goblin Camp');
-    expect(store.dispatched).toContainEqual({ type: 'project/addCardRef', payload: { id: 'c1', refId: 'c2' } });
+    expect(textarea.value).toBe('#[Goblin Camp](c2)');
+    expect(store.dispatched.some(a => a.type === 'project/addCardRef')).toBe(false);
     expect(screen.queryByRole('button', { name: 'Goblin Camp' })).toBeNull(); // picker closes on select
 
     fireEvent.blur(textarea);
     expect(store.dispatched).toContainEqual({
       type: 'project/updateCustomTextBlock',
-      payload: { id: 'c1', blockId: 'b1', text: 'Goblin Camp' },
+      payload: { id: 'c1', blockId: 'b1', text: '#[Goblin Camp](c2)' },
     });
+
+    // Back in display mode, the token renders as a resolved chip, not raw text.
+    expect(screen.getByText('Goblin Camp')).not.toBeNull();
+    expect(screen.queryByText('#[Goblin Camp](c2)')).toBeNull();
   });
 
   it('an empty query after "#" lists cards, most recently edited first', () => {
-    const { getByPlaceholderText } = renderRefCustom(makeRefStore());
-    const textarea = getByPlaceholderText('Type anything...');
+    const { getByText, getByPlaceholderText } = renderRefCustom(makeRefStore());
+    const textarea = enterEditAndGetTextarea(getByText, getByPlaceholderText);
 
     fireEvent.change(textarea, { target: { value: '#', selectionStart: 1, selectionEnd: 1 } });
 
@@ -284,16 +313,16 @@ describe('CustomContent - card references (# trigger)', () => {
   });
 
   it('shows an empty state for a query that matches nothing', () => {
-    const { getByPlaceholderText } = renderRefCustom(makeRefStore());
-    const textarea = getByPlaceholderText('Type anything...');
+    const { getByText, getByPlaceholderText } = renderRefCustom(makeRefStore());
+    const textarea = enterEditAndGetTextarea(getByText, getByPlaceholderText);
 
     fireEvent.change(textarea, { target: { value: '#zzz', selectionStart: 4, selectionEnd: 4 } });
     expect(screen.getByText('No matching cards')).not.toBeNull();
   });
 
   it('Escape closes the picker without reverting the typed text', () => {
-    const { getByPlaceholderText } = renderRefCustom(makeRefStore());
-    const textarea = getByPlaceholderText('Type anything...');
+    const { getByText, getByPlaceholderText } = renderRefCustom(makeRefStore());
+    const textarea = enterEditAndGetTextarea(getByText, getByPlaceholderText);
 
     fireEvent.change(textarea, { target: { value: '#zzz', selectionStart: 4, selectionEnd: 4 } });
     expect(screen.getByText('No matching cards')).not.toBeNull();
@@ -305,8 +334,8 @@ describe('CustomContent - card references (# trigger)', () => {
   });
 
   it('ArrowDown/ArrowUp move the highlighted result', () => {
-    const { getByPlaceholderText } = renderRefCustom(makeRefStore());
-    const textarea = getByPlaceholderText('Type anything...');
+    const { getByText, getByPlaceholderText } = renderRefCustom(makeRefStore());
+    const textarea = enterEditAndGetTextarea(getByText, getByPlaceholderText);
 
     fireEvent.change(textarea, { target: { value: '#', selectionStart: 1, selectionEnd: 1 } });
     // Tavern (editedOn 10) sorts first, so it starts highlighted.

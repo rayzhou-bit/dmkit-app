@@ -291,11 +291,12 @@ describe('LibraryMonsterContent - editing dispatches (reuses the canvas actions/
 
   it('a notes text block dispatches updateCustomTextBlock (field: notes) on blur, same mechanism as a custom card', () => {
     const content = buildMonsterContent({ armorClass: '18', notes: [{ id: 'n1', type: 'text', text: '' }] });
-    const { getByPlaceholderText, store } = renderLibraryMonster(content, {}, { isExpanded: true });
-    const notes = getByPlaceholderText('Type anything...');
+    const { getByText, getByPlaceholderText, store } = renderLibraryMonster(content, {}, { isExpanded: true });
     const blockId = content.notes[0].id;
 
-    fireEvent.click(notes);
+    // Empty block -> display mode shows the placeholder; click it to swap in the textarea.
+    fireEvent.mouseDown(getByText('Type anything...'));
+    const notes = getByPlaceholderText('Type anything...');
     fireEvent.change(notes, { target: { value: 'lair is flooded' } });
     fireEvent.blur(notes);
 

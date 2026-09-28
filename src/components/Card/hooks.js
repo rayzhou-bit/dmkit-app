@@ -7,6 +7,7 @@ import { actions, selectors } from '../../data/redux';
 import { CARD_COLOR_KEYS, LIGHT_COLORS } from '../../constants/colors';
 import { getCardType, hasCardContent, CARD_TYPES } from '../../constants/cards';
 import { getActiveRefQuery } from '../../utils/cardRefQuery';
+import { buildCardRefToken } from '../../utils/cardRefToken';
 import { processImageFile } from '../../utils/imageUtils';
 import { MAX_PORTRAIT_DATA_URI_LENGTH, PORTRAIT_MAX_EDGE_STEPS } from '../../constants/images';
 import {
@@ -494,11 +495,9 @@ export const useContentHooks = ({
     if (!isEditing) {
       setIsEditing(true);
       setEditingCard(true);
-      contentRef.current.focus();
-      contentRef.current.setSelectionRange(
-        contentRef.current.value.length,
-        contentRef.current.value.length,
-      );
+      // Focus/caret placement is owned by CardRefField's own effect now -
+      // contentRef.current is still null here the moment this fires from a
+      // display-mode click (the textarea hasn't mounted yet).
     }
   };
 
@@ -610,18 +609,22 @@ export const useImageContentHooks = ({
 // `draggable` creates.
 // setEditingCard undefined (the canvas) -> fully inert: always editable,
 // nothing to gate, matching today's canvas behavior exactly.
-export const useDragSafeFieldHooks = ({ setEditingCard }) => {
+// alwaysToggle: opts out of that canvas shortcut - needed by the ref-token
+// fields (CustomTextBlock), which need a real display/edit swap on the
+// canvas too, not just in the Library (see CardRefField). Every other
+// caller leaves it false and keeps the always-editable canvas behavior.
+export const useDragSafeFieldHooks = ({ setEditingCard, alwaysToggle = false }) => {
   const [ isEditing, setIsEditing ] = useState(false);
   const editRef = useRef();
 
-  if (!setEditingCard) {
+  if (!setEditingCard && !alwaysToggle) {
     return { editRef, readOnly: false, beginEdit: () => {}, endEdit: () => {} };
   }
 
   const beginEdit = () => {
     if (isEditing) return;
     setIsEditing(true);
-    setEditingCard(true);
+    setEditingCard?.(true);
     editRef.current?.focus();
     editRef.current?.setSelectionRange?.(editRef.current.value.length, editRef.current.value.length);
   };
@@ -629,7 +632,7 @@ export const useDragSafeFieldHooks = ({ setEditingCard }) => {
   const endEdit = () => {
     if (!isEditing) return;
     setIsEditing(false);
-    setEditingCard(false);
+    setEditingCard?.(false);
   };
 
   return { editRef, readOnly: !isEditing, beginEdit, endEdit };
@@ -1146,11 +1149,10 @@ const CARD_REF_PICKER_MAX_RESULTS = 8;
 // wires onChange/onKeyDown/onKeyUp/onBlur to the versions returned here
 // instead of its own, and renders <CardRefPicker {...picker} /> when
 // `picker` is non-null. Insertion goes through the field's own changeValue
-// (not a direct dispatch) so the normal commit-on-blur path is what
-// actually persists the text - this hook only adds the addCardRef dispatch
-// and the caret restore on top of that.
+// (not a dispatch) so the normal commit-on-blur path is what actually
+// persists the text - the inserted #[Title](id) token IS the reference now,
+// there's nothing else to record (see cardRefToken.js).
 export const useCardRefTrigger = ({ cardId, editRef, value, changeValue, handleKeyDown }) => {
-  const dispatch = useDispatch();
   // Reads the store imperatively (via useStore, not useSelector) - this only
   // needs a snapshot at the moment the query changes, not a live
   // subscription, and several hand-rolled fake stores in this repo's tests
@@ -1202,9 +1204,9 @@ export const useCardRefTrigger = ({ cardId, editRef, value, changeValue, handleK
     if (!match) return;
     const before = value.slice(0, match.start);
     const after = value.slice(match.end);
-    pendingCaretRef.current = before.length + card.title.length;
-    changeValue(before + card.title + after);
-    dispatch(actions.project.addCardRef({ id: cardId, refId: card.id }));
+    const token = buildCardRefToken({ id: card.id, title: card.title });
+    pendingCaretRef.current = before.length + token.length;
+    changeValue(before + token + after);
     closePicker();
   };
 

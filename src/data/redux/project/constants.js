@@ -13,7 +13,6 @@ export const DEFAULT_CARD = {
   title: 'untitled',
   type: CARD_TYPES.text,
   content: { text: '' },
-  refs: [],
   createdOn: Date.now(),
   editedOn: Date.now(),
 };

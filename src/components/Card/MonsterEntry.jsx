@@ -1,8 +1,7 @@
 import React from 'react';
 
-import { useMonsterEntryFieldHooks, useDragSafeFieldHooks, useCardRefTrigger } from './hooks';
+import { useMonsterEntryFieldHooks, useDragSafeFieldHooks } from './hooks';
 import { MONSTER_ENTRY_NAME_MAX_LENGTH, MONSTER_ENTRY_TEXT_MAX_LENGTH } from '../../constants/monster';
-import CardRefPicker from './CardRefPicker';
 
 import './Card.scss';
 import DuplicateIcon from '../../assets/icons/entry-duplicate.svg';
@@ -13,6 +12,7 @@ import TrashIcon from '../../assets/icons/trash-red.svg';
 // controls. `index` is just for the ordinal accessible names ("Action 2") -
 // the DOM id is keyed on the stable entry.id so React never reuses an
 // input/textarea across entries when the list reorders.
+// No "#" card-reference trigger here - see NoteTextField.jsx's comment.
 const MonsterEntry = ({
   cardId,
   fieldKey,
@@ -29,9 +29,6 @@ const MonsterEntry = ({
   const textField = useMonsterEntryFieldHooks({ cardId, fieldKey, entry, entryFieldKey: 'description' });
   const nameGate = useDragSafeFieldHooks({ setEditingCard });
   const textGate = useDragSafeFieldHooks({ setEditingCard });
-  const refTrigger = useCardRefTrigger({
-    cardId, editRef: textGate.editRef, value: textField.value, changeValue: textField.changeValue, handleKeyDown: textField.handleKeyDown,
-  });
   const nameId = `monster-entry-${cardId}-${fieldKey}-${entry.id}-name`;
   const textId = `monster-entry-${cardId}-${fieldKey}-${entry.id}-description`;
   const ordinal = `${singular} ${index + 1}`;
@@ -85,13 +82,11 @@ const MonsterEntry = ({
         readOnly={textGate.readOnly}
         onClick={textGate.beginEdit}
         onFocus={textGate.beginEdit}
-        onChange={refTrigger.onChange}
-        onBlur={() => { textField.commit(); textGate.endEdit(); refTrigger.onBlur(); }}
-        onKeyDown={refTrigger.onKeyDown}
-        onKeyUp={refTrigger.onKeyUp}
+        onChange={(e) => textField.changeValue(e.target.value)}
+        onBlur={() => { textField.commit(); textGate.endEdit(); }}
+        onKeyDown={textField.handleKeyDown}
         onWheel={setEditingCard ? undefined : (e) => e.stopPropagation()}
       />
-      {refTrigger.picker && <CardRefPicker {...refTrigger.picker} />}
     </div>
   );
 };

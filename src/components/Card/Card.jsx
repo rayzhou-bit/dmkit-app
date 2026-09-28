@@ -4,7 +4,6 @@ import { Rnd } from 'react-rnd';
 import { useCardHooks } from './hooks';
 
 import Title from './Title';
-import CardRefs from './CardRefs';
 import Content from './Content';
 
 import './Card.scss';
@@ -80,7 +79,6 @@ export const Card = ({
           cardId={cardId}
           setEditingCard={setIsEditing}
         />
-        <CardRefs cardId={cardId} />
         <Content
           cardId={cardId}
           setEditingCard={setIsEditing}

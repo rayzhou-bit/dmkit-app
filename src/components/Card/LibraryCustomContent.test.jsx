@@ -79,10 +79,17 @@ describe('LibraryCustomContent - condensed view (unselected, not expanded)', () 
 });
 
 describe('LibraryCustomContent - expanded view (selected or isExpanded)', () => {
-  it('renders the block list, editable', () => {
+  it('renders the block list, its text inline in display mode', () => {
     const content = buildCustomContent({ blocks: [{ id: 'b1', type: 'text', text: 'Some notes.' }] });
-    const { container, getByPlaceholderText } = renderLibraryCustom(content, { isExpanded: true });
+    const { container, getByText } = renderLibraryCustom(content, { isExpanded: true });
     expect(container.querySelectorAll('.custom-block').length).toBe(1);
+    expect(getByText('Some notes.')).not.toBeNull();
+  });
+
+  it('clicking a block swaps in the real textarea, with the same value', () => {
+    const content = buildCustomContent({ blocks: [{ id: 'b1', type: 'text', text: 'Some notes.' }] });
+    const { getByText, getByPlaceholderText } = renderLibraryCustom(content, { isExpanded: true });
+    fireEvent.mouseDown(getByText('Some notes.'));
     expect(getByPlaceholderText('Type anything...').value).toBe('Some notes.');
   });
 
@@ -95,7 +102,8 @@ describe('LibraryCustomContent - expanded view (selected or isExpanded)', () => 
 
   it('typing in a text block dispatches nothing; blurring dispatches exactly one updateCustomTextBlock', () => {
     const content = buildCustomContent({ blocks: [{ id: 'b1', type: 'text', text: 'Some notes.' }] });
-    const { getByPlaceholderText, store } = renderLibraryCustom(content, { isExpanded: true });
+    const { getByText, getByPlaceholderText, store } = renderLibraryCustom(content, { isExpanded: true });
+    fireEvent.mouseDown(getByText('Some notes.'));
     const textarea = getByPlaceholderText('Type anything...');
 
     fireEvent.change(textarea, { target: { value: 'Updated notes.' } });

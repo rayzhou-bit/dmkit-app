@@ -1,7 +1,6 @@
 import React from 'react';
 
-import { useNoteFieldHooks, useDragSafeFieldHooks, useCardRefTrigger } from './hooks';
-import CardRefPicker from './CardRefPicker';
+import { useNoteFieldHooks, useDragSafeFieldHooks } from './hooks';
 
 import './Card.scss';
 
@@ -11,6 +10,10 @@ import './Card.scss';
 // NoteContent.jsx (canvas) and LibraryNoteContent.jsx (Library)
 // need the exact same markup. Reuses .monster-field*/.monster-field-textarea
 // CSS as-is.
+// No "#" card-reference trigger here - this field renders as plain text,
+// not through CardRefField/CardRefDisplay, so a token would just show up
+// as raw #[Title](id) forever. It'll get references back once inline
+// rendering reaches non-prose fields too.
 const NoteTextField = ({
   cardId,
   fieldKey,
@@ -21,7 +24,6 @@ const NoteTextField = ({
 }) => {
   const { value, changeValue, commit, handleKeyDown } = useNoteFieldHooks({ cardId, fieldKey });
   const { editRef, readOnly, beginEdit, endEdit } = useDragSafeFieldHooks({ setEditingCard });
-  const refTrigger = useCardRefTrigger({ cardId, editRef, value, changeValue, handleKeyDown });
   const id = `note-field-${cardId}-${fieldKey}`;
 
   return (
@@ -36,15 +38,13 @@ const NoteTextField = ({
         readOnly={readOnly}
         onClick={beginEdit}
         onFocus={beginEdit}
-        onChange={refTrigger.onChange}
-        onBlur={() => { commit(); endEdit(); refTrigger.onBlur(); }}
-        onKeyDown={refTrigger.onKeyDown}
-        onKeyUp={refTrigger.onKeyUp}
+        onChange={(e) => changeValue(e.target.value)}
+        onBlur={() => { commit(); endEdit(); }}
+        onKeyDown={handleKeyDown}
         // Only needed on the canvas, to stop a scroll-to-zoom gesture over
         // the field from also zooming the canvas - see MonsterTextField.
         onWheel={setEditingCard ? undefined : (e) => e.stopPropagation()}
       />
-      {refTrigger.picker && <CardRefPicker {...refTrigger.picker} />}
     </div>
   );
 };

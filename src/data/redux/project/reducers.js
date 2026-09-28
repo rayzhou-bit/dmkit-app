@@ -6,7 +6,7 @@ import {
   BLANK_PROJECT,
 } from './constants';
 import { GRID_SIZE, DEFAULT_CARD_POSITION, DEFAULT_CARD_SIZE, MONSTER_CARD_SIZE, NOTE_CARD_SIZE } from '../../../constants/dimensions';
-import { CARD_TYPES, getCardType, migrateLegacyTextImageCard, normalizeCardRefs } from '../../../constants/cards';
+import { CARD_TYPES, getCardType, migrateLegacyTextImageCard } from '../../../constants/cards';
 import {
   buildMonsterContent, MONSTER_FIELD_KEYS,
   MONSTER_ENTRY_FIELD_KEYS, MONSTER_MAX_ENTRIES_PER_SECTION, normalizeMonsterEntries,
@@ -171,7 +171,7 @@ const project = createSlice({
 
     // Card reducers
     createCard: (state, { payload }) => {
-      const { newId, position, size, color, title, text, type, image, alt, monster, note, custom, refs } = payload;
+      const { newId, position, size, color, title, text, type, image, alt, monster, note, custom } = payload;
       if (!state.activeViewId) return state;
       return {
         ...state,
@@ -193,7 +193,6 @@ const project = createSlice({
               : type === CARD_TYPES.custom ? buildCustomContent(custom)
               : type === CARD_TYPES.image ? { image: image ?? '', alt: alt ?? '' }
               : { text: text ?? DEFAULT_CARD.content.text },
-            refs: normalizeCardRefs(refs),
             createdOn: Date.now(),
             editedOn: Date.now(),
           },
@@ -591,38 +590,6 @@ const project = createSlice({
       next[index] = { ...next[index], image: payload.image, alt: payload.alt };
       return next;
     }),
-    // refs live on the card, not content - one place regardless of card
-    // type (see normalizeCardRefs). Self-refs are rejected here too, not
-    // just filtered out of the picker, so the reducer stays correct on
-    // its own.
-    addCardRef: (state, { payload }) => {
-      const { id, refId } = payload;
-      const card = state.cards[id];
-      if (!card || refId === id) return state;
-      const refs = normalizeCardRefs(card.refs);
-      if (refs.includes(refId)) return state;
-      return {
-        ...state,
-        cards: {
-          ...state.cards,
-          [id]: { ...card, refs: [...refs, refId], editedOn: Date.now() },
-        },
-      };
-    },
-    removeCardRef: (state, { payload }) => {
-      const { id, refId } = payload;
-      const card = state.cards[id];
-      if (!card) return state;
-      const refs = normalizeCardRefs(card.refs);
-      if (!refs.includes(refId)) return state;
-      return {
-        ...state,
-        cards: {
-          ...state.cards,
-          [id]: { ...card, refs: refs.filter(r => r !== refId), editedOn: Date.now() },
-        },
-      };
-    },
     // Tab reducers
     createTab: (state, { payload }) => {
       const { newId } = payload;

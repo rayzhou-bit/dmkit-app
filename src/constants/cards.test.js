@@ -1,4 +1,4 @@
-import { getCardType, hasCardContent, migrateLegacyTextImageCard, normalizeCardRefs, CARD_TYPES } from './cards';
+import { getCardType, hasCardContent, migrateLegacyTextImageCard, CARD_TYPES } from './cards';
 import { buildMonsterContent } from './monster';
 import { buildNoteContent } from './note';
 import { buildCustomContent } from './custom';
@@ -106,20 +106,5 @@ describe('migrateLegacyTextImageCard', () => {
     const once = migrateLegacyTextImageCard(card);
     const twice = migrateLegacyTextImageCard(once);
     expect(twice).toBe(once);
-  });
-});
-
-describe('normalizeCardRefs', () => {
-  it.each([
-    ['undefined', undefined, []],
-    ['null', null, []],
-    ['a non-array', 'c1', []],
-    ['an object', { c1: true }, []],
-    ['an already-normal list', ['c1', 'c2'], ['c1', 'c2']],
-    ['duplicates', ['c1', 'c1', 'c2'], ['c1', 'c2']],
-    ['non-strings mixed in', ['c1', 42, null, undefined, { id: 'c2' }], ['c1']],
-    ['empty strings', ['c1', '', 'c2'], ['c1', 'c2']],
-  ])('%s', (_, value, expected) => {
-    expect(normalizeCardRefs(value)).toEqual(expected);
   });
 });

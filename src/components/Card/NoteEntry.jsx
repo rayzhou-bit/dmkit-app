@@ -1,8 +1,7 @@
 import React from 'react';
 
-import { useNoteEntryFieldHooks, useDragSafeFieldHooks, useCardRefTrigger } from './hooks';
+import { useNoteEntryFieldHooks, useDragSafeFieldHooks } from './hooks';
 import { NOTE_ENTRY_NAME_MAX_LENGTH, NOTE_ENTRY_TEXT_MAX_LENGTH } from '../../constants/note';
-import CardRefPicker from './CardRefPicker';
 
 import './Card.scss';
 import DuplicateIcon from '../../assets/icons/entry-duplicate.svg';
@@ -12,6 +11,7 @@ import TrashIcon from '../../assets/icons/trash-red.svg';
 // only ever has one entry list) - reuses its .monster-entry* CSS classes
 // as-is, they have no monster-specific coupling. See MonsterEntry.jsx for
 // the fuller explanation of index/ordinal/id-keying.
+// No "#" card-reference trigger here - see NoteTextField's comment.
 const NoteEntry = ({
   cardId,
   entry,
@@ -27,9 +27,6 @@ const NoteEntry = ({
   const textField = useNoteEntryFieldHooks({ cardId, entry, entryFieldKey: 'description' });
   const nameGate = useDragSafeFieldHooks({ setEditingCard });
   const textGate = useDragSafeFieldHooks({ setEditingCard });
-  const refTrigger = useCardRefTrigger({
-    cardId, editRef: textGate.editRef, value: textField.value, changeValue: textField.changeValue, handleKeyDown: textField.handleKeyDown,
-  });
   const nameId = `note-entry-${cardId}-${entry.id}-name`;
   const textId = `note-entry-${cardId}-${entry.id}-description`;
   const ordinal = `${singular} ${index + 1}`;
@@ -83,13 +80,11 @@ const NoteEntry = ({
         readOnly={textGate.readOnly}
         onClick={textGate.beginEdit}
         onFocus={textGate.beginEdit}
-        onChange={refTrigger.onChange}
-        onBlur={() => { textField.commit(); textGate.endEdit(); refTrigger.onBlur(); }}
-        onKeyDown={refTrigger.onKeyDown}
-        onKeyUp={refTrigger.onKeyUp}
+        onChange={(e) => textField.changeValue(e.target.value)}
+        onBlur={() => { textField.commit(); textGate.endEdit(); }}
+        onKeyDown={textField.handleKeyDown}
         onWheel={setEditingCard ? undefined : (e) => e.stopPropagation()}
       />
-      {refTrigger.picker && <CardRefPicker {...refTrigger.picker} />}
     </div>
   );
 };

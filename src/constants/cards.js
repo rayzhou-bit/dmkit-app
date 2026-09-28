@@ -48,16 +48,6 @@ export const hasCardContent = (content) => {
   return MONSTER_FIELD_KEYS.some(key => monsterFieldHasContent(content, key));
 };
 
-// card.refs is a sibling of content, not inside it (content is shaped
-// per card type; refs is the same shape - an id list - for all 5).
-// Every pre-existing saved card has no `refs` key at all, so every read
-// and every write path normalizes through this rather than assuming an
-// array.
-export const normalizeCardRefs = (value) => {
-  if (!Array.isArray(value)) return [];
-  return [...new Set(value.filter(id => typeof id === 'string' && id.length))];
-};
-
 // The custom card type is the successor to text/image (see ToolMenu -
 // neither has a creation button anymore); this converts a card still in
 // one of those two shapes into a real custom card, one block holding its
