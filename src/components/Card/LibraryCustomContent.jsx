@@ -18,7 +18,11 @@ const LibraryCustomContent = ({
   const content = useSelector(state => state.project.present.cards[cardId].content);
   const expanded = isSelected || isExpanded;
 
-  if (!hasCardContent(content)) {
+  // The placeholder is only for condensed browsing - once expanded/selected,
+  // a freshly-created (still empty) card must fall through to the real,
+  // editable block list below (same as the canvas's CustomContent), or a
+  // brand new card would have no way to ever get its first block.
+  if (!hasCardContent(content) && !expanded) {
     return (
       <div className='library-card-content-container' style={{ height: '80px' }}>
         <span className='library-custom-empty'>No blocks yet</span>

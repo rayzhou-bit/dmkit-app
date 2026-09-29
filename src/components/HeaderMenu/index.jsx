@@ -31,7 +31,7 @@ const HeaderMenu = ({
   return (
     <>
       <div className='header-menu'>
-        { !!activeProject ? ToolMenuButton({isToolMenuOpen, toggleToolMenu}) : null }
+        { !!activeProject && !!toggleToolMenu ? ToolMenuButton({isToolMenuOpen, toggleToolMenu}) : null }
         <Title />
         <VersionControls />
         { !!userId ? <Projects /> : null }

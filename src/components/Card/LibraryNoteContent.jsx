@@ -24,7 +24,11 @@ const LibraryNoteContent = ({
   const content = useSelector(state => state.project.present.cards[cardId].content);
   const expanded = isSelected || isExpanded;
 
-  if (!hasCardContent(content)) {
+  // Same reasoning as LibraryCustomContent: only gate the placeholder while
+  // condensed - expanded/selected must always fall through to the real
+  // editable fields, or a freshly-created empty note card could never be
+  // filled in.
+  if (!hasCardContent(content) && !expanded) {
     return (
       <div className='library-card-content-container' style={{ height: '80px' }}>
         <span className='library-note-empty'>No note details yet</span>

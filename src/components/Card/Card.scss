@@ -831,6 +831,14 @@ $scrollbar-width: 17px;
 .active-card .note-content .monster-entry-add {
   display: block;
 }
+// Touch has no hover, so the rules above would never reveal this button -
+// on a touch device just always show it once rendered (still gated by the
+// Library's expanded/selected check upstream).
+@media (hover: none) {
+  .note-content .monster-entry-add {
+    display: block;
+  }
+}
 
 .monster-lines {
   display: flex;
@@ -1093,7 +1101,12 @@ $scrollbar-width: 17px;
 
   .note-portrait-image { max-height: 140px; }
 }
+// Sits in a bare .library-card-content-container (no .library-note-condensed
+// wrapper), so it carries that wrapper's inset itself - otherwise it renders
+// flush into the card's top-left corner, and the text jumps once real
+// content replaces it.
 .library-note-empty {
+  padding: 8px 15px;
   font-family: Roboto;
   font-size: 12px;
   color: #A0A4B4;
@@ -1289,6 +1302,12 @@ $scrollbar-width: 17px;
 .library-custom-expanded .custom-block-add-row {
   display: flex;
 }
+// Same touch fallback as .monster-entry-add above.
+@media (hover: none) {
+  .custom-block-add-row {
+    display: flex;
+  }
+}
 .custom-block-add {
   flex: 1 1 0;
   box-sizing: border-box;
@@ -1336,7 +1355,9 @@ $scrollbar-width: 17px;
   overflow-y: auto;
   gap: 8px;
 }
+// Same inset as .library-note-empty above, for the same reason.
 .library-custom-empty {
+  padding: 8px 15px;
   font-family: Roboto;
   font-size: 12px;
   color: #A0A4B4;

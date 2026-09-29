@@ -154,3 +154,69 @@ describe('LibraryCard (note) - draggable disarms while a field is being edited',
     expect(nameInput.value).toBe('Innkeeper Rosa');
   });
 });
+
+// Mobile replaces the canvas with the card list, so the Library card is the
+// only surface there. Two desktop affordances don't survive the trip: the
+// native drag onto a canvas that doesn't exist, and the double-click title
+// gate (double-tap is a zoom gesture). useIsMobile reads matchMedia, which
+// jsdom lacks entirely - absent, every other test here stays on the desktop
+// path, which is exactly what they were written against.
+describe('LibraryCard - mobile', () => {
+  const setMobile = (matches) => {
+    window.matchMedia = () => ({ matches, addEventListener: () => {}, removeEventListener: () => {} });
+  };
+  afterEach(() => { delete window.matchMedia; });
+
+  const renderCard = (cardId) => render(
+    <Provider store={store}>
+      <LibraryCard cardId={cardId} isExpanded={false} />
+    </Provider>
+  );
+
+  it('is not natively draggable - there is no canvas to drag onto, and it would fight touch scrolling', () => {
+    setMobile(true);
+    store.dispatch(actions.project.createCard({ newId: 'mcard', type: 'custom' }));
+    const { container } = renderCard('mcard');
+    expect(container.querySelector('.card').draggable).toBe(false);
+  });
+
+  it('opens the active card, so a just-created card (active, not yet selected) is editable straight away', () => {
+    setMobile(true);
+    store.dispatch(actions.project.createCard({ newId: 'mcard-new', type: 'custom' }));
+    store.dispatch(actions.session.setActiveCard({ id: 'mcard-new' }));
+
+    const { getByText, queryByText } = renderCard('mcard-new');
+    expect(queryByText('No blocks yet')).toBeNull();
+    expect(getByText('+ Add text')).not.toBeNull();
+  });
+
+  it('leaves a just-created card collapsed on desktop, where the canvas card is the place to edit it', () => {
+    store.dispatch(actions.project.createCard({ newId: 'dcard-new', type: 'custom' }));
+    store.dispatch(actions.session.setActiveCard({ id: 'dcard-new' }));
+
+    const { getByText } = renderCard('dcard-new');
+    expect(getByText('No blocks yet')).not.toBeNull();
+  });
+
+  it('opens the title on a single tap, since double-tap is a zoom gesture', () => {
+    setMobile(true);
+    store.dispatch(actions.project.createCard({ newId: 'mcard-title', type: 'custom' }));
+    const { container } = renderCard('mcard-title');
+
+    const titleInput = container.querySelector('.card-title input');
+    expect(titleInput.readOnly).toBe(true);
+    fireEvent.click(titleInput);
+    expect(titleInput.readOnly).toBe(false);
+  });
+
+  it('still requires a double-click on the title on desktop, where it guards against the card drag', () => {
+    store.dispatch(actions.project.createCard({ newId: 'dcard-title', type: 'custom' }));
+    const { container } = renderCard('dcard-title');
+
+    const titleInput = container.querySelector('.card-title input');
+    fireEvent.click(titleInput);
+    expect(titleInput.readOnly).toBe(true);
+    fireEvent.doubleClick(titleInput);
+    expect(titleInput.readOnly).toBe(false);
+  });
+});

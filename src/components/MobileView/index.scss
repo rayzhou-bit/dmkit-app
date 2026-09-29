@@ -1,0 +1,156 @@
+.mobile-view {
+  position: fixed;
+  top: 48px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10;
+  display: flex;
+  flex-flow: column nowrap;
+  background-color: #E8EEF5;
+}
+
+.mobile-tab-strip {
+  flex: 0 0 auto;
+  display: flex;
+  flex-flow: row nowrap;
+  gap: 8px;
+  padding: 10px 12px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  background-color: white;
+  border-bottom: 1px solid #F4F4F4;
+}
+
+.mobile-tab {
+  flex: 0 0 auto;
+  padding: 6px 14px;
+  border-radius: 16px;
+  border: 1px solid #D7D6D6;
+  background-color: white;
+  color: #667092;
+  font-family: Roboto;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+
+  &.active {
+    background-color: #363B4E;
+    border-color: #363B4E;
+    color: white;
+  }
+}
+
+.mobile-all-tab {
+  border-style: dashed;
+}
+
+.mobile-search-row {
+  flex: 0 0 auto;
+  padding: 8px 12px;
+  background-color: white;
+  border-bottom: 1px solid #F4F4F4;
+}
+
+.mobile-search-input {
+  width: 100%;
+  height: 36px;
+  padding: 0 12px;
+  border: 1px solid #D7D6D6;
+  border-radius: 8px;
+  background-color: #F4F4F4;
+  font-family: Roboto;
+  font-size: 14px;
+}
+
+.mobile-card-list {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 12px 12px calc(88px + env(safe-area-inset-bottom, 0px)); // clears the floating add button
+  display: flex;
+  flex-flow: column nowrap;
+  gap: 12px;
+
+  // .card is height:100%, sized for the canvas and for a Library column full
+  // enough that flex-shrink squeezes each card back to its content. With only
+  // a few cards that share leaves a tall band of card background under the
+  // content, so here each card sizes to what it holds.
+  > .card {
+    flex: 0 0 auto;
+    height: auto;
+  }
+}
+
+.mobile-empty {
+  padding: 40px 0;
+  text-align: center;
+  color: #A0A4B4;
+  font-family: Roboto;
+  font-size: 13px;
+}
+
+.mobile-add-btn {
+  position: fixed;
+  right: 20px;
+  bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background-color: #363B4E;
+  box-shadow: 2px 4px 12px -3px #00000066;
+  z-index: 30;
+
+  img {
+    width: 22px;
+    height: 22px;
+    filter: invert(1);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+  }
+}
+
+.mobile-sheet-backdrop {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 40;
+  background-color: #00000059;
+}
+
+.mobile-create-sheet {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 50;
+  padding: 20px 20px calc(20px + env(safe-area-inset-bottom, 0px));
+  border-radius: 16px 16px 0 0;
+  background-color: white;
+  box-shadow: 0 -2px 12px -3px #00000033;
+
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-around;
+
+  button {
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: center;
+    gap: 6px;
+    background-color: transparent;
+
+    img { width: 32px; height: 32px; }
+    span {
+      color: #363B4E;
+      font-family: Roboto;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    &:disabled { opacity: 0.4; }
+  }
+}
