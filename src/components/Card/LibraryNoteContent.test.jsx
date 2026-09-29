@@ -92,23 +92,35 @@ describe('LibraryNoteContent - condensed view (unselected, not expanded)', () =>
 });
 
 describe('LibraryNoteContent - expanded view (selected or isExpanded)', () => {
+  // The description field starts in display mode (CardRefField) - clicking
+  // its rendered text swaps in the real textarea, same pattern as
+  // LibraryCustomContent.test.jsx's mouseDown-then-getByPlaceholderText flow.
+  const enterEdit = (getByText) => fireEvent.mouseDown(getByText('A dim tavern.'));
+
   it('renders the portrait, an editable description, and the entry list', () => {
     const content = buildNoteContent({ description: 'A dim tavern.' });
-    const { container, getByLabelText } = renderLibraryNote(content, { isExpanded: true });
+    const { container, getByText, getByLabelText } = renderLibraryNote(content, { isExpanded: true });
     expect(container.querySelector('.note-portrait')).not.toBeNull();
+    expect(getByText('A dim tavern.')).not.toBeNull();
+    enterEdit(getByText);
     expect(getByLabelText('Description').value).toBe('A dim tavern.');
     expect(container.querySelector('.monster-entry-list')).not.toBeNull();
   });
 
   it('empty fields still render (with placeholders), unlike the condensed view', () => {
-    const { getByLabelText, getByText } = renderLibraryNote(buildNoteContent({ description: 'x' }), { isExpanded: true });
-    expect(getByLabelText('Description')).not.toBeNull();
+    const { getByPlaceholderText, getByText } = renderLibraryNote(buildNoteContent({ description: 'x' }), { isExpanded: true });
+    // description is 'x', not empty, so it renders in display mode as text -
+    // clicking it swaps in the textarea, which still carries the field's
+    // placeholder attribute (just not shown, since there's a value).
+    fireEvent.mouseDown(getByText('x'));
+    expect(getByPlaceholderText("What's this about? Jot down anything worth remembering.")).not.toBeNull();
     expect(getByText('+ Add Detail')).not.toBeNull();
   });
 
   it('typing in the description dispatches nothing; blurring dispatches exactly one updateCardNoteFields', () => {
     const content = buildNoteContent({ description: 'A dim tavern.' });
-    const { getByLabelText, store } = renderLibraryNote(content, { isExpanded: true });
+    const { getByText, getByLabelText, store } = renderLibraryNote(content, { isExpanded: true });
+    enterEdit(getByText);
     const textarea = getByLabelText('Description');
 
     fireEvent.change(textarea, { target: { value: 'A bright tavern.' } });
