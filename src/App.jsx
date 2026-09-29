@@ -30,9 +30,10 @@ const App = () => {
 
   return (
     <div className='layout'>
+      {/* No toggle handler on mobile - there's no ToolMenu to collapse. */}
       <HeaderMenu
         isToolMenuOpen={isToolMenuOpen}
-        toggleToolMenu={toggleToolMenu} />
+        toggleToolMenu={isMobile ? undefined : toggleToolMenu} />
       {isMobile ? (
         <MobileView />
       ) : (

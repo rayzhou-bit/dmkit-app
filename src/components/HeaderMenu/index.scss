@@ -15,36 +15,6 @@ $border-radius: 0.5rem;
   flex-flow: row nowrap;
 }
 
-// At phone width the row of controls (title/undo-redo-save/projects/user)
-// doesn't fit its usual sizes. Rather than build a second header, shrink
-// things down and - as a hard guarantee against ever pushing the document
-// wider than the viewport - let the row itself scroll horizontally if
-// something still doesn't fit.
-@media (max-width: 480px) {
-  .header-menu {
-    overflow-x: auto;
-  }
-  .expand {
-    display: none; // ToolMenu isn't rendered on mobile, so its toggle has nothing to open
-  }
-  .usermenu-title {
-    flex: 0 1 auto;
-    width: 110px;
-    padding: 12px 6px;
-    input { font-size: 14px; }
-  }
-  .version-controls button {
-    padding: 8px;
-  }
-  .version-controls .save span {
-    display: none; // keep the icon, drop the label to save room
-  }
-  .sign-in .sign-in-btn,
-  .sign-up-btn {
-    padding: 0 12px;
-  }
-}
-
 .expand {
   position: relative;
   width: 80px;
@@ -519,5 +489,36 @@ $scrollbar-width: 12px;
     li {
       list-style: none;
     }
+  }
+}
+
+// At phone width the row of controls doesn't fit at its usual sizes, so
+// shrink things down - and as a hard guarantee against ever pushing the
+// document wider than the viewport, let the row itself scroll if something
+// still doesn't fit. Must stay last in the file: these selectors are no more
+// specific than the base rules above, so only source order lets them win.
+@media (max-width: 480px) {
+  .header-menu {
+    overflow-x: auto;
+  }
+  // The ToolMenu toggle isn't rendered on mobile at all (App.jsx passes no
+  // handler), which frees its 80px for the title. min-width keeps the title
+  // legible instead of letting its siblings crush it to an ellipsis.
+  .usermenu-title {
+    flex: 0 1 auto;
+    width: auto;
+    min-width: 96px;
+    padding: 12px 8px;
+    input { font-size: 14px; }
+  }
+  .version-controls button {
+    padding: 8px;
+  }
+  .version-controls .save span {
+    display: none; // keep the icon, drop the label to save room
+  }
+  .sign-in .sign-in-btn,
+  .sign-up-btn {
+    padding: 0 12px;
   }
 }
