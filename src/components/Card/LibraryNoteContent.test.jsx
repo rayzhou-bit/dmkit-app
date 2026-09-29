@@ -56,6 +56,21 @@ describe('LibraryNoteContent - condensed view (unselected, not expanded)', () =>
     expect(getByText('Innkeeper Rosa, Hidden trapdoor')).not.toBeNull();
   });
 
+  // Description first - it's what the note is about - then the entry names,
+  // both rather than either/or, since the box fits several lines.
+  it('shows the description and the entry names together when both exist', () => {
+    const content = buildNoteContent({
+      description: 'A dim tavern that smells of salt.',
+      entries: [
+        { id: 'e1', name: 'Innkeeper Rosa', description: '' },
+        { id: 'e2', name: 'Hidden trapdoor', description: '' },
+      ],
+    });
+    const { container } = renderLibraryNote(content);
+    expect(container.querySelector('.library-note-line').textContent)
+      .toBe('A dim tavern that smells of salt.\nInnkeeper Rosa, Hidden trapdoor');
+  });
+
   it('renders no input or textarea - stays fully read-only, unlike the expanded view', () => {
     const content = buildNoteContent({
       description: 'A dim tavern.',

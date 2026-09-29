@@ -5,7 +5,7 @@ import { useToolMenuHooks } from '../ToolMenu/hooks';
 import { useMobileViewHooks, useCreateCardSheetHooks } from './hooks';
 
 import './index.scss';
-import PlusIcon from '../../assets/icons/plus.svg';
+import PlusIcon from '../../assets/icons/plus-dark.svg'; // dark glyph for the yellow button
 import MonsterIcon from '../../assets/icons/monster-icon.svg';
 import NoteIcon from '../../assets/icons/note-icon.svg';
 import CustomIcon from '../../assets/icons/custom-icon.svg';

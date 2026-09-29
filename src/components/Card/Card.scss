@@ -1,5 +1,8 @@
 $card-radius: 12px;
 $title-height: 32px;
+// Lines of preview text a condensed (80px) Library card fits: 80px less its
+// 8px padding, over an 11px/1.4 line.
+$library-preview-lines: 4;
 
 .card {
   padding: 0;
@@ -1072,7 +1075,7 @@ $scrollbar-width: 17px;
 // same idea as .library-monster-condensed.
 .library-note-condensed {
   flex-flow: row nowrap;
-  align-items: center;
+  align-items: flex-start; // preview text reads from the top, not floating mid-box
   gap: 8px;
   padding: 8px 15px;
 }
@@ -1084,15 +1087,23 @@ $scrollbar-width: 17px;
   border-radius: 4px;
 }
 .library-note-summary {
+  flex: 1 1 auto;
+  min-width: 0; // lets the clamped text shrink instead of forcing the row wider
   overflow: hidden;
 }
+// The preview box is a fixed 80px; a single nowrap line left most of it
+// empty. Wrap instead and clamp to what fits (4 lines at this line-height),
+// so a card shows as much of itself as the box allows.
 .library-note-line {
   font-family: Roboto;
   font-size: 11px;
+  line-height: 1.4;
   color: #363B4E;
+  white-space: pre-line; // sections are joined with \n
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: $library-preview-lines;
   overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 .library-note-expanded {
   padding: 10px 15px;
@@ -1101,15 +1112,14 @@ $scrollbar-width: 17px;
 
   .note-portrait-image { max-height: 140px; }
 }
-// Sits in a bare .library-card-content-container (no .library-note-condensed
-// wrapper), so it carries that wrapper's inset itself - otherwise it renders
-// flush into the card's top-left corner, and the text jumps once real
-// content replaces it.
+// Centered in the box, matching .library-monster-empty/.library-image-empty -
+// every card type says "nothing here yet" the same way.
 .library-note-empty {
-  padding: 8px 15px;
+  margin: auto;
   font-family: Roboto;
   font-size: 12px;
   color: #A0A4B4;
+  text-align: center;
 }
 
 // Custom card - a freely mixed, open-ended list of text/image blocks (see
@@ -1328,7 +1338,7 @@ $scrollbar-width: 17px;
 // same idea as .library-note-condensed.
 .library-custom-condensed {
   flex-flow: row nowrap;
-  align-items: center;
+  align-items: flex-start; // same top-aligned preview as .library-note-condensed
   gap: 8px;
   padding: 8px 15px;
 }
@@ -1340,27 +1350,34 @@ $scrollbar-width: 17px;
   border-radius: 4px;
 }
 .library-custom-summary {
+  flex: 1 1 auto;
+  min-width: 0;
   overflow: hidden;
 }
+// Same multi-line clamp as .library-note-line.
 .library-custom-line {
   font-family: Roboto;
   font-size: 11px;
+  line-height: 1.4;
   color: #363B4E;
+  white-space: pre-line;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: $library-preview-lines;
   overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 .library-custom-expanded {
   padding: 10px 15px;
   overflow-y: auto;
   gap: 8px;
 }
-// Same inset as .library-note-empty above, for the same reason.
+// Centered, same as .library-note-empty above.
 .library-custom-empty {
-  padding: 8px 15px;
+  margin: auto;
   font-family: Roboto;
   font-size: 12px;
   color: #A0A4B4;
+  text-align: center;
 }
 
 // Library monster preview. Condensed (80px, unselected) stays read-only -
