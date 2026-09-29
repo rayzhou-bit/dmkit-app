@@ -39,14 +39,17 @@ const LibraryNoteContent = ({
   const { portrait = '', portraitAlt = '', description = '', entries } = content ?? {};
 
   if (!expanded) {
+    // Description first (the most important thing about a note), entry names
+    // after, both shown rather than either/or - the preview box fits several
+    // lines and CSS clamps whatever doesn't fit.
     const entryNames = normalizeMonsterEntries(entries).map(e => e.name.trim()).filter(Boolean);
-    const summaryLine = description.trim() || entryNames.join(', ');
+    const summaryText = [description.trim(), entryNames.join(', ')].filter(Boolean).join('\n');
 
     return (
       <div className='library-card-content-container library-note-condensed' style={{ height: '80px' }}>
         {portrait && <img className='library-note-thumb' src={portrait} alt={portraitAlt} draggable='false' />}
         <div className='library-note-summary'>
-          {summaryLine && <div className='library-note-line'>{summaryLine}</div>}
+          {summaryText && <div className='library-note-line'>{summaryText}</div>}
         </div>
       </div>
     );

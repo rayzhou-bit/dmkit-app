@@ -94,17 +94,20 @@
   position: fixed;
   right: 20px;
   bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+  // content-box plus the UA's default button padding made this 68x58 - an
+  // ellipse, not the circle the 50% radius implies.
+  box-sizing: border-box;
   width: 56px;
   height: 56px;
+  padding: 0;
   border-radius: 50%;
-  background-color: #363B4E;
+  background-color: #FFDC5F; // the accent already used for the primary action
   box-shadow: 2px 4px 12px -3px #00000066;
   z-index: 30;
 
   img {
     width: 22px;
     height: 22px;
-    filter: invert(1);
   }
 
   &:disabled {

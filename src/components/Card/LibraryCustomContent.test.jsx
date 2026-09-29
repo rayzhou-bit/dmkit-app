@@ -84,6 +84,42 @@ describe('LibraryCustomContent - condensed view (unselected, not expanded)', () 
     expect(container.querySelector('.library-custom-thumb')).not.toBeNull();
   });
 
+  // The preview box fits several lines, so it summarizes the whole card
+  // rather than stopping at the first block - CSS clamps the overflow.
+  it('combines every text block, in order, into the summary', () => {
+    const content = buildCustomContent({
+      blocks: [
+        { id: 'b1', type: 'text', text: 'First line.' },
+        { id: 'b2', type: 'text', text: 'Second line.' },
+        { id: 'b3', type: 'text', text: 'Third line.' },
+      ],
+    });
+    const { container } = renderLibraryCustom(content);
+    expect(container.querySelector('.library-custom-line').textContent)
+      .toBe('First line.\nSecond line.\nThird line.');
+  });
+
+  it('shows a thumbnail and the text together, not one or the other', () => {
+    const content = buildCustomContent({
+      blocks: [
+        { id: 'b1', type: 'image', image: 'data:image/jpeg;base64,x', alt: 'photo.png' },
+        { id: 'b2', type: 'text', text: 'Caption for the photo.' },
+      ],
+    });
+    const { container, getByText } = renderLibraryCustom(content);
+    expect(container.querySelector('.library-custom-thumb')).not.toBeNull();
+    expect(getByText('Caption for the photo.')).not.toBeNull();
+  });
+
+  it('omits the summary entirely when the card holds only images', () => {
+    const content = buildCustomContent({
+      blocks: [{ id: 'b1', type: 'image', image: 'data:image/jpeg;base64,x', alt: 'photo.png' }],
+    });
+    const { container } = renderLibraryCustom(content);
+    expect(container.querySelector('.library-custom-thumb')).not.toBeNull();
+    expect(container.querySelector('.library-custom-summary')).toBeNull();
+  });
+
   it('renders no input or textarea - stays fully read-only, unlike the expanded view', () => {
     const content = buildCustomContent({ blocks: [{ id: 'b1', type: 'text', text: 'Some notes.' }] });
     const { container } = renderLibraryCustom(content);

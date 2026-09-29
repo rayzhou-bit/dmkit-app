@@ -31,17 +31,24 @@ const LibraryCustomContent = ({
   }
 
   if (!expanded) {
-    // hasCardContent being true guarantees at least one block has content -
-    // show whichever comes first (text -> a truncated line, image -> a thumbnail).
-    const firstContentBlock = normalizeCustomBlocks(content?.blocks).find(customBlockHasContent);
+    // hasCardContent being true guarantees at least one block has content.
+    // A thumbnail and text aren't either/or: show the first image alongside
+    // every text block's content, in block order, and let CSS clamp what
+    // doesn't fit rather than stopping at the first block.
+    const contentBlocks = normalizeCustomBlocks(content?.blocks).filter(customBlockHasContent);
+    const firstImage = contentBlocks.find(block => block.type === CUSTOM_BLOCK_TYPES.image);
+    const summaryText = contentBlocks
+      .filter(block => block.type === CUSTOM_BLOCK_TYPES.text)
+      .map(block => block.text.trim())
+      .filter(Boolean)
+      .join('\n');
 
     return (
       <div className='library-card-content-container library-custom-condensed' style={{ height: '80px' }}>
-        {firstContentBlock?.type === CUSTOM_BLOCK_TYPES.image ? (
-          <img className='library-custom-thumb' src={firstContentBlock.image} alt={firstContentBlock.alt} draggable='false' />
-        ) : (
+        {firstImage && <img className='library-custom-thumb' src={firstImage.image} alt={firstImage.alt} draggable='false' />}
+        {summaryText && (
           <div className='library-custom-summary'>
-            <div className='library-custom-line'>{firstContentBlock?.text}</div>
+            <div className='library-custom-line'>{summaryText}</div>
           </div>
         )}
       </div>
