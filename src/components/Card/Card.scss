@@ -102,6 +102,49 @@ $title-height: 32px;
   }
 }
 
+// The display-mode rendering of a ref-token-capable field (CustomTextBlock/
+// TextContent/LibraryTextContent - see CardRefField/CardRefDisplay.jsx).
+// className on the node is always the SAME class its textarea counterpart
+// uses (e.g. .text, .monster-field-textarea), so box model/font/padding all
+// come from that rule for free - this only adds what a plain textarea gets
+// for free from the UA (whitespace/newline preservation) and a caret cursor
+// to signal it's clickable despite not being a real input.
+.card-ref-display {
+  white-space: pre-wrap;
+  cursor: text;
+}
+
+.card-ref-placeholder {
+  color: #A0A4B4;
+}
+
+// Inline reference chip - a pill that flows with the surrounding text
+// (replaces the old .card-refs block strip), one per #[Title](id) token.
+// Resolves to the live target's title at render time so a rename just
+// works (see CardRefDisplay.jsx); a dangling ref (target deleted) renders
+// greyed and non-interactive rather than disappearing.
+.card-ref-chip-inline {
+  display: inline-block;
+  max-width: 100%;
+  margin: 0 1px;
+  padding: 1px 7px;
+  border-radius: 10px;
+  background-color: #F4F4F4;
+  color: #363B4E;
+  font-family: Roboto;
+  white-space: nowrap;
+  vertical-align: baseline;
+  cursor: pointer;
+
+  &.card-ref-chip-inline-dangling {
+    background-color: transparent;
+    border: 1px solid #D7D6D6;
+    color: #A0A4B4;
+    font-style: italic;
+    cursor: default;
+  }
+}
+
 $scrollbar-width: 17px;
 // Hidden file inputs behind MonsterPortrait/ImageContent's upload buttons -
 // top-level, not scoped to .card-content, since the Library wraps its

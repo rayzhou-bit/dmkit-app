@@ -11,6 +11,7 @@ import TrashIcon from '../../assets/icons/trash-red.svg';
 // only ever has one entry list) - reuses its .monster-entry* CSS classes
 // as-is, they have no monster-specific coupling. See MonsterEntry.jsx for
 // the fuller explanation of index/ordinal/id-keying.
+// No "#" card-reference trigger here - see NoteTextField's comment.
 const NoteEntry = ({
   cardId,
   entry,

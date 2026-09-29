@@ -1,5 +1,5 @@
 import React from 'react';
-import { render } from '@testing-library/react';
+import { render, fireEvent } from '@testing-library/react';
 import { Provider } from 'react-redux';
 
 import Content from './Content';
@@ -16,15 +16,25 @@ const makeStore = (cards) => ({
 });
 
 describe('Content (dispatcher)', () => {
-  it('renders a textarea (no img) for a legacy card with no type', () => {
+  it('renders text inline (display mode, no textarea yet) for a legacy card with no type', () => {
     const store = makeStore({ c1: { content: { text: 'hi' } } });
-    const { container } = render(
+    const { container, getByText } = render(
       <Provider store={store}><Content cardId='c1' setEditingCard={() => {}} /></Provider>
     );
+    expect(container.querySelector('textarea')).toBeNull();
+    expect(getByText('hi')).not.toBeNull();
+    expect(container.querySelector('img')).toBeNull();
+  });
+
+  it('clicking the display swaps in a real textarea with the same value', () => {
+    const store = makeStore({ c1: { content: { text: 'hi' } } });
+    const { container, getByText } = render(
+      <Provider store={store}><Content cardId='c1' setEditingCard={() => {}} /></Provider>
+    );
+    fireEvent.mouseDown(getByText('hi'));
     const textarea = container.querySelector('textarea');
     expect(textarea).not.toBeNull();
     expect(textarea.value).toBe('hi');
-    expect(container.querySelector('img')).toBeNull();
   });
 
   it('renders an image/placeholder (no textarea) for an image card', () => {

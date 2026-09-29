@@ -1,11 +1,13 @@
-import { useEffect, useRef, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { useDispatch, useSelector, useStore } from 'react-redux';
 import useOutsideClick from '../../utils/useOutsideClick';
 
 import { copySelectedCard } from '../../data/redux/thunkActions';
 import { actions, selectors } from '../../data/redux';
 import { CARD_COLOR_KEYS, LIGHT_COLORS } from '../../constants/colors';
 import { getCardType, hasCardContent, CARD_TYPES } from '../../constants/cards';
+import { getActiveRefQuery } from '../../utils/cardRefQuery';
+import { buildCardRefToken } from '../../utils/cardRefToken';
 import { processImageFile } from '../../utils/imageUtils';
 import { MAX_PORTRAIT_DATA_URI_LENGTH, PORTRAIT_MAX_EDGE_STEPS } from '../../constants/images';
 import {
@@ -493,11 +495,9 @@ export const useContentHooks = ({
     if (!isEditing) {
       setIsEditing(true);
       setEditingCard(true);
-      contentRef.current.focus();
-      contentRef.current.setSelectionRange(
-        contentRef.current.value.length,
-        contentRef.current.value.length,
-      );
+      // Focus/caret placement is owned by CardRefField's own effect now -
+      // contentRef.current is still null here the moment this fires from a
+      // display-mode click (the textarea hasn't mounted yet).
     }
   };
 
@@ -609,18 +609,22 @@ export const useImageContentHooks = ({
 // `draggable` creates.
 // setEditingCard undefined (the canvas) -> fully inert: always editable,
 // nothing to gate, matching today's canvas behavior exactly.
-export const useDragSafeFieldHooks = ({ setEditingCard }) => {
+// alwaysToggle: opts out of that canvas shortcut - needed by the ref-token
+// fields (CustomTextBlock), which need a real display/edit swap on the
+// canvas too, not just in the Library (see CardRefField). Every other
+// caller leaves it false and keeps the always-editable canvas behavior.
+export const useDragSafeFieldHooks = ({ setEditingCard, alwaysToggle = false }) => {
   const [ isEditing, setIsEditing ] = useState(false);
   const editRef = useRef();
 
-  if (!setEditingCard) {
+  if (!setEditingCard && !alwaysToggle) {
     return { editRef, readOnly: false, beginEdit: () => {}, endEdit: () => {} };
   }
 
   const beginEdit = () => {
     if (isEditing) return;
     setIsEditing(true);
-    setEditingCard(true);
+    setEditingCard?.(true);
     editRef.current?.focus();
     editRef.current?.setSelectionRange?.(editRef.current.value.length, editRef.current.value.length);
   };
@@ -628,7 +632,7 @@ export const useDragSafeFieldHooks = ({ setEditingCard }) => {
   const endEdit = () => {
     if (!isEditing) return;
     setIsEditing(false);
-    setEditingCard(false);
+    setEditingCard?.(false);
   };
 
   return { editRef, readOnly: !isEditing, beginEdit, endEdit };
@@ -1136,3 +1140,121 @@ export const usePortraitHooks = ({ cardId }) => {
 };
 
 export const useMonsterPortraitHooks = usePortraitHooks;
+
+// The "#" trigger shared by every multiline field that supports card
+// references (see CardRefPicker.jsx and cardRefQuery.js). Wraps a field's
+// own value/changeValue/handleKeyDown rather than replacing them - a field
+// wires onChange/onKeyDown/onKeyUp/onBlur to the versions returned here
+// instead of its own, and renders <CardRefPicker {...picker} /> when
+// `picker` is non-null. Insertion goes through the field's own changeValue
+// (not a dispatch) so the normal commit-on-blur path is what actually
+// persists the text - the inserted #[Title](id) token IS the reference now,
+// there's nothing else to record (see cardRefToken.js).
+export const useCardRefTrigger = ({ cardId, editRef, value, changeValue, handleKeyDown }) => {
+  // Reads the store imperatively (via useStore, not useSelector) - this only
+  // needs a snapshot at the moment the query changes, not a live
+  // subscription, and several hand-rolled fake stores in this repo's tests
+  // rebuild `cards` as a fresh object on every getState() call, which would
+  // defeat useSelector's reference-equality bail-out and infinite-loop (see
+  // useMonsterEntryListHooks's comment on the same class of bug).
+  const store = useStore();
+
+  const [match, setMatch] = useState(null); // { query, start, end } or null
+  const [highlightedIndex, setHighlightedIndex] = useState(0);
+  const [rect, setRect] = useState(null);
+  const pendingCaretRef = useRef(null);
+
+  // Runs after `value` (and therefore the DOM textarea.value) has actually
+  // updated - setSelectionRange before that would clamp against the old,
+  // shorter string.
+  useEffect(() => {
+    if (pendingCaretRef.current == null || !editRef.current) return;
+    editRef.current.setSelectionRange(pendingCaretRef.current, pendingCaretRef.current);
+    pendingCaretRef.current = null;
+  }, [value]);
+
+  const syncMatch = (text, caretIndex) => {
+    const next = getActiveRefQuery(text, caretIndex);
+    if (!next) {
+      setMatch(null);
+      return;
+    }
+    // Only restart the highlight when the query itself changed, i.e. when
+    // the result list is actually different. Arrow keys fire a keyup as
+    // well as a keydown, and resetting on every caret sync would snap the
+    // highlight back to the first result the instant the user moved it.
+    if (!match || match.query !== next.query) setHighlightedIndex(0);
+    setMatch({ ...next, end: caretIndex });
+    setRect(editRef.current?.getBoundingClientRect() ?? null);
+  };
+
+  const closePicker = () => setMatch(null);
+
+  const results = useMemo(() => {
+    if (!match) return [];
+    const cards = store.getState().project.present.cards;
+    const query = match.query.trim().toLowerCase();
+    return Object.entries(cards)
+      .filter(([id]) => id !== cardId)
+      .map(([id, card]) => ({ id, title: card.title || 'untitled', editedOn: card.editedOn || 0 }))
+      .filter(card => !query || card.title.toLowerCase().includes(query))
+      .sort((a, b) => b.editedOn - a.editedOn);
+  }, [match, store, cardId]);
+
+  const selectResult = (card) => {
+    if (!match) return;
+    const before = value.slice(0, match.start);
+    const after = value.slice(match.end);
+    const token = buildCardRefToken({ id: card.id, title: card.title });
+    pendingCaretRef.current = before.length + token.length;
+    changeValue(before + token + after);
+    closePicker();
+  };
+
+  return {
+    picker: match ? { rect, results, highlightedIndex, onSelect: selectResult, onHighlight: setHighlightedIndex } : null,
+    onChange: (e) => {
+      changeValue(e.target.value);
+      syncMatch(e.target.value, e.target.selectionStart);
+    },
+    // Catches caret moves that don't fire a change event (arrow keys,
+    // Home/End) - typing itself is already covered by onChange.
+    onKeyUp: (e) => {
+      if (match) syncMatch(e.target.value, e.target.selectionStart);
+    },
+    onKeyDown: (e) => {
+      if (match) {
+        if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+          e.preventDefault();
+          e.stopPropagation();
+          if (results.length) {
+            const delta = e.key === 'ArrowDown' ? 1 : -1;
+            setHighlightedIndex(i => (i + delta + results.length) % results.length);
+          }
+          return;
+        }
+        if (e.key === 'Enter' || e.key === 'Tab') {
+          if (results[highlightedIndex]) {
+            e.preventDefault();
+            e.stopPropagation();
+            selectResult(results[highlightedIndex]);
+            return;
+          }
+          // No match to select - close and let Enter/Tab do whatever they
+          // normally do (newline, focus move) instead of eating the keystroke.
+          closePicker();
+        } else if (e.key === 'Escape') {
+          // Takes precedence over the field's own Escape-reverts-to-store
+          // handling below - closing the picker should never also wipe
+          // whatever the user has typed.
+          e.preventDefault();
+          e.stopPropagation();
+          closePicker();
+          return;
+        }
+      }
+      handleKeyDown?.(e);
+    },
+    onBlur: closePicker,
+  };
+};

@@ -10,6 +10,10 @@ import './Card.scss';
 // NoteContent.jsx (canvas) and LibraryNoteContent.jsx (Library)
 // need the exact same markup. Reuses .monster-field*/.monster-field-textarea
 // CSS as-is.
+// No "#" card-reference trigger here - this field renders as plain text,
+// not through CardRefField/CardRefDisplay, so a token would just show up
+// as raw #[Title](id) forever. It'll get references back once inline
+// rendering reaches non-prose fields too.
 const NoteTextField = ({
   cardId,
   fieldKey,

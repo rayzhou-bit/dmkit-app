@@ -43,9 +43,10 @@ describe('MonsterContent', () => {
   });
 
   it('renders the Notes block list, starting with the one empty text block from buildMonsterContent()', () => {
-    const { container, getByPlaceholderText } = renderMonster(buildMonsterContent());
+    const { container, getByText } = renderMonster(buildMonsterContent());
     expect(container.querySelectorAll('.monster-notes .custom-block').length).toBe(1);
-    expect(getByPlaceholderText('Type anything...').value).toBe('');
+    // Empty block -> display mode shows the placeholder, not a real textarea yet.
+    expect(getByText('Type anything...')).not.toBeNull();
   });
 
   it('typing dispatches nothing; blurring dispatches exactly one updateCardMonsterFields', () => {

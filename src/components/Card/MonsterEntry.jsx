@@ -12,6 +12,7 @@ import TrashIcon from '../../assets/icons/trash-red.svg';
 // controls. `index` is just for the ordinal accessible names ("Action 2") -
 // the DOM id is keyed on the stable entry.id so React never reuses an
 // input/textarea across entries when the list reorders.
+// No "#" card-reference trigger here - see NoteTextField.jsx's comment.
 const MonsterEntry = ({
   cardId,
   fieldKey,
