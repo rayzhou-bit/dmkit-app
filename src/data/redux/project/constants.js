@@ -118,7 +118,7 @@ export const INTRO_CARDS = {
       blocks: [{
         id: 'start-refs-b1',
         type: CUSTOM_BLOCK_TYPES.text,
-        text: "Type # inside a freeform card's text to search your other cards and insert a link to one. The stat card's Notes field works the same way.\n\nClick a reference and it jumps straight to that card. If the card lives on a different tab, the library opens automatically and highlights it there. The Sunken Barrow's Running It card links to the Bestiary this way.",
+        text: "Type # in a freeform card, a note's description or details, or a stat card's notes, to search your other cards and drop in a link.\n\nClick a reference and it jumps straight to that card. If the card lives on a different tab, the library opens and highlights it there. Every room in The Sunken Barrow links to its monsters in the Bestiary this way.",
       }],
     }),
     views: {
@@ -161,11 +161,8 @@ export const INTRO_CARDS = {
 
   // ---------------------------------------------------------------------
   // Tab 2: "The Sunken Barrow" - a short original beginner dungeon. The
-  // hook card below uses #[Name](id) tokens to link to the Bestiary tab -
-  // note cards (every room) can't: NoteTextField/NoteEntry render plain
-  // text, not through CardRefField/CardRefDisplay, so a token there would
-  // just show up as literal "#[Name](id)" forever. Room entries mention
-  // monsters by plain name with a "(see Bestiary: X)" pointer instead.
+  // hook card and every room's entries use #[Name](id) tokens to link to the
+  // Bestiary tab, so a monster is one click away from the room it appears in.
   // ---------------------------------------------------------------------
   'barrow-hook': {
     title: 'The Sunken Barrow - Running It',
@@ -198,7 +195,7 @@ export const INTRO_CARDS = {
       description: "The barrow hill's south face has collapsed inward, exposing a jagged hole in the old stonework wide enough to duck through. Fresh boot prints - small, bare, clawed - lead inside over scattered rubble. A crude totem of bones and red twine hangs over the opening.",
       entries: [
         { id: 'barrow-r1-e1', name: 'Totem Trap', description: 'The bone totem is rigged to a trip-cord. Anyone who pulls it aside without a DC 12 Wisdom (Perception) check to spot the cord yanks free a stack of loose rocks overhead: DC 13 Dexterity save or take 7 (2d6) bludgeoning damage and alert every goblin in Area 2.' },
-        { id: 'barrow-r1-e2', name: 'Goblin Lookout', description: 'A single goblin (see Bestiary: Goblin) watches the entrance from a rubble pile 20 feet in, using Stealth to stay hidden until it can loose a shortbow shot and flee toward Area 2 to raise the alarm.' },
+        { id: 'barrow-r1-e2', name: 'Goblin Lookout', description: 'A single #[Goblin](mon-goblin) watches the entrance from a rubble pile 20 feet in, using Stealth to stay hidden until it can loose a shortbow shot and flee toward Area 2 to raise the alarm.' },
         { id: 'barrow-r1-e3', name: 'Tracks', description: 'A DC 10 Wisdom (Survival) check reveals two sets of tracks: goblin feet heading in, and a dragged, heavier trail leading toward Area 4 - consistent with a stolen sheep.' },
       ],
     }),
@@ -214,7 +211,7 @@ export const INTRO_CARDS = {
     content: buildNoteContent({
       description: 'A guttering fire pit lights a wider chamber cluttered with stolen sacks, chicken bones, and a heap of mismatched furs. Two goblins hunch near the flames, sharpening blades and arguing in low voices.',
       entries: [
-        { id: 'barrow-r2-e1', name: 'Goblins', description: "Two goblins (see Bestiary: Goblin). If the alarm was raised in Area 1, they're ready and fighting from behind the furs (half cover); otherwise they're surprised." },
+        { id: 'barrow-r2-e1', name: 'Goblins', description: "Two #[Goblin](mon-goblin) raiders. If the alarm was raised in Area 1, they're ready and fighting from behind the furs (half cover); otherwise they're surprised." },
         { id: 'barrow-r2-e2', name: 'Loot Sacks', description: "The sacks hold Millbrook's stolen goods: a small cook pot, 15 sp, and a shepherd's silver whistle worth 10 gp." },
         { id: 'barrow-r2-e3', name: 'Passage', description: 'A low tunnel to the north leads to Area 3; a wider one east leads to Area 4.' },
       ],
@@ -231,10 +228,10 @@ export const INTRO_CARDS = {
     content: buildNoteContent({
       description: 'Bedrolls of straw and stolen blankets fill this cramped den. Something small and quick skitters through a gap in the rubble as torchlight spills in.',
       entries: [
-        { id: 'barrow-r3-e1', name: 'Giant Rat', description: 'A giant rat (see Bestiary: Giant Rat) nests here and attacks anything that disturbs it. Add a second one for a harder fight.' },
-        { id: 'barrow-r3-e2', name: 'Sleeping Goblin', description: 'One goblin (see Bestiary: Goblin) sleeps off a shift here unless already alerted; it wakes if a fight starts elsewhere in this room.' },
+        { id: 'barrow-r3-e1', name: 'Giant Rat', description: 'A #[Giant Rat](mon-giant-rat) nests here and attacks anything that disturbs it. Add a second one for a harder fight.' },
+        { id: 'barrow-r3-e2', name: 'Sleeping Goblin', description: 'One #[Goblin](mon-goblin) sleeps off a shift here unless already alerted; it wakes if a fight starts elsewhere in this room.' },
         { id: 'barrow-r3-e3', name: 'Hidden Coin Purse', description: "Buried in a bedroll (DC 12 Investigation): a leather purse with 22 gp - one goblin's private stash." },
-        { id: 'barrow-r3-e4', name: 'The Wolf Pack', description: "If the goblins' hunting wolf (see Bestiary: Wolf) is out on a run when the party arrives, it returns here 1d4 rounds into any loud fight, drawn by the noise." },
+        { id: 'barrow-r3-e4', name: 'The Wolf Pack', description: "If the goblins' hunting #[Wolf](mon-wolf) is out on a run when the party arrives, it returns here 1d4 rounds into any loud fight, drawn by the noise." },
       ],
     }),
     views: {
@@ -249,7 +246,7 @@ export const INTRO_CARDS = {
     content: buildNoteContent({
       description: 'The air turns sour with the smell of butchered meat. Sheep carcasses hang from hooks driven into the old stonework, and a terrified figure is bound and gagged in the corner, watching the door.',
       entries: [
-        { id: 'barrow-r4-e1', name: 'The Captive', description: "Denna (see Bestiary: Bandit; treat as a noncombatant while bound), a scavenger who broke in ahead of the party looking for the tomb's treasure and got caught. Freed, she knows the layout of Area 6 and warns that \"the thing in the box isn't dead\" - a DC 10 Charisma (Persuasion) check gets her help in a fight." },
+        { id: 'barrow-r4-e1', name: 'The Captive', description: "Denna (a #[Bandit](mon-bandit), but a noncombatant while bound), a scavenger who broke in ahead of the party looking for the tomb's treasure and got caught. Freed, she knows the layout of Area 6 and warns that \"the thing in the box isn't dead\" - a DC 10 Charisma (Persuasion) check gets her help in a fight." },
         { id: 'barrow-r4-e2', name: 'Stolen Livestock', description: "Three butchered sheep account for Millbrook's losses - proof enough to collect the bounty even if the party goes no further." },
         { id: 'barrow-r4-e3', name: 'Secret Door', description: 'A DC 15 Wisdom (Perception) check finds a slab in the east wall, cool to the touch and out of place among the barrow stonework, leading to Area 6.' },
       ],
@@ -266,8 +263,8 @@ export const INTRO_CARDS = {
     content: buildNoteContent({
       description: 'Furs and looted finery cover a chair worthy of a throne, if you squint. A goblin in mismatched armor snarls orders at two bodyguards flanking her.',
       entries: [
-        { id: 'barrow-r5-e1', name: 'Grix, the Goblin Boss', description: 'Grix (see Bestiary: Goblin Boss) fights from the chair, using Redirect Attack to shield herself with her bodyguards. If reduced below half HP, she offers to surrender the tomb key in exchange for her life.' },
-        { id: 'barrow-r5-e2', name: 'Bodyguards', description: 'Two goblins (see Bestiary: Goblin) guard Grix and fight to the death for her unless she surrenders.' },
+        { id: 'barrow-r5-e1', name: 'Grix, the Goblin Boss', description: 'Grix, a #[Goblin Boss](mon-goblin-boss), fights from the chair, using Redirect Attack to shield herself with her bodyguards. If reduced below half HP, she offers to surrender the tomb key in exchange for her life.' },
+        { id: 'barrow-r5-e2', name: 'Bodyguards', description: 'Two #[Goblin](mon-goblin) bodyguards guard Grix and fight to the death for her unless she surrenders.' },
         { id: 'barrow-r5-e3', name: 'Treasure', description: 'A locked chest (Grix carries the key) holds 85 gp, a potion of healing, and a crude iron key etched with spiral markings - it opens the vault door in Area 6.' },
       ],
     }),
@@ -283,7 +280,7 @@ export const INTRO_CARDS = {
     content: buildNoteContent({
       description: 'Goblin digging has torn a ragged hole through into a perfectly circular stone chamber, untouched by the warren above. Spiral carvings older than any language you recognize cover the walls. In the center, a stone sarcophagus lies cracked open - and empty.',
       entries: [
-        { id: 'barrow-r6-e1', name: 'The Guardian', description: 'A skeleton (see Bestiary: Skeleton) rises from behind the sarcophagus the moment anyone crosses the threshold. It was sealed here to guard the tomb, not to serve whoever broke in, and attacks goblins and party alike.' },
+        { id: 'barrow-r6-e1', name: 'The Guardian', description: 'A #[Skeleton](mon-skeleton) rises from behind the sarcophagus the moment anyone crosses the threshold. It was sealed here to guard the tomb, not to serve whoever broke in, and attacks goblins and party alike.' },
         { id: 'barrow-r6-e2', name: 'Vault Door', description: "An iron door in the north wall is locked; Grix's key (Area 5) or a DC 18 Thieves' Tools check opens it without damage. Forcing it (DC 20 Strength) triggers a rockfall: DC 14 Dexterity save or 14 (4d6) bludgeoning damage." },
         { id: 'barrow-r6-e3', name: 'The Vault', description: "Beyond the door: a stone pedestal holding a suit of +1 leather armor and a sealed clay urn of ashes that radiates faint necromancy - what's left of whoever the skeleton once was. What the party does with the ashes is their call to make." },
         { id: 'barrow-r6-e4', name: 'Something Older', description: "The spiral carvings don't match any known culture in the region. That's the hook for a bigger campaign, if you want one." },
