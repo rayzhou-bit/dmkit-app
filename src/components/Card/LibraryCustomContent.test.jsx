@@ -40,6 +40,20 @@ describe('LibraryCustomContent - empty state', () => {
     const { getByText } = renderLibraryCustom(content);
     expect(getByText('No blocks yet')).not.toBeNull();
   });
+
+  // The placeholder is for condensed browsing only. Once the card is open it
+  // has to fall through to the real block list, or a newly-created card would
+  // be a dead end - no way to ever add its first block. That's the only way
+  // in on mobile, where the card list is the whole app.
+  it.each([
+    ['selected', { isSelected: true }],
+    ['expanded', { isExpanded: true }],
+  ])('gives an empty card the add-block controls once %s', (_label, props) => {
+    const { getByText, queryByText } = renderLibraryCustom(buildCustomContent(), props);
+    expect(queryByText('No blocks yet')).toBeNull();
+    expect(getByText('+ Add text')).not.toBeNull();
+    expect(getByText('+ Add image')).not.toBeNull();
+  });
 });
 
 describe('LibraryCustomContent - condensed view (unselected, not expanded)', () => {

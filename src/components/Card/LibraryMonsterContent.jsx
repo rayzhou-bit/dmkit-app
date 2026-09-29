@@ -35,7 +35,11 @@ const LibraryMonsterContent = ({
   const content = useSelector(state => state.project.present.cards[cardId].content);
   const expanded = isSelected || isExpanded;
 
-  if (!hasCardContent(content)) {
+  // Same reasoning as LibraryCustomContent/LibraryNoteContent: only gate the
+  // placeholder while condensed - expanded/selected must fall through to
+  // the real editable fields below, or a freshly-created empty stat card
+  // could never be filled in.
+  if (!hasCardContent(content) && !expanded) {
     return (
       <div className='library-card-content-container' style={{ height: '80px' }}>
         <span className='library-monster-empty'>No stat block yet</span>

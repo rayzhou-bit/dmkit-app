@@ -831,6 +831,14 @@ $scrollbar-width: 17px;
 .active-card .note-content .monster-entry-add {
   display: block;
 }
+// Touch has no hover, so the rules above would never reveal this button -
+// on a touch device just always show it once rendered (still gated by the
+// Library's expanded/selected check upstream).
+@media (hover: none) {
+  .note-content .monster-entry-add {
+    display: block;
+  }
+}
 
 .monster-lines {
   display: flex;
@@ -1288,6 +1296,12 @@ $scrollbar-width: 17px;
 .active-card .custom-block-add-row,
 .library-custom-expanded .custom-block-add-row {
   display: flex;
+}
+// Same touch fallback as .monster-entry-add above.
+@media (hover: none) {
+  .custom-block-add-row {
+    display: flex;
+  }
 }
 .custom-block-add {
   flex: 1 1 0;

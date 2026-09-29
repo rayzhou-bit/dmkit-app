@@ -6,10 +6,12 @@ import ToolMenu from './components/ToolMenu';
 import Library from './components/Library';
 import TabBar from './components/TabBar';
 import Canvas from './components/Canvas';
+import MobileView from './components/MobileView';
 import Popup from './components/Popup';
 import ErrorBanner from './components/ErrorBanner';
 
 import { useListenerHooks, useMenuStateHooks } from './hooks';
+import useIsMobile from './utils/useIsMobile';
 
 const App = () => {
   useListenerHooks();
@@ -18,6 +20,7 @@ const App = () => {
     isToolMenuOpen,
     toggleToolMenu,
   } = useMenuStateHooks();
+  const isMobile = useIsMobile();
 
   // Disable scrolling
   document.body.scroll = 'no';
@@ -30,10 +33,16 @@ const App = () => {
       <HeaderMenu
         isToolMenuOpen={isToolMenuOpen}
         toggleToolMenu={toggleToolMenu} />
-      <ToolMenu toolMenuRef={toolMenuRef} isOpen={isToolMenuOpen} />
-      <Library />
-      <TabBar />
-      <Canvas toolMenuRef={toolMenuRef} />
+      {isMobile ? (
+        <MobileView />
+      ) : (
+        <>
+          <ToolMenu toolMenuRef={toolMenuRef} isOpen={isToolMenuOpen} />
+          <Library />
+          <TabBar />
+          <Canvas toolMenuRef={toolMenuRef} />
+        </>
+      )}
       <Popup />
       <ErrorBanner />
     </div>

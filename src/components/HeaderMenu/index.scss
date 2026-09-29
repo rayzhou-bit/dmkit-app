@@ -15,6 +15,36 @@ $border-radius: 0.5rem;
   flex-flow: row nowrap;
 }
 
+// At phone width the row of controls (title/undo-redo-save/projects/user)
+// doesn't fit its usual sizes. Rather than build a second header, shrink
+// things down and - as a hard guarantee against ever pushing the document
+// wider than the viewport - let the row itself scroll horizontally if
+// something still doesn't fit.
+@media (max-width: 480px) {
+  .header-menu {
+    overflow-x: auto;
+  }
+  .expand {
+    display: none; // ToolMenu isn't rendered on mobile, so its toggle has nothing to open
+  }
+  .usermenu-title {
+    flex: 0 1 auto;
+    width: 110px;
+    padding: 12px 6px;
+    input { font-size: 14px; }
+  }
+  .version-controls button {
+    padding: 8px;
+  }
+  .version-controls .save span {
+    display: none; // keep the icon, drop the label to save room
+  }
+  .sign-in .sign-in-btn,
+  .sign-up-btn {
+    padding: 0 12px;
+  }
+}
+
 .expand {
   position: relative;
   width: 80px;

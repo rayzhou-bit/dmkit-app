@@ -3,6 +3,7 @@ import { useSelector } from 'react-redux';
 
 import { useTitleHooks, useColorDropdownHooks, useOptionsDropdownLibraryHooks } from './hooks';
 import { getCardType, CARD_TYPE_ICONS } from '../../constants/cards';
+import useIsMobile from '../../utils/useIsMobile';
 
 import ColorDropdown from '../../components-shared/Dropdowns/ColorDropdown';
 import ActionDropdown from '../../components-shared/Dropdowns/ActionDropdown';
@@ -19,6 +20,10 @@ const LibraryTitle = ({
   setEditingCard,
 }) => {
   const typeIcon = useSelector(state => CARD_TYPE_ICONS[getCardType(state.project.present.cards[cardId])]);
+  // Double-click guards the title against the card's own drag, which mobile
+  // doesn't have - and double-tap is a zoom gesture there, so the title would
+  // otherwise be uneditable. One tap opens it instead.
+  const isMobile = useIsMobile();
 
   const {
     inputClassName,
@@ -68,6 +73,7 @@ const LibraryTitle = ({
           maxLength='50'
           onBlur={endTitleEdit}
           onChange={(e) => changeTitleValue(e.target.value)}
+          onClick={isMobile ? beginTitleEdit : undefined}
           onDoubleClick={beginTitleEdit}
           onDragOver={(e) => e.preventDefault()}
           onKeyDown={handleTitleKeyPress}
