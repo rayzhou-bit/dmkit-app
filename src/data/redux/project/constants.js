@@ -58,7 +58,7 @@ export const INTRO_CARDS = {
       }],
     }),
     views: {
-      'start': { pos: { x: 6 * GRID_SIZE, y: 6 * GRID_SIZE }, size: { width: 26 * GRID_SIZE, height: 20 * GRID_SIZE } },
+      'start': { pos: { x: 6 * GRID_SIZE, y: 6 * GRID_SIZE }, size: { width: 20 * GRID_SIZE, height: 26 * GRID_SIZE } },
     },
     ...ts(18),
   },
@@ -74,7 +74,7 @@ export const INTRO_CARDS = {
       }],
     }),
     views: {
-      'start': { pos: { x: 36 * GRID_SIZE, y: 6 * GRID_SIZE }, size: { width: 30 * GRID_SIZE, height: 24 * GRID_SIZE } },
+      'start': { pos: { x: 28 * GRID_SIZE, y: 6 * GRID_SIZE }, size: { width: 20 * GRID_SIZE, height: 26 * GRID_SIZE } },
     },
     ...ts(19),
   },
@@ -90,7 +90,7 @@ export const INTRO_CARDS = {
       }],
     }),
     views: {
-      'start': { pos: { x: 70 * GRID_SIZE, y: 6 * GRID_SIZE }, size: { width: 26 * GRID_SIZE, height: 20 * GRID_SIZE } },
+      'start': { pos: { x: 50 * GRID_SIZE, y: 6 * GRID_SIZE }, size: { width: 20 * GRID_SIZE, height: 26 * GRID_SIZE } },
     },
     ...ts(20),
   },
@@ -106,7 +106,7 @@ export const INTRO_CARDS = {
       }],
     }),
     views: {
-      'start': { pos: { x: 100 * GRID_SIZE, y: 6 * GRID_SIZE }, size: { width: 28 * GRID_SIZE, height: 22 * GRID_SIZE } },
+      'start': { pos: { x: 72 * GRID_SIZE, y: 6 * GRID_SIZE }, size: { width: 20 * GRID_SIZE, height: 26 * GRID_SIZE } },
     },
     ...ts(21),
   },
@@ -118,11 +118,11 @@ export const INTRO_CARDS = {
       blocks: [{
         id: 'start-refs-b1',
         type: CUSTOM_BLOCK_TYPES.text,
-        text: 'Type # inside any freeform or note card to search your other cards and insert a link to one.\n\nClick a reference and it jumps straight to that card. If the card lives on a different tab, the library opens automatically and highlights it there. The Sunken Barrow tab uses these to link every room to the monsters it references in the Bestiary.',
+        text: "Type # inside a freeform card's text to search your other cards and insert a link to one. The stat card's Notes field works the same way.\n\nClick a reference and it jumps straight to that card. If the card lives on a different tab, the library opens automatically and highlights it there. The Sunken Barrow's Running It card links to the Bestiary this way.",
       }],
     }),
     views: {
-      'start': { pos: { x: 6 * GRID_SIZE, y: 34 * GRID_SIZE }, size: { width: 30 * GRID_SIZE, height: 22 * GRID_SIZE } },
+      'start': { pos: { x: 6 * GRID_SIZE, y: 34 * GRID_SIZE }, size: { width: 20 * GRID_SIZE, height: 24 * GRID_SIZE } },
     },
     ...ts(22),
   },
@@ -138,7 +138,7 @@ export const INTRO_CARDS = {
       }],
     }),
     views: {
-      'start': { pos: { x: 40 * GRID_SIZE, y: 34 * GRID_SIZE }, size: { width: 28 * GRID_SIZE, height: 20 * GRID_SIZE } },
+      'start': { pos: { x: 28 * GRID_SIZE, y: 34 * GRID_SIZE }, size: { width: 20 * GRID_SIZE, height: 24 * GRID_SIZE } },
     },
     ...ts(23),
   },
@@ -154,7 +154,7 @@ export const INTRO_CARDS = {
       }],
     }),
     views: {
-      'start': { pos: { x: 72 * GRID_SIZE, y: 34 * GRID_SIZE }, size: { width: 34 * GRID_SIZE, height: 22 * GRID_SIZE } },
+      'start': { pos: { x: 50 * GRID_SIZE, y: 34 * GRID_SIZE }, size: { width: 20 * GRID_SIZE, height: 24 * GRID_SIZE } },
     },
     ...ts(24),
   },
