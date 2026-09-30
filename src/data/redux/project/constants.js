@@ -177,6 +177,7 @@ export const INTRO_CARDS = {
     color: 'forest',
     type: CARD_TYPES.monster,
     content: buildMonsterContent({
+      notes: [{ id: 'mon-goblin-note', type: CUSTOM_BLOCK_TYPES.text, text: "Fights from cover and at range. Nimble Escape lets it shoot, duck out of sight, and reappear somewhere else every turn. Runs once the fight turns against it." }],
       size: 'Small',
       creatureType: 'humanoid (goblinoid)',
       alignment: 'neutral evil',
@@ -217,6 +218,7 @@ export const INTRO_CARDS = {
     color: 'jungle',
     type: CARD_TYPES.monster,
     content: buildMonsterContent({
+      notes: [{ id: 'mon-goblin-boss-note', type: CUSTOM_BLOCK_TYPES.text, text: "Hangs back and lets others die for it - Redirect Attack shoves a nearby #[Goblin](mon-goblin) into a blow meant for the boss. Bargains for its life rather than fighting to the end." }],
       size: 'Small',
       creatureType: 'humanoid (goblinoid)',
       alignment: 'neutral evil',
@@ -267,6 +269,7 @@ export const INTRO_CARDS = {
     color: 'chestnut',
     type: CARD_TYPES.monster,
     content: buildMonsterContent({
+      notes: [{ id: 'mon-giant-rat-note', type: CUSTOM_BLOCK_TYPES.text, text: "Territorial, not tactical. Defends its nest and fights until it drops. Pack Tactics means a second rat is worse than twice as bad." }],
       size: 'Small',
       creatureType: 'beast',
       alignment: 'unaligned',
@@ -306,6 +309,7 @@ export const INTRO_CARDS = {
     color: 'gray',
     type: CARD_TYPES.monster,
     content: buildMonsterContent({
+      notes: [{ id: 'mon-wolf-note', type: CUSTOM_BLOCK_TYPES.text, text: "Hunts as a pack and works the flanks for Pack Tactics advantage. A bite can knock a target prone (DC 11 Strength), which is how wolves finish anyone who goes down." }],
       size: 'Medium',
       creatureType: 'beast',
       alignment: 'unaligned',
@@ -346,6 +350,7 @@ export const INTRO_CARDS = {
     color: 'cloud',
     type: CARD_TYPES.monster,
     content: buildMonsterContent({
+      notes: [{ id: 'mon-skeleton-note', type: CUSTOM_BLOCK_TYPES.text, text: "Obeys its last standing order and nothing else - it won't flee, parley, or tell friend from foe. Bludgeoning damage breaks it fastest." }],
       size: 'Medium',
       creatureType: 'undead',
       alignment: 'lawful evil',
@@ -388,6 +393,7 @@ export const INTRO_CARDS = {
     color: 'red',
     type: CARD_TYPES.monster,
     content: buildMonsterContent({
+      notes: [{ id: 'mon-bandit-note', type: CUSTOM_BLOCK_TYPES.text, text: "Fights while it is winning and surrenders or bolts when it isn't. More useful alive: a captive, a guide, or a turncoat." }],
       size: 'Medium',
       creatureType: 'humanoid (any race)',
       alignment: 'any non-lawful alignment',
