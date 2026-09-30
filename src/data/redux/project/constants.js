@@ -58,7 +58,7 @@ export const INTRO_CARDS = {
       ],
     }),
     views: {
-      'start': { pos: { x: 8 * GRID_SIZE, y: 6 * GRID_SIZE }, size: { width: 36 * GRID_SIZE, height: 12 * GRID_SIZE } },
+      'start': { pos: { x: 8 * GRID_SIZE, y: 6 * GRID_SIZE }, size: { width: 28 * GRID_SIZE, height: 12 * GRID_SIZE } },
     },
     ...ts(24),
   },
@@ -76,7 +76,7 @@ export const INTRO_CARDS = {
       ],
     }),
     views: {
-      'start': { pos: { x: 50 * GRID_SIZE, y: 6 * GRID_SIZE }, size: { width: 38 * GRID_SIZE, height: 23 * GRID_SIZE } },
+      'start': { pos: { x: 39 * GRID_SIZE, y: 6 * GRID_SIZE }, size: { width: 28 * GRID_SIZE, height: 25 * GRID_SIZE } },
     },
     ...ts(23),
   },
@@ -90,7 +90,7 @@ export const INTRO_CARDS = {
       ],
     }),
     views: {
-      'start': { pos: { x: 50 * GRID_SIZE, y: 31 * GRID_SIZE }, size: { width: 38 * GRID_SIZE, height: 9 * GRID_SIZE } },
+      'start': { pos: { x: 8 * GRID_SIZE, y: 21 * GRID_SIZE }, size: { width: 28 * GRID_SIZE, height: 9 * GRID_SIZE } },
     },
     ...ts(22),
   },
