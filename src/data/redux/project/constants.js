@@ -43,122 +43,56 @@ const ts = (n) => ({
 
 export const INTRO_CARDS = {
   // ---------------------------------------------------------------------
-  // Tab 1: "Start Here" - each card sits next to the UI it describes (the
-  // tool menu on the left, the library on the right, tabs below, the header
-  // above) and points at it, so the layout itself does half the explaining.
-  // Keep them terse: people click things to find out what they do.
+  // Tab 1: "Start Here" - two columns, welcome on the left and the rest on
+  // the right. Keep it terse: people click things to find out what they do,
+  // so this only covers what isn't discoverable that way (what each card type
+  // is for, how references work, and that saving needs an account).
   // ---------------------------------------------------------------------
   'start-welcome': {
     title: "Welcome to DM Kit",
     color: 'jungle',
     type: CARD_TYPES.custom,
     content: buildCustomContent({
-      blocks: [{
-        id: 'start-welcome-b1',
-        type: CUSTOM_BLOCK_TYPES.text,
-        text: "A canvas for planning your games. Drag cards, resize them, put them wherever makes sense.\n\nThe other three tabs are samples - pull them apart.",
-      }],
+      blocks: [
+        { id: 'start-welcome-b1', type: CUSTOM_BLOCK_TYPES.text, text: "A canvas for planning your games. Drag cards, resize them, put them wherever makes sense.\n\nCheck out the other tabs for ways to use this app!" },
+      ],
     }),
     views: {
-      'start': { pos: { x: 26 * GRID_SIZE, y: 2 * GRID_SIZE }, size: { width: 22 * GRID_SIZE, height: 14 * GRID_SIZE } },
+      'start': { pos: { x: 8 * GRID_SIZE, y: 6 * GRID_SIZE }, size: { width: 36 * GRID_SIZE, height: 12 * GRID_SIZE } },
     },
-    ...ts(18),
+    ...ts(24),
   },
   'start-tools': {
     title: "Cards",
     color: 'cotton_blue',
     type: CARD_TYPES.custom,
     content: buildCustomContent({
-      blocks: [{
-        id: 'start-tools-b1',
-        type: CUSTOM_BLOCK_TYPES.text,
-        text: "\u2190 Click one to add it to this tab.",
-      }],
+      blocks: [
+        { id: 'start-tools-b1', type: CUSTOM_BLOCK_TYPES.text, text: "Add one from the tool menu on the left." },
+        { id: 'start-tools-b2', type: CUSTOM_BLOCK_TYPES.text, text: "stat - a monster or NPC stat block." },
+        { id: 'start-tools-b3', type: CUSTOM_BLOCK_TYPES.text, text: "note - a description plus a list of keyed details." },
+        { id: 'start-tools-b4', type: CUSTOM_BLOCK_TYPES.text, text: "freeform - any mix of text and images, like this card." },
+        { id: 'start-tools-b5', type: CUSTOM_BLOCK_TYPES.text, text: "Type # in any card to link another, like #[The Sunken Barrow - Running It](barrow-hook). Click a chip to jump there." },
+      ],
     }),
     views: {
-      'start': { pos: { x: 2 * GRID_SIZE, y: 5 * GRID_SIZE }, size: { width: 20 * GRID_SIZE, height: 9 * GRID_SIZE } },
-    },
-    ...ts(19),
-  },
-  'start-select': {
-    title: "Select a card",
-    color: 'butter',
-    type: CARD_TYPES.custom,
-    content: buildCustomContent({
-      blocks: [{
-        id: 'start-select-b1',
-        type: CUSTOM_BLOCK_TYPES.text,
-        text: "\u2190 More tools appear down here once something's selected.",
-      }],
-    }),
-    views: {
-      'start': { pos: { x: 2 * GRID_SIZE, y: 40 * GRID_SIZE }, size: { width: 20 * GRID_SIZE, height: 9 * GRID_SIZE } },
-    },
-    ...ts(20),
-  },
-  'start-undo-save': {
-    title: "Undo & saving",
-    color: 'chestnut',
-    type: CARD_TYPES.custom,
-    content: buildCustomContent({
-      blocks: [{
-        id: 'start-undo-save-b1',
-        type: CUSTOM_BLOCK_TYPES.text,
-        text: "\u2191 Undo, redo, save.\n\nSaving needs an account - until then it's only this browser tab.",
-      }],
-    }),
-    views: {
-      'start': { pos: { x: 56 * GRID_SIZE, y: 0 * GRID_SIZE }, size: { width: 18 * GRID_SIZE, height: 8 * GRID_SIZE } },
-    },
-    ...ts(21),
-  },
-  'start-library': {
-    title: "The Library",
-    color: 'lavender',
-    type: CARD_TYPES.custom,
-    content: buildCustomContent({
-      blocks: [{
-        id: 'start-library-b1',
-        type: CUSTOM_BLOCK_TYPES.text,
-        text: "Every card you make is in here \u2192\n\nSearch it, or drag a card back onto any tab.",
-      }],
-    }),
-    views: {
-      'start': { pos: { x: 76 * GRID_SIZE, y: 4 * GRID_SIZE }, size: { width: 18 * GRID_SIZE, height: 13 * GRID_SIZE } },
-    },
-    ...ts(22),
-  },
-  'start-refs': {
-    title: "Linking cards",
-    color: 'sage',
-    type: CARD_TYPES.custom,
-    content: buildCustomContent({
-      blocks: [{
-        id: 'start-refs-b1',
-        type: CUSTOM_BLOCK_TYPES.text,
-        text: "Type # in any card to link another, like #[The Sunken Barrow - Running It](barrow-hook).\n\nClick the chip to jump to it.",
-      }],
-    }),
-    views: {
-      'start': { pos: { x: 30 * GRID_SIZE, y: 18 * GRID_SIZE }, size: { width: 28 * GRID_SIZE, height: 12 * GRID_SIZE } },
+      'start': { pos: { x: 50 * GRID_SIZE, y: 6 * GRID_SIZE }, size: { width: 38 * GRID_SIZE, height: 23 * GRID_SIZE } },
     },
     ...ts(23),
   },
-  'start-tabs': {
-    title: "Tabs",
-    color: 'cobalt',
+  'start-saving': {
+    title: "Saving",
+    color: 'chestnut',
     type: CARD_TYPES.custom,
     content: buildCustomContent({
-      blocks: [{
-        id: 'start-tabs-b1',
-        type: CUSTOM_BLOCK_TYPES.text,
-        text: "\u2193 Separate views of the same collection. A card can sit in more than one.",
-      }],
+      blocks: [
+        { id: 'start-saving-b1', type: CUSTOM_BLOCK_TYPES.text, text: "Saving needs an account - sign in from the header. Until then your work only lives in this browser tab." },
+      ],
     }),
     views: {
-      'start': { pos: { x: 34 * GRID_SIZE, y: 44 * GRID_SIZE }, size: { width: 24 * GRID_SIZE, height: 9 * GRID_SIZE } },
+      'start': { pos: { x: 50 * GRID_SIZE, y: 31 * GRID_SIZE }, size: { width: 38 * GRID_SIZE, height: 9 * GRID_SIZE } },
     },
-    ...ts(24),
+    ...ts(22),
   },
 
   // ---------------------------------------------------------------------
@@ -635,7 +569,7 @@ export const INTRO_TABS = {
     title: 'Start Here',
     pos: DEFAULT_CANVAS_POSITION,
     scale: 1,
-    cards: ['start-welcome', 'start-tools', 'start-select', 'start-undo-save', 'start-library', 'start-refs', 'start-tabs'],
+    cards: ['start-welcome', 'start-tools', 'start-saving'],
   },
   'barrow': {
     title: 'The Sunken Barrow',
