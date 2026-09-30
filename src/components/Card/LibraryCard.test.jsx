@@ -106,7 +106,7 @@ describe('LibraryCard (note) - draggable disarms while a field is being edited',
     // Library's expanded view), so seed a field first.
     store.dispatch(actions.project.updateCardNoteFields({ id: 'lcard-note', fields: { description: 'placeholder' } }));
 
-    const { container } = render(
+    const { container, getByText } = render(
       <Provider store={store}>
         <LibraryCard cardId='lcard-note' isExpanded={false} />
       </Provider>
@@ -116,11 +116,15 @@ describe('LibraryCard (note) - draggable disarms while a field is being edited',
     fireEvent.click(card);
     expect(card.draggable).toBe(true);
 
+    // The description field starts in display mode (CardRefField) - a
+    // mousedown on its rendered text is what swaps in the real textarea AND
+    // disarms draggable (both go through the field's own beginEdit), same
+    // pattern as LibraryCustomContent.test.jsx.
+    fireEvent.mouseDown(getByText('placeholder'));
+    expect(card.draggable).toBe(false);
+
     const descriptionInput = container.querySelector('#note-field-lcard-note-description');
     expect(descriptionInput).not.toBeNull();
-
-    fireEvent.click(descriptionInput);
-    expect(card.draggable).toBe(false);
 
     fireEvent.change(descriptionInput, { target: { value: 'A dim tavern.' } });
     fireEvent.blur(descriptionInput);
