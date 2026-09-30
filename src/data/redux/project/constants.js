@@ -43,118 +43,120 @@ const ts = (n) => ({
 
 export const INTRO_CARDS = {
   // ---------------------------------------------------------------------
-  // Tab 1: "Start Here" - freeform cards teaching the app as it exists
-  // today, in left-to-right/top-to-bottom reading order.
+  // Tab 1: "Start Here" - each card sits next to the UI it describes (the
+  // tool menu on the left, the library on the right, tabs below, the header
+  // above) and points at it, so the layout itself does half the explaining.
+  // Keep them terse: people click things to find out what they do.
   // ---------------------------------------------------------------------
   'start-welcome': {
-    title: 'Welcome to DM Kit',
+    title: "Welcome to DM Kit",
     color: 'jungle',
     type: CARD_TYPES.custom,
     content: buildCustomContent({
       blocks: [{
         id: 'start-welcome-b1',
         type: CUSTOM_BLOCK_TYPES.text,
-        text: "DM Kit is a canvas for planning your games. Drag cards anywhere, resize them, and lay out a session however makes sense to you.\n\nThis tab walks through what's here today. The other three tabs show it in use: a short sample dungeon, the monsters it references, and a sample party you can copy for your own table.",
+        text: "A canvas for planning your games. Drag cards, resize them, put them wherever makes sense.\n\nThe other three tabs are samples - pull them apart.",
       }],
     }),
     views: {
-      'start': { pos: { x: 6 * GRID_SIZE, y: 6 * GRID_SIZE }, size: { width: 20 * GRID_SIZE, height: 26 * GRID_SIZE } },
+      'start': { pos: { x: 26 * GRID_SIZE, y: 2 * GRID_SIZE }, size: { width: 22 * GRID_SIZE, height: 14 * GRID_SIZE } },
     },
     ...ts(18),
   },
   'start-tools': {
-    title: 'Creating Cards',
+    title: "Cards",
     color: 'cotton_blue',
     type: CARD_TYPES.custom,
     content: buildCustomContent({
       blocks: [{
         id: 'start-tools-b1',
         type: CUSTOM_BLOCK_TYPES.text,
-        text: 'The tool menu on the left edge adds new cards to the current tab:\n\nstat - a monster stat block, like the ones in the Bestiary tab\nnote - a description plus a list of named details (see the Sunken Barrow room cards, or the Party tab)\nfreeform - any mix of text and images, like this card\n\nSelect one or more cards to reveal select all, group (lays selected cards out in a tidy grid), copy, and delete.',
+        text: "\u2190 Click one to add it to this tab.",
       }],
     }),
     views: {
-      'start': { pos: { x: 28 * GRID_SIZE, y: 6 * GRID_SIZE }, size: { width: 20 * GRID_SIZE, height: 26 * GRID_SIZE } },
+      'start': { pos: { x: 2 * GRID_SIZE, y: 5 * GRID_SIZE }, size: { width: 20 * GRID_SIZE, height: 9 * GRID_SIZE } },
     },
     ...ts(19),
   },
-  'start-tabs': {
-    title: 'Tabs',
-    color: 'cobalt',
+  'start-select': {
+    title: "Select a card",
+    color: 'butter',
     type: CARD_TYPES.custom,
     content: buildCustomContent({
       blocks: [{
-        id: 'start-tabs-b1',
+        id: 'start-select-b1',
         type: CUSTOM_BLOCK_TYPES.text,
-        text: 'The bar along the top holds your tabs - separate views for organizing cards into scenes, locations, or session pages.\n\nClick + to add a tab, click a tab to switch to it, and drag tabs to reorder them. A card can be placed in more than one tab at once, so the same monster or NPC can show up wherever you need it.',
+        text: "\u2190 More tools appear down here once something's selected.",
       }],
     }),
     views: {
-      'start': { pos: { x: 50 * GRID_SIZE, y: 6 * GRID_SIZE }, size: { width: 20 * GRID_SIZE, height: 26 * GRID_SIZE } },
+      'start': { pos: { x: 2 * GRID_SIZE, y: 40 * GRID_SIZE }, size: { width: 20 * GRID_SIZE, height: 9 * GRID_SIZE } },
     },
     ...ts(20),
   },
-  'start-library': {
-    title: 'The Library',
-    color: 'lavender',
-    type: CARD_TYPES.custom,
-    content: buildCustomContent({
-      blocks: [{
-        id: 'start-library-b1',
-        type: CUSTOM_BLOCK_TYPES.text,
-        text: "Every card you've ever created lives in the library, whichever tab it's placed in (or none at all). Click the book icon on the right edge to open it.\n\nFrom there you can search by title, filter by color or by which tabs a card appears in, and sort alphabetically or by when a card was last edited.",
-      }],
-    }),
-    views: {
-      'start': { pos: { x: 72 * GRID_SIZE, y: 6 * GRID_SIZE }, size: { width: 20 * GRID_SIZE, height: 26 * GRID_SIZE } },
-    },
-    ...ts(21),
-  },
-  'start-refs': {
-    title: 'Card References',
-    color: 'sage',
-    type: CARD_TYPES.custom,
-    content: buildCustomContent({
-      blocks: [{
-        id: 'start-refs-b1',
-        type: CUSTOM_BLOCK_TYPES.text,
-        text: "Type # in a freeform card, a note's description or details, or a stat card's notes, to search your other cards and drop in a link.\n\nClick a reference and it jumps straight to that card. If the card lives on a different tab, the library opens and highlights it there. Every room in The Sunken Barrow links to its monsters in the Bestiary this way.",
-      }],
-    }),
-    views: {
-      'start': { pos: { x: 6 * GRID_SIZE, y: 34 * GRID_SIZE }, size: { width: 20 * GRID_SIZE, height: 24 * GRID_SIZE } },
-    },
-    ...ts(22),
-  },
   'start-undo-save': {
-    title: 'Undo, Redo & Saving',
+    title: "Undo & saving",
     color: 'chestnut',
     type: CARD_TYPES.custom,
     content: buildCustomContent({
       blocks: [{
         id: 'start-undo-save-b1',
         type: CUSTOM_BLOCK_TYPES.text,
-        text: "Made a mistake? Undo and redo buttons live in the header, next to a running save status indicator.\n\nSaving requires an account - sign in from the header to create one. Until then, everything you build only lives in this browser tab, so it won't survive a refresh.",
+        text: "\u2191 Undo, redo, save.\n\nSaving needs an account - until then it's only this browser tab.",
       }],
     }),
     views: {
-      'start': { pos: { x: 28 * GRID_SIZE, y: 34 * GRID_SIZE }, size: { width: 20 * GRID_SIZE, height: 24 * GRID_SIZE } },
+      'start': { pos: { x: 56 * GRID_SIZE, y: 0 * GRID_SIZE }, size: { width: 18 * GRID_SIZE, height: 8 * GRID_SIZE } },
     },
-    ...ts(23),
+    ...ts(21),
   },
-  'start-explore': {
-    title: 'Go Explore',
-    color: 'forest',
+  'start-library': {
+    title: "The Library",
+    color: 'lavender',
     type: CARD_TYPES.custom,
     content: buildCustomContent({
       blocks: [{
-        id: 'start-explore-b1',
+        id: 'start-library-b1',
         type: CUSTOM_BLOCK_TYPES.text,
-        text: 'Take a look at the other three tabs: The Sunken Barrow is a short sample dungeon, Bestiary holds the monsters it references, and Party & Session Prep has a set of sample characters you can copy and reuse.\n\nStart with #[The Sunken Barrow - Running It](barrow-hook) - then make a tab of your own and start building.',
+        text: "Every card you make is in here \u2192\n\nSearch it, or drag a card back onto any tab.",
       }],
     }),
     views: {
-      'start': { pos: { x: 50 * GRID_SIZE, y: 34 * GRID_SIZE }, size: { width: 20 * GRID_SIZE, height: 24 * GRID_SIZE } },
+      'start': { pos: { x: 76 * GRID_SIZE, y: 4 * GRID_SIZE }, size: { width: 18 * GRID_SIZE, height: 13 * GRID_SIZE } },
+    },
+    ...ts(22),
+  },
+  'start-refs': {
+    title: "Linking cards",
+    color: 'sage',
+    type: CARD_TYPES.custom,
+    content: buildCustomContent({
+      blocks: [{
+        id: 'start-refs-b1',
+        type: CUSTOM_BLOCK_TYPES.text,
+        text: "Type # in any card to link another, like #[The Sunken Barrow - Running It](barrow-hook).\n\nClick the chip to jump to it.",
+      }],
+    }),
+    views: {
+      'start': { pos: { x: 30 * GRID_SIZE, y: 18 * GRID_SIZE }, size: { width: 28 * GRID_SIZE, height: 12 * GRID_SIZE } },
+    },
+    ...ts(23),
+  },
+  'start-tabs': {
+    title: "Tabs",
+    color: 'cobalt',
+    type: CARD_TYPES.custom,
+    content: buildCustomContent({
+      blocks: [{
+        id: 'start-tabs-b1',
+        type: CUSTOM_BLOCK_TYPES.text,
+        text: "\u2193 Separate views of the same collection. A card can sit in more than one.",
+      }],
+    }),
+    views: {
+      'start': { pos: { x: 34 * GRID_SIZE, y: 44 * GRID_SIZE }, size: { width: 24 * GRID_SIZE, height: 9 * GRID_SIZE } },
     },
     ...ts(24),
   },
@@ -633,7 +635,7 @@ export const INTRO_TABS = {
     title: 'Start Here',
     pos: DEFAULT_CANVAS_POSITION,
     scale: 1,
-    cards: ['start-welcome', 'start-tools', 'start-tabs', 'start-library', 'start-refs', 'start-undo-save', 'start-explore'],
+    cards: ['start-welcome', 'start-tools', 'start-select', 'start-undo-save', 'start-library', 'start-refs', 'start-tabs'],
   },
   'barrow': {
     title: 'The Sunken Barrow',
