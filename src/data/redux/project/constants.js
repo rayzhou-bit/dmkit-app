@@ -96,136 +96,75 @@ export const INTRO_CARDS = {
   },
 
   // ---------------------------------------------------------------------
-  // Tab 2: "The Sunken Barrow" - a short original beginner dungeon. The
-  // hook card and every room's entries use #[Name](id) tokens to link to the
-  // Bestiary tab, so a monster is one click away from the room it appears in.
+  // Tab 2: "The Sunken Barrow" - a three-room beginner dungeon, kept short
+  // on purpose: it is sample content a first-time user meets, not a module to
+  // read. Entries link to the Bestiary with #[Name](id) tokens, so a monster
+  // is one click from the area it appears in. Note-card height is driven by
+  // entry count (~80px each), not width, so areas carry two entries apiece.
   // ---------------------------------------------------------------------
   'barrow-hook': {
-    title: 'The Sunken Barrow - Running It',
+    title: "The Sunken Barrow",
     color: 'chestnut',
     type: CARD_TYPES.custom,
     content: buildCustomContent({
       blocks: [
-        {
-          id: 'barrow-hook-b1',
-          type: CUSTOM_BLOCK_TYPES.text,
-          text: "The Sunken Barrow is a one-session dungeon crawl for four 1st-level characters. A goblin warband has dug into an old hill barrow above the village of Millbrook, and their tunneling broke through into a sealed tomb far older than they are.\n\nThe hook: sheep have gone missing from Millbrook's flocks for two weeks, and a shepherd swears she saw green-skinned raiders dragging a carcass up the barrow hill at dusk. The village offers 50 gp to whoever clears the goblins out, and whatever the party finds underneath is theirs to keep.",
-        },
-        {
-          id: 'barrow-hook-b2',
-          type: CUSTOM_BLOCK_TYPES.text,
-          text: "Running it: play the goblins as scared and outmatched, not suicidal. #[Grix](mon-goblin-boss) will bargain or flee if a fight turns against her. If the party is having an easy time, the goblins' hunting #[Wolf](mon-wolf) can arrive as reinforcements a few rounds into a loud fight. The #[Skeleton](mon-skeleton) in the tomb is older and colder than anything the goblins understand - play it as grim, not comedic.\n\nScaling: for a party of three, drop one goblin from the Watch Fire and skip the wolf. For a party of five, add a second #[Goblin](mon-goblin) to Grix's Den.",
-        },
+        { id: 'barrow-hook-b1', type: CUSTOM_BLOCK_TYPES.text, text: "A three-room dungeon for a first session." },
+        { id: 'barrow-hook-b2', type: CUSTOM_BLOCK_TYPES.text, text: "Sheep keep going missing from Millbrook. Goblins have dug into the old barrow on the hill - and broken into something much older underneath." },
+        { id: 'barrow-hook-b3', type: CUSTOM_BLOCK_TYPES.text, text: "Play the goblins as scared, not suicidal. For five players, add a #[Goblin](mon-goblin) to area 2." },
       ],
     }),
     views: {
-      'barrow': { pos: { x: 6 * GRID_SIZE, y: 6 * GRID_SIZE }, size: { width: 36 * GRID_SIZE, height: 40 * GRID_SIZE } },
+      'barrow': { pos: { x: 6 * GRID_SIZE, y: 6 * GRID_SIZE }, size: { width: 34 * GRID_SIZE, height: 19 * GRID_SIZE } },
     },
     ...ts(11),
   },
-  'barrow-room-1-door': {
-    title: 'Area 1 - The Broken Barrow Door',
-    color: 'gray',
+  'barrow-a1': {
+    title: "1 - The Barrow Door",
+    color: 'sage',
     type: CARD_TYPES.note,
     content: buildNoteContent({
-      description: "The barrow hill's south face has collapsed inward, exposing a jagged hole in the old stonework wide enough to duck through. Fresh boot prints - small, bare, clawed - lead inside over scattered rubble. A crude totem of bones and red twine hangs over the opening.",
+      description: "The hillside has caved in, opening a crack into the dark. Bones on a rope hang across it.",
       entries: [
-        { id: 'barrow-r1-e1', name: 'Totem Trap', description: 'The bone totem is rigged to a trip-cord. Anyone who pulls it aside without a DC 12 Wisdom (Perception) check to spot the cord yanks free a stack of loose rocks overhead: DC 13 Dexterity save or take 7 (2d6) bludgeoning damage and alert every goblin in Area 2.' },
-        { id: 'barrow-r1-e2', name: 'Goblin Lookout', description: 'A single #[Goblin](mon-goblin) watches the entrance from a rubble pile 20 feet in, using Stealth to stay hidden until it can loose a shortbow shot and flee toward Area 2 to raise the alarm.' },
-        { id: 'barrow-r1-e3', name: 'Tracks', description: 'A DC 10 Wisdom (Survival) check reveals two sets of tracks: goblin feet heading in, and a dragged, heavier trail leading toward Area 4 - consistent with a stolen sheep.' },
+        { id: 'barrow-a1-e1', name: "Lookout", description: "One #[Goblin](mon-goblin) hides in the rubble. If it spots the party, it runs to warn the others." },
+        { id: 'barrow-a1-e2', name: "Alarm", description: "DC 12 Perception to notice the bone rope before it rattles." },
       ],
     }),
     views: {
-      'barrow': { pos: { x: 6 * GRID_SIZE, y: 50 * GRID_SIZE }, size: { width: 32 * GRID_SIZE, height: 44 * GRID_SIZE } },
+      'barrow': { pos: { x: 43 * GRID_SIZE, y: 6 * GRID_SIZE }, size: { width: 34 * GRID_SIZE, height: 32 * GRID_SIZE } },
     },
     ...ts(12),
   },
-  'barrow-room-2-watchfire': {
-    title: 'Area 2 - The Watch Fire',
-    color: 'carrot',
-    type: CARD_TYPES.note,
-    content: buildNoteContent({
-      description: 'A guttering fire pit lights a wider chamber cluttered with stolen sacks, chicken bones, and a heap of mismatched furs. Two goblins hunch near the flames, sharpening blades and arguing in low voices.',
-      entries: [
-        { id: 'barrow-r2-e1', name: 'Goblins', description: "Two #[Goblin](mon-goblin) raiders. If the alarm was raised in Area 1, they're ready and fighting from behind the furs (half cover); otherwise they're surprised." },
-        { id: 'barrow-r2-e2', name: 'Loot Sacks', description: "The sacks hold Millbrook's stolen goods: a small cook pot, 15 sp, and a shepherd's silver whistle worth 10 gp." },
-        { id: 'barrow-r2-e3', name: 'Passage', description: 'A low tunnel to the north leads to Area 3; a wider one east leads to Area 4.' },
-      ],
-    }),
-    views: {
-      'barrow': { pos: { x: 42 * GRID_SIZE, y: 50 * GRID_SIZE }, size: { width: 32 * GRID_SIZE, height: 44 * GRID_SIZE } },
-    },
-    ...ts(13),
-  },
-  'barrow-room-3-warren': {
-    title: 'Area 3 - The Warren',
+  'barrow-a2': {
+    title: "2 - The Warren",
     color: 'butter',
     type: CARD_TYPES.note,
     content: buildNoteContent({
-      description: 'Bedrolls of straw and stolen blankets fill this cramped den. Something small and quick skitters through a gap in the rubble as torchlight spills in.',
+      description: "Straw bedding, a cook fire, stolen sacks. A stone slab at the back has been levered open, and cold air comes out of it.",
       entries: [
-        { id: 'barrow-r3-e1', name: 'Giant Rat', description: 'A #[Giant Rat](mon-giant-rat) nests here and attacks anything that disturbs it. Add a second one for a harder fight.' },
-        { id: 'barrow-r3-e2', name: 'Sleeping Goblin', description: 'One #[Goblin](mon-goblin) sleeps off a shift here unless already alerted; it wakes if a fight starts elsewhere in this room.' },
-        { id: 'barrow-r3-e3', name: 'Hidden Coin Purse', description: "Buried in a bedroll (DC 12 Investigation): a leather purse with 22 gp - one goblin's private stash." },
-        { id: 'barrow-r3-e4', name: 'The Wolf Pack', description: "If the goblins' hunting #[Wolf](mon-wolf) is out on a run when the party arrives, it returns here 1d4 rounds into any loud fight, drawn by the noise." },
+        { id: 'barrow-a2-e1', name: "Goblins", description: "Two #[Goblin](mon-goblin) raiders, and #[Goblin Boss](mon-goblin-boss) Grix if the alarm went up." },
+        { id: 'barrow-a2-e2', name: "Loot", description: "Millbrook's stolen goods, plus a silver whistle worth 10 gp." },
       ],
     }),
     views: {
-      'barrow': { pos: { x: 78 * GRID_SIZE, y: 50 * GRID_SIZE }, size: { width: 32 * GRID_SIZE, height: 56 * GRID_SIZE } },
+      'barrow': { pos: { x: 6 * GRID_SIZE, y: 41 * GRID_SIZE }, size: { width: 34 * GRID_SIZE, height: 32 * GRID_SIZE } },
     },
-    ...ts(14),
+    ...ts(13),
   },
-  'barrow-room-4-larder': {
-    title: 'Area 4 - The Larder',
+  'barrow-a3': {
+    title: "3 - The Sunken Tomb",
     color: 'eggplant',
     type: CARD_TYPES.note,
     content: buildNoteContent({
-      description: 'The air turns sour with the smell of butchered meat. Sheep carcasses hang from hooks driven into the old stonework, and a terrified figure is bound and gagged in the corner, watching the door.',
+      description: "A low stone chamber, centuries older than the goblins. A cracked sarcophagus sits in the middle.",
       entries: [
-        { id: 'barrow-r4-e1', name: 'The Captive', description: "Denna (a #[Bandit](mon-bandit), but a noncombatant while bound), a scavenger who broke in ahead of the party looking for the tomb's treasure and got caught. Freed, she knows the layout of Area 6 and warns that \"the thing in the box isn't dead\" - a DC 10 Charisma (Persuasion) check gets her help in a fight." },
-        { id: 'barrow-r4-e2', name: 'Stolen Livestock', description: "Three butchered sheep account for Millbrook's losses - proof enough to collect the bounty even if the party goes no further." },
-        { id: 'barrow-r4-e3', name: 'Secret Door', description: 'A DC 15 Wisdom (Perception) check finds a slab in the east wall, cool to the touch and out of place among the barrow stonework, leading to Area 6.' },
+        { id: 'barrow-a3-e1', name: "Guardian", description: "A #[Skeleton](mon-skeleton) rises when anyone steps inside. It attacks the goblins too." },
+        { id: 'barrow-a3-e2', name: "Treasure", description: "A bronze circlet (25 gp), and a sealed iron box nobody here can open." },
       ],
     }),
     views: {
-      'barrow': { pos: { x: 6 * GRID_SIZE, y: 110 * GRID_SIZE }, size: { width: 32 * GRID_SIZE, height: 44 * GRID_SIZE } },
+      'barrow': { pos: { x: 43 * GRID_SIZE, y: 41 * GRID_SIZE }, size: { width: 34 * GRID_SIZE, height: 32 * GRID_SIZE } },
     },
-    ...ts(15),
-  },
-  'barrow-room-5-den': {
-    title: "Area 5 - Grix's Den",
-    color: 'cobalt',
-    type: CARD_TYPES.note,
-    content: buildNoteContent({
-      description: 'Furs and looted finery cover a chair worthy of a throne, if you squint. A goblin in mismatched armor snarls orders at two bodyguards flanking her.',
-      entries: [
-        { id: 'barrow-r5-e1', name: 'Grix, the Goblin Boss', description: 'Grix, a #[Goblin Boss](mon-goblin-boss), fights from the chair, using Redirect Attack to shield herself with her bodyguards. If reduced below half HP, she offers to surrender the tomb key in exchange for her life.' },
-        { id: 'barrow-r5-e2', name: 'Bodyguards', description: 'Two #[Goblin](mon-goblin) bodyguards guard Grix and fight to the death for her unless she surrenders.' },
-        { id: 'barrow-r5-e3', name: 'Treasure', description: 'A locked chest (Grix carries the key) holds 85 gp, a potion of healing, and a crude iron key etched with spiral markings - it opens the vault door in Area 6.' },
-      ],
-    }),
-    views: {
-      'barrow': { pos: { x: 42 * GRID_SIZE, y: 110 * GRID_SIZE }, size: { width: 32 * GRID_SIZE, height: 44 * GRID_SIZE } },
-    },
-    ...ts(16),
-  },
-  'barrow-room-6-tomb': {
-    title: 'Area 6 - The Sunken Tomb',
-    color: 'forest',
-    type: CARD_TYPES.note,
-    content: buildNoteContent({
-      description: 'Goblin digging has torn a ragged hole through into a perfectly circular stone chamber, untouched by the warren above. Spiral carvings older than any language you recognize cover the walls. In the center, a stone sarcophagus lies cracked open - and empty.',
-      entries: [
-        { id: 'barrow-r6-e1', name: 'The Guardian', description: 'A #[Skeleton](mon-skeleton) rises from behind the sarcophagus the moment anyone crosses the threshold. It was sealed here to guard the tomb, not to serve whoever broke in, and attacks goblins and party alike.' },
-        { id: 'barrow-r6-e2', name: 'Vault Door', description: "An iron door in the north wall is locked; Grix's key (Area 5) or a DC 18 Thieves' Tools check opens it without damage. Forcing it (DC 20 Strength) triggers a rockfall: DC 14 Dexterity save or 14 (4d6) bludgeoning damage." },
-        { id: 'barrow-r6-e3', name: 'The Vault', description: "Beyond the door: a stone pedestal holding a suit of +1 leather armor and a sealed clay urn of ashes that radiates faint necromancy - what's left of whoever the skeleton once was. What the party does with the ashes is their call to make." },
-        { id: 'barrow-r6-e4', name: 'Something Older', description: "The spiral carvings don't match any known culture in the region. That's the hook for a bigger campaign, if you want one." },
-      ],
-    }),
-    views: {
-      'barrow': { pos: { x: 78 * GRID_SIZE, y: 110 * GRID_SIZE }, size: { width: 32 * GRID_SIZE, height: 56 * GRID_SIZE } },
-    },
-    ...ts(17),
+    ...ts(14),
   },
 
   // ---------------------------------------------------------------------
@@ -558,7 +497,7 @@ export const INTRO_CARDS = {
       }],
     }),
     views: {
-      'party': { pos: { x: 6 * GRID_SIZE, y: 42 * GRID_SIZE }, size: { width: 40 * GRID_SIZE, height: 28 * GRID_SIZE } },
+      'party': { pos: { x: 6 * GRID_SIZE, y: 42 * GRID_SIZE }, size: { width: 40 * GRID_SIZE, height: 22 * GRID_SIZE } },
     },
     ...ts(4),
   },
@@ -575,11 +514,7 @@ export const INTRO_TABS = {
     title: 'The Sunken Barrow',
     pos: DEFAULT_CANVAS_POSITION,
     scale: 1,
-    cards: [
-      'barrow-hook',
-      'barrow-room-1-door', 'barrow-room-2-watchfire', 'barrow-room-3-warren',
-      'barrow-room-4-larder', 'barrow-room-5-den', 'barrow-room-6-tomb',
-    ],
+    cards: ['barrow-hook', 'barrow-a1', 'barrow-a2', 'barrow-a3'],
   },
   'bestiary': {
     title: 'Bestiary',
