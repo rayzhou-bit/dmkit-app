@@ -108,9 +108,9 @@ export const INTRO_CARDS = {
     type: CARD_TYPES.custom,
     content: buildCustomContent({
       blocks: [
-        { id: 'barrow-hook-b1', type: CUSTOM_BLOCK_TYPES.text, text: "A three-room dungeon for a first session." },
+        { id: 'barrow-hook-b1', type: CUSTOM_BLOCK_TYPES.text, text: "A three-room dungeon for a first session, built for four 1st-level characters." },
         { id: 'barrow-hook-b2', type: CUSTOM_BLOCK_TYPES.text, text: "Sheep keep going missing from Millbrook. Goblins have dug into the old barrow on the hill - and broken into something much older underneath." },
-        { id: 'barrow-hook-b3', type: CUSTOM_BLOCK_TYPES.text, text: "Play the goblins as scared, not suicidal. For five players, add a #[Goblin](mon-goblin) to area 2." },
+        { id: 'barrow-hook-b3', type: CUSTOM_BLOCK_TYPES.text, text: "Play the goblins as scared, not suicidal." },
       ],
     }),
     views: {
