@@ -72,7 +72,7 @@ export const INTRO_CARDS = {
         { id: 'start-tools-b2', type: CUSTOM_BLOCK_TYPES.text, text: "stat - a monster or NPC stat block." },
         { id: 'start-tools-b3', type: CUSTOM_BLOCK_TYPES.text, text: "note - a description plus a list of keyed details." },
         { id: 'start-tools-b4', type: CUSTOM_BLOCK_TYPES.text, text: "freeform - any mix of text and images, like this card." },
-        { id: 'start-tools-b5', type: CUSTOM_BLOCK_TYPES.text, text: "Type # in any card to link another, like #[The Sunken Barrow - Running It](barrow-hook). Click a chip to jump there." },
+        { id: 'start-tools-b5', type: CUSTOM_BLOCK_TYPES.text, text: "Type # in any card to link another, like #[The Sunken Barrow](barrow-hook). Click a chip to jump there." },
       ],
     }),
     views: {
@@ -425,7 +425,7 @@ export const INTRO_CARDS = {
   },
 
   // ---------------------------------------------------------------------
-  // Tab 4: "Party & Session Prep" - sample PCs plus a reusable checklist.
+  // Tab 4: "Party" - sample PCs, each a note card with a bond and a goal.
   // ---------------------------------------------------------------------
   'pc-1': {
     title: 'Thessaly Vane',
@@ -439,7 +439,7 @@ export const INTRO_CARDS = {
       ],
     }),
     views: {
-      'party': { pos: { x: 6 * GRID_SIZE, y: 6 * GRID_SIZE }, size: { width: 25 * GRID_SIZE, height: 32 * GRID_SIZE } },
+      'party': { pos: { x: 6 * GRID_SIZE, y: 6 * GRID_SIZE }, size: { width: 25 * GRID_SIZE, height: 34 * GRID_SIZE } },
     },
     ...ts(0),
   },
@@ -455,7 +455,7 @@ export const INTRO_CARDS = {
       ],
     }),
     views: {
-      'party': { pos: { x: 35 * GRID_SIZE, y: 6 * GRID_SIZE }, size: { width: 25 * GRID_SIZE, height: 32 * GRID_SIZE } },
+      'party': { pos: { x: 35 * GRID_SIZE, y: 6 * GRID_SIZE }, size: { width: 25 * GRID_SIZE, height: 34 * GRID_SIZE } },
     },
     ...ts(1),
   },
@@ -471,7 +471,7 @@ export const INTRO_CARDS = {
       ],
     }),
     views: {
-      'party': { pos: { x: 64 * GRID_SIZE, y: 6 * GRID_SIZE }, size: { width: 25 * GRID_SIZE, height: 32 * GRID_SIZE } },
+      'party': { pos: { x: 64 * GRID_SIZE, y: 6 * GRID_SIZE }, size: { width: 25 * GRID_SIZE, height: 34 * GRID_SIZE } },
     },
     ...ts(2),
   },
@@ -487,25 +487,9 @@ export const INTRO_CARDS = {
       ],
     }),
     views: {
-      'party': { pos: { x: 93 * GRID_SIZE, y: 6 * GRID_SIZE }, size: { width: 25 * GRID_SIZE, height: 32 * GRID_SIZE } },
+      'party': { pos: { x: 93 * GRID_SIZE, y: 6 * GRID_SIZE }, size: { width: 25 * GRID_SIZE, height: 34 * GRID_SIZE } },
     },
     ...ts(3),
-  },
-  'prep-checklist': {
-    title: 'Session Prep Checklist',
-    color: 'gray',
-    type: CARD_TYPES.custom,
-    content: buildCustomContent({
-      blocks: [{
-        id: 'prep-checklist-b1',
-        type: CUSTOM_BLOCK_TYPES.text,
-        text: "Before you run this (or any) session:\n\n- Read the hook and the room notes once through so you're not discovering the map live.\n- Skim each monster's stat block in the Bestiary and note anything that changes how it fights (Pack Tactics, Nimble Escape, Redirect Attack).\n- Decide how you'll scale the encounters for your actual party size - see the scaling notes on the hook card.\n- Have the four sample characters above ready to hand out, or swap in your players' own.\n- Set a stopping point in advance. It's fine not to finish everything in one sitting.",
-      }],
-    }),
-    views: {
-      'party': { pos: { x: 6 * GRID_SIZE, y: 42 * GRID_SIZE }, size: { width: 40 * GRID_SIZE, height: 22 * GRID_SIZE } },
-    },
-    ...ts(4),
   },
 };
 
@@ -529,10 +513,10 @@ export const INTRO_TABS = {
     cards: ['mon-goblin', 'mon-goblin-boss', 'mon-giant-rat', 'mon-wolf', 'mon-skeleton', 'mon-bandit'],
   },
   'party': {
-    title: 'Party & Session Prep',
+    title: 'Party',
     pos: DEFAULT_CANVAS_POSITION,
     scale: 1,
-    cards: ['pc-1', 'pc-2', 'pc-3', 'pc-4', 'prep-checklist'],
+    cards: ['pc-1', 'pc-2', 'pc-3', 'pc-4'],
   },
 };
 
