@@ -990,6 +990,11 @@ $scrollbar-width: 17px;
 // portrait, a photo - whatever the note is about) better.
 .note-portrait {
   position: relative;
+  // Never shrink: .note-content is a flex column, so without this the
+  // portrait absorbs any height its siblings gain - hovering the card
+  // reveals "+ Add Detail" and the image visibly collapsed. The container
+  // already scrolls (overflow-y: auto), which is the right give instead.
+  flex: 0 0 auto;
   border-radius: 6px;
   overflow: hidden;
   background-color: #F4F4F4;
@@ -1162,7 +1167,7 @@ $scrollbar-width: 17px;
     padding: 0;
     background-color: transparent;
     font-family: Roboto;
-    font-size: 12px;
+    font-size: 13px;
     color: #363B4E;
     min-height: 20px;
     resize: none;

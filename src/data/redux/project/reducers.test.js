@@ -156,14 +156,14 @@ describe('loadCards - migrates legacy text/image cards to custom', () => {
 });
 
 describe('loadIntroProject/loadBlankProject - migrate the fixture data too', () => {
-  it('the tutorial text cards (card0-3) load as custom, the sample monster card untouched', () => {
+  it('the intro project is already authored in modern card shapes - migration is a no-op', () => {
     const next = reducer(baseState, { type: 'project/loadIntroProject' });
-    expect(next.cards.card0.type).toBe('custom');
-    expect(next.cards.card0.content.blocks[0]).toMatchObject({ type: 'text' });
-    expect(next.cards.card1.type).toBe('custom');
-    expect(next.cards.card2.type).toBe('custom');
-    expect(next.cards.card3.type).toBe('custom');
-    expect(next.cards.card4.type).toBe('monster'); // the sample Goblin card - untouched
+    const types = Object.values(next.cards).map(card => card.type);
+    expect(types.length).toBeGreaterThan(0);
+    for (const type of types) {
+      expect(['custom', 'note', 'monster']).toContain(type);
+    }
+    expect(next.cards['mon-goblin'].type).toBe('monster'); // the sample Goblin card
   });
 
   it('loadBlankProject has no cards to migrate - still returns cleanly', () => {
