@@ -2,7 +2,11 @@ import React from 'react';
 import { render, fireEvent } from '@testing-library/react';
 import { Provider } from 'react-redux';
 
-import Graph from './index';
+import Graph, { GraphButton } from './index';
+
+// GraphButton lives in Library's button rail in the real tree (so it tracks
+// the panel as it slides); render the pair together to exercise the toggle.
+const GraphWithButton = () => (<><GraphButton /><Graph /></>);
 import { reducer as sessionReducer, initialState as sessionInitialState } from '../../data/redux/session/reducers';
 import { CARD_TYPES } from '../../constants/cards';
 import { buildCustomContent } from '../../constants/custom';
@@ -49,7 +53,7 @@ describe('Graph - toggle', () => {
         viewOrder: ['t1'],
       },
     });
-    const { container } = render(<Provider store={store}><Graph /></Provider>);
+    const { container } = render(<Provider store={store}><GraphWithButton /></Provider>);
 
     expect(container.querySelector('.card-graph-panel')).toBeNull();
 
@@ -76,7 +80,7 @@ describe('Graph - edges', () => {
         viewOrder: ['t1'],
       },
     });
-    const { container } = render(<Provider store={store}><Graph /></Provider>);
+    const { container } = render(<Provider store={store}><GraphWithButton /></Provider>);
     fireEvent.click(container.querySelector('.graph-btn'));
 
     // a->b, a->c, b->c
@@ -93,7 +97,7 @@ describe('Graph - node click', () => {
         viewOrder: ['t1'],
       },
     });
-    const { container } = render(<Provider store={store}><Graph /></Provider>);
+    const { container } = render(<Provider store={store}><GraphWithButton /></Provider>);
     fireEvent.click(container.querySelector('.graph-btn'));
 
     fireEvent.click(container.querySelector('[data-card-id="a"]'));
@@ -110,7 +114,7 @@ describe('Graph - empty states', () => {
       project: { cards: {}, views: { t1: { title: 'One' } }, viewOrder: ['t1'] },
     });
     expect(() => {
-      const { container } = render(<Provider store={store}><Graph /></Provider>);
+      const { container } = render(<Provider store={store}><GraphWithButton /></Provider>);
       fireEvent.click(container.querySelector('.graph-btn'));
       expect(container.querySelector('.card-graph-empty')).not.toBeNull();
       expect(container.querySelector('.card-graph-svg')).toBeNull();
@@ -129,7 +133,7 @@ describe('Graph - empty states', () => {
       },
     });
     expect(() => {
-      const { container } = render(<Provider store={store}><Graph /></Provider>);
+      const { container } = render(<Provider store={store}><GraphWithButton /></Provider>);
       fireEvent.click(container.querySelector('.graph-btn'));
       expect(container.querySelector('.card-graph-caption')).not.toBeNull();
       expect(container.querySelectorAll('.card-graph-node').length).toBe(2);
@@ -150,7 +154,7 @@ describe('Graph - shared card marker', () => {
         viewOrder: ['t1', 't2'],
       },
     });
-    const { container } = render(<Provider store={store}><Graph /></Provider>);
+    const { container } = render(<Provider store={store}><GraphWithButton /></Provider>);
     fireEvent.click(container.querySelector('.graph-btn'));
 
     const sharedNode = container.querySelector('[data-card-id="shared"]');

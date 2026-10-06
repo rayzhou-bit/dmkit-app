@@ -71,8 +71,26 @@ const GraphNode = ({ node, onNodeClick }) => {
   );
 };
 
+// Rendered by Library, not here: the button belongs in the same rail as the
+// library button so it tracks the panel as it slides, instead of sitting on
+// top of the panel's contents.
+export const GraphButton = () => {
+  const { showButton, toggleGraph } = useGraphHooks();
+  return (
+    <button
+      className='graph-btn'
+      style={{ display: showButton ? 'block' : 'none' }}
+      onClick={toggleGraph}
+      aria-label='Card graph'
+    >
+      <GraphIcon />
+      <span className='tooltip'>Card graph</span>
+    </button>
+  );
+};
+
 const Graph = () => {
-  const { showButton, isOpen, toggleGraph, nodes, groups, edges, width, height, onNodeClick } = useGraphHooks();
+  const { isOpen, toggleGraph, nodes, groups, edges, width, height, onNodeClick } = useGraphHooks();
 
   const nodesById = React.useMemo(() => Object.fromEntries(nodes.map(n => [n.id, n])), [nodes]);
   const hasNodes = nodes.length > 0;
@@ -80,16 +98,6 @@ const Graph = () => {
 
   return (
     <>
-      <button
-        className='graph-btn'
-        style={{ display: showButton ? 'block' : 'none' }}
-        onClick={toggleGraph}
-        aria-label='Card graph'
-      >
-        <GraphIcon />
-        <span className='tooltip'>Card graph</span>
-      </button>
-
       {isOpen && (
         <>
         {/* Without this the ToolMenu shows through the panel's 24px gutter,
@@ -97,6 +105,7 @@ const Graph = () => {
             and gives click-away-to-close, same as the mobile create sheet. */}
         <div className='card-graph-backdrop' onClick={toggleGraph} />
         <div className='card-graph-panel'>
+          <button className='card-graph-close' onClick={toggleGraph} aria-label='Close card graph'>&#215;</button>
           {!hasNodes ? (
             <div className='card-graph-empty'>
               <p>No cards yet.</p>

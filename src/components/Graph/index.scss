@@ -1,11 +1,11 @@
+// Sits in .library's button rail, directly under .library-btn, so it tracks
+// the panel as it slides instead of covering the panel's contents. That also
+// puts it behind the graph panel once open, which is why the panel carries
+// its own close control.
 .graph-btn {
-  position: fixed;
-  right: 20px;
-  bottom: 55px;
-  // Above .card-graph-panel's z-index (85) - the panel's own footprint
-  // overlaps this corner, and the button must stay clickable (to close the
-  // graph) regardless of whether the panel is open.
-  z-index: 90;
+  position: absolute;
+  top: calc(3% + 62px);
+  right: 102%;
   height: 50px;
   width: 50px;
   padding: 4px;
@@ -28,30 +28,35 @@
     line { stroke-width: 2; }
   }
 
-  // Position/shape/color only - show/hide-on-hover comes from App.scss's
-  // app-wide button tooltip rule, same precedent as ZoomControls.
+  // Position only - everything else comes from App.scss's app-wide tooltip
+  // rule. Same placement as .library-btn's: to the left, arrow on the right.
   .tooltip {
-    bottom: 120%;
-    left: 50%;
-    transform: translateX(-50%);
+    top: 27%;
+    right: 120%;
     white-space: nowrap;
-    padding: 4px 8px;
-    border-radius: 4px;
-    background: #363B4E;
-    color: #FFFFFF;
-    font-size: 11px;
-    font-family: Roboto;
-
-    &::after {
-      top: 100%;
-      left: 50%;
-      margin-left: -5px;
-      border-width: 5px;
-      border-top-color: #363B4E;
-    }
+  }
+  .tooltip::after {
+    top: 50%;
+    left: 100%;
+    border-left-color: #363B4E;
   }
 
   &:hover { box-shadow: 0 0 0 3px #DBE2EB; }
+}
+
+.card-graph-close {
+  position: absolute;
+  top: 10px;
+  right: 14px;
+  z-index: 1;
+  padding: 0 6px 3px;
+  border-radius: 8px;
+  background-color: transparent;
+  color: #7E849A;
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+  &:hover { background-color: #F4F4F4; color: #363B4E; }
 }
 
 .card-graph-backdrop {
