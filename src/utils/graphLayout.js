@@ -130,3 +130,69 @@ export const layoutCardGraph = ({ nodes = [], groups = [] } = {}) => {
 
   return { nodes: placed, rings, width: VIEWBOX, height: VIEWBOX, centre, radius: RING_RADIUS };
 };
+
+// Focused layout: the chosen tab's cards on a small ring in the middle, then
+// one ring per level outward. Radii are derived from what's actually there -
+// a tab with no second-level neighbours doesn't pay for an empty outer band -
+// so the common case stays readable instead of scaling down to fit bands
+// nothing occupies.
+//
+// An edge between rings has to cross the inner ring's label band; there's
+// nowhere else for it to go. Labels carry a white halo (see .card-graph-node
+// text) so a line passing behind one doesn't make it unreadable.
+const LABEL_BAND = 140;      // room for a title outside its ring
+const RING_PAD = 38;         // clear space between one band and the next ring
+const MIN_CORE_RADIUS = 124;
+const NODE_ARC = 38;         // arc length a node needs to not crowd its neighbour
+
+const byTitle = (a, b) => a.title.localeCompare(b.title) || a.id.localeCompare(b.id);
+
+const radialPlacement = (list, radius, centre) => {
+  const step = TAU / list.length;
+  return list.map((node, i) => {
+    const angle = -Math.PI / 2 + i * step;
+    const cos = Math.cos(angle);
+    const sin = Math.sin(angle);
+    const flipped = cos < 0;
+    const degrees = (angle * 180) / Math.PI;
+    return {
+      ...node,
+      angle,
+      x: centre + radius * cos,
+      y: centre + radius * sin,
+      labelX: centre + (radius + LABEL_OFFSET) * cos,
+      labelY: centre + (radius + LABEL_OFFSET) * sin,
+      labelRotation: flipped ? degrees + 180 : degrees,
+      labelAnchor: flipped ? 'end' : 'start',
+    };
+  });
+};
+
+export const layoutFocusGraph = ({ nodes = [] } = {}) => {
+  const byLevel = [0, 1, 2].map(level => nodes.filter(node => node.level === level).sort(byTitle));
+  const populated = byLevel.filter(list => list.length);
+  if (!populated.length) return { nodes: [], guides: [], width: 400, height: 400, centre: 200, radius: 0 };
+
+  // Each populated level gets a radius; an empty level costs nothing.
+  const radii = [];
+  for (const list of populated) {
+    const needed = (list.length * NODE_ARC) / TAU;
+    radii.push(radii.length === 0
+      ? Math.max(MIN_CORE_RADIUS, needed)
+      : Math.max(radii.at(-1) + LABEL_BAND + RING_PAD, needed));
+  }
+
+  const viewbox = 2 * (radii.at(-1) + LABEL_BAND + 24);
+  const centre = viewbox / 2;
+
+  const placed = populated.flatMap((list, i) => radialPlacement(list, radii[i], centre));
+
+  return {
+    nodes: placed,
+    guides: radii,
+    width: viewbox,
+    height: viewbox,
+    centre,
+    radius: radii.at(-1),
+  };
+};
