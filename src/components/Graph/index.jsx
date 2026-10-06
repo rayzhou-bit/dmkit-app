@@ -106,7 +106,7 @@ export const GraphButton = () => {
 
 const Graph = () => {
   const { isOpen, toggleGraph, nodes, rings, edges, width, height, centre, onNodeClick } = useGraphHooks();
-  const pan = useGraphViewHooks(VIEWBOX);
+  const pan = useGraphViewHooks(VIEWBOX, isOpen);
 
   const nodesById = React.useMemo(() => Object.fromEntries(nodes.map(n => [n.id, n])), [nodes]);
   const hasNodes = nodes.length > 0;
@@ -140,7 +140,7 @@ const Graph = () => {
                   preserveAspectRatio='xMidYMid meet'
                   role='img'
                   aria-label='Card reference graph'
-                  onWheel={pan.onWheel}
+
                   onPointerDown={pan.onPointerDown}
                   onPointerMove={pan.onPointerMove}
                   onPointerUp={pan.onPointerUp}

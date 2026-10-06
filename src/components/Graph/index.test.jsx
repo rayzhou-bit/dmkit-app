@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, fireEvent } from '@testing-library/react';
+import { render, fireEvent, act } from '@testing-library/react';
 import { Provider } from 'react-redux';
 
 import Graph, { GraphButton } from './index';
@@ -248,5 +248,31 @@ describe('Graph - zoom and pan', () => {
     fireEvent.pointerDown(node, { button: 0, clientX: 10, clientY: 10 });
     fireEvent.pointerMove(svg, { clientX: 90, clientY: 90 });
     expect(transform(container)).toBe('translate(0 0) scale(1)');
+  });
+
+  // React registers onWheel passively, so preventDefault() there is ignored
+  // and a trackpad pinch zooms the browser window instead of the graph. The
+  // listener has to be bound natively with { passive: false }.
+  it('cancels a trackpad pinch and zooms the graph instead', () => {
+    const { container } = open();
+    const svg = container.querySelector('.card-graph-svg');
+    const event = new WheelEvent('wheel', { deltaY: -240, ctrlKey: true, bubbles: true, cancelable: true });
+    // Raw dispatch, not fireEvent: the point is the native listener, and the
+    // state update it triggers needs flushing by hand.
+    act(() => { svg.dispatchEvent(event); });
+
+    expect(event.defaultPrevented).toBe(true);
+    expect(transform(container)).not.toContain('scale(1)');
+  });
+
+  it('pans on a plain wheel rather than zooming', () => {
+    const { container } = open();
+    const svg = container.querySelector('.card-graph-svg');
+    act(() => {
+      svg.dispatchEvent(new WheelEvent('wheel', { deltaX: 60, deltaY: 40, bubbles: true, cancelable: true }));
+    });
+
+    expect(transform(container)).toContain('scale(1)');
+    expect(transform(container)).not.toBe('translate(0 0) scale(1)');
   });
 });

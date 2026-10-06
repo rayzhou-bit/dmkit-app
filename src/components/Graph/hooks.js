@@ -4,6 +4,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { actions, selectors } from '../../data/redux';
 import { buildCardGraph } from '../../utils/cardGraph';
 import { layoutCardGraph } from '../../utils/graphLayout';
+import { normalizeWheelDelta } from '../../utils/canvasTransform';
+import { WHEEL_ZOOM_SENSITIVITY } from '../../constants/dimensions';
 
 export const useGraphHooks = () => {
   const dispatch = useDispatch();
@@ -50,6 +52,9 @@ export const useGraphHooks = () => {
   };
 };
 
+// Wheel handling mirrors Canvas's: ctrl/meta (a trackpad pinch) zooms about
+// the pointer, a plain wheel pans. deltaMode normalisation is shared so a
+// line- or page-mode wheel behaves the same in both places.
 export const MIN_ZOOM = 0.6;
 export const MAX_ZOOM = 4;
 const ZOOM_STEP = 0.25;
@@ -60,11 +65,18 @@ const clamp = (value) => Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, value));
 // Pan/zoom for the graph panel. View-only and short-lived, so it stays in
 // component state rather than Redux - nothing here is worth persisting, and
 // it resets every time the panel reopens.
-export const useGraphViewHooks = (viewbox) => {
+export const useGraphViewHooks = (viewbox, isMounted) => {
   const centre = viewbox / 2;
   const [view, setView] = useState({ scale: 1, x: 0, y: 0 });
+  // Reopening the panel starts from the default view rather than wherever
+  // the last session left it.
+  useEffect(() => { if (!isMounted) setView({ scale: 1, x: 0, y: 0 }); }, [isMounted]);
   const dragRef = useRef(null);
   const svgRef = useRef(null);
+  // The wheel listener is bound once; it reads the latest view from here
+  // rather than being torn down and rebound on every zoom step.
+  const viewRef = useRef(view);
+  viewRef.current = view;
 
   // Client pixels -> viewBox units. preserveAspectRatio is xMidYMid meet, so
   // the box is drawn as a centred square of the smaller dimension.
@@ -90,6 +102,30 @@ export const useGraphViewHooks = (viewbox) => {
     };
   });
 
+  // Native, non-passive: React registers onWheel passively, so
+  // preventDefault() there is ignored and a trackpad pinch zooms the browser
+  // window instead of the graph. Same reason Canvas binds its own listener.
+  useEffect(() => {
+    const node = svgRef.current;
+    if (!node) return;
+    const onWheel = (event) => {
+      event.preventDefault();
+      const rect = node.getBoundingClientRect();
+      const { dx, dy } = normalizeWheelDelta(event, rect.height);
+      if (event.ctrlKey || event.metaKey) {
+        zoomAbout(viewRef.current.scale * Math.exp(-dy * WHEEL_ZOOM_SENSITIVITY),
+          toUserSpace(event.clientX, event.clientY));
+        return;
+      }
+      const k = rect.width ? Math.min(rect.width, rect.height) / viewbox : 1;
+      setView(prev => ({ ...prev, x: prev.x - dx / k, y: prev.y - dy / k }));
+    };
+    node.addEventListener('wheel', onWheel, { passive: false });
+    return () => node.removeEventListener('wheel', onWheel);
+    // isMounted, not just viewbox: the svg doesn't exist until the panel
+    // opens, and a ref filling in doesn't re-run an effect on its own.
+  }, [viewbox, isMounted]);
+
   return {
     svgRef,
     view,
@@ -100,11 +136,6 @@ export const useGraphViewHooks = (viewbox) => {
     zoomIn: () => zoomAbout(view.scale + ZOOM_STEP, { x: centre, y: centre }),
     zoomOut: () => zoomAbout(view.scale - ZOOM_STEP, { x: centre, y: centre }),
     reset: () => setView({ scale: 1, x: 0, y: 0 }),
-    onWheel: (event) => {
-      event.preventDefault();
-      zoomAbout(view.scale * Math.exp(-event.deltaY * WHEEL_SENSITIVITY),
-        toUserSpace(event.clientX, event.clientY));
-    },
     onPointerDown: (event) => {
       // Left button on empty space only - a node handles its own click.
       if (event.button !== 0 || event.target.closest('.card-graph-node')) return;
