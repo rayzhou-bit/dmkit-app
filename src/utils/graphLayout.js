@@ -1,82 +1,126 @@
-// Deterministic layout: the same project always produces the same picture,
-// so the graph is somewhere you can build spatial memory rather than a fresh
-// arrangement every visit. That matters more here than the organic clustering
-// a force simulation would give, because this app is already a spatial canvas
-// and a layout that moved on its own would compete with the positions the
-// user authored themselves.
+import { UNPLACED_GROUP_ID } from './cardGraph';
 
-export const NODE_RADIUS = 7;
-export const LABEL_WIDTH = 132;      // node + its title, the real cell width
-const CELL_HEIGHT = 30;
-const GROUP_PADDING = 18;
-const GROUP_HEADER = 24;
-const GROUP_GAP = 36;
-const MAX_ROW_WIDTH = 1200;          // flow groups onto a new row past this
+// Radial layout. Two properties drive the whole shape:
+//
+// 1. Labels live outside the ring and edges are chords inside it, so an edge
+//    can never cross a label. That's structural, not a routing trick.
+// 2. A tab is a ring, drawn as arcs over the cards that belong to it. A card
+//    in two tabs is covered by two rings at once, so shared membership reads
+//    as overlap instead of forcing the card into one box - which is what the
+//    earlier region layout had to do, and got wrong.
+//
+// Deterministic, like the layout it replaces: same project, same picture, so
+// the graph is somewhere you can build spatial memory.
 
-// Same ceil(sqrt(n)) shape the group toolbar button uses, so a cluster of
-// cards reads the same way in both places.
-const columnsFor = (count) => Math.max(1, Math.ceil(Math.sqrt(count)));
+export const NODE_RADIUS = 6;
+export const VIEWBOX = 760;          // square; the view scales it to fit
+const RING_RADIUS = 232;
+const RING_GAP = 15;                 // between one tab ring and the next
+const FIRST_RING_INSET = 24;         // from the card ring to the outermost tab ring
+const LABEL_OFFSET = 14;
+const ARC_PAD = 0.42;                // of one step, so an arc overhangs its end cards
 
-// Title then id: titles are what the reader sees, and the id tiebreak keeps
-// two identically-named cards from swapping places between renders.
-const sortCards = (cardIds, nodesById) => [...cardIds].sort((a, b) => {
-  const byTitle = (nodesById[a]?.title ?? '').localeCompare(nodesById[b]?.title ?? '');
-  return byTitle !== 0 ? byTitle : a.localeCompare(b);
-});
+const TAU = Math.PI * 2;
+
+// Consecutive runs of indices around the ring, wrap-around included, so a tab
+// whose cards sit together draws as one arc rather than a dotted line of stubs.
+export const consecutiveRuns = (indices, total) => {
+  const sorted = [...new Set(indices)].sort((a, b) => a - b);
+  if (!sorted.length) return [];
+  const out = [];
+  let run = [sorted[0]];
+  for (let i = 1; i < sorted.length; i++) {
+    if (sorted[i] === sorted[i - 1] + 1) run.push(sorted[i]);
+    else { out.push(run); run = [sorted[i]]; }
+  }
+  out.push(run);
+  // A run ending at the last slot joins one starting at slot 0 - they're
+  // adjacent on a circle even though their indices aren't.
+  if (out.length > 1 && out[0][0] === 0 && out.at(-1).at(-1) === total - 1) {
+    out[0] = [...out.pop(), ...out[0]];
+  }
+  return out;
+};
+
+const arcPath = (cx, cy, r, start, end) => {
+  const x1 = cx + r * Math.cos(start);
+  const y1 = cy + r * Math.sin(start);
+  const x2 = cx + r * Math.cos(end);
+  const y2 = cy + r * Math.sin(end);
+  // A full sweep can't be drawn as one arc (start and end coincide), so a tab
+  // holding every card is split into two halves.
+  if (end - start >= TAU - 1e-6) {
+    const mx = cx + r * Math.cos(start + Math.PI);
+    const my = cy + r * Math.sin(start + Math.PI);
+    return `M${x1} ${y1} A${r} ${r} 0 1 1 ${mx} ${my} A${r} ${r} 0 1 1 ${x2} ${y2}`;
+  }
+  return `M${x1} ${y1} A${r} ${r} 0 ${end - start > Math.PI ? 1 : 0} 1 ${x2} ${y2}`;
+};
+
+// Primary tab (in tab-bar order), then title, then id. Each card gets exactly
+// one slot; the id tiebreak keeps two same-named cards from swapping places.
+const ringOrder = (nodes, groups) => {
+  const rank = Object.fromEntries(groups.map((group, i) => [group.id, i]));
+  const at = (node) => rank[node.primaryTabId] ?? (node.primaryTabId === UNPLACED_GROUP_ID ? groups.length : groups.length + 1);
+  return [...nodes].sort((a, b) =>
+    at(a) - at(b)
+    || a.title.localeCompare(b.title)
+    || a.id.localeCompare(b.id));
+};
 
 export const layoutCardGraph = ({ nodes = [], groups = [] } = {}) => {
-  const nodesById = Object.fromEntries(nodes.map(node => [node.id, node]));
+  const centre = VIEWBOX / 2;
+  const empty = { nodes: [], rings: [], width: VIEWBOX, height: VIEWBOX, centre, radius: RING_RADIUS };
+  if (!nodes.length) return empty;
 
-  // Size every group from its own contents first, then flow them.
-  const sized = groups.map(group => {
-    const cardIds = sortCards(group.cardIds, nodesById);
-    const columns = columnsFor(cardIds.length);
-    const rows = Math.max(1, Math.ceil(cardIds.length / columns));
+  const ordered = ringOrder(nodes, groups);
+  const step = TAU / ordered.length;
+  const angleAt = (i) => -Math.PI / 2 + i * step;
+  const slotOf = Object.fromEntries(ordered.map((node, i) => [node.id, i]));
+
+  const placed = ordered.map((node, i) => {
+    const angle = angleAt(i);
+    const cos = Math.cos(angle);
+    const sin = Math.sin(angle);
+    // Text on the left half would read upside down, so it's rotated a further
+    // 180 degrees and anchored at its end instead.
+    const flipped = cos < 0;
+    const degrees = (angle * 180) / Math.PI;
     return {
-      ...group,
-      cardIds,
-      columns,
-      width: GROUP_PADDING * 2 + columns * LABEL_WIDTH,
-      height: GROUP_PADDING * 2 + GROUP_HEADER + rows * CELL_HEIGHT,
+      ...node,
+      angle,
+      x: centre + RING_RADIUS * cos,
+      y: centre + RING_RADIUS * sin,
+      labelX: centre + (RING_RADIUS + LABEL_OFFSET) * cos,
+      labelY: centre + (RING_RADIUS + LABEL_OFFSET) * sin,
+      labelRotation: flipped ? degrees + 180 : degrees,
+      labelAnchor: flipped ? 'end' : 'start',
     };
   });
 
-  const placedGroups = [];
-  let cursorX = 0;
-  let cursorY = 0;
-  let rowHeight = 0;
-
-  for (const group of sized) {
-    if (cursorX > 0 && cursorX + group.width > MAX_ROW_WIDTH) {
-      cursorX = 0;
-      cursorY += rowHeight + GROUP_GAP;
-      rowHeight = 0;
-    }
-    placedGroups.push({ ...group, x: cursorX, y: cursorY });
-    cursorX += group.width + GROUP_GAP;
-    rowHeight = Math.max(rowHeight, group.height);
-  }
-
-  const positions = {};
-  for (const group of placedGroups) {
-    group.cardIds.forEach((cardId, index) => {
-      const column = index % group.columns;
-      const row = Math.floor(index / group.columns);
-      positions[cardId] = {
-        x: group.x + GROUP_PADDING + column * LABEL_WIDTH + NODE_RADIUS,
-        y: group.y + GROUP_PADDING + GROUP_HEADER + row * CELL_HEIGHT + CELL_HEIGHT / 2,
+  const rings = groups
+    .filter(group => group.cardIds.length)
+    .map((group, i) => {
+      const radius = RING_RADIUS - FIRST_RING_INSET - i * RING_GAP;
+      const slots = group.cardIds.map(id => slotOf[id]).filter(slot => slot !== undefined);
+      return {
+        id: group.id,
+        title: group.title,
+        radius,
+        arcs: consecutiveRuns(slots, ordered.length).map(run => {
+          // A tab holding every card closes into a full ring; padding alone
+          // can never span a whole turn, so it would otherwise draw with an
+          // odd notch in it.
+          const coversAll = run.length === ordered.length;
+          const start = angleAt(run[0]) - (coversAll ? 0 : step * ARC_PAD);
+          const end = coversAll
+            ? start + TAU
+            : angleAt(run[0] + run.length - 1) + step * ARC_PAD;
+          return arcPath(centre, centre, radius, start, end);
+        }),
       };
-    });
-  }
+    })
+    .filter(ring => ring.radius > 0);
 
-  const positionedNodes = nodes
-    .filter(node => positions[node.id])
-    .map(node => ({ ...node, ...positions[node.id] }));
-
-  return {
-    nodes: positionedNodes,
-    groups: placedGroups,
-    width: placedGroups.reduce((max, g) => Math.max(max, g.x + g.width), 0),
-    height: placedGroups.reduce((max, g) => Math.max(max, g.y + g.height), 0),
-  };
+  return { nodes: placed, rings, width: VIEWBOX, height: VIEWBOX, centre, radius: RING_RADIUS };
 };

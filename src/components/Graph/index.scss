@@ -127,55 +127,108 @@
   height: 100%;
 }
 
-.card-graph-group {
-  rect {
-    fill: #FAFCFF;
-    stroke: #E5E5E5;
-    stroke-width: 1;
-  }
-  text {
-    font-family: Roboto;
-    font-size: 11px;
-    font-weight: 600;
-    fill: #363B4E;
-  }
+.card-graph-ring-track {
+  fill: none;
+  stroke: #F0F3F8;
+  stroke-width: 1;
+}
+// currentColor is set per ring on the <g>, so one rule covers every tab.
+.card-graph-ring-arc {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 5;
+  stroke-linecap: round;
+  opacity: .9;
 }
 
 .card-graph-edge {
-  stroke: #BEC5FF;
-  stroke-width: 1.5;
   fill: none;
+  stroke: #4A5068;
+  stroke-width: 1.8;
+  opacity: .85;
 }
-
-.card-graph-arrowhead {
-  fill: #BEC5FF;
-}
+.card-graph-arrowhead { fill: #4A5068; }
 
 .card-graph-node {
   cursor: pointer;
 
   text {
     font-family: Roboto;
-    font-size: 10px;
+    font-size: 11px;
     fill: #363B4E;
-    pointer-events: none;
   }
+  .card-graph-node-fill { stroke: #FFFFFF; stroke-width: 2; }
+  // Dashed ring marks a card that sits in more than one tab - the tab rings
+  // already show which, this just makes it findable at a glance.
+  .card-graph-node-ring {
+    fill: none;
+    stroke: #7E849A;
+    stroke-width: 1;
+    stroke-dasharray: 2 2;
+  }
+  &:hover text { fill: #0E77D8; }
+  &:hover .card-graph-node-fill { stroke: #DBE2EB; stroke-width: 3; }
+  &:focus-visible { outline: none; }
+  &:focus-visible text { fill: #0E77D8; text-decoration: underline; }
+}
 
-  &:hover .card-graph-node-fill,
-  &:focus-visible .card-graph-node-fill {
-    stroke: #363B4E;
-    stroke-width: 2;
+.card-graph-legend {
+  position: absolute;
+  left: 22px;
+  bottom: 18px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    color: #7E849A;
+    font-family: Roboto;
+    font-size: 11px;
+    line-height: 20px;
+  }
+  .swatch {
+    display: inline-block;
+    width: 14px;
+    height: 4px;
+    border-radius: 2px;
   }
 }
 
-.card-graph-node-fill {
-  stroke: #FFFFFF;
-  stroke-width: 1;
+.card-graph-empty {
+  margin: auto;
+  text-align: center;
+  font-family: Roboto;
+  color: #7E849A;
+
+  p { margin: 4px 0; }
+  .hint { font-size: 12px; }
 }
 
-.card-graph-node-ring {
-  fill: none;
-  stroke: #363B4E;
-  stroke-width: 1.5;
-  stroke-dasharray: 2 2;
+.card-graph-caption {
+  flex: 0 0 auto;
+  margin: 0;
+  text-align: center;
+  font-family: Roboto;
+  font-size: 12px;
+  color: #7E849A;
 }
+
+// The flex-shrink trap this repo keeps hitting: without an explicit
+// flex-basis/min-height, this child's height resolves against its own
+// (percentage-sized, so circular) content instead of the space the panel
+// actually has to give it.
+.card-graph-svg-wrap {
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
+}
+
+.card-graph-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+

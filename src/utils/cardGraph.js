@@ -72,11 +72,10 @@ export const UNPLACED_GROUP_ID = '__unplaced__';
 // The whole graph model, derived fresh from project state - nothing here is
 // persisted, so it can never drift from the cards it describes.
 //
-// A card is placed in exactly one group (its first tab), not one per tab:
-// the layout is deterministic, so a card has one position, and duplicating
-// a node would imply two cards. `tabIds` carries the full membership so the
-// view can mark shared cards, and the cross-group edges are what actually
-// show how two canvases connect.
+// A tab is a set, not a box: `groups[].cardIds` is full membership, so a card
+// placed in three tabs appears in all three. `primaryTabId` exists only to
+// give the layout a deterministic place to put that card's single dot - it is
+// not ownership, and nothing should read it as "the tab this card is in".
 export const buildCardGraph = ({ cards = {}, views = {}, viewOrder = [] } = {}) => {
   const order = viewOrder.filter(viewId => views[viewId]);
 
@@ -88,7 +87,7 @@ export const buildCardGraph = ({ cards = {}, views = {}, viewOrder = [] } = {}) 
       color: card?.color ?? 'gray',
       type: getCardType(card),
       tabIds,
-      groupId: tabIds[0] ?? UNPLACED_GROUP_ID,
+      primaryTabId: tabIds[0] ?? UNPLACED_GROUP_ID,
       isShared: tabIds.length > 1,
     };
   });
@@ -96,12 +95,12 @@ export const buildCardGraph = ({ cards = {}, views = {}, viewOrder = [] } = {}) 
   const groups = order.map(viewId => ({
     id: viewId,
     title: views[viewId]?.title ?? '',
-    cardIds: nodes.filter(node => node.groupId === viewId).map(node => node.id),
+    cardIds: nodes.filter(node => node.tabIds.includes(viewId)).map(node => node.id),
   }));
 
   // Cards that exist only in the Library still belong on the graph - they're
   // the ones most easily forgotten about.
-  const unplaced = nodes.filter(node => node.groupId === UNPLACED_GROUP_ID);
+  const unplaced = nodes.filter(node => !node.tabIds.length);
   if (unplaced.length) {
     groups.push({ id: UNPLACED_GROUP_ID, title: 'Not in a tab', cardIds: unplaced.map(node => node.id) });
   }

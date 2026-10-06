@@ -163,3 +163,32 @@ describe('Graph - shared card marker', () => {
     expect(soloNode.querySelector('.card-graph-node-ring')).toBeNull();
   });
 });
+
+describe('Graph - tab rings', () => {
+  // The reason this layout replaced regions: a card in two tabs has to be
+  // covered by both rings, not assigned to one of them.
+  it('draws a ring per tab, and a shared card is covered by every ring it belongs to', () => {
+    const store = makeStore({
+      session: { isGraphOpen: false },
+      project: {
+        cards: {
+          shared: customCard('Shared', '', { t1: {}, t2: {} }),
+          only1: customCard('Only One', '', { t1: {} }),
+          only2: customCard('Only Two', '', { t2: {} }),
+        },
+        views: { t1: { title: 'One' }, t2: { title: 'Two' } },
+        viewOrder: ['t1', 't2'],
+      },
+    });
+    const { container } = render(<Provider store={store}><GraphWithButton /></Provider>);
+    fireEvent.click(container.querySelector('.graph-btn'));
+
+    expect(container.querySelectorAll('.card-graph-ring').length).toBe(2);
+    // Every ring draws at least one arc, so neither tab is left unrepresented.
+    for (const ring of container.querySelectorAll('.card-graph-ring')) {
+      expect(ring.querySelectorAll('.card-graph-ring-arc').length).toBeGreaterThan(0);
+    }
+    expect(container.querySelectorAll('.card-graph-node-ring').length).toBe(1);
+    expect(container.querySelectorAll('.card-graph-legend li').length).toBe(2);
+  });
+});

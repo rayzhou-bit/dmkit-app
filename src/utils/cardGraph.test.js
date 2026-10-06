@@ -107,20 +107,24 @@ describe('buildCardGraph - edges', () => {
 describe('buildCardGraph - grouping', () => {
   const views = { t1: { title: 'One' }, t2: { title: 'Two' } };
 
-  it('places a card in its first tab by viewOrder, not object key order', () => {
-    const { nodes } = buildCardGraph({
-      cards: { a: customCard('A', '', { t2: {}, t1: {} }) },
+  // A tab is a set, not a box - a card in two tabs is listed by both, and
+  // that overlap is the thing the graph is meant to show.
+  it('lists a shared card under every tab it belongs to', () => {
+    const { groups } = buildCardGraph({
+      cards: { a: customCard('A', '', { t1: {}, t2: {} }), b: customCard('B', '', { t2: {} }) },
       views,
       viewOrder: ['t1', 't2'],
     });
-    expect(nodes[0].groupId).toBe('t1');
+    expect(groups.find(g => g.id === 't1').cardIds).toEqual(['a']);
+    expect(groups.find(g => g.id === 't2').cardIds).toEqual(['a', 'b']);
+  });
 
-    const reordered = buildCardGraph({
-      cards: { a: customCard('A', '', { t2: {}, t1: {} }) },
-      views,
-      viewOrder: ['t2', 't1'],
-    });
-    expect(reordered.nodes[0].groupId).toBe('t2');
+  // primaryTabId only decides where the single dot is drawn; it follows
+  // viewOrder so the ring order matches the tab bar.
+  it('takes primaryTabId from viewOrder, not object key order', () => {
+    const cards = () => ({ a: customCard('A', '', { t2: {}, t1: {} }) });
+    expect(buildCardGraph({ cards: cards(), views, viewOrder: ['t1', 't2'] }).nodes[0].primaryTabId).toBe('t1');
+    expect(buildCardGraph({ cards: cards(), views, viewOrder: ['t2', 't1'] }).nodes[0].primaryTabId).toBe('t2');
   });
 
   it('marks a card that appears in more than one tab, and keeps the full membership', () => {
@@ -143,7 +147,7 @@ describe('buildCardGraph - grouping', () => {
       views,
       viewOrder: ['t1', 't2'],
     });
-    expect(nodes[0].groupId).toBe(UNPLACED_GROUP_ID);
+    expect(nodes[0].primaryTabId).toBe(UNPLACED_GROUP_ID);
     expect(groups.at(-1)).toMatchObject({ id: UNPLACED_GROUP_ID, cardIds: ['a'] });
   });
 

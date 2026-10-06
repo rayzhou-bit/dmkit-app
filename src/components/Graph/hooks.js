@@ -38,10 +38,11 @@ export const useGraphHooks = () => {
     isOpen,
     toggleGraph: () => dispatch(actions.session.setGraphOpen({ isOpen: !isOpen })),
     nodes: graph.nodes,
-    groups: graph.groups,
+    rings: graph.rings,
     edges: graph.edges,
     width: graph.width,
     height: graph.height,
+    centre: graph.centre,
     onNodeClick: (cardId) => {
       dispatch(actions.session.focusCard({ cardId }));
       dispatch(actions.session.setGraphOpen({ isOpen: false }));

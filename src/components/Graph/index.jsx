@@ -1,29 +1,12 @@
 import React from 'react';
 
 import { useGraphHooks } from './hooks';
-import { NODE_RADIUS, LABEL_WIDTH } from '../../utils/graphLayout';
+import { NODE_RADIUS } from '../../utils/graphLayout';
 
 import '../../constants/colors.scss';
 import './index.scss';
 
 const ARROW_MARKER_ID = 'card-graph-arrowhead';
-
-// Trims both ends of a source->target line to the node circles' own
-// boundary (rather than drawing center-to-center) so the arrowhead marker
-// always lands in open space, whichever of edge/node ends up on top.
-const trimToNodes = (source, target, radius) => {
-  const dx = target.x - source.x;
-  const dy = target.y - source.y;
-  const dist = Math.sqrt(dx * dx + dy * dy) || 1;
-  const ux = dx / dist;
-  const uy = dy / dist;
-  return {
-    x1: source.x + ux * radius,
-    y1: source.y + uy * radius,
-    x2: target.x - ux * radius,
-    y2: target.y - uy * radius,
-  };
-};
 
 const GraphIcon = () => (
   <svg viewBox='0 0 24 24' aria-hidden='true'>
@@ -34,6 +17,11 @@ const GraphIcon = () => (
     <circle cx='18' cy='18' r='3' />
   </svg>
 );
+
+// Tab colours. Deliberately not the card palette - a ring says "this tab",
+// a dot says "this card", and reusing one set of hues for both would read as
+// a relationship that isn't there.
+const RING_HUES = ['#5BC5FF', '#F2A65A', '#8FBF6F', '#B18FD9', '#E2778F', '#6FB7B7'];
 
 const GraphNode = ({ node, onNodeClick }) => {
   const activate = () => onNodeClick(node.id);
@@ -47,26 +35,32 @@ const GraphNode = ({ node, onNodeClick }) => {
       onClick={activate}
       onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') activate(); }}
     >
-      {/* Invisible hit area spanning the dot + its label (LABEL_WIDTH is
-          graphLayout's own "node + title" cell width) - without this, a
-          click landing in the gap between the small dot and its text (the
-          <g>'s own bounding-box center, which is what a pointer naturally
-          targets) falls through to the group rect underneath instead of
-          registering on this node. fill="transparent" (not "none") so it
-          still hit-tests under the SVG default pointer-events value. */}
+      {/* Hit area over the dot and its label. Without it a click landing
+          between the two (the <g>'s own bounding-box centre, which is what a
+          pointer naturally targets) falls through to whatever is underneath.
+          fill="transparent", not "none", so it still hit-tests. */}
       <rect
         className='card-graph-node-hit'
-        x={node.x - NODE_RADIUS - 2}
-        y={node.y - NODE_RADIUS * 1.5}
-        width={LABEL_WIDTH - NODE_RADIUS - 2}
-        height={NODE_RADIUS * 3}
+        x={node.labelAnchor === 'end' ? node.labelX - 130 : node.labelX - 6}
+        y={node.labelY - 9}
+        width={136}
+        height={18}
+        transform={`rotate(${node.labelRotation} ${node.labelX} ${node.labelY})`}
         fill='transparent'
       />
       {node.isShared && (
         <circle className='card-graph-node-ring' cx={node.x} cy={node.y} r={NODE_RADIUS + 3} />
       )}
       <circle className={`card-graph-node-fill ${node.color}`} cx={node.x} cy={node.y} r={NODE_RADIUS} />
-      <text x={node.x + NODE_RADIUS + 4} y={node.y + 4}>{node.title}</text>
+      <text
+        x={node.labelX}
+        y={node.labelY}
+        textAnchor={node.labelAnchor}
+        dominantBaseline='middle'
+        transform={`rotate(${node.labelRotation} ${node.labelX} ${node.labelY})`}
+      >
+        {node.title}
+      </text>
     </g>
   );
 };
@@ -90,7 +84,7 @@ export const GraphButton = () => {
 };
 
 const Graph = () => {
-  const { isOpen, toggleGraph, nodes, groups, edges, width, height, onNodeClick } = useGraphHooks();
+  const { isOpen, toggleGraph, nodes, rings, edges, width, height, centre, onNodeClick } = useGraphHooks();
 
   const nodesById = React.useMemo(() => Object.fromEntries(nodes.map(n => [n.id, n])), [nodes]);
   const hasNodes = nodes.length > 0;
@@ -138,10 +132,12 @@ const Graph = () => {
                     </marker>
                   </defs>
 
-                  {groups.map(group => (
-                    <g key={group.id} className='card-graph-group'>
-                      <rect x={group.x} y={group.y} width={group.width} height={group.height} rx={10} />
-                      <text x={group.x + 18} y={group.y + 24}>{group.title}</text>
+                  {rings.map((ring, i) => (
+                    <g key={ring.id} className='card-graph-ring' style={{ color: RING_HUES[i % RING_HUES.length] }}>
+                      <circle className='card-graph-ring-track' cx={centre} cy={centre} r={ring.radius} />
+                      {ring.arcs.map((d, j) => (
+                        <path key={j} className='card-graph-ring-arc' d={d} />
+                      ))}
                     </g>
                   ))}
 
@@ -149,12 +145,14 @@ const Graph = () => {
                     const source = nodesById[edge.source];
                     const target = nodesById[edge.target];
                     if (!source || !target) return null;
-                    const { x1, y1, x2, y2 } = trimToNodes(source, target, NODE_RADIUS);
+                    // Quadratic through the centre: every chord bows inward,
+                    // so edges stay in the empty middle and never reach the
+                    // labels outside the ring.
                     return (
-                      <line
+                      <path
                         key={`${edge.source}->${edge.target}-${i}`}
                         className='card-graph-edge'
-                        x1={x1} y1={y1} x2={x2} y2={y2}
+                        d={`M${source.x} ${source.y} Q${centre} ${centre} ${target.x} ${target.y}`}
                         markerEnd={`url(#${ARROW_MARKER_ID})`}
                       />
                     );
@@ -165,6 +163,14 @@ const Graph = () => {
                   ))}
                 </svg>
               </div>
+              <ul className='card-graph-legend'>
+                {rings.map((ring, i) => (
+                  <li key={ring.id}>
+                    <span className='swatch' style={{ backgroundColor: RING_HUES[i % RING_HUES.length] }} />
+                    {ring.title || 'Untitled'}
+                  </li>
+                ))}
+              </ul>
             </>
           )}
         </div>
