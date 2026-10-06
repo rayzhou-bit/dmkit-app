@@ -1112,3 +1112,40 @@ describe('custom block reducers - field: "notes" on a monster card', () => {
     });
   });
 });
+
+// Titles are kept unique across the project at the reducer, not in a hook, so
+// it holds for every path that can set one - typing, copying, creating.
+describe('card titles stay unique', () => {
+  const withCards = (cards) => ({ ...baseState, activeViewId: 'tab1', cards });
+
+  it('renaming a card onto a taken title numbers it', () => {
+    const next = reducer(
+      withCards({ a: { title: 'Goblin', views: {} }, b: { title: 'Wolf', views: {} } }),
+      { type: 'project/updateCardTitle', payload: { id: 'b', title: 'Goblin' } },
+    );
+    expect(next.cards.b.title).toBe('Goblin 2');
+  });
+
+  it('committing a card its own unchanged title leaves it alone', () => {
+    const next = reducer(
+      withCards({ a: { title: 'Goblin', views: {} } }),
+      { type: 'project/updateCardTitle', payload: { id: 'a', title: 'Goblin' } },
+    );
+    expect(next.cards.a.title).toBe('Goblin');
+  });
+
+  it('a copy lands numbered - copySelectedCard routes through createCard', () => {
+    const next = reducer(
+      withCards({ a: { title: 'Goblin', views: {} } }),
+      { type: 'project/createCard', payload: { newId: 'b', title: 'Goblin' } },
+    );
+    expect(next.cards.b.title).toBe('Goblin 2');
+  });
+
+  it('new untitled cards do not pile up identical names', () => {
+    let state = withCards({});
+    state = reducer(state, { type: 'project/createCard', payload: { newId: 'a' } });
+    state = reducer(state, { type: 'project/createCard', payload: { newId: 'b' } });
+    expect(state.cards.a.title).not.toBe(state.cards.b.title);
+  });
+});

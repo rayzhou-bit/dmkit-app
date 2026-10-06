@@ -5,6 +5,7 @@ import FilterBar from './FilterBar';
 import SortBar from './SortBar';
 import ViewBar from './ViewBar';
 import LibraryCard from '../Card/LibraryCard';
+import { GraphButton } from '../Graph';
 
 import { VIEW_OPTIONS, useLibraryHooks } from './hooks';
 
@@ -73,6 +74,7 @@ const Library = () => {
         <img src={isOpen ? OpenLibraryIcon : ClosedLibraryIcon} alt='Library' />
         <span className='tooltip'>Library of cards</span>
       </button>
+      <GraphButton />
     </div>
   );
 };

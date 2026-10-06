@@ -209,6 +209,7 @@ export const INTRO_CARDS = {
       ],
     }),
     views: {
+      'barrow': { pos: { x: 6 * GRID_SIZE, y: 76 * GRID_SIZE }, size: MONSTER_CARD_SIZE },
       'bestiary': { pos: { x: 6 * GRID_SIZE, y: 6 * GRID_SIZE }, size: MONSTER_CARD_SIZE },
     },
     ...ts(5),
@@ -260,6 +261,7 @@ export const INTRO_CARDS = {
       }],
     }),
     views: {
+      'barrow': { pos: { x: 33 * GRID_SIZE, y: 76 * GRID_SIZE }, size: MONSTER_CARD_SIZE },
       'bestiary': { pos: { x: 34 * GRID_SIZE, y: 6 * GRID_SIZE }, size: MONSTER_CARD_SIZE },
     },
     ...ts(6),
@@ -384,6 +386,7 @@ export const INTRO_CARDS = {
       ],
     }),
     views: {
+      'barrow': { pos: { x: 60 * GRID_SIZE, y: 76 * GRID_SIZE }, size: MONSTER_CARD_SIZE },
       'bestiary': { pos: { x: 118 * GRID_SIZE, y: 6 * GRID_SIZE }, size: MONSTER_CARD_SIZE },
     },
     ...ts(9),
@@ -504,7 +507,7 @@ export const INTRO_TABS = {
     title: 'The Sunken Barrow',
     pos: DEFAULT_CANVAS_POSITION,
     scale: 1,
-    cards: ['barrow-hook', 'barrow-a1', 'barrow-a2', 'barrow-a3'],
+    cards: ['barrow-hook', 'barrow-a1', 'barrow-a2', 'barrow-a3', 'mon-goblin', 'mon-goblin-boss', 'mon-skeleton'],
   },
   'bestiary': {
     title: 'Bestiary',

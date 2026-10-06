@@ -142,6 +142,19 @@ describe('setLibraryOpen', () => {
   });
 });
 
+describe('setGraphOpen', () => {
+  it('opens the graph', () => {
+    const next = reducer(initialState, { type: 'session/setGraphOpen', payload: { isOpen: true } });
+    expect(next.isGraphOpen).toBe(true);
+  });
+
+  it('closes the graph', () => {
+    const state = { ...initialState, isGraphOpen: true };
+    const next = reducer(state, { type: 'session/setGraphOpen', payload: { isOpen: false } });
+    expect(next.isGraphOpen).toBe(false);
+  });
+});
+
 describe('focusCard', () => {
   it('starts null', () => {
     expect(initialState.cardFocus).toBe(null);

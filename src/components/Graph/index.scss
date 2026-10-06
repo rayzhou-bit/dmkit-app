@@ -1,0 +1,293 @@
+// Sits in .library's button rail, directly under .library-btn, so it tracks
+// the panel as it slides instead of covering the panel's contents. That also
+// puts it behind the graph panel once open, which is why the panel carries
+// its own close control.
+.graph-btn {
+  position: absolute;
+  top: calc(3% + 72px);
+  right: 102%;
+  height: 50px;
+  width: 50px;
+  padding: 4px;
+  background-color: #FFFFFF;
+  border: 1px solid #F4F4F4;
+  border-radius: 12px;
+  box-shadow: 2px 2px 8px -3px #D7D6D6;
+
+  svg {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 60%;
+    height: 60%;
+
+    line, circle {
+      stroke: #363B4E;
+      fill: #363B4E;
+    }
+    line { stroke-width: 2; }
+  }
+
+  // Position only - everything else comes from App.scss's app-wide tooltip
+  // rule. Same placement as .library-btn's: to the left, arrow on the right.
+  .tooltip {
+    top: 27%;
+    right: 120%;
+    white-space: nowrap;
+  }
+  .tooltip::after {
+    top: 50%;
+    left: 100%;
+    border-left-color: #363B4E;
+  }
+
+  &:hover { box-shadow: 0 0 0 3px #DBE2EB; }
+}
+
+.card-graph-close {
+  position: absolute;
+  top: 10px;
+  right: 14px;
+  z-index: 1;
+  padding: 0 6px 3px;
+  border-radius: 8px;
+  background-color: transparent;
+  color: #7E849A;
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+  &:hover { background-color: #F4F4F4; color: #363B4E; }
+}
+
+.card-graph-backdrop {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  // Just under .card-graph-panel (85), above everything it covers.
+  z-index: 84;
+  background-color: #00000059;
+}
+
+.card-graph-panel {
+  position: fixed;
+  top: 64px;
+  right: 24px;
+  bottom: 59px;
+  // Clears the 80px ToolMenu rather than overlapping it: a 24px inset cut
+  // the menu's labels down the middle, and half a word reads as a rendering
+  // bug however dim the backdrop is.
+  left: 88px;
+  z-index: 85;
+
+  background-color: #FFFFFF;
+  border: 1px solid #F4F4F4;
+  border-radius: 20px;
+  box-shadow: 2px 2px 8px -3px #D7D6D6;
+  padding: 16px 20px;
+
+  display: flex;
+  flex-flow: column nowrap;
+  gap: 8px;
+}
+
+.card-graph-empty {
+  margin: auto;
+  text-align: center;
+  font-family: Roboto;
+  color: #7E849A;
+
+  p { margin: 4px 0; }
+  .hint { font-size: 12px; }
+}
+
+.card-graph-caption {
+  flex: 0 0 auto;
+  margin: 0;
+  text-align: center;
+  font-family: Roboto;
+  font-size: 12px;
+  color: #7E849A;
+}
+
+// The flex-shrink trap this repo keeps hitting: without an explicit
+// flex-basis/min-height, this child's height resolves against its own
+// (percentage-sized, so circular) content instead of the space the panel
+// actually has to give it.
+.card-graph-svg-wrap {
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
+}
+
+.card-graph-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.card-graph-ring-track {
+  fill: none;
+  stroke: #F0F3F8;
+  stroke-width: 1;
+}
+// currentColor is set per ring on the <g>, so one rule covers every tab.
+.card-graph-ring-arc {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 10;
+  stroke-linecap: round;
+  opacity: .9;
+}
+
+.card-graph-edge {
+  fill: none;
+  stroke: #4A5068;
+  stroke-width: 1.8;
+  opacity: .85;
+}
+.card-graph-arrowhead { fill: #4A5068; }
+
+.card-graph-node {
+  cursor: pointer;
+
+  text {
+    font-family: Roboto;
+    font-size: 11px;
+    fill: #363B4E;
+  }
+  .card-graph-node-fill { stroke: #FFFFFF; stroke-width: 2; }
+  // Dashed ring marks a card that sits in more than one tab - the tab rings
+  // already show which, this just makes it findable at a glance.
+  .card-graph-node-ring {
+    fill: none;
+    stroke: #7E849A;
+    stroke-width: 1;
+    stroke-dasharray: 2 2;
+  }
+  // The browser draws a <g>'s focus ring round its whole bounding box, which
+  // here includes the rotated label - a big skewed rectangle. Suppressed in
+  // favour of the halo below.
+  &:focus,
+  &:focus-visible { outline: none; }
+
+  .card-graph-node-halo {
+    fill: none;
+    stroke: #0E77D8;
+    stroke-width: 2;
+    opacity: 0;
+    transition: opacity .12s;
+  }
+  &:hover .card-graph-node-halo,
+  &:focus-visible .card-graph-node-halo { opacity: 1; }
+  &:hover text,
+  &:focus-visible text { fill: #0E77D8; font-weight: 600; }
+}
+
+.card-graph-node-icon { pointer-events: none; }
+
+.card-graph-key {
+  position: absolute;
+  left: 22px;
+  bottom: 18px;
+
+  h2 {
+    margin: 0 0 4px;
+    color: #A0A4B4;
+    font-family: Roboto;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  li {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    color: #7E849A;
+    font-family: Roboto;
+    font-size: 11px;
+    line-height: 20px;
+  }
+  .swatch {
+    display: inline-block;
+    width: 16px;
+    height: 7px;
+    border-radius: 4px;
+  }
+}
+
+.card-graph-zoom {
+  position: absolute;
+  right: 22px;
+  bottom: 18px;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 3px;
+  border: 1px solid #F0F3F8;
+  border-radius: 10px;
+  background-color: #FFFFFF;
+
+  button {
+    min-width: 30px;
+    height: 26px;
+    padding: 0 7px;
+    border-radius: 7px;
+    background-color: transparent;
+    color: #363B4E;
+    font-family: Roboto;
+    font-size: 12px;
+    cursor: pointer;
+    &:hover:not(:disabled) { background-color: #F4F4F4; }
+    &:disabled { color: #C9D2DE; cursor: default; }
+  }
+}
+
+.card-graph-svg {
+  cursor: grab;
+  touch-action: none;
+  &:active { cursor: grabbing; }
+}
+
+.card-graph-empty {
+  margin: auto;
+  text-align: center;
+  font-family: Roboto;
+  color: #7E849A;
+
+  p { margin: 4px 0; }
+  .hint { font-size: 12px; }
+}
+
+.card-graph-caption {
+  flex: 0 0 auto;
+  margin: 0;
+  text-align: center;
+  font-family: Roboto;
+  font-size: 12px;
+  color: #7E849A;
+}
+
+// The flex-shrink trap this repo keeps hitting: without an explicit
+// flex-basis/min-height, this child's height resolves against its own
+// (percentage-sized, so circular) content instead of the space the panel
+// actually has to give it.
+.card-graph-svg-wrap {
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
+}
+
+.card-graph-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+

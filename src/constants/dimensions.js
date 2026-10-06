@@ -62,7 +62,7 @@ export const NOTE_CARD_SIZE = {
 };
 
 export const ZOOM_STEP = 0.1;                 // additive step, buttons + keyboard
-export const WHEEL_ZOOM_SENSITIVITY = 0.0025; // exponent per normalized px
+export const WHEEL_ZOOM_SENSITIVITY = 0.005; // exponent per normalized px
 export const WHEEL_PAN_SPEED = 1;             // multiplier on normalized px
 export const WHEEL_LINE_HEIGHT = 16;          // px per DOM_DELTA_LINE unit
 export const WHEEL_PAGE_HEIGHT = 400;         // fallback px per DOM_DELTA_PAGE unit

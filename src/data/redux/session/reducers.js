@@ -17,6 +17,7 @@ const initialState = {
   selectedCards: [],
 
   isLibraryOpen: false,
+  isGraphOpen: false,
   // { cardId, nonce } when a card-reference navigation targets a card, else
   // null. nonce lets the same target be re-focused (e.g. clicking the same
   // link twice) since the payload would otherwise be identical.
@@ -95,6 +96,7 @@ const session = createSlice({
     setIsProjectEdited: (state, { payload }) => ({ ...state, isProjectEdited: payload }),
 
     setLibraryOpen: (state, { payload }) => ({ ...state, isLibraryOpen: payload.isOpen }),
+    setGraphOpen: (state, { payload }) => ({ ...state, isGraphOpen: payload.isOpen }),
 
     focusCard: (state, { payload }) => ({
       ...state,
