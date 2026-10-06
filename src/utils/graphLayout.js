@@ -131,19 +131,21 @@ export const layoutCardGraph = ({ nodes = [], groups = [] } = {}) => {
   return { nodes: placed, rings, width: VIEWBOX, height: VIEWBOX, centre, radius: RING_RADIUS };
 };
 
-// Focused layout: the chosen tab's cards on a small ring in the middle, then
-// one ring per level outward. Radii are derived from what's actually there -
-// a tab with no second-level neighbours doesn't pay for an empty outer band -
+// Focused layout: the chosen tab's cards fill a disc in the middle, then one
+// ring per level outward. Radii are derived from what's actually there - a
+// tab with no second-level neighbours doesn't pay for an empty outer band -
 // so the common case stays readable instead of scaling down to fit bands
 // nothing occupies.
 //
-// An edge between rings has to cross the inner ring's label band; there's
-// nowhere else for it to go. Labels carry a white halo (see .card-graph-node
-// text) so a line passing behind one doesn't make it unreadable.
-const LABEL_BAND = 140;      // room for a title outside its ring
-const RING_PAD = 38;         // clear space between one band and the next ring
-const MIN_CORE_RADIUS = 124;
-const NODE_ARC = 38;         // arc length a node needs to not crowd its neighbour
+// An edge between the disc and a ring has to cross the disc's own labels;
+// there's nowhere else for it to go. Labels carry a white halo (see
+// .card-graph-node text) so a line passing behind one stays readable.
+const LABEL_BAND = 140;      // room for a title outside a ring
+const RING_PAD = 42;         // clear space between one band and the next ring
+const CORE_LABEL_BAND = 124; // room for a core card's title inside the disc
+const CORE_PAD = 18;         // between a core label and the disc edge
+const MIN_CORE_ARC = 74;     // smallest ring the core cards sit on
+const NODE_ARC = 38;         // arc length a ring node needs to not crowd its neighbour
 
 const byTitle = (a, b) => a.title.localeCompare(b.title) || a.id.localeCompare(b.id);
 
@@ -169,30 +171,47 @@ const radialPlacement = (list, radius, centre) => {
 };
 
 export const layoutFocusGraph = ({ nodes = [] } = {}) => {
-  const byLevel = [0, 1, 2].map(level => nodes.filter(node => node.level === level).sort(byTitle));
-  const populated = byLevel.filter(list => list.length);
-  if (!populated.length) return { nodes: [], guides: [], width: 400, height: 400, centre: 200, radius: 0 };
-
-  // Each populated level gets a radius; an empty level costs nothing.
-  const radii = [];
-  for (const list of populated) {
-    const needed = (list.length * NODE_ARC) / TAU;
-    radii.push(radii.length === 0
-      ? Math.max(MIN_CORE_RADIUS, needed)
-      : Math.max(radii.at(-1) + LABEL_BAND + RING_PAD, needed));
+  const core = nodes.filter(node => node.level === 0).sort(byTitle);
+  const outer = [1, 2].map(level => nodes.filter(node => node.level === level).sort(byTitle));
+  if (!core.length && !outer.some(list => list.length)) {
+    return { nodes: [], guides: [], coreRadius: 0, width: 400, height: 400, centre: 200, radius: 0 };
   }
 
-  const viewbox = 2 * (radii.at(-1) + LABEL_BAND + 24);
+  // Core cards sit on a ring *inside* the disc, labels radiating outward but
+  // still within it. That keeps the property the all-tabs view relies on -
+  // labels outside the ring, edges as chords inside - so a connection between
+  // two of the tab's own cards never crosses one of their titles. The disc is
+  // what makes it read as an area rather than another bare ring.
+  const coreRing = core.length
+    ? Math.max(MIN_CORE_ARC, (core.length * NODE_ARC) / TAU)
+    : 0;
+  const coreRadius = core.length ? coreRing + CORE_LABEL_BAND + CORE_PAD : 0;
+
+  const radii = [];
+  for (const list of outer) {
+    if (!list.length) continue;
+    const needed = (list.length * NODE_ARC) / TAU;
+    const previous = radii.length ? radii.at(-1) + LABEL_BAND + RING_PAD : coreRadius + RING_PAD;
+    radii.push(Math.max(previous, needed));
+  }
+
+  const outermost = radii.length ? radii.at(-1) + LABEL_BAND : coreRadius;
+  const viewbox = 2 * (outermost + 24);
   const centre = viewbox / 2;
 
-  const placed = populated.flatMap((list, i) => radialPlacement(list, radii[i], centre));
+  const placedCore = core.length ? radialPlacement(core, coreRing, centre) : [];
+
+  let ringIndex = 0;
+  const placedOuter = outer.flatMap(list =>
+    (list.length ? radialPlacement(list, radii[ringIndex++], centre) : []));
 
   return {
-    nodes: placed,
+    nodes: [...placedCore, ...placedOuter],
     guides: radii,
+    coreRadius,
     width: viewbox,
     height: viewbox,
     centre,
-    radius: radii.at(-1),
+    radius: outermost,
   };
 };

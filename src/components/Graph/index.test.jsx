@@ -348,6 +348,14 @@ describe('Graph - focusing a tab', () => {
     expect(container.querySelector('.card-graph-focus')).toBeNull();
   });
 
+  it('draws the core disc and names the tab in the key, without a description', () => {
+    const { container, getByText } = openFocused();
+    fireEvent.click(getByText('One'));
+    expect(container.querySelector('.card-graph-core')).not.toBeNull();
+    expect(container.querySelector('.card-graph-focus h2').textContent).toBe('One');
+    expect(container.querySelector('.card-graph-focus p')).toBeNull();
+  });
+
   it('a node still navigates from the focused view', () => {
     const { container, getByText } = openFocused();
     fireEvent.click(getByText('One'));

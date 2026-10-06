@@ -10,6 +10,15 @@ import './index.scss';
 
 const ARROW_MARKER_ID = 'card-graph-arrowhead';
 
+// Stops a straight edge at the target's edge rather than its centre, so the
+// arrowhead sits in the open instead of under the dot.
+const trimToNode = (source, target, radius) => {
+  const dx = target.x - source.x;
+  const dy = target.y - source.y;
+  const distance = Math.hypot(dx, dy) || 1;
+  return { x: target.x - (dx / distance) * radius, y: target.y - (dy / distance) * radius };
+};
+
 const GraphIcon = () => (
   <svg viewBox='0 0 24 24' aria-hidden='true'>
     <line x1='6' y1='18' x2='12' y2='6' />
@@ -107,8 +116,10 @@ export const GraphButton = () => {
 const Graph = () => {
   const {
     isOpen, toggleGraph, nodes, rings, guides, edges, width, height, centre,
-    activeProject, onNodeClick, focusTabId, focusTitle, setFocusTab, clearFocus, viewbox,
+    activeProject, onNodeClick, focusTabId, focusTitle, focusTabIndex, coreRadius,
+    setFocusTab, clearFocus, viewbox,
   } = useGraphHooks();
+  const focusHue = RING_HUES[Math.max(0, focusTabIndex) % RING_HUES.length];
   const pan = useGraphViewHooks(viewbox, isOpen, `${activeProject}:${focusTabId ?? ''}`);
 
   const nodesById = React.useMemo(() => Object.fromEntries(nodes.map(n => [n.id, n])), [nodes]);
@@ -167,6 +178,13 @@ const Graph = () => {
                   {(guides ?? []).map(radius => (
                     <circle key={radius} className='card-graph-guide' cx={centre} cy={centre} r={radius} />
                   ))}
+                  {focusTabId && coreRadius > 0 && (
+                    <circle
+                      className='card-graph-core'
+                      cx={centre} cy={centre} r={coreRadius}
+                      style={{ color: focusHue }}
+                    />
+                  )}
                   {rings.map((ring, i) => (
                     <g key={ring.id} className='card-graph-ring' style={{ color: RING_HUES[i % RING_HUES.length] }}>
                       <circle className='card-graph-ring-track' cx={centre} cy={centre} r={ring.radius} />
@@ -180,14 +198,20 @@ const Graph = () => {
                     const source = nodesById[edge.source];
                     const target = nodesById[edge.target];
                     if (!source || !target) return null;
-                    // Quadratic through the centre: every chord bows inward,
-                    // so edges stay in the empty middle and never reach the
-                    // labels outside the ring.
+                    // All-tabs: a quadratic through the middle, so every chord
+                    // bows inward and stays clear of the labels outside the
+                    // ring. Focused: straight, because bowing a short hop
+                    // between two core cards through the centre makes a
+                    // direct connection look like a detour.
+                    const trimmed = trimToNode(source, target, NODE_RADIUS + 3);
+                    const d = focusTabId
+                      ? `M${source.x} ${source.y} L${trimmed.x} ${trimmed.y}`
+                      : `M${source.x} ${source.y} Q${centre} ${centre} ${target.x} ${target.y}`;
                     return (
                       <path
                         key={`${edge.source}->${edge.target}-${i}`}
                         className='card-graph-edge'
-                        d={`M${source.x} ${source.y} Q${centre} ${centre} ${target.x} ${target.y}`}
+                        d={d}
                         markerEnd={`url(#${ARROW_MARKER_ID})`}
                       />
                     );
@@ -201,8 +225,7 @@ const Graph = () => {
               </div>
               {focusTabId ? (
                 <div className='card-graph-focus'>
-                  <h2>{focusTitle}</h2>
-                  <p>and what connects to it, two steps out</p>
+                  <h2 style={{ borderColor: focusHue }}>{focusTitle}</h2>
                   <button type='button' onClick={clearFocus}>Show all tabs</button>
                 </div>
               ) : (

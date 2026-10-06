@@ -174,29 +174,63 @@ describe('layoutFocusGraph', () => {
     const twoLevels = layoutFocusGraph({ nodes: [lvl('a', 0), lvl('b', 1)] });
     const threeLevels = layoutFocusGraph({ nodes: [lvl('a', 0), lvl('b', 1), lvl('c', 2)] });
     expect(twoLevels.width).toBeLessThan(threeLevels.width);
-    expect(twoLevels.guides).toHaveLength(2);
+    // guides are the outer rings only - the core is a disc, not a ring.
+    expect(twoLevels.guides).toHaveLength(1);
+    expect(threeLevels.guides).toHaveLength(2);
   });
 
-  it('keeps every label outside its own ring, where chords cannot reach', () => {
-    const { nodes, centre } = layoutFocusGraph({ nodes: [lvl('a', 0), lvl('b', 0), lvl('c', 1)] });
-    for (const n of nodes) {
+  it('keeps every ring label outside its own ring', () => {
+    const { nodes, centre } = layoutFocusGraph({ nodes: [lvl('a', 0), lvl('b', 1), lvl('c', 2)] });
+    for (const n of nodes.filter(x => x.level > 0)) {
       const node = Math.hypot(n.x - centre, n.y - centre);
       const label = Math.hypot(n.labelX - centre, n.labelY - centre);
       expect(label).toBeGreaterThan(node);
     }
   });
 
-  it('flips labels on the left half so they never read upside down', () => {
-    const { nodes } = layoutFocusGraph({
-      nodes: Array.from({ length: 6 }, (_, i) => lvl(`c${i}`, 0, `C${i}`)),
+  // Core cards keep the all-tabs property: labels outside their ring, edges
+  // as chords inside it, so a core-to-core link never crosses a title.
+  it('keeps core labels between the core ring and the disc edge', () => {
+    const { nodes, centre, coreRadius } = layoutFocusGraph({
+      nodes: Array.from({ length: 7 }, (_, i) => lvl(`c${i}`, 0, `Card ${i}`)),
     });
-    for (const n of nodes) expect(n.labelAnchor).toBe(Math.cos(n.angle) < 0 ? 'end' : 'start');
+    for (const n of nodes) {
+      const node = Math.hypot(n.x - centre, n.y - centre);
+      const label = Math.hypot(n.labelX - centre, n.labelY - centre);
+      expect(label).toBeGreaterThan(node);
+      expect(label).toBeLessThan(coreRadius);
+    }
   });
 
-  it('grows the core ring rather than crowding a large tab onto a small one', () => {
+  it('flips ring labels on the left half so they never read upside down', () => {
+    const { nodes } = layoutFocusGraph({
+      nodes: [lvl('core', 0), ...Array.from({ length: 6 }, (_, i) => lvl(`c${i}`, 1, `C${i}`))],
+    });
+    for (const n of nodes.filter(x => x.level === 1)) {
+      expect(n.labelAnchor).toBe(Math.cos(n.angle) < 0 ? 'end' : 'start');
+    }
+  });
+
+  it('grows the core disc rather than crowding a large tab into a small one', () => {
     const small = layoutFocusGraph({ nodes: [lvl('a', 0)] });
     const big = layoutFocusGraph({ nodes: Array.from({ length: 40 }, (_, i) => lvl(`c${i}`, 0, `C${i}`)) });
-    expect(big.guides[0]).toBeGreaterThan(small.guides[0]);
+    expect(big.coreRadius).toBeGreaterThan(small.coreRadius);
+  });
+
+  it('keeps every core card inside the disc', () => {
+    const { nodes, centre, coreRadius } = layoutFocusGraph({
+      nodes: Array.from({ length: 9 }, (_, i) => lvl(`c${i}`, 0, `Card ${i}`)),
+    });
+    for (const n of nodes) {
+      expect(Math.hypot(n.x - centre, n.y - centre)).toBeLessThan(coreRadius);
+    }
+  });
+
+  it('puts the first ring outside the core disc', () => {
+    const { guides, coreRadius } = layoutFocusGraph({
+      nodes: [lvl('a', 0), lvl('b', 0), lvl('c', 1)],
+    });
+    expect(guides[0]).toBeGreaterThan(coreRadius);
   });
 
   it('handles an empty focus without throwing', () => {

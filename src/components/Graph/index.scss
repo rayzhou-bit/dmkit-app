@@ -194,6 +194,16 @@
 
 .card-graph-node-icon { pointer-events: none; }
 
+// The area the focused tab's own cards sit in. currentColor is set per-render
+// from that tab's hue in the key, so the two always agree.
+.card-graph-core {
+  fill: currentColor;
+  fill-opacity: .09;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-opacity: .55;
+}
+
 .card-graph-guide {
   fill: none;
   stroke: #F0F3F8;
@@ -209,17 +219,15 @@
   max-width: 230px;
 
   h2 {
-    margin: 0;
+    display: inline-block;
+    margin: 0 0 8px;
+    padding: 4px 12px;
+    border: 2px solid;          // colour comes from the focused tab
+    border-radius: 14px;
     color: #363B4E;
     font-family: Roboto;
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 600;
-  }
-  p {
-    margin: 2px 0 8px;
-    color: #A0A4B4;
-    font-family: Roboto;
-    font-size: 11px;
   }
   button {
     padding: 5px 11px;

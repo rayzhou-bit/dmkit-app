@@ -50,6 +50,10 @@ export const useGraphHooks = () => {
     toggleGraph: () => dispatch(actions.session.setGraphOpen({ isOpen: !isOpen })),
     focusTabId,
     focusTitle: graph.tabs.find(tab => tab.id === focusTabId)?.title ?? '',
+    // Index among the tabs, so the focused view can reuse the same hue the
+    // key gave that tab in the all-tabs view.
+    focusTabIndex: graph.tabs.findIndex(tab => tab.id === focusTabId),
+    coreRadius: graph.coreRadius ?? 0,
     setFocusTab: (tabId) => setFocusTabId(current => (current === tabId ? null : tabId)),
     clearFocus: () => setFocusTabId(null),
     viewbox: graph.width,
