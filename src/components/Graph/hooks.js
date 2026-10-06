@@ -3,7 +3,8 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { actions, selectors } from '../../data/redux';
 import { buildCardGraph } from '../../utils/cardGraph';
-import { layoutCardGraph } from '../../utils/graphLayout';
+import { layoutCardGraph, layoutFocusGraph } from '../../utils/graphLayout';
+import { focusGraph } from '../../utils/cardGraphFocus';
 import { normalizeWheelDelta } from '../../utils/canvasTransform';
 import { WHEEL_ZOOM_SENSITIVITY } from '../../constants/dimensions';
 
@@ -16,12 +17,15 @@ export const useGraphHooks = () => {
   const viewOrder = useSelector(selectors.project.tabOrder);
 
   const [showButton, setShowButton] = useState(!!activeProject);
+  // Which tab's neighbourhood is being shown, or null for the whole project.
+  const [focusTabId, setFocusTabId] = useState(null);
 
   // Same reset-on-project-change precedent as Library's useLibraryHooks:
   // switching projects doesn't dispatch session/initialize, so a graph left
   // open on the old project would otherwise still be open on the new one.
   useEffect(() => {
     setShowButton(!!activeProject);
+    setFocusTabId(null);
     dispatch(actions.session.setGraphOpen({ isOpen: false }));
   }, [activeProject]);
 
@@ -31,17 +35,31 @@ export const useGraphHooks = () => {
   // positioned nodes/groups layoutCardGraph returns.
   const graph = useMemo(() => {
     const built = buildCardGraph({ cards, views, viewOrder });
+    if (focusTabId) {
+      const focused = focusGraph(built, focusTabId);
+      return { ...layoutFocusGraph(focused), edges: focused.edges, rings: [], tabs: built.groups };
+    }
     const layout = layoutCardGraph(built);
-    return { ...layout, edges: built.edges };
-  }, [cards, views, viewOrder]);
+    return { ...layout, guides: [], edges: built.edges, tabs: built.groups };
+  }, [cards, views, viewOrder, focusTabId]);
 
   return {
     showButton,
     isOpen,
     activeProject,
     toggleGraph: () => dispatch(actions.session.setGraphOpen({ isOpen: !isOpen })),
+    focusTabId,
+    focusTitle: graph.tabs.find(tab => tab.id === focusTabId)?.title ?? '',
+    // Index among the tabs, so the focused view can reuse the same hue the
+    // key gave that tab in the all-tabs view.
+    focusTabIndex: graph.tabs.findIndex(tab => tab.id === focusTabId),
+    coreRadius: graph.coreRadius ?? 0,
+    setFocusTab: (tabId) => setFocusTabId(current => (current === tabId ? null : tabId)),
+    clearFocus: () => setFocusTabId(null),
+    viewbox: graph.width,
     nodes: graph.nodes,
     rings: graph.rings,
+    guides: graph.guides,
     edges: graph.edges,
     width: graph.width,
     height: graph.height,

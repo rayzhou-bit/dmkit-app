@@ -156,6 +156,13 @@
     font-family: Roboto;
     font-size: 11px;
     fill: #363B4E;
+    // White halo so an edge passing behind a label doesn't make it
+    // unreadable - unavoidable in the focused view, where a ring-to-ring
+    // edge has to cross the inner ring's label band.
+    paint-order: stroke fill;
+    stroke: #FFFFFF;
+    stroke-width: 3;
+    stroke-linejoin: round;
   }
   .card-graph-node-fill { stroke: #FFFFFF; stroke-width: 2; }
   // Dashed ring marks a card that sits in more than one tab - the tab rings
@@ -187,6 +194,59 @@
 
 .card-graph-node-icon { pointer-events: none; }
 
+// The area the focused tab's own cards sit in. currentColor is set per-render
+// from that tab's hue in the key, so the two always agree.
+.card-graph-core {
+  fill: currentColor;
+  fill-opacity: .09;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-opacity: .55;
+}
+
+.card-graph-guide {
+  fill: none;
+  stroke: #F0F3F8;
+  stroke-width: 1;
+}
+
+// Replaces the key while a tab is focused - the key's job is picking a tab,
+// and there's nothing left to pick.
+.card-graph-focus {
+  position: absolute;
+  left: 22px;
+  bottom: 18px;
+  max-width: 230px;
+  // Column so the button sits under the name rather than beside it; the
+  // pill still shrinks to its text.
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+
+  h2 {
+    display: inline-block;
+    margin: 0 0 8px;
+    padding: 4px 12px;
+    border: 2px solid;          // colour comes from the focused tab
+    border-radius: 14px;
+    color: #363B4E;
+    font-family: Roboto;
+    font-size: 13px;
+    font-weight: 600;
+  }
+  button {
+    padding: 5px 11px;
+    border: 1px solid #E9EDF3;
+    border-radius: 8px;
+    background-color: #FFFFFF;
+    color: #363B4E;
+    font-family: Roboto;
+    font-size: 11px;
+    cursor: pointer;
+    &:hover { background-color: #F4F4F4; }
+  }
+}
+
 .card-graph-key {
   position: absolute;
   left: 22px;
@@ -206,14 +266,19 @@
     padding: 0;
     list-style: none;
   }
-  li {
+  li button {
     display: flex;
     align-items: center;
     gap: 9px;
+    padding: 2px 7px 2px 4px;
+    border-radius: 7px;
+    background-color: transparent;
     color: #7E849A;
     font-family: Roboto;
     font-size: 11px;
     line-height: 20px;
+    cursor: pointer;
+    &:hover { background-color: #F4F4F4; color: #363B4E; }
   }
   .swatch {
     display: inline-block;

@@ -290,3 +290,76 @@ describe('Graph - zoom and pan', () => {
     expect(transform(container)).toBe(zoomed);
   });
 });
+
+describe('Graph - focusing a tab', () => {
+  // t1 holds a and b. c points at b (one step out), d points at c (two), and
+  // e points at d (three - past the cap, so it should not appear).
+  const openFocused = () => {
+    const store = makeStore({
+      session: { isGraphOpen: false },
+      project: {
+        cards: {
+          a: customCard('A', '#[B](b)', { t1: {} }),
+          b: customCard('B', '', { t1: {} }),
+          c: customCard('C', '#[B](b)', { t2: {} }),
+          d: customCard('D', '#[C](c)', { t2: {} }),
+          e: customCard('E', '#[D](d)', { t2: {} }),
+        },
+        views: { t1: { title: 'One' }, t2: { title: 'Two' } },
+        viewOrder: ['t1', 't2'],
+      },
+    });
+    const utils = render(<Provider store={store}><GraphWithButton /></Provider>);
+    fireEvent.click(utils.container.querySelector('.graph-btn'));
+    return utils;
+  };
+  const labels = (container) =>
+    [...container.querySelectorAll('.card-graph-node')].map(n => n.getAttribute('aria-label')).sort();
+
+  it('shows the whole project until a tab is chosen', () => {
+    const { container } = openFocused();
+    expect(labels(container)).toEqual(['A', 'B', 'C', 'D', 'E']);
+    expect(container.querySelector('.card-graph-focus')).toBeNull();
+  });
+
+  it('keeps the tab, its neighbours and their neighbours - and drops the rest', () => {
+    const { container, getByText } = openFocused();
+    fireEvent.click(getByText('One'));
+    // A,B are the tab; C reaches B; D reaches C. E is three steps out.
+    expect(labels(container)).toEqual(['A', 'B', 'C', 'D']);
+    expect(container.querySelector('.card-graph-focus h2').textContent).toBe('One');
+  });
+
+  it('swaps the tab key for the focus panel and back again', () => {
+    const { container, getByText } = openFocused();
+    fireEvent.click(getByText('One'));
+    expect(container.querySelector('.card-graph-key')).toBeNull();
+
+    fireEvent.click(getByText('Show all tabs'));
+    expect(container.querySelector('.card-graph-key')).not.toBeNull();
+    expect(labels(container)).toEqual(['A', 'B', 'C', 'D', 'E']);
+  });
+
+  it('clicking the focused tab again clears the focus', () => {
+    const { container, getByText } = openFocused();
+    fireEvent.click(getByText('One'));
+    expect(container.querySelector('.card-graph-focus')).not.toBeNull();
+    fireEvent.click(container.querySelector('.card-graph-focus button'));
+    expect(container.querySelector('.card-graph-focus')).toBeNull();
+  });
+
+  it('draws the core disc and names the tab in the key, without a description', () => {
+    const { container, getByText } = openFocused();
+    fireEvent.click(getByText('One'));
+    expect(container.querySelector('.card-graph-core')).not.toBeNull();
+    expect(container.querySelector('.card-graph-focus h2').textContent).toBe('One');
+    expect(container.querySelector('.card-graph-focus p')).toBeNull();
+  });
+
+  it('a node still navigates from the focused view', () => {
+    const { container, getByText } = openFocused();
+    fireEvent.click(getByText('One'));
+    fireEvent.click(container.querySelector('[data-card-id="c"]'));
+    expect(container.querySelector('.card-graph-panel')).toBeNull();
+  });
+});
