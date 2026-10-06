@@ -1,0 +1,162 @@
+.graph-btn {
+  position: fixed;
+  right: 20px;
+  bottom: 55px;
+  // Above .card-graph-panel's z-index (85) - the panel's own footprint
+  // overlaps this corner, and the button must stay clickable (to close the
+  // graph) regardless of whether the panel is open.
+  z-index: 90;
+  height: 50px;
+  width: 50px;
+  padding: 4px;
+  background-color: #FFFFFF;
+  border: 1px solid #F4F4F4;
+  border-radius: 12px;
+  box-shadow: 2px 2px 8px -3px #D7D6D6;
+
+  svg {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 60%;
+    height: 60%;
+
+    line, circle {
+      stroke: #363B4E;
+      fill: #363B4E;
+    }
+    line { stroke-width: 2; }
+  }
+
+  // Position/shape/color only - show/hide-on-hover comes from App.scss's
+  // app-wide button tooltip rule, same precedent as ZoomControls.
+  .tooltip {
+    bottom: 120%;
+    left: 50%;
+    transform: translateX(-50%);
+    white-space: nowrap;
+    padding: 4px 8px;
+    border-radius: 4px;
+    background: #363B4E;
+    color: #FFFFFF;
+    font-size: 11px;
+    font-family: Roboto;
+
+    &::after {
+      top: 100%;
+      left: 50%;
+      margin-left: -5px;
+      border-width: 5px;
+      border-top-color: #363B4E;
+    }
+  }
+
+  &:hover { box-shadow: 0 0 0 3px #DBE2EB; }
+}
+
+.card-graph-panel {
+  position: fixed;
+  top: 64px;
+  right: 24px;
+  bottom: 59px;
+  left: 24px;
+  z-index: 85;
+
+  background-color: #FFFFFF;
+  border: 1px solid #F4F4F4;
+  border-radius: 20px;
+  box-shadow: 2px 2px 8px -3px #D7D6D6;
+  padding: 16px 20px;
+
+  display: flex;
+  flex-flow: column nowrap;
+  gap: 8px;
+}
+
+.card-graph-empty {
+  margin: auto;
+  text-align: center;
+  font-family: Roboto;
+  color: #7E849A;
+
+  p { margin: 4px 0; }
+  .hint { font-size: 12px; }
+}
+
+.card-graph-caption {
+  flex: 0 0 auto;
+  margin: 0;
+  text-align: center;
+  font-family: Roboto;
+  font-size: 12px;
+  color: #7E849A;
+}
+
+// The flex-shrink trap this repo keeps hitting: without an explicit
+// flex-basis/min-height, this child's height resolves against its own
+// (percentage-sized, so circular) content instead of the space the panel
+// actually has to give it.
+.card-graph-svg-wrap {
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
+}
+
+.card-graph-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.card-graph-group {
+  rect {
+    fill: #FAFCFF;
+    stroke: #E5E5E5;
+    stroke-width: 1;
+  }
+  text {
+    font-family: Roboto;
+    font-size: 11px;
+    font-weight: 600;
+    fill: #363B4E;
+  }
+}
+
+.card-graph-edge {
+  stroke: #BEC5FF;
+  stroke-width: 1.5;
+  fill: none;
+}
+
+.card-graph-arrowhead {
+  fill: #BEC5FF;
+}
+
+.card-graph-node {
+  cursor: pointer;
+
+  text {
+    font-family: Roboto;
+    font-size: 10px;
+    fill: #363B4E;
+    pointer-events: none;
+  }
+
+  &:hover .card-graph-node-fill,
+  &:focus-visible .card-graph-node-fill {
+    stroke: #363B4E;
+    stroke-width: 2;
+  }
+}
+
+.card-graph-node-fill {
+  stroke: #FFFFFF;
+  stroke-width: 1;
+}
+
+.card-graph-node-ring {
+  fill: none;
+  stroke: #363B4E;
+  stroke-width: 1.5;
+  stroke-dasharray: 2 2;
+}

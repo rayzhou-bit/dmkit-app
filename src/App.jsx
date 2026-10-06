@@ -4,6 +4,7 @@ import './App.scss';
 import HeaderMenu from './components/HeaderMenu';
 import ToolMenu from './components/ToolMenu';
 import Library from './components/Library';
+import Graph from './components/Graph';
 import TabBar from './components/TabBar';
 import Canvas from './components/Canvas';
 import MobileView from './components/MobileView';
@@ -40,6 +41,7 @@ const App = () => {
         <>
           <ToolMenu toolMenuRef={toolMenuRef} isOpen={isToolMenuOpen} />
           <Library />
+          <Graph />
           <TabBar />
           <Canvas toolMenuRef={toolMenuRef} />
         </>

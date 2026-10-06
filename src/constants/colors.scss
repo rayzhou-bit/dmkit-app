@@ -1,20 +1,23 @@
-.cloud { background-color: #F4F4F4; }
-.gray { background-color: #CCD6E3; }
-.pink { background-color: #FFD8E1; }
-.lichen_green { background-color: #B8DAB6; }
-.cotton_blue { background-color: #C1E9FF; }
-.butter { background-color: #FFEDAB; }
-.sage { background-color: #87BAC1; }
-.lilac { background-color: #BEC5FF; }
-.orange { background-color: #FFAB49; }
-.corn { background-color: #FFD749; }
-.carrot { background-color: #ED5E31; }
-.lavender {background-color: #C598F2; }
-.red { background-color: #D84C4C; }
-.cobalt { background-color: #0E77D8; }
-.chestnut { background-color: #BC9681; }
-.eggplant { background-color: #503C7C; }
-.jungle { background-color: #225C33; }
-.forest { background-color: #134444; }
-.shadow { background-color: #363B4E; }
-.black { background-color: #000000; }
+// `fill` sits alongside `background-color` on every rule so these same
+// classes can color an SVG shape (e.g. Graph's node circles) as well as a
+// DOM swatch - one color value per key, no second hex list to keep in sync.
+.cloud { background-color: #F4F4F4; fill: #F4F4F4; }
+.gray { background-color: #CCD6E3; fill: #CCD6E3; }
+.pink { background-color: #FFD8E1; fill: #FFD8E1; }
+.lichen_green { background-color: #B8DAB6; fill: #B8DAB6; }
+.cotton_blue { background-color: #C1E9FF; fill: #C1E9FF; }
+.butter { background-color: #FFEDAB; fill: #FFEDAB; }
+.sage { background-color: #87BAC1; fill: #87BAC1; }
+.lilac { background-color: #BEC5FF; fill: #BEC5FF; }
+.orange { background-color: #FFAB49; fill: #FFAB49; }
+.corn { background-color: #FFD749; fill: #FFD749; }
+.carrot { background-color: #ED5E31; fill: #ED5E31; }
+.lavender {background-color: #C598F2; fill: #C598F2; }
+.red { background-color: #D84C4C; fill: #D84C4C; }
+.cobalt { background-color: #0E77D8; fill: #0E77D8; }
+.chestnut { background-color: #BC9681; fill: #BC9681; }
+.eggplant { background-color: #503C7C; fill: #503C7C; }
+.jungle { background-color: #225C33; fill: #225C33; }
+.forest { background-color: #134444; fill: #134444; }
+.shadow { background-color: #363B4E; fill: #363B4E; }
+.black { background-color: #000000; fill: #000000; }

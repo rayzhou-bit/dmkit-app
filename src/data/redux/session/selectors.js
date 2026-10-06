@@ -14,6 +14,7 @@ export const simpleSelectors = {
   isCampaignEdited: mkSimpleSelector(session => session.isProjectEdited),
   monsterCollapse: mkSimpleSelector(session => session.monsterCollapse),
   isLibraryOpen: mkSimpleSelector(session => session.isLibraryOpen),
+  isGraphOpen: mkSimpleSelector(session => session.isGraphOpen),
   cardFocus: mkSimpleSelector(session => session.cardFocus),
 };
 
