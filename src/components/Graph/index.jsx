@@ -91,6 +91,11 @@ const Graph = () => {
       </button>
 
       {isOpen && (
+        <>
+        {/* Without this the ToolMenu shows through the panel's 24px gutter,
+            sliced down its middle. Dimming it reads as a lens over the app
+            and gives click-away-to-close, same as the mobile create sheet. */}
+        <div className='card-graph-backdrop' onClick={toggleGraph} />
         <div className='card-graph-panel'>
           {!hasNodes ? (
             <div className='card-graph-empty'>
@@ -154,6 +159,7 @@ const Graph = () => {
             </>
           )}
         </div>
+        </>
       )}
     </>
   );

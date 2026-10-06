@@ -54,12 +54,26 @@
   &:hover { box-shadow: 0 0 0 3px #DBE2EB; }
 }
 
+.card-graph-backdrop {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  // Just under .card-graph-panel (85), above everything it covers.
+  z-index: 84;
+  background-color: #00000059;
+}
+
 .card-graph-panel {
   position: fixed;
   top: 64px;
   right: 24px;
   bottom: 59px;
-  left: 24px;
+  // Clears the 80px ToolMenu rather than overlapping it: a 24px inset cut
+  // the menu's labels down the middle, and half a word reads as a rendering
+  // bug however dim the backdrop is.
+  left: 88px;
   z-index: 85;
 
   background-color: #FFFFFF;
