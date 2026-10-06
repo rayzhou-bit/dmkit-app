@@ -1,4 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
+import { uniqueTitle, titlesInUse } from '../../../utils/uniqueTitle';
 import {
   DEFAULT_CARD,
   DEFAULT_TAB,
@@ -186,7 +187,7 @@ const project = createSlice({
               },
             },
             color: color ?? DEFAULT_CARD.color,
-            title: title ?? DEFAULT_CARD.title,
+            title: uniqueTitle(title ?? DEFAULT_CARD.title, titlesInUse(state.cards)),
             type: type ?? DEFAULT_CARD.type,
             content: type === CARD_TYPES.monster ? buildMonsterContent(monster)
               : type === CARD_TYPES.note ? buildNoteContent(note)
@@ -357,7 +358,7 @@ const project = createSlice({
           ...state.cards,
           [id]: {
             ...state.cards[id],
-            title: title,
+            title: uniqueTitle(title, titlesInUse(state.cards, id)),
             editedOn: Date.now(),
           },
         },
