@@ -3,6 +3,7 @@ import { render, fireEvent } from '@testing-library/react';
 import { Provider } from 'react-redux';
 
 import Graph, { GraphButton } from './index';
+import { MIN_ZOOM } from './hooks';
 
 // GraphButton lives in Library's button rail in the real tree (so it tracks
 // the panel as it slides); render the pair together to exercise the toggle.
@@ -189,6 +190,63 @@ describe('Graph - tab rings', () => {
       expect(ring.querySelectorAll('.card-graph-ring-arc').length).toBeGreaterThan(0);
     }
     expect(container.querySelectorAll('.card-graph-node-ring').length).toBe(1);
-    expect(container.querySelectorAll('.card-graph-legend li').length).toBe(2);
+    expect(container.querySelectorAll('.card-graph-key li').length).toBe(2);
+  });
+});
+
+describe('Graph - zoom and pan', () => {
+  const open = () => {
+    const store = makeStore({
+      session: { isGraphOpen: false },
+      project: {
+        cards: { a: customCard('A', '#[B](b)', { t1: {} }), b: customCard('B', '', { t1: {} }) },
+        views: { t1: { title: 'One' } },
+        viewOrder: ['t1'],
+      },
+    });
+    const utils = render(<Provider store={store}><GraphWithButton /></Provider>);
+    fireEvent.click(utils.container.querySelector('.graph-btn'));
+    return utils;
+  };
+  const transform = (container) =>
+    container.querySelector('.card-graph-svg g[transform]').getAttribute('transform');
+
+  it('starts unzoomed with the reset control disabled', () => {
+    const { container } = open();
+    expect(transform(container)).toBe('translate(0 0) scale(1)');
+    expect(container.querySelector('.card-graph-zoom [aria-label="Reset zoom"]').disabled).toBe(true);
+  });
+
+  it('zooms in and back out from the controls', () => {
+    const { container } = open();
+    fireEvent.click(container.querySelector('[aria-label="Zoom in"]'));
+    expect(transform(container)).toContain('scale(1.25)');
+    fireEvent.click(container.querySelector('[aria-label="Zoom out"]'));
+    expect(transform(container)).toContain('scale(1)');
+  });
+
+  it('clamps at the far ends rather than zooming without limit', () => {
+    const { container } = open();
+    const zoomOut = container.querySelector('[aria-label="Zoom out"]');
+    for (let i = 0; i < 12; i++) fireEvent.click(zoomOut);
+    expect(zoomOut.disabled).toBe(true);
+    expect(transform(container)).toContain(`scale(${MIN_ZOOM})`);
+  });
+
+  it('reset returns to the original view', () => {
+    const { container } = open();
+    fireEvent.click(container.querySelector('[aria-label="Zoom in"]'));
+    fireEvent.click(container.querySelector('.card-graph-zoom [aria-label="Reset zoom"]'));
+    expect(transform(container)).toBe('translate(0 0) scale(1)');
+  });
+
+  // A drag starting on a node must not pan - that gesture is the node's click.
+  it('ignores a pointer-down that lands on a node', () => {
+    const { container } = open();
+    const svg = container.querySelector('.card-graph-svg');
+    const node = container.querySelector('.card-graph-node');
+    fireEvent.pointerDown(node, { button: 0, clientX: 10, clientY: 10 });
+    fireEvent.pointerMove(svg, { clientX: 90, clientY: 90 });
+    expect(transform(container)).toBe('translate(0 0) scale(1)');
   });
 });

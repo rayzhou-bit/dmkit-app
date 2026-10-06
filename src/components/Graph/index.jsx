@@ -1,7 +1,9 @@
 import React from 'react';
 
-import { useGraphHooks } from './hooks';
-import { NODE_RADIUS } from '../../utils/graphLayout';
+import { useGraphHooks, useGraphViewHooks } from './hooks';
+import { NODE_RADIUS, VIEWBOX } from '../../utils/graphLayout';
+import { CARD_TYPE_ICONS } from '../../constants/cards';
+import { LIGHT_COLORS } from '../../constants/colors';
 
 import '../../constants/colors.scss';
 import './index.scss';
@@ -23,8 +25,13 @@ const GraphIcon = () => (
 // a relationship that isn't there.
 const RING_HUES = ['#5BC5FF', '#F2A65A', '#8FBF6F', '#B18FD9', '#E2778F', '#6FB7B7'];
 
+const ICON_SIZE = NODE_RADIUS * 1.2;
+
 const GraphNode = ({ node, onNodeClick }) => {
   const activate = () => onNodeClick(node.id);
+  const typeIcon = CARD_TYPE_ICONS[node.type];
+  // Same dark-on-light pairing the card title bars use.
+  const icon = typeIcon && (LIGHT_COLORS.includes(node.color) ? typeIcon.darkIcon : typeIcon.lightIcon);
   return (
     <g
       className='card-graph-node'
@@ -48,10 +55,24 @@ const GraphNode = ({ node, onNodeClick }) => {
         transform={`rotate(${node.labelRotation} ${node.labelX} ${node.labelY})`}
         fill='transparent'
       />
+      {/* Hover/focus halo. The browser's own focus ring on a <g> is drawn
+          round its whole bounding box, which includes the rotated label -
+          a big rectangle skewed off at the label's angle. */}
+      <circle className='card-graph-node-halo' cx={node.x} cy={node.y} r={NODE_RADIUS + 5} />
       {node.isShared && (
         <circle className='card-graph-node-ring' cx={node.x} cy={node.y} r={NODE_RADIUS + 3} />
       )}
       <circle className={`card-graph-node-fill ${node.color}`} cx={node.x} cy={node.y} r={NODE_RADIUS} />
+      {icon && (
+        <image
+          className='card-graph-node-icon'
+          href={icon}
+          x={node.x - ICON_SIZE / 2}
+          y={node.y - ICON_SIZE / 2}
+          width={ICON_SIZE}
+          height={ICON_SIZE}
+        />
+      )}
       <text
         x={node.labelX}
         y={node.labelY}
@@ -85,6 +106,7 @@ export const GraphButton = () => {
 
 const Graph = () => {
   const { isOpen, toggleGraph, nodes, rings, edges, width, height, centre, onNodeClick } = useGraphHooks();
+  const pan = useGraphViewHooks(VIEWBOX);
 
   const nodesById = React.useMemo(() => Object.fromEntries(nodes.map(n => [n.id, n])), [nodes]);
   const hasNodes = nodes.length > 0;
@@ -112,11 +134,17 @@ const Graph = () => {
               )}
               <div className='card-graph-svg-wrap'>
                 <svg
-                  className='card-graph-svg'
+                  ref={pan.svgRef}
+                  className={'card-graph-svg' + (pan.isPanned ? ' is-panned' : '')}
                   viewBox={`0 0 ${Math.max(width, 1)} ${Math.max(height, 1)}`}
                   preserveAspectRatio='xMidYMid meet'
                   role='img'
                   aria-label='Card reference graph'
+                  onWheel={pan.onWheel}
+                  onPointerDown={pan.onPointerDown}
+                  onPointerMove={pan.onPointerMove}
+                  onPointerUp={pan.onPointerUp}
+                  onPointerCancel={pan.onPointerUp}
                 >
                   <defs>
                     <marker
@@ -132,6 +160,7 @@ const Graph = () => {
                     </marker>
                   </defs>
 
+                  <g transform={pan.transform}>
                   {rings.map((ring, i) => (
                     <g key={ring.id} className='card-graph-ring' style={{ color: RING_HUES[i % RING_HUES.length] }}>
                       <circle className='card-graph-ring-track' cx={centre} cy={centre} r={ring.radius} />
@@ -161,16 +190,25 @@ const Graph = () => {
                   {nodes.map(node => (
                     <GraphNode key={node.id} node={node} onNodeClick={onNodeClick} />
                   ))}
+                  </g>
                 </svg>
               </div>
-              <ul className='card-graph-legend'>
+              <div className='card-graph-key'>
+                <h2>Tabs</h2>
+                <ul>
                 {rings.map((ring, i) => (
                   <li key={ring.id}>
                     <span className='swatch' style={{ backgroundColor: RING_HUES[i % RING_HUES.length] }} />
                     {ring.title || 'Untitled'}
                   </li>
                 ))}
-              </ul>
+                </ul>
+              </div>
+              <div className='card-graph-zoom'>
+                <button type='button' onClick={pan.zoomOut} disabled={!pan.canZoomOut} aria-label='Zoom out'>&#8722;</button>
+                <button type='button' onClick={pan.reset} disabled={!pan.isPanned} aria-label='Reset zoom'>{Math.round(pan.view.scale * 100)}%</button>
+                <button type='button' onClick={pan.zoomIn} disabled={!pan.canZoomIn} aria-label='Zoom in'>+</button>
+              </div>
             </>
           )}
         </div>

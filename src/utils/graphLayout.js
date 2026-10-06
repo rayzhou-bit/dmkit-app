@@ -12,12 +12,13 @@ import { UNPLACED_GROUP_ID } from './cardGraph';
 // Deterministic, like the layout it replaces: same project, same picture, so
 // the graph is somewhere you can build spatial memory.
 
-export const NODE_RADIUS = 6;
+export const NODE_RADIUS = 12;       // big enough to hold the card-type icon
 export const VIEWBOX = 760;          // square; the view scales it to fit
 const RING_RADIUS = 232;
-const RING_GAP = 15;                 // between one tab ring and the next
-const FIRST_RING_INSET = 24;         // from the card ring to the outermost tab ring
-const LABEL_OFFSET = 14;
+const MAX_RING_GAP = 28;             // between one tab ring and the next
+const MIN_INNER_RADIUS = 40;         // rings stop here, leaving the middle for chords
+const FIRST_RING_INSET = 34;         // from the card ring to the outermost tab ring
+const LABEL_OFFSET = 20;
 const ARC_PAD = 0.42;                // of one step, so an arc overhangs its end cards
 
 const TAU = Math.PI * 2;
@@ -98,10 +99,15 @@ export const layoutCardGraph = ({ nodes = [], groups = [] } = {}) => {
     };
   });
 
-  const rings = groups
-    .filter(group => group.cardIds.length)
+  // Gap shrinks once there are enough tabs that the fixed one would push the
+  // innermost ring past the centre - every tab keeps a visible ring.
+  const drawn = groups.filter(group => group.cardIds.length);
+  const span = RING_RADIUS - FIRST_RING_INSET - MIN_INNER_RADIUS;
+  const gap = Math.min(MAX_RING_GAP, span / Math.max(1, drawn.length - 1));
+
+  const rings = drawn
     .map((group, i) => {
-      const radius = RING_RADIUS - FIRST_RING_INSET - i * RING_GAP;
+      const radius = RING_RADIUS - FIRST_RING_INSET - i * gap;
       const slots = group.cardIds.map(id => slotOf[id]).filter(slot => slot !== undefined);
       return {
         id: group.id,

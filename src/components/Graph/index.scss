@@ -4,7 +4,7 @@
 // its own close control.
 .graph-btn {
   position: absolute;
-  top: calc(3% + 62px);
+  top: calc(3% + 72px);
   right: 102%;
   height: 50px;
   width: 50px;
@@ -136,7 +136,7 @@
 .card-graph-ring-arc {
   fill: none;
   stroke: currentColor;
-  stroke-width: 5;
+  stroke-width: 10;
   stroke-linecap: round;
   opacity: .9;
 }
@@ -166,20 +166,46 @@
     stroke-width: 1;
     stroke-dasharray: 2 2;
   }
-  &:hover text { fill: #0E77D8; }
-  &:hover .card-graph-node-fill { stroke: #DBE2EB; stroke-width: 3; }
+  // The browser draws a <g>'s focus ring round its whole bounding box, which
+  // here includes the rotated label - a big skewed rectangle. Suppressed in
+  // favour of the halo below.
+  &:focus,
   &:focus-visible { outline: none; }
-  &:focus-visible text { fill: #0E77D8; text-decoration: underline; }
+
+  .card-graph-node-halo {
+    fill: none;
+    stroke: #0E77D8;
+    stroke-width: 2;
+    opacity: 0;
+    transition: opacity .12s;
+  }
+  &:hover .card-graph-node-halo,
+  &:focus-visible .card-graph-node-halo { opacity: 1; }
+  &:hover text,
+  &:focus-visible text { fill: #0E77D8; font-weight: 600; }
 }
 
-.card-graph-legend {
+.card-graph-node-icon { pointer-events: none; }
+
+.card-graph-key {
   position: absolute;
   left: 22px;
   bottom: 18px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
 
+  h2 {
+    margin: 0 0 4px;
+    color: #A0A4B4;
+    font-family: Roboto;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
   li {
     display: flex;
     align-items: center;
@@ -191,10 +217,43 @@
   }
   .swatch {
     display: inline-block;
-    width: 14px;
-    height: 4px;
-    border-radius: 2px;
+    width: 16px;
+    height: 7px;
+    border-radius: 4px;
   }
+}
+
+.card-graph-zoom {
+  position: absolute;
+  right: 22px;
+  bottom: 18px;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 3px;
+  border: 1px solid #F0F3F8;
+  border-radius: 10px;
+  background-color: #FFFFFF;
+
+  button {
+    min-width: 30px;
+    height: 26px;
+    padding: 0 7px;
+    border-radius: 7px;
+    background-color: transparent;
+    color: #363B4E;
+    font-family: Roboto;
+    font-size: 12px;
+    cursor: pointer;
+    &:hover:not(:disabled) { background-color: #F4F4F4; }
+    &:disabled { color: #C9D2DE; cursor: default; }
+  }
+}
+
+.card-graph-svg {
+  cursor: grab;
+  touch-action: none;
+  &:active { cursor: grabbing; }
 }
 
 .card-graph-empty {
