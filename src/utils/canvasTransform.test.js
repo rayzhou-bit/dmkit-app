@@ -16,6 +16,7 @@ import {
   WHEEL_LINE_HEIGHT,
   WHEEL_PAGE_HEIGHT,
   MAX_WHEEL_DELTA,
+  WHEEL_ZOOM_SENSITIVITY,
   CANVAS_TRANSITION_MS,
 } from '../constants/dimensions';
 
@@ -202,8 +203,10 @@ describe('zoomAtPoint', () => {
 });
 
 describe('getWheelScale', () => {
+  // Derived from the constant, not a baked-in number: tuning
+  // WHEEL_ZOOM_SENSITIVITY shouldn't fail a test about the formula.
   it('matches the exp-based formula for getWheelScale(1, -100)', () => {
-    expect(getWheelScale(1, -100)).toBe(roundScale(Math.exp(0.25)));
+    expect(getWheelScale(1, -100)).toBe(roundScale(Math.exp(100 * WHEEL_ZOOM_SENSITIVITY)));
   });
 
   it('shrinks the scale for a positive dy', () => {

@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { useGraphHooks, useGraphViewHooks } from './hooks';
-import { NODE_RADIUS, VIEWBOX } from '../../utils/graphLayout';
+import { NODE_RADIUS } from '../../utils/graphLayout';
 import { CARD_TYPE_ICONS } from '../../constants/cards';
 import { LIGHT_COLORS } from '../../constants/colors';
 
@@ -105,8 +105,11 @@ export const GraphButton = () => {
 };
 
 const Graph = () => {
-  const { isOpen, toggleGraph, nodes, rings, edges, width, height, centre, activeProject, onNodeClick } = useGraphHooks();
-  const pan = useGraphViewHooks(VIEWBOX, isOpen, activeProject);
+  const {
+    isOpen, toggleGraph, nodes, rings, guides, edges, width, height, centre,
+    activeProject, onNodeClick, focusTabId, focusTitle, setFocusTab, clearFocus, viewbox,
+  } = useGraphHooks();
+  const pan = useGraphViewHooks(viewbox, isOpen, `${activeProject}:${focusTabId ?? ''}`);
 
   const nodesById = React.useMemo(() => Object.fromEntries(nodes.map(n => [n.id, n])), [nodes]);
   const hasNodes = nodes.length > 0;
@@ -161,6 +164,9 @@ const Graph = () => {
                   </defs>
 
                   <g transform={pan.transform}>
+                  {(guides ?? []).map(radius => (
+                    <circle key={radius} className='card-graph-guide' cx={centre} cy={centre} r={radius} />
+                  ))}
                   {rings.map((ring, i) => (
                     <g key={ring.id} className='card-graph-ring' style={{ color: RING_HUES[i % RING_HUES.length] }}>
                       <circle className='card-graph-ring-track' cx={centre} cy={centre} r={ring.radius} />
@@ -193,17 +199,27 @@ const Graph = () => {
                   </g>
                 </svg>
               </div>
+              {focusTabId ? (
+                <div className='card-graph-focus'>
+                  <h2>{focusTitle}</h2>
+                  <p>and what connects to it, two steps out</p>
+                  <button type='button' onClick={clearFocus}>Show all tabs</button>
+                </div>
+              ) : (
               <div className='card-graph-key'>
                 <h2>Tabs</h2>
                 <ul>
                 {rings.map((ring, i) => (
                   <li key={ring.id}>
-                    <span className='swatch' style={{ backgroundColor: RING_HUES[i % RING_HUES.length] }} />
-                    {ring.title || 'Untitled'}
+                    <button type='button' onClick={() => setFocusTab(ring.id)}>
+                      <span className='swatch' style={{ backgroundColor: RING_HUES[i % RING_HUES.length] }} />
+                      {ring.title || 'Untitled'}
+                    </button>
                   </li>
                 ))}
                 </ul>
               </div>
+              )}
               <div className='card-graph-zoom'>
                 <button type='button' onClick={pan.zoomOut} disabled={!pan.canZoomOut} aria-label='Zoom out'>&#8722;</button>
                 <button type='button' onClick={pan.reset} disabled={!pan.isPanned} aria-label='Reset zoom'>{Math.round(pan.view.scale * 100)}%</button>
