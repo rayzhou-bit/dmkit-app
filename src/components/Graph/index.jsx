@@ -3,7 +3,7 @@ import React from 'react';
 import { useGraphHooks, useGraphViewHooks } from './hooks';
 import { NODE_RADIUS } from '../../utils/graphLayout';
 import { CARD_TYPE_ICONS } from '../../constants/cards';
-import { LIGHT_COLORS } from '../../constants/colors';
+import { LIGHT_COLORS, TAB_RING_COLORS as RING_HUES } from '../../constants/colors';
 
 import '../../constants/colors.scss';
 import './index.scss';
@@ -29,10 +29,6 @@ const GraphIcon = () => (
   </svg>
 );
 
-// Tab colours. Deliberately not the card palette - a ring says "this tab",
-// a dot says "this card", and reusing one set of hues for both would read as
-// a relationship that isn't there.
-const RING_HUES = ['#5BC5FF', '#F2A65A', '#8FBF6F', '#B18FD9', '#E2778F', '#6FB7B7'];
 
 const ICON_SIZE = NODE_RADIUS * 1.2;
 
