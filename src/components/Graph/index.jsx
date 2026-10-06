@@ -105,8 +105,8 @@ export const GraphButton = () => {
 };
 
 const Graph = () => {
-  const { isOpen, toggleGraph, nodes, rings, edges, width, height, centre, onNodeClick } = useGraphHooks();
-  const pan = useGraphViewHooks(VIEWBOX, isOpen);
+  const { isOpen, toggleGraph, nodes, rings, edges, width, height, centre, activeProject, onNodeClick } = useGraphHooks();
+  const pan = useGraphViewHooks(VIEWBOX, isOpen, activeProject);
 
   const nodesById = React.useMemo(() => Object.fromEntries(nodes.map(n => [n.id, n])), [nodes]);
   const hasNodes = nodes.length > 0;

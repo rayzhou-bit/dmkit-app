@@ -38,6 +38,7 @@ export const useGraphHooks = () => {
   return {
     showButton,
     isOpen,
+    activeProject,
     toggleGraph: () => dispatch(actions.session.setGraphOpen({ isOpen: !isOpen })),
     nodes: graph.nodes,
     rings: graph.rings,
@@ -65,12 +66,14 @@ const clamp = (value) => Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, value));
 // Pan/zoom for the graph panel. View-only and short-lived, so it stays in
 // component state rather than Redux - nothing here is worth persisting, and
 // it resets every time the panel reopens.
-export const useGraphViewHooks = (viewbox, isMounted) => {
+export const useGraphViewHooks = (viewbox, isMounted, resetKey) => {
   const centre = viewbox / 2;
   const [view, setView] = useState({ scale: 1, x: 0, y: 0 });
-  // Reopening the panel starts from the default view rather than wherever
-  // the last session left it.
-  useEffect(() => { if (!isMounted) setView({ scale: 1, x: 0, y: 0 }); }, [isMounted]);
+  // Deliberately NOT reset when the panel closes - reopening the graph puts
+  // you back where you were looking. It resets on resetKey (the active
+  // project) instead, since a different project is a different graph. Lives
+  // in component state: worth keeping for the session, not worth persisting.
+  useEffect(() => { setView({ scale: 1, x: 0, y: 0 }); }, [resetKey]);
   const dragRef = useRef(null);
   const svgRef = useRef(null);
   // The wheel listener is bound once; it reads the latest view from here

@@ -275,4 +275,18 @@ describe('Graph - zoom and pan', () => {
     expect(transform(container)).toContain('scale(1)');
     expect(transform(container)).not.toBe('translate(0 0) scale(1)');
   });
+
+  // The view is worth keeping for the session - reopening the graph should
+  // put you back where you were looking, not at the default.
+  it('keeps zoom and pan across closing and reopening the panel', () => {
+    const { container } = open();
+    fireEvent.click(container.querySelector('[aria-label="Zoom in"]'));
+    const zoomed = transform(container);
+
+    fireEvent.click(container.querySelector('.card-graph-close'));
+    expect(container.querySelector('.card-graph-panel')).toBeNull();
+
+    fireEvent.click(container.querySelector('.graph-btn'));
+    expect(transform(container)).toBe(zoomed);
+  });
 });
