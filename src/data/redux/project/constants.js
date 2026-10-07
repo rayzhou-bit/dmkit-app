@@ -2,7 +2,9 @@ import {
   GRID_SIZE,
   DEFAULT_CANVAS_POSITION,
   DEFAULT_CANVAS_SCALE,
+  DEFAULT_CARD_SIZE,
   MONSTER_CARD_SIZE,
+  NOTE_CARD_SIZE,
 } from '../../../constants/dimensions';
 import { CARD_TYPES } from '../../../constants/cards';
 import { buildMonsterContent } from '../../../constants/monster';
@@ -538,18 +540,100 @@ export const INTRO_PROJECT = {
   editedOn: Date.now(),
 };
 
-export const BLANK_PROJECT = {
-  title: 'Title',
-  viewOrder: ['tab0'],
-  activeViewId: 'tab0',
-  cards: {},
-  views: {
-    'tab0': {
-      title: 'Title',
-      pos: DEFAULT_CANVAS_POSITION,
-      scale: 1,
-      cards: [],
+// A new project isn't empty: three tabs with one card each, so the first
+// thing someone sees is the shape the app expects rather than a blank canvas
+// and a tool menu to guess at. One card per type, which also means every
+// type is one click from being copied rather than created from scratch.
+//
+// Same rule as the intro fixture: loadBlankProject doesn't merge DEFAULT_CARD
+// over these, so every field the app reads is authored here, and the cards
+// carry distinct timestamps or the Library's Newest/Oldest sort has nothing
+// to order them by.
+const blankTs = (n) => ({ createdOn: Date.now() + n, editedOn: Date.now() + n });
+
+export const BLANK_CARDS = {
+  'start-scene': {
+    title: 'Opening scene',
+    color: 'eggplant',
+    type: CARD_TYPES.custom,
+    content: buildCustomContent({
+      blocks: [
+        { id: 'start-scene-b1', type: CUSTOM_BLOCK_TYPES.text, text: 'It was a dark and stormy night...' },
+      ],
+    }),
+    views: {
+      'campaign': { pos: { x: 6 * GRID_SIZE, y: 6 * GRID_SIZE }, size: DEFAULT_CARD_SIZE },
     },
+    ...blankTs(2),
+  },
+  'start-goblin': {
+    title: 'Goblin',
+    color: 'forest',
+    type: CARD_TYPES.monster,
+    content: buildMonsterContent({
+      notes: [{ id: 'start-goblin-note', type: CUSTOM_BLOCK_TYPES.text, text: 'Fights from cover and at range. Runs once the fight turns against it.' }],
+      size: 'Small',
+      creatureType: 'humanoid (goblinoid)',
+      alignment: 'neutral evil',
+      armorClass: '15 (leather armor, shield)',
+      hitPoints: '7 (2d6)',
+      speed: '30 ft.',
+      str: '8', dex: '14', con: '10', int: '10', wis: '8', cha: '8',
+      skills: 'Stealth +6',
+      senses: 'darkvision 60 ft., passive Perception 9',
+      languages: 'Common, Goblin',
+      challengeRating: '1/4',
+      xp: '50',
+      traits: [{
+        id: 'start-goblin-trait-nimble-escape',
+        name: 'Nimble Escape',
+        description: 'The goblin can take the Disengage or Hide action as a bonus action on each of its turns.',
+      }],
+      actions: [
+        {
+          id: 'start-goblin-action-scimitar',
+          name: 'Scimitar',
+          description: 'Melee Weapon Attack: +4 to hit, reach 5 ft., one target. Hit: 5 (1d6 + 2) slashing damage.',
+        },
+        {
+          id: 'start-goblin-action-shortbow',
+          name: 'Shortbow',
+          description: 'Ranged Weapon Attack: +4 to hit, range 80/320 ft., one target. Hit: 5 (1d6 + 2) piercing damage.',
+        },
+      ],
+    }),
+    views: {
+      'bestiary': { pos: { x: 6 * GRID_SIZE, y: 6 * GRID_SIZE }, size: MONSTER_CARD_SIZE },
+    },
+    ...blankTs(1),
+  },
+  'start-hero': {
+    title: 'The Hero',
+    color: 'cotton_blue',
+    type: CARD_TYPES.note,
+    content: buildNoteContent({
+      description: 'Race and class, level. AC, HP, passive Perception.',
+      entries: [
+        { id: 'start-hero-e1', name: 'Bond', description: 'Who or what they would cross the map for.' },
+        { id: 'start-hero-e2', name: 'Goal', description: "What they're chasing, and what it would cost them." },
+      ],
+    }),
+    views: {
+      'players': { pos: { x: 6 * GRID_SIZE, y: 6 * GRID_SIZE }, size: NOTE_CARD_SIZE },
+    },
+    ...blankTs(0),
+  },
+};
+
+export const BLANK_PROJECT = {
+  title: 'Untitled campaign',
+  viewOrder: ['campaign', 'bestiary', 'players'],
+  activeViewId: 'campaign',
+  cards: BLANK_CARDS,
+  views: {
+    'campaign': { title: 'Campaign', pos: DEFAULT_CANVAS_POSITION, scale: 1, cards: ['start-scene'] },
+    'bestiary': { title: 'Bestiary', pos: DEFAULT_CANVAS_POSITION, scale: 1, cards: ['start-goblin'] },
+    'players': { title: 'Players', pos: DEFAULT_CANVAS_POSITION, scale: 1, cards: ['start-hero'] },
   },
   createdOn: Date.now(),
   editedOn: Date.now(),

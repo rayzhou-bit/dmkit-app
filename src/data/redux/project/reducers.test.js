@@ -166,9 +166,34 @@ describe('loadIntroProject/loadBlankProject - migrate the fixture data too', () 
     expect(next.cards['mon-goblin'].type).toBe('monster'); // the sample Goblin card
   });
 
-  it('loadBlankProject has no cards to migrate - still returns cleanly', () => {
+  // A new project now ships one card per type, authored in modern shapes, so
+  // migration is a no-op here too.
+  it('loadBlankProject returns its starter cards, already in modern shapes', () => {
     const next = reducer(baseState, { type: 'project/loadBlankProject' });
-    expect(next.cards).toEqual({});
+    expect(Object.values(next.cards).map(card => card.type).sort())
+      .toEqual(['custom', 'monster', 'note']);
+  });
+
+  it('a new project opens on three tabs, each holding its starter card', () => {
+    const next = reducer(baseState, { type: 'project/loadBlankProject' });
+    expect(next.viewOrder.map(id => next.views[id].title)).toEqual(['Campaign', 'Bestiary', 'Players']);
+    expect(next.activeViewId).toBe(next.viewOrder[0]);
+    for (const id of next.viewOrder) {
+      expect(next.views[id].cards).toHaveLength(1);
+      // Every listed card exists, and is placed on the tab that lists it.
+      for (const cardId of next.views[id].cards) {
+        expect(next.cards[cardId]).toBeDefined();
+        expect(Object.keys(next.cards[cardId].views)).toEqual([id]);
+      }
+    }
+  });
+
+  it('gives the starter cards distinct titles and timestamps', () => {
+    const next = reducer(baseState, { type: 'project/loadBlankProject' });
+    const cards = Object.values(next.cards);
+    expect(new Set(cards.map(c => c.title)).size).toBe(cards.length);
+    expect(new Set(cards.map(c => c.editedOn)).size).toBe(cards.length);
+    expect(cards.every(c => c.title && c.color && c.createdOn)).toBe(true);
   });
 });
 
