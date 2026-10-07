@@ -96,7 +96,12 @@ export const INTRO_CARDS = {
   },
 
   // ---------------------------------------------------------------------
-  // Tab 2: "The Sunken Barrow" - a three-room beginner dungeon, kept short
+  // Tab 2: "The Sunken Barrow" - hook then areas read top to bottom in one
+  // column, like paragraphs, with each monster beside the area it first
+  // appears in. The 38-unit pitch matches the taller stat cards, so a
+  // monster's top lines up with its area's.
+  //
+  // A three-room beginner dungeon, kept short
   // on purpose: it is sample content a first-time user meets, not a module to
   // read. Entries link to the Bestiary with #[Name](id) tokens, so a monster
   // is one click from the area it appears in. Note-card height is driven by
@@ -130,7 +135,7 @@ export const INTRO_CARDS = {
       ],
     }),
     views: {
-      'barrow': { pos: { x: 43 * GRID_SIZE, y: 6 * GRID_SIZE }, size: { width: 34 * GRID_SIZE, height: 32 * GRID_SIZE } },
+      'barrow': { pos: { x: 6 * GRID_SIZE, y: 28 * GRID_SIZE }, size: { width: 34 * GRID_SIZE, height: 32 * GRID_SIZE } },
     },
     ...ts(12),
   },
@@ -146,7 +151,7 @@ export const INTRO_CARDS = {
       ],
     }),
     views: {
-      'barrow': { pos: { x: 6 * GRID_SIZE, y: 41 * GRID_SIZE }, size: { width: 34 * GRID_SIZE, height: 32 * GRID_SIZE } },
+      'barrow': { pos: { x: 6 * GRID_SIZE, y: 66 * GRID_SIZE }, size: { width: 34 * GRID_SIZE, height: 32 * GRID_SIZE } },
     },
     ...ts(13),
   },
@@ -162,7 +167,7 @@ export const INTRO_CARDS = {
       ],
     }),
     views: {
-      'barrow': { pos: { x: 43 * GRID_SIZE, y: 41 * GRID_SIZE }, size: { width: 34 * GRID_SIZE, height: 32 * GRID_SIZE } },
+      'barrow': { pos: { x: 6 * GRID_SIZE, y: 104 * GRID_SIZE }, size: { width: 34 * GRID_SIZE, height: 32 * GRID_SIZE } },
     },
     ...ts(14),
   },
@@ -209,7 +214,7 @@ export const INTRO_CARDS = {
       ],
     }),
     views: {
-      'barrow': { pos: { x: 6 * GRID_SIZE, y: 76 * GRID_SIZE }, size: MONSTER_CARD_SIZE },
+      'barrow': { pos: { x: 43 * GRID_SIZE, y: 28 * GRID_SIZE }, size: MONSTER_CARD_SIZE },
       'bestiary': { pos: { x: 6 * GRID_SIZE, y: 6 * GRID_SIZE }, size: MONSTER_CARD_SIZE },
     },
     ...ts(5),
@@ -261,7 +266,7 @@ export const INTRO_CARDS = {
       }],
     }),
     views: {
-      'barrow': { pos: { x: 33 * GRID_SIZE, y: 76 * GRID_SIZE }, size: MONSTER_CARD_SIZE },
+      'barrow': { pos: { x: 43 * GRID_SIZE, y: 66 * GRID_SIZE }, size: MONSTER_CARD_SIZE },
       'bestiary': { pos: { x: 34 * GRID_SIZE, y: 6 * GRID_SIZE }, size: MONSTER_CARD_SIZE },
     },
     ...ts(6),
@@ -386,7 +391,7 @@ export const INTRO_CARDS = {
       ],
     }),
     views: {
-      'barrow': { pos: { x: 60 * GRID_SIZE, y: 76 * GRID_SIZE }, size: MONSTER_CARD_SIZE },
+      'barrow': { pos: { x: 43 * GRID_SIZE, y: 104 * GRID_SIZE }, size: MONSTER_CARD_SIZE },
       'bestiary': { pos: { x: 118 * GRID_SIZE, y: 6 * GRID_SIZE }, size: MONSTER_CARD_SIZE },
     },
     ...ts(9),
