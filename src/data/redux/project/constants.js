@@ -137,7 +137,7 @@ export const INTRO_CARDS = {
       ],
     }),
     views: {
-      'barrow': { pos: { x: 6 * GRID_SIZE, y: 28 * GRID_SIZE }, size: { width: 34 * GRID_SIZE, height: 32 * GRID_SIZE } },
+      'barrow': { pos: { x: 6 * GRID_SIZE, y: 28 * GRID_SIZE }, size: { width: 34 * GRID_SIZE, height: 27 * GRID_SIZE } },
     },
     ...ts(12),
   },
@@ -153,7 +153,7 @@ export const INTRO_CARDS = {
       ],
     }),
     views: {
-      'barrow': { pos: { x: 6 * GRID_SIZE, y: 66 * GRID_SIZE }, size: { width: 34 * GRID_SIZE, height: 32 * GRID_SIZE } },
+      'barrow': { pos: { x: 6 * GRID_SIZE, y: 66 * GRID_SIZE }, size: { width: 34 * GRID_SIZE, height: 27 * GRID_SIZE } },
     },
     ...ts(13),
   },
@@ -169,7 +169,7 @@ export const INTRO_CARDS = {
       ],
     }),
     views: {
-      'barrow': { pos: { x: 6 * GRID_SIZE, y: 104 * GRID_SIZE }, size: { width: 34 * GRID_SIZE, height: 32 * GRID_SIZE } },
+      'barrow': { pos: { x: 6 * GRID_SIZE, y: 104 * GRID_SIZE }, size: { width: 34 * GRID_SIZE, height: 27 * GRID_SIZE } },
     },
     ...ts(14),
   },
@@ -449,7 +449,7 @@ export const INTRO_CARDS = {
       ],
     }),
     views: {
-      'party': { pos: { x: 6 * GRID_SIZE, y: 6 * GRID_SIZE }, size: { width: 25 * GRID_SIZE, height: 34 * GRID_SIZE } },
+      'party': { pos: { x: 6 * GRID_SIZE, y: 6 * GRID_SIZE }, size: { width: 25 * GRID_SIZE, height: 29 * GRID_SIZE } },
     },
     ...ts(0),
   },
@@ -465,7 +465,7 @@ export const INTRO_CARDS = {
       ],
     }),
     views: {
-      'party': { pos: { x: 35 * GRID_SIZE, y: 6 * GRID_SIZE }, size: { width: 25 * GRID_SIZE, height: 34 * GRID_SIZE } },
+      'party': { pos: { x: 35 * GRID_SIZE, y: 6 * GRID_SIZE }, size: { width: 25 * GRID_SIZE, height: 29 * GRID_SIZE } },
     },
     ...ts(1),
   },
@@ -481,7 +481,7 @@ export const INTRO_CARDS = {
       ],
     }),
     views: {
-      'party': { pos: { x: 64 * GRID_SIZE, y: 6 * GRID_SIZE }, size: { width: 25 * GRID_SIZE, height: 34 * GRID_SIZE } },
+      'party': { pos: { x: 64 * GRID_SIZE, y: 6 * GRID_SIZE }, size: { width: 25 * GRID_SIZE, height: 29 * GRID_SIZE } },
     },
     ...ts(2),
   },
@@ -497,7 +497,7 @@ export const INTRO_CARDS = {
       ],
     }),
     views: {
-      'party': { pos: { x: 93 * GRID_SIZE, y: 6 * GRID_SIZE }, size: { width: 25 * GRID_SIZE, height: 34 * GRID_SIZE } },
+      'party': { pos: { x: 93 * GRID_SIZE, y: 6 * GRID_SIZE }, size: { width: 25 * GRID_SIZE, height: 29 * GRID_SIZE } },
     },
     ...ts(3),
   },
@@ -549,7 +549,12 @@ export const INTRO_PROJECT = {
 // over these, so every field the app reads is authored here, and the cards
 // carry distinct timestamps or the Library's Newest/Oldest sort has nothing
 // to order them by.
-const blankTs = (n) => ({ createdOn: Date.now() + n, editedOn: Date.now() + n });
+// One clock reading for all of them. Calling Date.now() per card looks
+// equivalent but isn't: the clock can tick while the module evaluates, so
+// card A's `now + 2` and card B's `now + 1` collide and two cards end up
+// sharing a timestamp. Distinct by construction here.
+const BLANK_BASE_TS = Date.now();
+const blankTs = (n) => ({ createdOn: BLANK_BASE_TS + n, editedOn: BLANK_BASE_TS + n });
 
 export const BLANK_CARDS = {
   'start-scene': {

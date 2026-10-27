@@ -56,6 +56,7 @@ const NotePortrait = ({
       ) : (
         <button type='button' className='note-portrait-placeholder' onClick={openFilePicker}>
           <img src={AddImageIcon} alt='' draggable='false' />
+          <span>Image</span>
         </button>
       )}
       {isProcessing && <div className='note-portrait-status'>Processing…</div>}
