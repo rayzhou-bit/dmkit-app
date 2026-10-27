@@ -896,14 +896,22 @@ $scrollbar-width: 17px;
   }
 
   .monster-portrait-placeholder {
-    // Fixed, unlike .monster-portrait-image - there's no image aspect ratio
-    // to size to yet, and .monster-portrait itself is now auto-sized (it
-    // sizes to whichever of these two is showing).
+    // Slim strip, not a 96px box: an empty portrait was a quarter of the
+    // card's content height on every stat card without one. Full width of
+    // its column so it stays a usable drop target, and always visible rather
+    // than hover-revealed - revealing it would shift the card's content
+    // every time the pointer crossed the card.
     width: 96px;
-    height: 96px;
-    box-sizing: border-box; // else the border pushes it to 98x98, clipped by overflow:hidden
+    height: 26px;
+    gap: 6px;
+    box-sizing: border-box; // else the border pushes it over, clipped by overflow:hidden
     border: 1px dashed #D7D6D6;
+    border-radius: 6px;
     background-color: white;
+    color: #A0A4B4;
+    font-family: Roboto;
+    font-size: 11px;
+    font-weight: 600;
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -1007,11 +1015,19 @@ $scrollbar-width: 17px;
   }
 
   .note-portrait-placeholder {
+    // See .monster-portrait-placeholder: a slim strip rather than a 96px
+    // banner, full width so it stays a usable drop target.
     width: 100%;
-    height: 96px;
+    height: 26px;
+    gap: 6px;
     box-sizing: border-box;
     border: 1px dashed #D7D6D6;
+    border-radius: 6px;
     background-color: white;
+    color: #A0A4B4;
+    font-family: Roboto;
+    font-size: 11px;
+    font-weight: 600;
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -1433,7 +1449,7 @@ $scrollbar-width: 17px;
   }
   .monster-portrait-placeholder {
     width: 64px;
-    height: 64px;
+    height: 24px;
   }
 }
 .library-monster-subtitle {

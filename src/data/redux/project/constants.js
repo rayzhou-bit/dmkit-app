@@ -137,7 +137,7 @@ export const INTRO_CARDS = {
       ],
     }),
     views: {
-      'barrow': { pos: { x: 6 * GRID_SIZE, y: 28 * GRID_SIZE }, size: { width: 34 * GRID_SIZE, height: 32 * GRID_SIZE } },
+      'barrow': { pos: { x: 6 * GRID_SIZE, y: 28 * GRID_SIZE }, size: { width: 34 * GRID_SIZE, height: 27 * GRID_SIZE } },
     },
     ...ts(12),
   },
@@ -153,7 +153,7 @@ export const INTRO_CARDS = {
       ],
     }),
     views: {
-      'barrow': { pos: { x: 6 * GRID_SIZE, y: 66 * GRID_SIZE }, size: { width: 34 * GRID_SIZE, height: 32 * GRID_SIZE } },
+      'barrow': { pos: { x: 6 * GRID_SIZE, y: 66 * GRID_SIZE }, size: { width: 34 * GRID_SIZE, height: 27 * GRID_SIZE } },
     },
     ...ts(13),
   },
@@ -169,7 +169,7 @@ export const INTRO_CARDS = {
       ],
     }),
     views: {
-      'barrow': { pos: { x: 6 * GRID_SIZE, y: 104 * GRID_SIZE }, size: { width: 34 * GRID_SIZE, height: 32 * GRID_SIZE } },
+      'barrow': { pos: { x: 6 * GRID_SIZE, y: 104 * GRID_SIZE }, size: { width: 34 * GRID_SIZE, height: 27 * GRID_SIZE } },
     },
     ...ts(14),
   },
@@ -449,7 +449,7 @@ export const INTRO_CARDS = {
       ],
     }),
     views: {
-      'party': { pos: { x: 6 * GRID_SIZE, y: 6 * GRID_SIZE }, size: { width: 25 * GRID_SIZE, height: 34 * GRID_SIZE } },
+      'party': { pos: { x: 6 * GRID_SIZE, y: 6 * GRID_SIZE }, size: { width: 25 * GRID_SIZE, height: 29 * GRID_SIZE } },
     },
     ...ts(0),
   },
@@ -465,7 +465,7 @@ export const INTRO_CARDS = {
       ],
     }),
     views: {
-      'party': { pos: { x: 35 * GRID_SIZE, y: 6 * GRID_SIZE }, size: { width: 25 * GRID_SIZE, height: 34 * GRID_SIZE } },
+      'party': { pos: { x: 35 * GRID_SIZE, y: 6 * GRID_SIZE }, size: { width: 25 * GRID_SIZE, height: 29 * GRID_SIZE } },
     },
     ...ts(1),
   },
@@ -481,7 +481,7 @@ export const INTRO_CARDS = {
       ],
     }),
     views: {
-      'party': { pos: { x: 64 * GRID_SIZE, y: 6 * GRID_SIZE }, size: { width: 25 * GRID_SIZE, height: 34 * GRID_SIZE } },
+      'party': { pos: { x: 64 * GRID_SIZE, y: 6 * GRID_SIZE }, size: { width: 25 * GRID_SIZE, height: 29 * GRID_SIZE } },
     },
     ...ts(2),
   },
@@ -497,7 +497,7 @@ export const INTRO_CARDS = {
       ],
     }),
     views: {
-      'party': { pos: { x: 93 * GRID_SIZE, y: 6 * GRID_SIZE }, size: { width: 25 * GRID_SIZE, height: 34 * GRID_SIZE } },
+      'party': { pos: { x: 93 * GRID_SIZE, y: 6 * GRID_SIZE }, size: { width: 25 * GRID_SIZE, height: 29 * GRID_SIZE } },
     },
     ...ts(3),
   },

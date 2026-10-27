@@ -48,6 +48,7 @@ const MonsterPortrait = ({
       ) : (
         <button type='button' className='monster-portrait-placeholder' onClick={openFilePicker}>
           <img src={AddImageIcon} alt='' draggable='false' />
+          <span>Image</span>
         </button>
       )}
       {isProcessing && <div className='monster-portrait-status'>Processing…</div>}
