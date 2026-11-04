@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, fireEvent } from '@testing-library/react';
+import { render, fireEvent, screen } from '@testing-library/react';
 import { Provider } from 'react-redux';
 
 import LibraryCard from './LibraryCard';
@@ -225,18 +225,21 @@ describe('LibraryCard - mobile', () => {
   });
 });
 
-describe('LibraryCard - add-image button in the title bar', () => {
+describe('LibraryCard - Add image item in the title options menu', () => {
   it('shows only on an expanded portrait-capable card with no portrait, and opens the file picker', () => {
     store.dispatch(actions.project.setActiveTab({ id: 'ltab2' }));
     store.dispatch(actions.project.createCard({ newId: 'lnote', type: 'note' }));
     const clickSpy = vi.spyOn(HTMLInputElement.prototype, 'click').mockImplementation(() => {});
 
     const collapsed = render(<Provider store={store}><LibraryCard cardId='lnote' isExpanded={false} /></Provider>);
-    expect(collapsed.container.querySelector('.add-image-btn')).toBeNull();
+    // No menu is open yet, so no item. (Opening the menu clicks through to the
+    // card, which selects it - and a selected card is offered Add image.)
+    expect(screen.queryByText('Add image')).toBeNull();
     collapsed.unmount();
 
     const { container } = render(<Provider store={store}><LibraryCard cardId='lnote' isExpanded={true} /></Provider>);
-    fireEvent.click(container.querySelector('.add-image-btn'));
+    fireEvent.click(container.querySelector('.dropdown-btn'));
+    fireEvent.click(screen.getByText('Add image'));
     expect(clickSpy).toHaveBeenCalledTimes(1);
     clickSpy.mockRestore();
   });
@@ -244,12 +247,14 @@ describe('LibraryCard - add-image button in the title bar', () => {
   it('is absent once the card has a portrait, and on a card type with no portrait', () => {
     store.dispatch(actions.project.updateCardPortrait({ id: 'lnote', portrait: 'data:image/jpeg;base64,x', portraitAlt: 'a' }));
     const withImg = render(<Provider store={store}><LibraryCard cardId='lnote' isExpanded={true} /></Provider>);
-    expect(withImg.container.querySelector('.add-image-btn')).toBeNull();
+    fireEvent.click(withImg.container.querySelector('.dropdown-btn'));
+    expect(screen.queryByText('Add image')).toBeNull();
     withImg.unmount();
 
     store.dispatch(actions.project.createCard({ newId: 'ltext', type: 'text' }));
     const text = render(<Provider store={store}><LibraryCard cardId='ltext' isExpanded={true} /></Provider>);
-    expect(text.container.querySelector('.add-image-btn')).toBeNull();
+    fireEvent.click(text.container.querySelector('.dropdown-btn'));
+    expect(screen.queryByText('Add image')).toBeNull();
   });
 });
 

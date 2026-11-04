@@ -41,21 +41,13 @@ $library-preview-lines: 4;
   border-radius: $card-radius $card-radius 0 0;
 
   display: grid;
-  grid-template-columns: auto 18px 12px;
+  grid-template-columns: auto 12px;
   gap: 12px;
 
   // Monster stat-block cards get a small type badge before the title text,
   // both on the canvas and in the Library - one extra leading column.
   &.has-type-icon {
-    grid-template-columns: 16px auto 18px 12px;
-  }
-  // Add-image button (portrait-capable card with no portrait) sits before
-  // the colour button - one more 18px column.
-  &.has-image-btn {
-    grid-template-columns: auto 18px 18px 12px;
-  }
-  &.has-type-icon.has-image-btn {
-    grid-template-columns: 16px auto 18px 18px 12px;
+    grid-template-columns: 16px auto 12px;
   }
   .type-icon {
     display: flex;
@@ -99,34 +91,12 @@ $library-preview-lines: 4;
     }
   }
 
-  // opacity, not display, so the grid column never jumps on hover.
-  .add-image-btn {
-    display: flex;
-    background-color: transparent;
-    opacity: 0;
-    transition: opacity .15s;
-    img { width: 18px; height: 18px; }
-  }
-
-  .color-btn {
-    display: flex;
-    background-color: transparent;
-    &:hover > img { content: url('../../assets/icons/rounded-square-hover.svg'); }
-  }
-
   .dropdown-btn {
     display: flex;
     background-color: transparent;
     img { transition-duration: .5s; }
     &:hover > img { transform: translateY(3px); }
   }
-}
-
-// Card hover (the title bar is inside .card), keyboard focus, or always on touch.
-.card:hover .card-title .add-image-btn,
-.card-title .add-image-btn:focus-visible { opacity: 1; }
-@media (hover: none) {
-  .card-title .add-image-btn { opacity: 1; }
 }
 
 // The display-mode rendering of a ref-token-capable field (CustomTextBlock/

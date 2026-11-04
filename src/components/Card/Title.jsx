@@ -4,15 +4,10 @@ import { useSelector } from 'react-redux';
 import { useTitleHooks, useColorDropdownHooks, useOptionsDropdownHooks } from './hooks';
 import { getCardType, CARD_TYPE_ICONS } from '../../constants/cards';
 
-import ColorDropdown from '../../components-shared/Dropdowns/ColorDropdown';
 import ActionDropdown from '../../components-shared/Dropdowns/ActionDropdown';
 
 import './Card.scss';
 import '../../constants/colors.scss';
-import OpenColorBlackIcon from '../../assets/icons/rounded-square.svg';
-import OpenColorWhiteIcon from '../../assets/icons/rounded-square-white.svg';
-import AddImageBlackIcon from '../../assets/icons/add-image-small.svg';
-import AddImageWhiteIcon from '../../assets/icons/add-image-small-white.svg';
 import DropdownArrowBlackIcon from '../../assets/icons/dropdown-arrow.svg';
 import DropdownArrowWhiteIcon from '../../assets/icons/dropdown-arrow-white.svg';
 
@@ -39,11 +34,7 @@ const Title = ({
 
   const {
     color,
-    colorDropdownBtnRef,
-    isColorDropdownOpen,
     isLightColor,
-    closeColorDropdown,
-    openColorDropdown,
     updateColor,
   } = useColorDropdownHooks({ cardId });
 
@@ -56,10 +47,13 @@ const Title = ({
   } = useOptionsDropdownHooks({
     beginTitleEdit,
     cardId,
+    color,
+    updateColor,
+    onAddImage,
   });
 
   return (
-    <div className={'card-title ' + color + (typeIcon ? ' has-type-icon' : '') + (onAddImage ? ' has-image-btn' : '')}>
+    <div className={'card-title ' + color + (typeIcon ? ' has-type-icon' : '')}>
       {typeIcon && (
         <span className='type-icon' title={typeIcon.label}>
           <img src={isLightColor ? typeIcon.darkIcon : typeIcon.lightIcon} alt='' draggable='false' />
@@ -81,32 +75,6 @@ const Title = ({
           value={titleValue}
         />
       </div>
-      {onAddImage && (
-        <button
-          type='button'
-          className='add-image-btn'
-          aria-label='Add image'
-          title='Add image'
-          onClick={onAddImage}
-        >
-          <img src={isLightColor ? AddImageBlackIcon : AddImageWhiteIcon} alt='' draggable='false' />
-        </button>
-      )}
-      <button
-        className='color-btn'
-        onClick={openColorDropdown}
-        ref={colorDropdownBtnRef}
-      >
-        <img src={isLightColor ? OpenColorBlackIcon : OpenColorWhiteIcon} />
-      </button>
-      <ColorDropdown
-        btnRef={colorDropdownBtnRef}
-        isOpen={isColorDropdownOpen}
-        message="Select card-top color"
-        onClose={closeColorDropdown}
-        onUpdateColor={updateColor}
-        selectedColor={color}
-      />
       <button
         className='dropdown-btn'
         ref={optionDropdownBtnRef}

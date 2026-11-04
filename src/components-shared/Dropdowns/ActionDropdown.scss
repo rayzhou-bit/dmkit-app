@@ -19,6 +19,12 @@ $vertical-offset: 38px;
     li {
       list-style: none;
     }
+    .color-row {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 6px;
+      padding: 0 19px;
+    }
     .break {
       margin: 8px 0;
       border: 1px solid #f4f4f4;
@@ -78,4 +84,17 @@ $vertical-offset: 38px;
     max-height: 20px;
     margin: auto;
   }
+}
+
+.color-swatch {
+  box-sizing: border-box;
+  width: 23px;
+  height: 19px;
+  margin: 0;
+  padding: 0;
+  border: 2px solid transparent;
+  border-radius: 4px;
+
+  &:hover { border-color: #5bc5ff; }
+  &.selected { border: 2px solid #5bc5ff; }
 }
