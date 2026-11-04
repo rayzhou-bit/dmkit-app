@@ -549,7 +549,12 @@ export const INTRO_PROJECT = {
 // over these, so every field the app reads is authored here, and the cards
 // carry distinct timestamps or the Library's Newest/Oldest sort has nothing
 // to order them by.
-const blankTs = (n) => ({ createdOn: Date.now() + n, editedOn: Date.now() + n });
+// One clock reading for all of them. Calling Date.now() per card looks
+// equivalent but isn't: the clock can tick while the module evaluates, so
+// card A's `now + 2` and card B's `now + 1` collide and two cards end up
+// sharing a timestamp. Distinct by construction here.
+const BLANK_BASE_TS = Date.now();
+const blankTs = (n) => ({ createdOn: BLANK_BASE_TS + n, editedOn: BLANK_BASE_TS + n });
 
 export const BLANK_CARDS = {
   'start-scene': {
