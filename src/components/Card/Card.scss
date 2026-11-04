@@ -5,6 +5,9 @@ $title-height: 32px;
 $library-preview-lines: 4;
 
 .card {
+  // Containing block for .action-dropdown, whose 38px offset is the title
+  // height. react-rnd supplied one on canvas; nothing did in the Library.
+  position: relative;
   padding: 0;
   margin: 0;
   border: 0;
