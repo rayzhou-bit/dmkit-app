@@ -20,6 +20,7 @@ const LibraryNoteContent = ({
   isExpanded,
   isSelected,
   setEditingCard,
+  portraitHooks,
 }) => {
   const content = useSelector(state => state.project.present.cards[cardId].content);
   const expanded = isSelected || isExpanded;
@@ -60,8 +61,9 @@ const LibraryNoteContent = ({
       className='library-card-content-container library-note-expanded'
       style={{ minHeight: '80px', maxHeight: '60vh', height: 'auto' }}
       onDragOver={(e) => e.preventDefault()}
+      onDrop={portraitHooks.onDrop}
     >
-      <NotePortrait cardId={cardId} />
+      <NotePortrait {...portraitHooks} />
       <NoteTextField cardId={cardId} fieldKey='description' {...NOTE_FIELDS.description} setEditingCard={setEditingCard} />
       <NoteEntryList cardId={cardId} setEditingCard={setEditingCard} />
     </div>

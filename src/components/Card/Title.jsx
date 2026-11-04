@@ -11,12 +11,15 @@ import './Card.scss';
 import '../../constants/colors.scss';
 import OpenColorBlackIcon from '../../assets/icons/rounded-square.svg';
 import OpenColorWhiteIcon from '../../assets/icons/rounded-square-white.svg';
+import AddImageBlackIcon from '../../assets/icons/add-image-small.svg';
+import AddImageWhiteIcon from '../../assets/icons/add-image-small-white.svg';
 import DropdownArrowBlackIcon from '../../assets/icons/dropdown-arrow.svg';
 import DropdownArrowWhiteIcon from '../../assets/icons/dropdown-arrow-white.svg';
 
 const Title = ({
   cardId,
   setEditingCard,
+  onAddImage, // only passed for a portrait-capable card with no portrait yet
 }) => {
   const typeIcon = useSelector(state => CARD_TYPE_ICONS[getCardType(state.project.present.cards[cardId])]);
 
@@ -56,7 +59,7 @@ const Title = ({
   });
 
   return (
-    <div className={'card-title ' + color + (typeIcon ? ' has-type-icon' : '')}>
+    <div className={'card-title ' + color + (typeIcon ? ' has-type-icon' : '') + (onAddImage ? ' has-image-btn' : '')}>
       {typeIcon && (
         <span className='type-icon' title={typeIcon.label}>
           <img src={isLightColor ? typeIcon.darkIcon : typeIcon.lightIcon} alt='' draggable='false' />
@@ -78,6 +81,17 @@ const Title = ({
           value={titleValue}
         />
       </div>
+      {onAddImage && (
+        <button
+          type='button'
+          className='add-image-btn'
+          aria-label='Add image'
+          title='Add image'
+          onClick={onAddImage}
+        >
+          <img src={isLightColor ? AddImageBlackIcon : AddImageWhiteIcon} alt='' draggable='false' />
+        </button>
+      )}
       <button
         className='color-btn'
         onClick={openColorDropdown}

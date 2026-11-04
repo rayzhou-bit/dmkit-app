@@ -14,14 +14,15 @@ const LibraryContent = ({
   isExpanded,
   isSelected,
   setEditingCard,
+  portraitHooks,
 }) => {
   const cardType = useCardType(cardId);
 
   if (cardType === CARD_TYPES.monster) {
-    return <LibraryMonsterContent cardId={cardId} isExpanded={isExpanded} isSelected={isSelected} setEditingCard={setEditingCard} />;
+    return <LibraryMonsterContent cardId={cardId} portraitHooks={portraitHooks} isExpanded={isExpanded} isSelected={isSelected} setEditingCard={setEditingCard} />;
   }
   if (cardType === CARD_TYPES.note) {
-    return <LibraryNoteContent cardId={cardId} isExpanded={isExpanded} isSelected={isSelected} setEditingCard={setEditingCard} />;
+    return <LibraryNoteContent cardId={cardId} portraitHooks={portraitHooks} isExpanded={isExpanded} isSelected={isSelected} setEditingCard={setEditingCard} />;
   }
   if (cardType === CARD_TYPES.custom) {
     return <LibraryCustomContent cardId={cardId} isExpanded={isExpanded} isSelected={isSelected} setEditingCard={setEditingCard} />;

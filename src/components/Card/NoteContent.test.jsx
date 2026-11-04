@@ -1,9 +1,17 @@
+vi.mock('../../utils/imageUtils', () => ({
+  processImageFile: vi.fn(),
+}));
+
 import React from 'react';
-import { render, fireEvent, screen } from '@testing-library/react';
+import { render, fireEvent, act, screen } from '@testing-library/react';
 import { Provider } from 'react-redux';
 
-import NoteContent from './NoteContent';
+import { processImageFile } from '../../utils/imageUtils';
+import RawNoteContent from './NoteContent';
+import { withPortraitHooks } from './portraitTestUtils';
 import { buildNoteContent } from '../../constants/note';
+
+const NoteContent = withPortraitHooks(RawNoteContent);
 
 // Hand-rolled fake store, matching the pattern in MonsterContent.test.jsx -
 // no session.monsterCollapse needed here, note has no collapsible
@@ -32,7 +40,7 @@ describe('NoteContent', () => {
 
   it('renders the portrait, description, and entry list', () => {
     const { container, getByText, getByLabelText } = renderNote(buildNoteContent({ description: 'A dim tavern.' }));
-    expect(container.querySelector('.note-portrait')).not.toBeNull();
+    expect(container.querySelector('.card-file-input')).not.toBeNull(); // stays mounted with no image
     expect(getByText('A dim tavern.')).not.toBeNull();
     enterEdit(getByText);
     expect(getByLabelText('Description').value).toBe('A dim tavern.');
@@ -292,6 +300,25 @@ describe('NoteContent - card references (# trigger)', () => {
       expect(chip).not.toBeNull();
       expect(chip.className).toMatch(/card-ref-chip-inline-dangling/);
       expect(queryByText('#[Ghost Card](ghost)')).toBeNull();
+    });
+  });
+});
+
+describe('NoteContent - portrait drop', () => {
+  it('a file dropped anywhere on the card sets the portrait; with no image there is no placeholder', async () => {
+    processImageFile.mockResolvedValueOnce({ image: 'data:image/jpeg;base64,dropped', alt: 'dropped.png' });
+    const { container, store } = renderNote(buildNoteContent());
+    expect(container.querySelector('.card-file-input')).not.toBeNull(); // stays mounted with no image
+    expect(container.querySelector('[class*="portrait-placeholder"]')).toBeNull();
+    const file = new File(['x'], 'dropped.png', { type: 'image/png' });
+
+    await act(async () => {
+      fireEvent.drop(container.querySelector('.note-content'), { dataTransfer: { files: [file] } });
+    });
+
+    expect(store.dispatched).toContainEqual({
+      type: 'project/updateCardPortrait',
+      payload: { id: 'c1', portrait: 'data:image/jpeg;base64,dropped', portraitAlt: 'dropped.png' },
     });
   });
 });

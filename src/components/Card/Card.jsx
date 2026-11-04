@@ -1,7 +1,8 @@
 import React from 'react';
 import { Rnd } from 'react-rnd';
 
-import { useCardHooks } from './hooks';
+import { useCardHooks, useCardType, usePortraitHooks } from './hooks';
+import { CARD_TYPES } from '../../constants/cards';
 
 import Title from './Title';
 import Content from './Content';
@@ -42,6 +43,12 @@ export const Card = ({
     groupDrag,
   });
 
+  // Hoisted this far (not into Content) because the title bar's add-image
+  // button, a sibling of Content, must reach openFilePicker.
+  const cardType = useCardType(cardId);
+  const portraitHooks = usePortraitHooks({ cardId });
+  const hasPortraitSlot = cardType === CARD_TYPES.monster || cardType === CARD_TYPES.note;
+
   return (
     <Rnd style={rndStyle}
       bounds='parent'
@@ -78,9 +85,11 @@ export const Card = ({
         <Title
           cardId={cardId}
           setEditingCard={setIsEditing}
+          onAddImage={hasPortraitSlot && !portraitHooks.hasPortrait ? portraitHooks.openFilePicker : undefined}
         />
         <Content
           cardId={cardId}
+          portraitHooks={portraitHooks}
           setEditingCard={setIsEditing}
         />
       </div>

@@ -80,3 +80,38 @@ describe.each([
     expect(container.querySelector('.card-title.has-type-icon .type-icon')).not.toBeNull();
   });
 });
+
+describe.each([
+  ['Title (canvas)', Title],
+  ['LibraryTitle (library)', LibraryTitle],
+])('%s - add-image button', (name, Component) => {
+  const renderWith = (onAddImage, type = 'note') => {
+    const store = makeStore({ type });
+    return render(
+      <Provider store={store}>
+        <Component cardId='c1' setEditingCard={() => {}} onAddImage={onAddImage} />
+      </Provider>
+    );
+  };
+
+  it('renders nothing extra without onAddImage (no portrait-capable card, or one that has an image)', () => {
+    const { container } = renderWith(undefined);
+    expect(container.querySelector('.add-image-btn')).toBeNull();
+    expect(container.querySelector('.card-title').className).not.toMatch(/has-image-btn/);
+  });
+
+  it('with onAddImage renders the button immediately before the colour button, and flags the grid', () => {
+    const { container } = renderWith(() => {});
+    const btn = container.querySelector('.add-image-btn');
+    expect(btn).not.toBeNull();
+    expect(btn.nextElementSibling.classList.contains('color-btn')).toBe(true);
+    expect(container.querySelector('.card-title').classList.contains('has-image-btn')).toBe(true);
+  });
+
+  it('clicking it calls onAddImage', () => {
+    const onAddImage = vi.fn();
+    const { container } = renderWith(onAddImage);
+    fireEvent.click(container.querySelector('.add-image-btn'));
+    expect(onAddImage).toHaveBeenCalledTimes(1);
+  });
+});

@@ -224,3 +224,32 @@ describe('LibraryCard - mobile', () => {
     expect(titleInput.readOnly).toBe(false);
   });
 });
+
+describe('LibraryCard - add-image button in the title bar', () => {
+  it('shows only on an expanded portrait-capable card with no portrait, and opens the file picker', () => {
+    store.dispatch(actions.project.setActiveTab({ id: 'ltab2' }));
+    store.dispatch(actions.project.createCard({ newId: 'lnote', type: 'note' }));
+    const clickSpy = vi.spyOn(HTMLInputElement.prototype, 'click').mockImplementation(() => {});
+
+    const collapsed = render(<Provider store={store}><LibraryCard cardId='lnote' isExpanded={false} /></Provider>);
+    expect(collapsed.container.querySelector('.add-image-btn')).toBeNull();
+    collapsed.unmount();
+
+    const { container } = render(<Provider store={store}><LibraryCard cardId='lnote' isExpanded={true} /></Provider>);
+    fireEvent.click(container.querySelector('.add-image-btn'));
+    expect(clickSpy).toHaveBeenCalledTimes(1);
+    clickSpy.mockRestore();
+  });
+
+  it('is absent once the card has a portrait, and on a card type with no portrait', () => {
+    store.dispatch(actions.project.updateCardPortrait({ id: 'lnote', portrait: 'data:image/jpeg;base64,x', portraitAlt: 'a' }));
+    const withImg = render(<Provider store={store}><LibraryCard cardId='lnote' isExpanded={true} /></Provider>);
+    expect(withImg.container.querySelector('.add-image-btn')).toBeNull();
+    withImg.unmount();
+
+    store.dispatch(actions.project.createCard({ newId: 'ltext', type: 'text' }));
+    const text = render(<Provider store={store}><LibraryCard cardId='ltext' isExpanded={true} /></Provider>);
+    expect(text.container.querySelector('.add-image-btn')).toBeNull();
+  });
+});
+

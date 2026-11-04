@@ -2,10 +2,13 @@ import React from 'react';
 import { render, fireEvent } from '@testing-library/react';
 import { Provider } from 'react-redux';
 
-import Content from './Content';
+import RawContent from './Content';
+import { withPortraitHooks } from './portraitTestUtils';
 import { buildMonsterContent } from '../../constants/monster';
 import { buildNoteContent } from '../../constants/note';
 import { buildCustomContent } from '../../constants/custom';
+
+const Content = withPortraitHooks(RawContent);
 
 // Hand-rolled fake store, matching the pattern in Canvas/testUtils.jsx.
 // session.monsterCollapse is read unconditionally by useMonsterSectionHooks.
@@ -62,7 +65,7 @@ describe('Content (dispatcher)', () => {
       <Provider store={store}><Content cardId='c4' setEditingCard={() => {}} /></Provider>
     );
     expect(container.querySelector('.note-content')).not.toBeNull();
-    expect(container.querySelector('.note-portrait')).not.toBeNull();
+    expect(container.querySelector('.card-file-input')).not.toBeNull(); // stays mounted with no image
     expect(container.querySelector('textarea.text')).toBeNull();
     expect(container.querySelector('.image-placeholder')).toBeNull();
   });

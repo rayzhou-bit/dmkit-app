@@ -16,6 +16,7 @@ import './Card.scss';
 // content input can never start a drag on this card type.
 const MonsterContent = ({
   cardId,
+  portraitHooks,
 }) => {
   const { isCollapsed, sectionContentCount, columnContentCount, toggleSection, toggleColumn } = useMonsterSectionHooks({ cardId });
 
@@ -29,10 +30,11 @@ const MonsterContent = ({
       className={'card-content monster-content' + (collapsedModifierClasses ? ' ' + collapsedModifierClasses : '')}
       onWheel={(e) => e.stopPropagation()}
       onDragOver={(e) => e.preventDefault()}
+      onDrop={portraitHooks.onDrop}
     >
       <div className='monster-column-media'>
         <div className='monster-media-top'>
-          <MonsterPortrait cardId={cardId} />
+          <MonsterPortrait {...portraitHooks} />
           <div className='monster-media-fields'>
             {MONSTER_MEDIA_FIELDS.map(fieldKey => (
               <MonsterTextField key={fieldKey} cardId={cardId} fieldKey={fieldKey} {...MONSTER_FIELDS[fieldKey]} />
