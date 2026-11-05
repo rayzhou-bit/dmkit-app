@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useRef, useState } from 'react';
+import React, { useRef } from 'react';
 
 import './ActionDropdown.scss';
 import { CARD_COLOR_KEYS } from '../../constants/colors';
@@ -24,19 +24,6 @@ export const ACTION_TYPE = {
   disabled: 'disabled',
 };
 
-// Edges the menu has to stay inside: the nearest scrolling ancestor if there
-// is one (the Library's card list clips its contents), else the viewport.
-const scrollBounds = (node) => {
-  for (let el = node.parentElement; el; el = el.parentElement) {
-    const overflow = getComputedStyle(el).overflowY;
-    if (overflow === 'auto' || overflow === 'scroll') {
-      const rect = el.getBoundingClientRect();
-      return { top: rect.top, bottom: rect.bottom };
-    }
-  }
-  return { top: 0, bottom: window.innerHeight };
-};
-
 export const VARIANT_TYPE = {
   dropup: 'dropup',
 };
@@ -49,27 +36,8 @@ export const ActionDropdown = ({
   variant,
 }) => {
   const dropdownRef = useRef();
-  // Flip above when there's no room below - in the Library the menu is
-  // clipped by the card list's scroll container. Not VARIANT_TYPE.dropup,
-  // which means "38px up from the containing block's bottom" and on a tall
-  // card still lands clipped. An explicit `variant` wins.
-  const [autoDropup, setAutoDropup] = useState(false);
 
   useOutsideClick([btnRef, dropdownRef], isOpen, onClose);
-
-  useLayoutEffect(() => {
-    if (!isOpen || variant) { setAutoDropup(false); return; }
-    const button = btnRef?.current;
-    const menu = dropdownRef.current;
-    // jsdom reports zeros for both, which would flip everything on every
-    // render - treat a measurement of nothing as "leave it alone".
-    if (!button || !menu || !menu.offsetHeight) return;
-    const rect = button.getBoundingClientRect();
-    const bounds = scrollBounds(button);
-    const fitsBelow = rect.bottom + menu.offsetHeight <= bounds.bottom;
-    const fitsAbove = rect.top - menu.offsetHeight >= bounds.top;
-    setAutoDropup(!fitsBelow && fitsAbove);
-  }, [isOpen, variant, items]);
 
   if (!isOpen) return null;
 
@@ -122,7 +90,7 @@ export const ActionDropdown = ({
 
   return (
     <div
-      className={`action-dropdown ${variant ?? (autoDropup ? 'flip-above' : '')}`}
+      className={`action-dropdown ${variant ?? ''}`}
       ref={dropdownRef}
     >
       <ul>

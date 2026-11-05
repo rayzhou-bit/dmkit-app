@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, fireEvent, screen } from '@testing-library/react';
 
-import ActionDropdown, { ACTION_TYPE, VARIANT_TYPE } from './ActionDropdown';
+import ActionDropdown, { ACTION_TYPE } from './ActionDropdown';
 import { CARD_COLOR_KEYS } from '../../constants/colors';
 
 const renderDropdown = (items, onClose = () => {}) => render(
@@ -39,30 +39,3 @@ describe('ActionDropdown', () => {
   });
 });
 
-// jsdom reports zero for every measurement, so the flip can't be exercised
-// there - these pin the parts that don't need layout. The geometry itself is
-// verified in the browser.
-describe('ActionDropdown - flip-above', () => {
-  const items = [{ title: 'One', callback: () => {} }];
-
-  it('does not flip when it cannot measure anything', () => {
-    const btnRef = { current: document.createElement('button') };
-    const { container } = render(
-      <ActionDropdown btnRef={btnRef} isOpen items={items} onClose={() => {}} />
-    );
-    expect(container.querySelector('.action-dropdown').className).not.toMatch(/flip-above/);
-  });
-
-  // TabBar always wants its menu above the tab; auto-flip must not override
-  // an explicit variant, and must not borrow its class either - dropup means
-  // "up from the containing block's bottom", which is a different geometry.
-  it('leaves an explicit variant alone', () => {
-    const btnRef = { current: document.createElement('button') };
-    const { container } = render(
-      <ActionDropdown btnRef={btnRef} isOpen items={items} onClose={() => {}} variant={VARIANT_TYPE.dropup} />
-    );
-    const cls = container.querySelector('.action-dropdown').className;
-    expect(cls).toMatch(/dropup/);
-    expect(cls).not.toMatch(/flip-above/);
-  });
-});

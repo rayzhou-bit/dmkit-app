@@ -35,13 +35,6 @@ $vertical-offset: 38px;
   top: auto !important;
   bottom: $vertical-offset !important;
 }
-// Auto-flip: sit wholly above the containing block, so a card low in the
-// Library's scrolling list opens upward instead of into the clipped edge.
-.flip-above {
-  top: auto !important;
-  bottom: 100% !important;
-  margin-bottom: 6px;
-}
 
 .selection {
   box-sizing: border-box;
