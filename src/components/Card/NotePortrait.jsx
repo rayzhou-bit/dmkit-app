@@ -1,73 +1,54 @@
 import React from 'react';
 
-import { usePortraitHooks } from './hooks';
 import { ACCEPTED_IMAGE_TYPES } from '../../constants/images';
 
 import './Card.scss';
-import AddImageIcon from '../../assets/icons/add-image.svg';
 
-// Near-identical to MonsterPortrait.jsx (own CSS class names, since the
-// canvas layouts around each differ) but sharing usePortraitHooks - see its
-// comment in hooks.js for why that's shared rather than duplicated here.
-// No setEditingCard/drag-safe gating needed even inside the Library: every
-// click/dblclick interaction here is one HTML5 drag-and-drop never treats
-// as the start of a drag (see LibraryCard.test.jsx), and dropping an OS
-// file onto it is a separate drag source entirely (see onDrop's comment in
-// hooks.js) - neither conflicts with the Library card's own draggable=true.
+// Props come from the card's usePortraitHooks call (hoisted to Card/LibraryCard
+// so the title bar's add-image button and whole-card drop share it). With no
+// image nothing renders in the content flow, only the hidden file input.
 const NotePortrait = ({
-  cardId,
-}) => {
-  const {
-    portrait,
-    portraitAlt,
-    hasPortrait,
-    fileInputRef,
-    isProcessing,
-    errorMessage,
-    openFilePicker,
-    onFileChange,
-    onDrop,
-    clearPortrait,
-    dismissError,
-  } = usePortraitHooks({ cardId });
-
-  return (
-    <div className='note-portrait' onDragOver={(e) => e.preventDefault()} onDrop={onDrop}>
-      <input
-        type='file'
-        className='card-file-input'
-        accept={ACCEPTED_IMAGE_TYPES.join(',')}
-        ref={fileInputRef}
-        onChange={onFileChange}
-      />
-      {hasPortrait ? (
-        <>
-          <img
-            className='note-portrait-image'
-            src={portrait}
-            alt={portraitAlt}
-            title={portraitAlt}
-            draggable='false'
-            onDragStart={(e) => e.preventDefault()}
-            onDoubleClick={openFilePicker}
-          />
-          <button type='button' className='note-portrait-clear' onClick={clearPortrait}>×</button>
-        </>
-      ) : (
-        <button type='button' className='note-portrait-placeholder' onClick={openFilePicker}>
-          <img src={AddImageIcon} alt='' draggable='false' />
-          <span>Image</span>
-        </button>
-      )}
-      {isProcessing && <div className='note-portrait-status'>Processing…</div>}
-      {errorMessage && (
-        <div className='note-portrait-error' role='alert'>
-          <span>{errorMessage}</span>
-          <button type='button' onClick={dismissError}>×</button>
-        </div>
-      )}
-    </div>
-  );
-};
+  portrait,
+  portraitAlt,
+  hasPortrait,
+  fileInputRef,
+  isProcessing,
+  errorMessage,
+  openFilePicker,
+  onFileChange,
+  clearPortrait,
+  dismissError,
+}) => (
+  <>
+    <input
+      type='file'
+      className='card-file-input'
+      accept={ACCEPTED_IMAGE_TYPES.join(',')}
+      ref={fileInputRef}
+      onChange={onFileChange}
+    />
+    {hasPortrait && (
+      <div className='note-portrait'>
+        <img
+          className='note-portrait-image'
+          src={portrait}
+          alt={portraitAlt}
+          title={portraitAlt}
+          draggable='false'
+          onDragStart={(e) => e.preventDefault()}
+          onDoubleClick={openFilePicker}
+        />
+        <button type='button' className='note-portrait-clear' onClick={clearPortrait}>×</button>
+      </div>
+    )}
+    {isProcessing && <div className='note-portrait-status'>Processing…</div>}
+    {errorMessage && (
+      <div className='note-portrait-error' role='alert'>
+        <span>{errorMessage}</span>
+        <button type='button' onClick={dismissError}>×</button>
+      </div>
+    )}
+  </>
+);
 
 export default NotePortrait;

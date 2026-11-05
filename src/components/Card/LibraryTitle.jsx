@@ -5,19 +5,17 @@ import { useTitleHooks, useColorDropdownHooks, useOptionsDropdownLibraryHooks } 
 import { getCardType, CARD_TYPE_ICONS } from '../../constants/cards';
 import useIsMobile from '../../utils/useIsMobile';
 
-import ColorDropdown from '../../components-shared/Dropdowns/ColorDropdown';
 import ActionDropdown from '../../components-shared/Dropdowns/ActionDropdown';
 
 import './Card.scss';
 import '../../constants/colors.scss';
-import OpenColorBlackIcon from '../../assets/icons/rounded-square.svg';
-import OpenColorWhiteIcon from '../../assets/icons/rounded-square-white.svg';
 import DropdownArrowBlackIcon from '../../assets/icons/dropdown-arrow.svg';
 import DropdownArrowWhiteIcon from '../../assets/icons/dropdown-arrow-white.svg';
 
 const LibraryTitle = ({
   cardId,
   setEditingCard,
+  onAddImage, // only passed for a portrait-capable card with no portrait yet
 }) => {
   const typeIcon = useSelector(state => CARD_TYPE_ICONS[getCardType(state.project.present.cards[cardId])]);
   // Double-click guards the title against the card's own drag, which mobile
@@ -41,11 +39,7 @@ const LibraryTitle = ({
 
   const {
     color,
-    colorDropdownBtnRef,
-    isColorDropdownOpen,
     isLightColor,
-    closeColorDropdown,
-    openColorDropdown,
     updateColor,
   } = useColorDropdownHooks({ cardId });
 
@@ -58,6 +52,9 @@ const LibraryTitle = ({
   } = useOptionsDropdownLibraryHooks({
     beginTitleEdit,
     cardId,
+    color,
+    updateColor,
+    onAddImage,
   });
 
   return (
@@ -84,21 +81,6 @@ const LibraryTitle = ({
           value={titleValue}
         />
       </div>
-      <button
-        className='color-btn'
-        onClick={openColorDropdown}
-        ref={colorDropdownBtnRef}
-      >
-        <img src={isLightColor ? OpenColorBlackIcon : OpenColorWhiteIcon} />
-      </button>
-      <ColorDropdown
-        btnRef={colorDropdownBtnRef}
-        isOpen={isColorDropdownOpen}
-        message="Select card-top color"
-        onClose={closeColorDropdown}
-        onUpdateColor={updateColor}
-        selectedColor={color}
-      />
       <button
         className='dropdown-btn'
         ref={optionDropdownBtnRef}

@@ -12,14 +12,15 @@ import CustomContent from './CustomContent';
 const Content = ({
   cardId,
   setEditingCard,
+  portraitHooks,
 }) => {
   const cardType = useCardType(cardId);
 
   if (cardType === CARD_TYPES.monster) {
-    return <MonsterContent cardId={cardId} />;
+    return <MonsterContent cardId={cardId} portraitHooks={portraitHooks} />;
   }
   if (cardType === CARD_TYPES.note) {
-    return <NoteContent cardId={cardId} />;
+    return <NoteContent cardId={cardId} portraitHooks={portraitHooks} />;
   }
   if (cardType === CARD_TYPES.custom) {
     return <CustomContent cardId={cardId} />;

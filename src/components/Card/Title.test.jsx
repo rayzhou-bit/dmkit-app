@@ -1,9 +1,10 @@
 import React from 'react';
-import { render, fireEvent } from '@testing-library/react';
+import { render, fireEvent, screen } from '@testing-library/react';
 import { Provider } from 'react-redux';
 
 import Title from './Title';
 import LibraryTitle from './LibraryTitle';
+import { CARD_COLOR_KEYS } from '../../constants/colors';
 
 // Minimal fake store covering both Title's and LibraryTitle's selector needs
 // (color, title, type, content, views, activeViewId).
@@ -78,5 +79,56 @@ describe.each([
   it('shows the note icon for a note card', () => {
     const { container } = renderTitle(Component, { type: 'note' });
     expect(container.querySelector('.card-title.has-type-icon .type-icon')).not.toBeNull();
+  });
+});
+
+describe.each([
+  ['Title (canvas)', Title],
+  ['LibraryTitle (library)', LibraryTitle],
+])('%s - options menu (add image, colour)', (name, Component) => {
+  const renderWith = (onAddImage, type = 'note') => {
+    const store = makeStore({ type });
+    return {
+      store,
+      ...render(
+        <Provider store={store}>
+          <Component cardId='c1' setEditingCard={() => {}} onAddImage={onAddImage} />
+        </Provider>
+      ),
+    };
+  };
+  const openMenu = (container) => fireEvent.click(container.querySelector('.dropdown-btn'));
+
+  it('title bar holds only the input and the options button (plus type icon)', () => {
+    const { container } = renderWith(() => {});
+    expect(container.querySelector('.add-image-btn')).toBeNull();
+    expect(container.querySelector('.color-btn')).toBeNull();
+    expect(container.querySelectorAll('.card-title button')).toHaveLength(1);
+  });
+
+  it('without onAddImage the menu has no Add image item', () => {
+    const { container } = renderWith(undefined);
+    openMenu(container);
+    expect(screen.queryByText('Add image')).toBeNull();
+  });
+
+  it('with onAddImage the menu has an Add image item that calls it and closes the menu', () => {
+    const onAddImage = vi.fn();
+    const { container } = renderWith(onAddImage);
+    openMenu(container);
+    fireEvent.click(screen.getByText('Add image'));
+    expect(onAddImage).toHaveBeenCalledTimes(1);
+    expect(container.querySelector('.action-dropdown')).toBeNull();
+  });
+
+  it('the menu has a swatch per colour, and clicking one dispatches the colour update', () => {
+    const { container, store } = renderWith(undefined);
+    openMenu(container);
+    expect(container.querySelectorAll('.color-swatch')).toHaveLength(Object.keys(CARD_COLOR_KEYS).length);
+    fireEvent.click(container.querySelector('.color-swatch.red'));
+    expect(store.dispatched).toContainEqual(expect.objectContaining({
+      payload: { id: 'c1', color: 'red' },
+    }));
+    expect(container.querySelector('.color-swatch.gray').classList.contains('selected')).toBe(true);
   });
 });

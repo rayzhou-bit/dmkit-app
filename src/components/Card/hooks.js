@@ -22,6 +22,7 @@ import { ACTION_TYPE } from '../../components-shared/Dropdowns/ActionDropdown';
 import { useGroupDragPosition } from '../Canvas/groupDrag';
 
 import LibraryIcon from '../../assets/icons/library-open.svg';
+import AddImageIcon from '../../assets/icons/add-image-small.svg';
 import RedTrashIcon from '../../assets/icons/trash-red.svg';
 import { DEFAULT_CARD_POSITION, MIN_CARD_SIZE, MONSTER_MIN_CARD_SIZE } from '../../constants/dimensions';
 import generateUID from '../../utils/generateUID';
@@ -329,16 +330,10 @@ export const useColorDropdownHooks = ({
   const dispatch = useDispatch();
   let color = useSelector(state => state.project.present.cards[cardId].color);
   color = CARD_COLOR_KEYS[color] ?? CARD_COLOR_KEYS.gray;
-  const [ isColorDropdownOpen, setIsColorDropdownOpen ] = useState(false);
-  const colorDropdownBtnRef = useRef();
 
   return {
     color,
-    colorDropdownBtnRef,
-    isColorDropdownOpen,
     isLightColor: LIGHT_COLORS.includes(color),
-    openColorDropdown: () => setIsColorDropdownOpen(!isColorDropdownOpen),
-    closeColorDropdown: () => setIsColorDropdownOpen(false),
     updateColor: (newColor) => dispatch(actions.project.updateCardColor({
       id: cardId,
       color: newColor,
@@ -349,6 +344,9 @@ export const useColorDropdownHooks = ({
 export const useOptionsDropdownHooks = ({
   beginTitleEdit,
   cardId,
+  color,
+  updateColor,
+  onAddImage,
 }) => {
   const dispatch = useDispatch();
 
@@ -359,7 +357,15 @@ export const useOptionsDropdownHooks = ({
   const [ isOptionDropdownOpen, setIsOptionDropdownOpen ] = useState(false);
   const optionDropdownBtnRef = useRef();
 
+  const colorItem = { colors: { selected: color, onSelect: updateColor } };
+  const addImageItems = onAddImage
+    ? [{}, { title: 'Add image', callback: onAddImage, icon: AddImageIcon }]
+    : [];
+
   const options = [
+    colorItem,
+    ...addImageItems,
+    {},
     {
       title: 'Copy card',
       callback: () => {
@@ -418,6 +424,9 @@ export const useOptionsDropdownHooks = ({
 export const useOptionsDropdownLibraryHooks = ({
   beginTitleEdit,
   cardId,
+  color,
+  updateColor,
+  onAddImage,
 }) => {
   const dispatch = useDispatch();
 
@@ -428,7 +437,15 @@ export const useOptionsDropdownLibraryHooks = ({
   const [ isOptionDropdownOpen, setIsOptionDropdownOpen ] = useState(false);
   const optionDropdownBtnRef = useRef();
 
+  const colorItem = { colors: { selected: color, onSelect: updateColor } };
+  const addImageItems = onAddImage
+    ? [{}, { title: 'Add image', callback: onAddImage, icon: AddImageIcon }]
+    : [];
+
   const options = [
+    colorItem,
+    ...addImageItems,
+    {},
     {
       title: 'Add to tab',
       type: cardTabs[activeTab] ? ACTION_TYPE.disabled : null,

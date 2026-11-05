@@ -1,9 +1,17 @@
+vi.mock('../../utils/imageUtils', () => ({
+  processImageFile: vi.fn(),
+}));
+
 import React from 'react';
-import { render, fireEvent } from '@testing-library/react';
+import { render, fireEvent, act } from '@testing-library/react';
 import { Provider } from 'react-redux';
 
-import LibraryMonsterContent from './LibraryMonsterContent';
+import { processImageFile } from '../../utils/imageUtils';
+import RawLibraryMonsterContent from './LibraryMonsterContent';
+import { withPortraitHooks } from './portraitTestUtils';
 import { buildMonsterContent } from '../../constants/monster';
+
+const LibraryMonsterContent = withPortraitHooks(RawLibraryMonsterContent);
 
 // Hand-rolled fake store, matching the pattern in MonsterContent.test.jsx -
 // libraryMonsterCollapse is a separate map from the canvas's monsterCollapse
@@ -122,9 +130,10 @@ describe('LibraryMonsterContent - expanded view: rendering', () => {
     expect(rows.map(el => el.className.includes('media-top') ? 'media-top' : 'subtitle')).toEqual(['media-top', 'subtitle']);
   });
 
-  it('the portrait is editable - shows an upload placeholder when empty', () => {
+  it('the portrait is editable - an empty one shows only the hidden input, no image area', () => {
     const { container } = renderLibraryMonster(buildMonsterContent({ armorClass: '18' }), {}, { isExpanded: true });
-    expect(container.querySelector('.monster-portrait-placeholder')).not.toBeNull();
+    expect(container.querySelector('.card-file-input')).not.toBeNull(); // stays mounted with no image
+    expect(container.querySelector('.monster-portrait')).toBeNull();
   });
 
   it('the portrait shows a clear button when a portrait is set', () => {
@@ -315,6 +324,25 @@ describe('LibraryMonsterContent - editing dispatches (reuses the canvas actions/
     expect(store.dispatched[0]).toMatchObject({
       type: 'project/addCustomBlock',
       payload: { id: 'c1', blockType: 'image', field: 'notes' },
+    });
+  });
+});
+
+describe('LibraryMonsterContent - portrait drop', () => {
+  it('a file dropped anywhere on the card sets the portrait; with no image there is no placeholder', async () => {
+    processImageFile.mockResolvedValueOnce({ image: 'data:image/jpeg;base64,dropped', alt: 'dropped.png' });
+    const { container, store } = renderLibraryMonster(buildMonsterContent({ armorClass: '18' }), {}, { isExpanded: true });
+    expect(container.querySelector('.card-file-input')).not.toBeNull(); // stays mounted with no image
+    expect(container.querySelector('[class*="portrait-placeholder"]')).toBeNull();
+    const file = new File(['x'], 'dropped.png', { type: 'image/png' });
+
+    await act(async () => {
+      fireEvent.drop(container.querySelector('.library-monster-expanded'), { dataTransfer: { files: [file] } });
+    });
+
+    expect(store.dispatched).toContainEqual({
+      type: 'project/updateCardPortrait',
+      payload: { id: 'c1', portrait: 'data:image/jpeg;base64,dropped', portraitAlt: 'dropped.png' },
     });
   });
 });

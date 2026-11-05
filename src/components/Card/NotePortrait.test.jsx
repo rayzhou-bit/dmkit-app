@@ -8,6 +8,7 @@ import { Provider } from 'react-redux';
 
 import { processImageFile } from '../../utils/imageUtils';
 import { PORTRAIT_MAX_EDGE_STEPS, MAX_PORTRAIT_DATA_URI_LENGTH } from '../../constants/images';
+import { usePortraitHooks } from './hooks';
 import NotePortrait from './NotePortrait';
 
 // Hand-rolled fake store, matching the pattern in MonsterPortrait.test.jsx -
@@ -24,18 +25,40 @@ const makeStore = (content) => {
   };
 };
 
+// The hook lives in the content component (so a drop anywhere on the card
+// works) - this stands in for it: hook call, drop handler on the root.
+const Harness = () => {
+  const hooks = usePortraitHooks({ cardId: 'c1' });
+  return (
+    <div className='root' onDragOver={(e) => e.preventDefault()} onDrop={hooks.onDrop}>
+      <NotePortrait {...hooks} />
+    </div>
+  );
+};
+
 const renderPortrait = (content) => {
   const store = makeStore(content);
-  const utils = render(<Provider store={store}><NotePortrait cardId='c1' /></Provider>);
+  const utils = render(<Provider store={store}><Harness /></Provider>);
   return { ...utils, store };
 };
 
 describe('NotePortrait', () => {
-  it('placeholder click opens the file picker', () => {
-    const clickSpy = vi.spyOn(HTMLInputElement.prototype, 'click').mockImplementation(() => {});
+  it('with no portrait renders no placeholder and no image, only the hidden file input', () => {
     const { container } = renderPortrait({ portrait: '', portraitAlt: '' });
-    fireEvent.click(container.querySelector('.note-portrait-placeholder'));
-    expect(clickSpy).toHaveBeenCalledTimes(1);
+    expect(container.querySelector('.note-portrait')).toBeNull();
+    expect(container.querySelector('.note-portrait-placeholder')).toBeNull();
+    expect(container.querySelector('img.note-portrait-image')).toBeNull();
+    expect(container.querySelector('.note-portrait-clear')).toBeNull();
+    expect(container.querySelector('.card-file-input')).not.toBeNull();
+    expect(container.querySelector('button')).toBeNull();
+  });
+
+  it('with a portrait renders the image and clear button, and no add button', () => {
+    const { container } = renderPortrait({ portrait: 'data:image/jpeg;base64,xxx', portraitAlt: 'map.png' });
+    const img = container.querySelector('img.note-portrait-image');
+    expect(img.getAttribute('src')).toBe('data:image/jpeg;base64,xxx');
+    expect(img.getAttribute('alt')).toBe('map.png');
+    expect(container.querySelector('.note-portrait-clear')).not.toBeNull();
   });
 
   it('dispatches updateCardPortrait on a successful pick, resets the input value, uses the portrait budget', async () => {
@@ -58,13 +81,13 @@ describe('NotePortrait', () => {
     });
   });
 
-  it('dispatches updateCardPortrait when a file is dropped onto the portrait', async () => {
+  it('dispatches updateCardPortrait when a file is dropped on the content root', async () => {
     processImageFile.mockResolvedValueOnce({ image: 'data:image/jpeg;base64,dropped', alt: 'dropped.png' });
     const { container, store } = renderPortrait({ portrait: '', portraitAlt: '' });
     const file = new File(['x'], 'dropped.png', { type: 'image/png' });
 
     await act(async () => {
-      fireEvent.drop(container.querySelector('.note-portrait'), { dataTransfer: { files: [file] } });
+      fireEvent.drop(container.querySelector('.root'), { dataTransfer: { files: [file] } });
     });
 
     expect(store.dispatched).toContainEqual({
@@ -94,5 +117,30 @@ describe('NotePortrait', () => {
       type: 'project/updateCardPortrait',
       payload: { id: 'c1', portrait: '', portraitAlt: '' },
     });
+  });
+
+  it('clearing the portrait returns the card to the no-image state', () => {
+    // Live store (unlike makeStore) so the dispatched clear actually changes state.
+    let content = { portrait: 'data:image/jpeg;base64,xxx', portraitAlt: 'map.png' };
+    const listeners = new Set();
+    const store = {
+      getState: () => ({ project: { present: { cards: { c1: { content } } } } }),
+      dispatch: (action) => {
+        if (action.type === 'project/updateCardPortrait') {
+          content = { portrait: action.payload.portrait, portraitAlt: action.payload.portraitAlt };
+          listeners.forEach(l => l());
+        }
+        return action;
+      },
+      subscribe: (l) => { listeners.add(l); return () => listeners.delete(l); },
+    };
+    const { container } = render(<Provider store={store}><Harness /></Provider>);
+    expect(container.querySelector('.note-portrait-image')).not.toBeNull();
+
+    act(() => { fireEvent.click(container.querySelector('.note-portrait-clear')); });
+
+    expect(container.querySelector('.note-portrait')).toBeNull();
+    expect(container.querySelector('.note-portrait-image')).toBeNull();
+    expect(container.querySelector('.card-file-input')).not.toBeNull();
   });
 });

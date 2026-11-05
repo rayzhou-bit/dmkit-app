@@ -31,6 +31,7 @@ const LibraryMonsterContent = ({
   isExpanded,
   isSelected,
   setEditingCard,
+  portraitHooks,
 }) => {
   const content = useSelector(state => state.project.present.cards[cardId].content);
   const expanded = isSelected || isExpanded;
@@ -75,6 +76,7 @@ const LibraryMonsterContent = ({
       content={content}
       subtitle={subtitle}
       setEditingCard={setEditingCard}
+      portraitHooks={portraitHooks}
     />
   );
 };
@@ -85,7 +87,7 @@ const LibraryMonsterContent = ({
 // can't type a value into a field you can never see. Collapse + the dot
 // indicators (reused as-is from the canvas) keep an all-empty section from
 // just being noise.
-const LibraryMonsterExpanded = ({ cardId, content, subtitle, setEditingCard }) => {
+const LibraryMonsterExpanded = ({ cardId, content, subtitle, setEditingCard, portraitHooks }) => {
   const { isCollapsed, sectionContentCount, columnContentCount, toggleSection } =
     useMonsterSectionHooks({ cardId, scope: 'library' });
   const notesDotCount = Math.min(normalizeNotesBlocks(content?.notes).filter(customBlockHasContent).length, MONSTER_MAX_DOTS);
@@ -95,9 +97,10 @@ const LibraryMonsterExpanded = ({ cardId, content, subtitle, setEditingCard }) =
       className='library-card-content-container library-monster-expanded library-monster-editable'
       style={{ minHeight: '80px', maxHeight: '60vh', height: 'auto' }}
       onDragOver={(e) => e.preventDefault()}
+      onDrop={portraitHooks.onDrop}
     >
       <div className='library-monster-media-top'>
-        <MonsterPortrait cardId={cardId} />
+        <MonsterPortrait {...portraitHooks} />
         <div className='library-monster-defenses'>
           {MONSTER_MEDIA_FIELDS.map(fieldKey => (
             <MonsterTextField key={fieldKey} cardId={cardId} fieldKey={fieldKey} {...MONSTER_FIELDS[fieldKey]} setEditingCard={setEditingCard} />

@@ -1,9 +1,17 @@
+vi.mock('../../utils/imageUtils', () => ({
+  processImageFile: vi.fn(),
+}));
+
 import React from 'react';
-import { render, fireEvent } from '@testing-library/react';
+import { render, fireEvent, act } from '@testing-library/react';
 import { Provider } from 'react-redux';
 
-import MonsterContent from './MonsterContent';
+import { processImageFile } from '../../utils/imageUtils';
+import RawMonsterContent from './MonsterContent';
+import { withPortraitHooks } from './portraitTestUtils';
 import { buildMonsterContent } from '../../constants/monster';
+
+const MonsterContent = withPortraitHooks(RawMonsterContent);
 
 // Hand-rolled fake store, matching the pattern in Canvas/testUtils.jsx.
 // Both Attributes and Combat default to collapsed - most tests that reach
@@ -384,5 +392,24 @@ describe('MonsterContent - Combat entry lists', () => {
     const { getByText } = renderMonster(content);
     const header = getByText('Stats').closest('button');
     expect(header.querySelectorAll('.monster-column-dot').length).toBe(2);
+  });
+});
+
+describe('MonsterContent - portrait drop', () => {
+  it('a file dropped anywhere on the card sets the portrait; with no image there is no placeholder', async () => {
+    processImageFile.mockResolvedValueOnce({ image: 'data:image/jpeg;base64,dropped', alt: 'dropped.png' });
+    const { container, store } = renderMonster(buildMonsterContent());
+    expect(container.querySelector('.card-file-input')).not.toBeNull(); // stays mounted with no image
+    expect(container.querySelector('[class*="portrait-placeholder"]')).toBeNull();
+    const file = new File(['x'], 'dropped.png', { type: 'image/png' });
+
+    await act(async () => {
+      fireEvent.drop(container.querySelector('.monster-content'), { dataTransfer: { files: [file] } });
+    });
+
+    expect(store.dispatched).toContainEqual({
+      type: 'project/updateCardPortrait',
+      payload: { id: 'c1', portrait: 'data:image/jpeg;base64,dropped', portraitAlt: 'dropped.png' },
+    });
   });
 });

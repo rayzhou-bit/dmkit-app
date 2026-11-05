@@ -5,6 +5,9 @@ $title-height: 32px;
 $library-preview-lines: 4;
 
 .card {
+  // Containing block for .action-dropdown, whose 38px offset is the title
+  // height. react-rnd supplied one on canvas; nothing did in the Library.
+  position: relative;
   padding: 0;
   margin: 0;
   border: 0;
@@ -41,13 +44,13 @@ $library-preview-lines: 4;
   border-radius: $card-radius $card-radius 0 0;
 
   display: grid;
-  grid-template-columns: auto 18px 12px;
+  grid-template-columns: auto 12px;
   gap: 12px;
 
   // Monster stat-block cards get a small type badge before the title text,
   // both on the canvas and in the Library - one extra leading column.
   &.has-type-icon {
-    grid-template-columns: 16px auto 18px 12px;
+    grid-template-columns: 16px auto 12px;
   }
   .type-icon {
     display: flex;
@@ -89,12 +92,6 @@ $library-preview-lines: 4;
 
       cursor: grab;
     }
-  }
-
-  .color-btn {
-    display: flex;
-    background-color: transparent;
-    &:hover > img { content: url('../../assets/icons/rounded-square-hover.svg'); }
   }
 
   .dropdown-btn {
@@ -895,31 +892,6 @@ $scrollbar-width: 17px;
     height: auto;
   }
 
-  .monster-portrait-placeholder {
-    // Slim strip, not a 96px box: an empty portrait was a quarter of the
-    // card's content height on every stat card without one. Full width of
-    // its column so it stays a usable drop target, and always visible rather
-    // than hover-revealed - revealing it would shift the card's content
-    // every time the pointer crossed the card.
-    width: 96px;
-    height: 26px;
-    gap: 6px;
-    box-sizing: border-box; // else the border pushes it over, clipped by overflow:hidden
-    border: 1px dashed #D7D6D6;
-    border-radius: 6px;
-    background-color: white;
-    color: #A0A4B4;
-    font-family: Roboto;
-    font-size: 11px;
-    font-weight: 600;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    &:hover { background-color: #F4F4F4; }
-  }
-
   .monster-portrait-clear {
     position: absolute;
     top: 2px;
@@ -944,35 +916,37 @@ $scrollbar-width: 17px;
   .monster-portrait-clear:focus-visible {
     opacity: 1;
   }
+}
 
-  .monster-portrait-status,
-  .monster-portrait-error {
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    padding: 2px 4px;
-    font-family: Roboto;
-    font-size: 9px;
-  }
-  .monster-portrait-status {
-    background-color: rgba(255, 255, 255, 0.85);
-    color: #363B4E;
-  }
-  .monster-portrait-error {
-    background-color: #ed5e31;
+// Outside .monster-portrait: with no image there is no wrapper, so these
+// float over the card (nearest positioned ancestor) instead.
+.monster-portrait-status,
+.monster-portrait-error {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 2px 4px;
+  font-family: Roboto;
+  font-size: 9px;
+}
+.monster-portrait-status {
+  background-color: rgba(255, 255, 255, 0.85);
+  color: #363B4E;
+}
+.monster-portrait-error {
+  background-color: #ed5e31;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+
+  button {
+    background-color: transparent;
     color: white;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 4px;
-
-    button {
-      background-color: transparent;
-      color: white;
-      line-height: 1;
-      cursor: pointer;
-    }
+    line-height: 1;
+    cursor: pointer;
   }
 }
 
@@ -1014,28 +988,6 @@ $scrollbar-width: 17px;
     object-fit: cover;
   }
 
-  .note-portrait-placeholder {
-    // See .monster-portrait-placeholder: a slim strip rather than a 96px
-    // banner, full width so it stays a usable drop target.
-    width: 100%;
-    height: 26px;
-    gap: 6px;
-    box-sizing: border-box;
-    border: 1px dashed #D7D6D6;
-    border-radius: 6px;
-    background-color: white;
-    color: #A0A4B4;
-    font-family: Roboto;
-    font-size: 11px;
-    font-weight: 600;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    &:hover { background-color: #F4F4F4; }
-  }
-
   .note-portrait-clear {
     position: absolute;
     top: 2px;
@@ -1060,35 +1012,37 @@ $scrollbar-width: 17px;
   .note-portrait-clear:focus-visible {
     opacity: 1;
   }
+}
 
-  .note-portrait-status,
-  .note-portrait-error {
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    padding: 2px 4px;
-    font-family: Roboto;
-    font-size: 9px;
-  }
-  .note-portrait-status {
-    background-color: rgba(255, 255, 255, 0.85);
-    color: #363B4E;
-  }
-  .note-portrait-error {
-    background-color: #ed5e31;
+// Outside .note-portrait: with no image there is no wrapper, so these
+// float over the card (nearest positioned ancestor) instead.
+.note-portrait-status,
+.note-portrait-error {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 2px 4px;
+  font-family: Roboto;
+  font-size: 9px;
+}
+.note-portrait-status {
+  background-color: rgba(255, 255, 255, 0.85);
+  color: #363B4E;
+}
+.note-portrait-error {
+  background-color: #ed5e31;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+
+  button {
+    background-color: transparent;
     color: white;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 4px;
-
-    button {
-      background-color: transparent;
-      color: white;
-      line-height: 1;
-      cursor: pointer;
-    }
+    line-height: 1;
+    cursor: pointer;
   }
 }
 
@@ -1446,10 +1400,6 @@ $scrollbar-width: 17px;
   .monster-portrait-image {
     max-width: 64px;
     max-height: 64px;
-  }
-  .monster-portrait-placeholder {
-    width: 64px;
-    height: 24px;
   }
 }
 .library-monster-subtitle {

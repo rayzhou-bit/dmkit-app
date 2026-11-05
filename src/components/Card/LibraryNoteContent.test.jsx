@@ -1,9 +1,17 @@
+vi.mock('../../utils/imageUtils', () => ({
+  processImageFile: vi.fn(),
+}));
+
 import React from 'react';
-import { render, fireEvent } from '@testing-library/react';
+import { render, fireEvent, act } from '@testing-library/react';
 import { Provider } from 'react-redux';
 
-import LibraryNoteContent from './LibraryNoteContent';
+import { processImageFile } from '../../utils/imageUtils';
+import RawLibraryNoteContent from './LibraryNoteContent';
+import { withPortraitHooks } from './portraitTestUtils';
 import { buildNoteContent } from '../../constants/note';
+
+const LibraryNoteContent = withPortraitHooks(RawLibraryNoteContent);
 
 // Hand-rolled fake store, matching the pattern in LibraryMonsterContent.test.jsx -
 // no collapse state needed here, note has no collapsible sections.
@@ -100,7 +108,7 @@ describe('LibraryNoteContent - expanded view (selected or isExpanded)', () => {
   it('renders the portrait, an editable description, and the entry list', () => {
     const content = buildNoteContent({ description: 'A dim tavern.' });
     const { container, getByText, getByLabelText } = renderLibraryNote(content, { isExpanded: true });
-    expect(container.querySelector('.note-portrait')).not.toBeNull();
+    expect(container.querySelector('.card-file-input')).not.toBeNull(); // stays mounted with no image
     expect(getByText('A dim tavern.')).not.toBeNull();
     enterEdit(getByText);
     expect(getByLabelText('Description').value).toBe('A dim tavern.');
@@ -130,5 +138,24 @@ describe('LibraryNoteContent - expanded view (selected or isExpanded)', () => {
     expect(store.dispatched).toEqual([
       { type: 'project/updateCardNoteFields', payload: { id: 'c1', fields: { description: 'A bright tavern.' } } },
     ]);
+  });
+});
+
+describe('LibraryNoteContent - portrait drop', () => {
+  it('a file dropped anywhere on the card sets the portrait; with no image there is no placeholder', async () => {
+    processImageFile.mockResolvedValueOnce({ image: 'data:image/jpeg;base64,dropped', alt: 'dropped.png' });
+    const { container, store } = renderLibraryNote(buildNoteContent({ description: 'x' }), { isExpanded: true });
+    expect(container.querySelector('.card-file-input')).not.toBeNull(); // stays mounted with no image
+    expect(container.querySelector('[class*="portrait-placeholder"]')).toBeNull();
+    const file = new File(['x'], 'dropped.png', { type: 'image/png' });
+
+    await act(async () => {
+      fireEvent.drop(container.querySelector('.library-note-expanded'), { dataTransfer: { files: [file] } });
+    });
+
+    expect(store.dispatched).toContainEqual({
+      type: 'project/updateCardPortrait',
+      payload: { id: 'c1', portrait: 'data:image/jpeg;base64,dropped', portraitAlt: 'dropped.png' },
+    });
   });
 });

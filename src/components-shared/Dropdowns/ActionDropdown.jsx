@@ -1,6 +1,8 @@
 import React, { useRef } from 'react';
 
 import './ActionDropdown.scss';
+import { CARD_COLOR_KEYS } from '../../constants/colors';
+import '../../constants/colors.scss';
 import useOutsideClick from '../../utils/useOutsideClick';
 
 /*
@@ -11,6 +13,9 @@ import useOutsideClick from '../../utils/useOutsideClick';
     callback: () => dispatch(actions.project.unlinkCardFromView({ id: cardId })),
     icon: LibraryIcon,
   },
+  {} renders a separator.
+  { colors: { selected, onSelect } } renders a row of colour swatches; the
+  menu stays open after a pick so the change is visible.
 */
 
 export const ACTION_TYPE = {
@@ -31,7 +36,7 @@ export const ActionDropdown = ({
   variant,
 }) => {
   const dropdownRef = useRef();
-  
+
   useOutsideClick([btnRef, dropdownRef], isOpen, onClose);
 
   if (!isOpen) return null;
@@ -42,6 +47,25 @@ export const ActionDropdown = ({
       itemsList = [
         ...itemsList,
         <li className='break' key={'break' + index} />
+      ];
+    }
+    else if (item.colors) {
+      const { selected, onSelect } = item.colors;
+      itemsList = [
+        ...itemsList,
+        <li className='color-row' key={'colors' + index}>
+          {Object.values(CARD_COLOR_KEYS).map(color => (
+            <button
+              type='button'
+              key={color}
+              className={`color-swatch ${color}${selected === color ? ' selected' : ''}`}
+              aria-label={color}
+              aria-pressed={selected === color}
+              title={color}
+              onClick={() => onSelect(color)}
+            />
+          ))}
+        </li>
       ];
     }
     else {
