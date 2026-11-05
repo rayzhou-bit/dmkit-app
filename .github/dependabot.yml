@@ -1,0 +1,26 @@
+# Without this, dependabot opens one PR per advisory - four of them piled up
+# for what was a single batch. Grouping collapses each run into one PR.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      npm-security:
+        applies-to: security-updates
+        patterns: ['*']
+      npm-versions:
+        applies-to: version-updates
+        patterns: ['*']
+
+  # The hosting workflow pins actions/checkout@v4 and setup-node@v4; nothing
+  # was watching them.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    groups:
+      actions:
+        patterns: ['*']
