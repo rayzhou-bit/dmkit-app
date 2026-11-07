@@ -1,5 +1,10 @@
 # Without this, dependabot opens one PR per advisory - four of them piled up
 # for what was a single batch. Grouping collapses each run into one PR.
+#
+# Majors stay out of the grouped PR on purpose. The first version of this
+# file grouped everything, and the result was one PR carrying React 18->19,
+# RTK 1->2, redux 4->5 and firebase 12->13 together - a stack migration that
+# can't be reviewed or bisected as a unit. Majors now arrive one per PR.
 version: 2
 updates:
   - package-ecosystem: npm
@@ -8,15 +13,17 @@ updates:
       interval: weekly
     open-pull-requests-limit: 5
     groups:
+      # Security fixes batch whatever their bump size: getting them in
+      # quickly matters more, and they're usually patches anyway.
       npm-security:
         applies-to: security-updates
         patterns: ['*']
       npm-versions:
         applies-to: version-updates
         patterns: ['*']
+        update-types: ['minor', 'patch']
 
-  # The hosting workflow pins actions/checkout@v4 and setup-node@v4; nothing
-  # was watching them.
+  # The hosting workflow pins its actions; nothing was watching them.
   - package-ecosystem: github-actions
     directory: /
     schedule:
@@ -24,3 +31,4 @@ updates:
     groups:
       actions:
         patterns: ['*']
+        update-types: ['minor', 'patch']
